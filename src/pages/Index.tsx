@@ -32,7 +32,7 @@ const Index = () => {
   return (
     <div className="flex min-h-screen bg-background">
       <CrmSidebar activeSection={activeSection} onNavigate={setActiveSection} />
-      <main className="ml-[68px] flex-1 min-w-0">
+      <main className="sm:ml-[68px] flex-1 min-w-0 pt-14 sm:pt-0">
         {renderPage()}
       </main>
     </div>
