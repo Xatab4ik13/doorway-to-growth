@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CrmHeader } from "@/components/crm/CrmHeader";
-import { Search, Plus, LayoutGrid, List, MoreHorizontal, ArrowUpDown, Filter } from "lucide-react";
+import { Search, Plus, LayoutGrid, List, MoreHorizontal, ArrowUpDown, Download, Upload, CheckSquare } from "lucide-react";
+import { ProductDetail } from "@/components/crm/ProductDetail";
 
 interface Product {
   id: number;
@@ -31,12 +32,31 @@ export function CatalogPage() {
   const [view, setView] = useState<"table" | "grid">("table");
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("Все");
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [massMode, setMassMode] = useState(false);
 
   const filtered = products.filter((p) => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
     const matchCat = activeCategory === "Все" || p.category === activeCategory;
     return matchSearch && matchCat;
   });
+
+  const toggleSelect = (id: number) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const toggleAll = () => {
+    if (selectedIds.size === filtered.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filtered.map((p) => p.id)));
+    }
+  };
 
   return (
     <div className="px-8 py-6">
@@ -54,7 +74,6 @@ export function CatalogPage() {
               className="h-9 w-64 rounded-xl border border-border bg-card pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow"
             />
           </div>
-          {/* Category pills */}
           <div className="flex items-center gap-1 ml-2">
             {categories.map((cat) => (
               <button
@@ -72,7 +91,22 @@ export function CatalogPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {/* View toggle */}
+          {/* Mass select toggle */}
+          <button
+            onClick={() => { setMassMode(!massMode); setSelectedIds(new Set()); }}
+            className={`flex h-9 w-9 items-center justify-center rounded-xl border transition-colors active:scale-95 ${
+              massMode ? "border-foreground bg-foreground text-primary-foreground" : "border-border bg-card text-muted-foreground hover:text-foreground"
+            }`}
+            title="Массовые действия"
+          >
+            <CheckSquare className="h-4 w-4" />
+          </button>
+          <button className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground active:scale-95 transition-colors" title="Импорт">
+            <Upload className="h-4 w-4" />
+          </button>
+          <button className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground active:scale-95 transition-colors" title="Экспорт">
+            <Download className="h-4 w-4" />
+          </button>
           <div className="flex items-center rounded-xl border border-border bg-card overflow-hidden">
             <button
               onClick={() => setView("table")}
@@ -98,12 +132,34 @@ export function CatalogPage() {
         </div>
       </div>
 
+      {/* Mass actions bar */}
+      {massMode && selectedIds.size > 0 && (
+        <div className="flex items-center gap-3 mb-4 rounded-xl bg-foreground/5 border border-border px-4 py-2.5 opacity-0 animate-fade-up">
+          <span className="text-xs font-medium text-foreground">Выбрано: {selectedIds.size}</span>
+          <div className="h-4 w-px bg-border" />
+          <button className="text-xs font-medium text-foreground hover:underline">Изменить цену</button>
+          <button className="text-xs font-medium text-foreground hover:underline">Изменить наличие</button>
+          <button className="text-xs font-medium text-foreground hover:underline">Изменить категорию</button>
+          <button className="text-xs font-medium text-destructive hover:underline ml-auto">Удалить</button>
+        </div>
+      )}
+
       {/* Table view */}
       {view === "table" && (
         <div className="rounded-2xl border border-border bg-card overflow-hidden opacity-0 animate-fade-up" style={{ animationDelay: "100ms" }}>
           <table className="w-full">
             <thead>
               <tr className="border-b border-border">
+                {massMode && (
+                  <th className="px-3 py-3.5 w-10">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.size === filtered.length && filtered.length > 0}
+                      onChange={toggleAll}
+                      className="h-4 w-4 rounded border-border accent-foreground"
+                    />
+                  </th>
+                )}
                 <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
                   <div className="flex items-center gap-1 cursor-pointer hover:text-foreground transition-colors">
                     Товар <ArrowUpDown className="h-3 w-3" />
@@ -123,7 +179,22 @@ export function CatalogPage() {
             </thead>
             <tbody>
               {filtered.map((p) => (
-                <tr key={p.id} className="border-b border-border last:border-0 transition-colors hover:bg-muted/40">
+                <tr
+                  key={p.id}
+                  onClick={() => !massMode && setSelectedProduct(p)}
+                  className="border-b border-border last:border-0 transition-colors hover:bg-muted/40 cursor-pointer"
+                >
+                  {massMode && (
+                    <td className="px-3 py-3.5">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(p.id)}
+                        onChange={() => toggleSelect(p.id)}
+                        onClick={(e) => e.stopPropagation()}
+                        className="h-4 w-4 rounded border-border accent-foreground"
+                      />
+                    </td>
+                  )}
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted text-[10px] font-semibold text-muted-foreground">
@@ -146,7 +217,10 @@ export function CatalogPage() {
                     <span className={`inline-block h-2.5 w-2.5 rounded-full ${p.inStock ? "bg-success" : "bg-muted-foreground/30"}`} />
                   </td>
                   <td className="px-5 py-3.5">
-                    <button className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors">
+                    <button
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors"
+                    >
                       <MoreHorizontal className="h-4 w-4" />
                     </button>
                   </td>
@@ -161,10 +235,24 @@ export function CatalogPage() {
       {view === "grid" && (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 opacity-0 animate-fade-up" style={{ animationDelay: "100ms" }}>
           {filtered.map((p) => (
-            <div key={p.id} className="group rounded-2xl border border-border bg-card overflow-hidden transition-shadow duration-200 hover:shadow-card-hover">
-              {/* Image placeholder */}
-              <div className="aspect-[4/3] bg-muted flex items-center justify-center text-xs text-muted-foreground font-medium">
+            <div
+              key={p.id}
+              onClick={() => setSelectedProduct(p)}
+              className="group rounded-2xl border border-border bg-card overflow-hidden transition-shadow duration-200 hover:shadow-card-hover cursor-pointer"
+            >
+              <div className="aspect-[4/3] bg-muted flex items-center justify-center text-xs text-muted-foreground font-medium relative">
                 Фото
+                {massMode && (
+                  <div className="absolute top-2 left-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(p.id)}
+                      onChange={() => toggleSelect(p.id)}
+                      onClick={(e) => e.stopPropagation()}
+                      className="h-4 w-4 rounded border-border accent-foreground"
+                    />
+                  </div>
+                )}
               </div>
               <div className="p-4">
                 <div className="flex items-start justify-between gap-2">
@@ -179,6 +267,11 @@ export function CatalogPage() {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Product detail modal */}
+      {selectedProduct && (
+        <ProductDetail product={selectedProduct} onClose={() => setSelectedProduct(null)} />
       )}
     </div>
   );

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CrmHeader } from "@/components/crm/CrmHeader";
-import { Search, Phone, Mail, MoreHorizontal, ArrowUpDown, Filter } from "lucide-react";
+import { Search, MoreHorizontal, ArrowUpDown, List, Columns3, MessageSquare, X, Send } from "lucide-react";
 
 interface Lead {
   id: number;
@@ -9,38 +9,62 @@ interface Lead {
   type: string;
   partner: string;
   date: string;
-  status: "new" | "processing" | "done" | "rejected";
+  status: "new" | "contact" | "measure" | "deal" | "done" | "rejected";
   score: number;
   source: "phone" | "form" | "email";
 }
 
+const kanbanStatuses = ["new", "contact", "measure", "deal", "done"] as const;
+type KanbanStatus = (typeof kanbanStatuses)[number];
+
 const statusLabels: Record<Lead["status"], string> = {
   new: "Новая",
-  processing: "В работе",
+  contact: "Контакт",
+  measure: "Замер",
+  deal: "Сделка",
   done: "Завершена",
   rejected: "Отклонена",
 };
 
 const statusStyles: Record<Lead["status"], string> = {
   new: "bg-[hsl(210_80%_52%/0.12)] text-[hsl(210_80%_52%)]",
-  processing: "bg-[hsl(38_92%_50%/0.12)] text-warning",
-  done: "bg-[hsl(152_60%_42%/0.12)] text-success",
+  contact: "bg-[hsl(38_92%_50%/0.12)] text-warning",
+  measure: "bg-[hsl(270_60%_55%/0.12)] text-[hsl(270_60%_55%)]",
+  deal: "bg-[hsl(152_60%_42%/0.12)] text-success",
+  done: "bg-foreground/10 text-foreground",
   rejected: "bg-[hsl(0_72%_51%/0.12)] text-destructive",
+};
+
+const kanbanColumnColors: Record<KanbanStatus, string> = {
+  new: "bg-[hsl(210_80%_52%)]",
+  contact: "bg-warning",
+  measure: "bg-[hsl(270_60%_55%)]",
+  deal: "bg-success",
+  done: "bg-foreground",
 };
 
 const leads: Lead[] = [
   { id: 1, name: "Алексей Петров", phone: "+7 (926) 123-45-67", type: "Замер двери", partner: "Brandoors Марьино", date: "21.03.2026 14:24", status: "new", score: 82, source: "phone" },
-  { id: 2, name: "Елена Сидорова", phone: "+7 (903) 234-56-78", type: "Консультация", partner: "Brandoors Митино", date: "21.03.2026 13:47", status: "processing", score: 64, source: "form" },
+  { id: 2, name: "Елена Сидорова", phone: "+7 (903) 234-56-78", type: "Консультация", partner: "Brandoors Митино", date: "21.03.2026 13:47", status: "contact", score: 64, source: "form" },
   { id: 3, name: "Дмитрий Козлов", phone: "+7 (915) 345-67-89", type: "Покупка двери", partner: "Brandoors Тёплый Стан", date: "21.03.2026 12:10", status: "done", score: 91, source: "phone" },
   { id: 4, name: "Ольга Иванова", phone: "+7 (977) 456-78-90", type: "Обратный звонок", partner: "Brandoors Люблино", date: "21.03.2026 11:33", status: "new", score: 20, source: "email" },
-  { id: 5, name: "Сергей Морозов", phone: "+7 (916) 567-89-01", type: "Замер двери", partner: "Brandoors Марьино", date: "21.03.2026 10:15", status: "processing", score: 73, source: "form" },
+  { id: 5, name: "Сергей Морозов", phone: "+7 (916) 567-89-01", type: "Замер двери", partner: "Brandoors Марьино", date: "21.03.2026 10:15", status: "measure", score: 73, source: "form" },
   { id: 6, name: "Анна Белова", phone: "+7 (925) 678-90-12", type: "Покупка двери", partner: "Brandoors Сокольники", date: "20.03.2026 18:42", status: "rejected", score: 15, source: "email" },
-  { id: 7, name: "Виктор Чернов", phone: "+7 (909) 789-01-23", type: "Консультация", partner: "Brandoors Митино", date: "20.03.2026 16:30", status: "done", score: 88, source: "phone" },
-  { id: 8, name: "Наталья Крылова", phone: "+7 (926) 890-12-34", type: "Замер двери", partner: "Brandoors Тёплый Стан", date: "20.03.2026 15:18", status: "new", score: 56, source: "form" },
+  { id: 7, name: "Виктор Чернов", phone: "+7 (909) 789-01-23", type: "Консультация", partner: "Brandoors Митино", date: "20.03.2026 16:30", status: "deal", score: 88, source: "phone" },
+  { id: 8, name: "Наталья Крылова", phone: "+7 (926) 890-12-34", type: "Замер двери", partner: "Brandoors Тёплый Стан", date: "20.03.2026 15:18", status: "contact", score: 56, source: "form" },
+];
+
+const mockHistory = [
+  { time: "14:24", text: "Заявка создана с сайта", type: "system" as const },
+  { time: "14:30", text: "Партнёр взял в работу", type: "system" as const },
+  { time: "14:45", text: "Перезвонили клиенту, договорились на замер 23.03", type: "note" as const },
+  { time: "15:10", text: "Клиент подтвердил время замера", type: "note" as const },
 ];
 
 export function LeadsPage() {
   const [search, setSearch] = useState("");
+  const [view, setView] = useState<"table" | "kanban">("kanban");
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [statusFilter, setStatusFilter] = useState<Lead["status"] | "all">("all");
 
   const filtered = leads.filter((l) => {
@@ -50,7 +74,7 @@ export function LeadsPage() {
   });
 
   return (
-    <div className="px-8 py-6">
+    <div className="px-8 py-6 h-screen flex flex-col">
       <CrmHeader title="Заявки" />
 
       {/* Stats row */}
@@ -60,21 +84,13 @@ export function LeadsPage() {
           <span className="text-sm text-muted-foreground">всего</span>
         </div>
         <div className="h-5 w-px bg-border" />
-        <div className="flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-full bg-[hsl(210_80%_52%)]" />
-          <span className="text-sm tabular-nums text-foreground">{leads.filter(l => l.status === "new").length}</span>
-          <span className="text-xs text-muted-foreground">новых</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-full bg-warning" />
-          <span className="text-sm tabular-nums text-foreground">{leads.filter(l => l.status === "processing").length}</span>
-          <span className="text-xs text-muted-foreground">в работе</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-full bg-success" />
-          <span className="text-sm tabular-nums text-foreground">{leads.filter(l => l.status === "done").length}</span>
-          <span className="text-xs text-muted-foreground">завершено</span>
-        </div>
+        {kanbanStatuses.map((s) => (
+          <div key={s} className="flex items-center gap-2">
+            <span className={`h-2.5 w-2.5 rounded-full ${kanbanColumnColors[s]}`} />
+            <span className="text-sm tabular-nums text-foreground">{leads.filter(l => l.status === s).length}</span>
+            <span className="text-xs text-muted-foreground">{statusLabels[s].toLowerCase()}</span>
+          </div>
+        ))}
       </div>
 
       {/* Toolbar */}
@@ -89,85 +105,237 @@ export function LeadsPage() {
               className="h-9 w-72 rounded-xl border border-border bg-card pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow"
             />
           </div>
-          <div className="flex items-center rounded-xl border border-border bg-card overflow-hidden">
-            {(["all", "new", "processing", "done", "rejected"] as const).map((s) => (
-              <button
-                key={s}
-                onClick={() => setStatusFilter(s)}
-                className={`h-9 px-3 text-xs font-medium transition-colors active:scale-95 ${
-                  statusFilter === s ? "bg-foreground text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {s === "all" ? "Все" : statusLabels[s]}
-              </button>
-            ))}
-          </div>
+        </div>
+        <div className="flex items-center rounded-xl border border-border bg-card overflow-hidden">
+          <button
+            onClick={() => setView("kanban")}
+            className={`flex h-9 w-9 items-center justify-center transition-colors active:scale-95 ${
+              view === "kanban" ? "bg-foreground text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Columns3 className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => setView("table")}
+            className={`flex h-9 w-9 items-center justify-center transition-colors active:scale-95 ${
+              view === "table" ? "bg-foreground text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <List className="h-4 w-4" />
+          </button>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="rounded-2xl border border-border bg-card overflow-hidden opacity-0 animate-fade-up" style={{ animationDelay: "160ms" }}>
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-border">
-              <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Клиент</th>
-              <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Тип</th>
-              <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Партнёр</th>
-              <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                <div className="flex items-center gap-1 cursor-pointer hover:text-foreground transition-colors">
-                  Дата <ArrowUpDown className="h-3 w-3" />
+      {/* Kanban view */}
+      {view === "kanban" && (
+        <div className="flex-1 flex gap-4 overflow-x-auto pb-4 opacity-0 animate-fade-up" style={{ animationDelay: "160ms" }}>
+          {kanbanStatuses.map((status) => {
+            const columnLeads = leads.filter((l) => l.status === status);
+            return (
+              <div key={status} className="flex w-[260px] shrink-0 flex-col">
+                {/* Column header */}
+                <div className="flex items-center gap-2 mb-3">
+                  <span className={`h-2.5 w-2.5 rounded-full ${kanbanColumnColors[status]}`} />
+                  <span className="text-xs font-semibold text-foreground uppercase tracking-wider">{statusLabels[status]}</span>
+                  <span className="ml-auto text-xs font-medium text-muted-foreground tabular-nums">{columnLeads.length}</span>
                 </div>
-              </th>
-              <th className="px-5 py-3.5 text-center text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Статус</th>
-              <th className="px-5 py-3.5 text-center text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Скоринг</th>
-              <th className="px-5 py-3.5 w-10"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((l) => (
-              <tr key={l.id} className="border-b border-border last:border-0 transition-colors hover:bg-muted/40">
-                <td className="px-5 py-3.5">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold text-foreground">
-                      {l.name.split(" ").map(n => n[0]).join("")}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{l.name}</p>
-                      <p className="text-[11px] text-muted-foreground">{l.phone}</p>
-                    </div>
+                {/* Cards */}
+                <div className="flex flex-col gap-2.5 flex-1">
+                  {columnLeads.map((lead) => (
+                    <button
+                      key={lead.id}
+                      onClick={() => setSelectedLead(lead)}
+                      className="text-left rounded-2xl border border-border bg-card p-4 transition-all duration-200 hover:shadow-card-hover active:scale-[0.98]"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-[11px] font-semibold text-foreground">
+                          {lead.name.split(" ").map(n => n[0]).join("")}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-foreground truncate">{lead.name}</p>
+                          <p className="text-[11px] text-muted-foreground truncate">{lead.type}</p>
+                        </div>
+                      </div>
+                      <div className="mt-3 flex items-center justify-between">
+                        <span className="text-[10px] text-muted-foreground truncate">{lead.partner.replace("Brandoors ", "")}</span>
+                        <div
+                          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold ${
+                            lead.score >= 70
+                              ? "bg-[hsl(152_60%_42%/0.12)] text-success"
+                              : lead.score >= 40
+                              ? "bg-[hsl(38_92%_50%/0.12)] text-warning"
+                              : "bg-muted text-muted-foreground"
+                          }`}
+                        >
+                          {lead.score}
+                        </div>
+                      </div>
+                      <p className="mt-2 text-[10px] text-muted-foreground tabular-nums">{lead.date}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Table view */}
+      {view === "table" && (
+        <div className="rounded-2xl border border-border bg-card overflow-hidden opacity-0 animate-fade-up" style={{ animationDelay: "160ms" }}>
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Клиент</th>
+                <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Тип</th>
+                <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Партнёр</th>
+                <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                  <div className="flex items-center gap-1 cursor-pointer hover:text-foreground transition-colors">
+                    Дата <ArrowUpDown className="h-3 w-3" />
                   </div>
-                </td>
-                <td className="px-5 py-3.5 text-sm text-foreground">{l.type}</td>
-                <td className="px-5 py-3.5 text-sm text-muted-foreground">{l.partner}</td>
-                <td className="px-5 py-3.5 text-sm tabular-nums text-muted-foreground">{l.date}</td>
-                <td className="px-5 py-3.5 text-center">
-                  <span className={`inline-block rounded-full px-2.5 py-0.5 text-[10px] font-medium ${statusStyles[l.status]}`}>
-                    {statusLabels[l.status]}
-                  </span>
-                </td>
-                <td className="px-5 py-3.5 text-center">
-                  <div
-                    className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-semibold ${
-                      l.score >= 70
-                        ? "bg-[hsl(152_60%_42%/0.12)] text-success"
-                        : l.score >= 40
-                        ? "bg-[hsl(38_92%_50%/0.12)] text-warning"
-                        : "bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    {l.score}
-                  </div>
-                </td>
-                <td className="px-5 py-3.5">
-                  <button className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </button>
-                </td>
+                </th>
+                <th className="px-5 py-3.5 text-center text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Статус</th>
+                <th className="px-5 py-3.5 text-center text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Скоринг</th>
+                <th className="px-5 py-3.5 w-10"></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {filtered.map((l) => (
+                <tr
+                  key={l.id}
+                  onClick={() => setSelectedLead(l)}
+                  className="border-b border-border last:border-0 transition-colors hover:bg-muted/40 cursor-pointer"
+                >
+                  <td className="px-5 py-3.5">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold text-foreground">
+                        {l.name.split(" ").map(n => n[0]).join("")}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{l.name}</p>
+                        <p className="text-[11px] text-muted-foreground">{l.phone}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-5 py-3.5 text-sm text-foreground">{l.type}</td>
+                  <td className="px-5 py-3.5 text-sm text-muted-foreground">{l.partner}</td>
+                  <td className="px-5 py-3.5 text-sm tabular-nums text-muted-foreground">{l.date}</td>
+                  <td className="px-5 py-3.5 text-center">
+                    <span className={`inline-block rounded-full px-2.5 py-0.5 text-[10px] font-medium ${statusStyles[l.status]}`}>
+                      {statusLabels[l.status]}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3.5 text-center">
+                    <div
+                      className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-semibold ${
+                        l.score >= 70
+                          ? "bg-[hsl(152_60%_42%/0.12)] text-success"
+                          : l.score >= 40
+                          ? "bg-[hsl(38_92%_50%/0.12)] text-warning"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {l.score}
+                    </div>
+                  </td>
+                  <td className="px-5 py-3.5">
+                    <button className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Lead detail slide-over */}
+      {selectedLead && (
+        <div className="fixed inset-0 z-50 flex justify-end">
+          <div className="absolute inset-0 bg-foreground/20" onClick={() => setSelectedLead(null)} />
+          <div className="relative w-full max-w-md bg-card border-l border-border shadow-xl animate-fade-up flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-5 border-b border-border">
+              <h3 className="text-sm font-semibold text-foreground">Детали заявки</h3>
+              <button
+                onClick={() => setSelectedLead(null)}
+                className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Client info */}
+            <div className="px-6 py-5 border-b border-border">
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground">
+                  {selectedLead.name.split(" ").map(n => n[0]).join("")}
+                </div>
+                <div>
+                  <p className="text-base font-semibold text-foreground">{selectedLead.name}</p>
+                  <p className="text-sm text-muted-foreground">{selectedLead.phone}</p>
+                </div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Тип</p>
+                  <p className="text-sm text-foreground mt-0.5">{selectedLead.type}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Партнёр</p>
+                  <p className="text-sm text-foreground mt-0.5">{selectedLead.partner.replace("Brandoors ", "")}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Статус</p>
+                  <span className={`mt-1 inline-block rounded-full px-2.5 py-0.5 text-[10px] font-medium ${statusStyles[selectedLead.status]}`}>
+                    {statusLabels[selectedLead.status]}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Скоринг</p>
+                  <p className="text-sm font-semibold text-foreground mt-0.5 tabular-nums">{selectedLead.score}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Communication history */}
+            <div className="flex-1 overflow-y-auto px-6 py-4">
+              <h4 className="text-xs font-semibold text-foreground uppercase tracking-wider mb-3">История</h4>
+              <div className="space-y-3">
+                {mockHistory.map((h, i) => (
+                  <div key={i} className="flex gap-3">
+                    <span className="text-[10px] font-medium text-muted-foreground tabular-nums w-10 shrink-0 pt-0.5">{h.time}</span>
+                    <div className="flex-1">
+                      <div className={`rounded-xl px-3 py-2 text-sm ${
+                        h.type === "system"
+                          ? "bg-muted text-muted-foreground"
+                          : "bg-foreground/5 text-foreground"
+                      }`}>
+                        {h.text}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Note input */}
+            <div className="border-t border-border px-6 py-4">
+              <div className="relative">
+                <input
+                  placeholder="Добавить заметку..."
+                  className="h-10 w-full rounded-xl border border-border bg-background pl-4 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow"
+                />
+                <button className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors">
+                  <Send className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

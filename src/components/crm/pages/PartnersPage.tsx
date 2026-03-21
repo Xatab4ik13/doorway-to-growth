@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CrmHeader } from "@/components/crm/CrmHeader";
-import { Search, Plus, MapPin, MoreHorizontal, ArrowUpDown } from "lucide-react";
+import { Search, Plus, MapPin, MoreHorizontal, ArrowUpDown, Star } from "lucide-react";
+import { PartnerProfile } from "@/components/crm/PartnerProfile";
 
 interface Partner {
   id: number;
@@ -12,25 +13,32 @@ interface Partner {
   conversion: number;
   active: boolean;
   contact: string;
+  rating: number;
 }
 
 const partners: Partner[] = [
-  { id: 1, name: "Brandoors Марьино", city: "Москва", zone: "ЮВАО", address: "ул. Люблинская, 169", leads: 24, conversion: 14.2, active: true, contact: "Иван Смирнов" },
-  { id: 2, name: "Brandoors Тёплый Стан", city: "Москва", zone: "ЮЗАО", address: "ул. Профсоюзная, 129А", leads: 18, conversion: 11.8, active: true, contact: "Мария Козлова" },
-  { id: 3, name: "Brandoors Митино", city: "Москва", zone: "СЗАО", address: "Пятницкое ш., 18", leads: 31, conversion: 16.5, active: true, contact: "Алексей Волков" },
-  { id: 4, name: "Brandoors Люблино", city: "Москва", zone: "ЮВАО", address: "ул. Совхозная, 10", leads: 12, conversion: 9.3, active: true, contact: "Ольга Новикова" },
-  { id: 5, name: "Brandoors Сокольники", city: "Москва", zone: "ВАО", address: "ул. Стромынка, 21", leads: 9, conversion: 7.1, active: false, contact: "Дмитрий Фёдоров" },
+  { id: 1, name: "Brandoors Марьино", city: "Москва", zone: "ЮВАО", address: "ул. Люблинская, 169", leads: 24, conversion: 14.2, active: true, contact: "Иван Смирнов", rating: 4.7 },
+  { id: 2, name: "Brandoors Тёплый Стан", city: "Москва", zone: "ЮЗАО", address: "ул. Профсоюзная, 129А", leads: 18, conversion: 11.8, active: true, contact: "Мария Козлова", rating: 4.3 },
+  { id: 3, name: "Brandoors Митино", city: "Москва", zone: "СЗАО", address: "Пятницкое ш., 18", leads: 31, conversion: 16.5, active: true, contact: "Алексей Волков", rating: 4.9 },
+  { id: 4, name: "Brandoors Люблино", city: "Москва", zone: "ЮВАО", address: "ул. Совхозная, 10", leads: 12, conversion: 9.3, active: true, contact: "Ольга Новикова", rating: 3.8 },
+  { id: 5, name: "Brandoors Сокольники", city: "Москва", zone: "ВАО", address: "ул. Стромынка, 21", leads: 9, conversion: 7.1, active: false, contact: "Дмитрий Фёдоров", rating: 3.2 },
 ];
 
 export function PartnersPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "active" | "inactive">("all");
+  const [selectedPartner, setSelectedPartner] = useState<number | null>(null);
 
   const filtered = partners.filter((p) => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.zone.toLowerCase().includes(search.toLowerCase());
     const matchFilter = filter === "all" || (filter === "active" ? p.active : !p.active);
     return matchSearch && matchFilter;
   });
+
+  // Show partner profile
+  if (selectedPartner !== null) {
+    return <PartnerProfile onBack={() => setSelectedPartner(null)} />;
+  }
 
   return (
     <div className="px-8 py-6">
@@ -86,13 +94,22 @@ export function PartnersPage() {
                 </div>
               </th>
               <th className="px-5 py-3.5 text-right text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Конверсия</th>
+              <th className="px-5 py-3.5 text-center text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                <div className="flex items-center justify-center gap-1 cursor-pointer hover:text-foreground transition-colors">
+                  Рейтинг <ArrowUpDown className="h-3 w-3" />
+                </div>
+              </th>
               <th className="px-5 py-3.5 text-center text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Статус</th>
               <th className="px-5 py-3.5 w-10"></th>
             </tr>
           </thead>
           <tbody>
             {filtered.map((p) => (
-              <tr key={p.id} className="border-b border-border last:border-0 transition-colors hover:bg-muted/40">
+              <tr
+                key={p.id}
+                onClick={() => setSelectedPartner(p.id)}
+                className="border-b border-border last:border-0 transition-colors hover:bg-muted/40 cursor-pointer"
+              >
                 <td className="px-5 py-3.5">
                   <div className="flex items-center gap-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-muted">
@@ -113,10 +130,19 @@ export function PartnersPage() {
                 <td className="px-5 py-3.5 text-right text-sm font-semibold tabular-nums text-foreground">{p.leads}</td>
                 <td className="px-5 py-3.5 text-right text-sm tabular-nums text-foreground">{p.conversion}%</td>
                 <td className="px-5 py-3.5 text-center">
+                  <div className="inline-flex items-center gap-1">
+                    <Star className="h-3 w-3 text-foreground fill-foreground" />
+                    <span className="text-sm font-medium tabular-nums text-foreground">{p.rating}</span>
+                  </div>
+                </td>
+                <td className="px-5 py-3.5 text-center">
                   <span className={`inline-block h-2.5 w-2.5 rounded-full ${p.active ? "bg-success" : "bg-muted-foreground/30"}`} />
                 </td>
                 <td className="px-5 py-3.5">
-                  <button className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); }}
+                    className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors"
+                  >
                     <MoreHorizontal className="h-4 w-4" />
                   </button>
                 </td>
