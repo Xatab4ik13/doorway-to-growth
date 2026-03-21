@@ -1,33 +1,25 @@
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   Package,
   Users,
-  Store,
   FileText,
   BarChart3,
   Settings,
-  ChevronLeft,
-  LogOut,
 } from "lucide-react";
 
 interface NavItem {
   icon: React.ElementType;
-  label: string;
   id: string;
+  label: string;
 }
 
-const mainNav: NavItem[] = [
-  { icon: LayoutDashboard, label: "Дашборд", id: "dashboard" },
-  { icon: Package, label: "Каталог", id: "catalog" },
-  { icon: Store, label: "Партнёры", id: "partners" },
-  { icon: FileText, label: "Заявки", id: "leads" },
-  { icon: BarChart3, label: "Аналитика", id: "analytics" },
-];
-
-const bottomNav: NavItem[] = [
-  { icon: Settings, label: "Настройки", id: "settings" },
+const navItems: NavItem[] = [
+  { icon: LayoutDashboard, id: "dashboard", label: "Дашборд" },
+  { icon: Users, id: "partners", label: "Партнёры" },
+  { icon: Package, id: "catalog", label: "Каталог" },
+  { icon: FileText, id: "leads", label: "Заявки" },
+  { icon: BarChart3, id: "analytics", label: "Аналитика" },
 ];
 
 interface CrmSidebarProps {
@@ -36,85 +28,50 @@ interface CrmSidebarProps {
 }
 
 export function CrmSidebar({ activeSection, onNavigate }: CrmSidebarProps) {
-  const [collapsed, setCollapsed] = useState(false);
-
   return (
-    <aside
-      className={cn(
-        "fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300",
-        collapsed ? "w-[72px]" : "w-[240px]"
-      )}
-    >
+    <aside className="fixed left-0 top-0 z-40 flex h-screen w-[68px] flex-col items-center border-r border-sidebar-border bg-sidebar py-5">
       {/* Logo */}
-      <div className="flex h-16 items-center gap-3 px-5">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-foreground">
-          <span className="text-sm font-bold text-card">B</span>
-        </div>
-        {!collapsed && (
-          <span className="text-base font-semibold tracking-tight text-foreground">
-            Brandoors
-          </span>
-        )}
+      <div className="mb-8 flex h-10 w-10 items-center justify-center rounded-xl bg-foreground">
+        <span className="text-sm font-bold text-primary-foreground tracking-tight">B</span>
       </div>
 
-      {/* Main nav */}
-      <nav className="mt-4 flex flex-1 flex-col gap-1 px-3">
-        {mainNav.map((item) => {
+      {/* Nav icons */}
+      <nav className="flex flex-1 flex-col items-center gap-1">
+        {navItems.map((item) => {
           const isActive = activeSection === item.id;
           return (
             <button
               key={item.id}
               onClick={() => onNavigate(item.id)}
+              title={item.label}
               className={cn(
-                "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
-                "active:scale-[0.97]",
+                "group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200",
+                "active:scale-95",
                 isActive
-                  ? "bg-foreground text-card shadow-card"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                  ? "bg-foreground text-primary-foreground shadow-card"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
               )}
             >
-              <item.icon className="h-[18px] w-[18px] shrink-0" />
-              {!collapsed && <span>{item.label}</span>}
+              <item.icon className="h-[18px] w-[18px]" strokeWidth={1.8} />
             </button>
           );
         })}
       </nav>
 
-      {/* Bottom nav */}
-      <div className="flex flex-col gap-1 px-3 pb-4">
-        {bottomNav.map((item) => {
-          const isActive = activeSection === item.id;
-          return (
-            <button
-              key={item.id}
-              onClick={() => onNavigate(item.id)}
-              className={cn(
-                "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
-                "active:scale-[0.97]",
-                isActive
-                  ? "bg-foreground text-card shadow-card"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-              )}
-            >
-              <item.icon className="h-[18px] w-[18px] shrink-0" />
-              {!collapsed && <span>{item.label}</span>}
-            </button>
-          );
-        })}
-
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-sidebar-foreground transition-all duration-150 hover:bg-sidebar-accent active:scale-[0.97]"
-        >
-          <ChevronLeft
-            className={cn(
-              "h-[18px] w-[18px] shrink-0 transition-transform duration-300",
-              collapsed && "rotate-180"
-            )}
-          />
-          {!collapsed && <span>Свернуть</span>}
-        </button>
-      </div>
+      {/* Settings */}
+      <button
+        onClick={() => onNavigate("settings")}
+        title="Настройки"
+        className={cn(
+          "flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200",
+          "active:scale-95",
+          activeSection === "settings"
+            ? "bg-foreground text-primary-foreground"
+            : "text-muted-foreground hover:bg-accent hover:text-foreground"
+        )}
+      >
+        <Settings className="h-[18px] w-[18px]" strokeWidth={1.8} />
+      </button>
     </aside>
   );
 }

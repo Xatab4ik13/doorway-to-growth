@@ -1,85 +1,103 @@
-import { Phone, Mail, MoreHorizontal } from "lucide-react";
+import { Phone, Mail, RefreshCw, CalendarDays, Search } from "lucide-react";
 
 const leads = [
   {
     name: "Алексей Петров",
-    store: "Brandoors Марьино",
-    type: "Звонок",
-    time: "14 мин назад",
-    status: "Новая",
+    role: "Замер двери",
+    date: "21.03.2026 14:24",
+    tag: "Лид",
+    score: 82,
+    type: "phone" as const,
   },
   {
     name: "Елена Сидорова",
-    store: "Brandoors Тёплый Стан",
-    type: "Форма",
-    time: "47 мин назад",
-    status: "Новая",
+    role: "Консультация",
+    date: "21.03.2026 13:47",
+    tag: "Лид",
+    score: 64,
+    type: "mail" as const,
   },
   {
     name: "Дмитрий Козлов",
-    store: "Brandoors Митино",
-    type: "Звонок",
-    time: "1 ч назад",
-    status: "В работе",
+    role: "Покупка двери",
+    date: "21.03.2026 12:10",
+    tag: "Лид",
+    score: 91,
+    type: "phone" as const,
   },
   {
     name: "Ольга Иванова",
-    store: "Brandoors Люблино",
-    type: "Форма",
-    time: "2 ч назад",
-    status: "В работе",
-  },
-  {
-    name: "Сергей Волков",
-    store: "Brandoors Сокольники",
-    type: "Форма",
-    time: "3 ч назад",
-    status: "Завершена",
+    role: "Обратный звонок",
+    date: "21.03.2026 11:33",
+    tag: "Лид",
+    score: 20,
+    type: "mail" as const,
   },
 ];
 
 export function RecentLeads() {
   return (
-    <div className="rounded-xl border border-border bg-card shadow-card opacity-0 animate-fade-in" style={{ animationDelay: "300ms" }}>
+    <div className="rounded-2xl border border-border bg-card opacity-0 animate-fade-up" style={{ animationDelay: "300ms" }}>
+      {/* Header */}
       <div className="flex items-center justify-between border-b border-border px-5 py-4">
         <h3 className="text-sm font-semibold text-foreground">Последние заявки</h3>
-        <button className="text-xs font-medium text-primary hover:underline active:scale-[0.97]">
-          Все заявки
-        </button>
+        <div className="flex items-center gap-1">
+          <button className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors">
+            <RefreshCw className="h-3.5 w-3.5" strokeWidth={2} />
+          </button>
+          <button className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors">
+            <CalendarDays className="h-3.5 w-3.5" strokeWidth={2} />
+          </button>
+          <button className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors">
+            <Search className="h-3.5 w-3.5" strokeWidth={2} />
+          </button>
+        </div>
       </div>
+
+      {/* Lead items */}
       <div className="divide-y divide-border">
         {leads.map((lead, i) => (
-          <div
-            key={i}
-            className="flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-secondary/50"
-          >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-semibold text-foreground">
-              {lead.name.split(" ").map((n) => n[0]).join("")}
+          <div key={i} className="flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-muted/40">
+            {/* Avatar */}
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold text-foreground">
+              {lead.name.split(" ").map(n => n[0]).join("")}
             </div>
+
+            {/* Info */}
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-foreground">{lead.name}</p>
-              <p className="truncate text-xs text-muted-foreground">{lead.store}</p>
+              <p className="text-sm font-medium text-foreground truncate">{lead.name}</p>
+              <p className="text-xs text-muted-foreground truncate">{lead.role}</p>
             </div>
-            <div className="hidden items-center gap-1.5 sm:flex">
-              {lead.type === "Звонок" ? (
-                <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+
+            {/* Action icon */}
+            <button className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors">
+              {lead.type === "phone" ? (
+                <Phone className="h-3.5 w-3.5" strokeWidth={2} />
               ) : (
-                <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+                <Mail className="h-3.5 w-3.5" strokeWidth={2} />
               )}
-              <span className="text-xs text-muted-foreground">{lead.type}</span>
+            </button>
+
+            {/* Tag + date */}
+            <div className="hidden sm:block text-right min-w-[120px]">
+              <span className="inline-block rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                {lead.tag}
+              </span>
+              <p className="mt-0.5 text-[11px] text-muted-foreground tabular-nums">{lead.date}</p>
             </div>
-            <span className="hidden text-xs text-muted-foreground lg:block">{lead.time}</span>
-            <span
-              className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
-                lead.status === "Новая"
-                  ? "bg-[hsl(220_80%_50%/0.1)] text-primary"
-                  : lead.status === "В работе"
-                  ? "bg-[hsl(38_92%_50%/0.1)] text-warning"
-                  : "bg-[hsl(152_60%_42%/0.1)] text-success"
+
+            {/* Score */}
+            <div
+              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
+                lead.score >= 70
+                  ? "bg-[hsl(152_60%_42%/0.12)] text-success"
+                  : lead.score >= 40
+                  ? "bg-[hsl(38_92%_50%/0.12)] text-warning"
+                  : "bg-muted text-muted-foreground"
               }`}
             >
-              {lead.status}
-            </span>
+              {lead.score}
+            </div>
           </div>
         ))}
       </div>

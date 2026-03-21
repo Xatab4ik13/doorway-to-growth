@@ -1,32 +1,39 @@
-import { Search, Bell } from "lucide-react";
+import { Search, Bell, ChevronDown } from "lucide-react";
 
 interface CrmHeaderProps {
   title: string;
-  subtitle?: string;
 }
 
-export function CrmHeader({ title, subtitle }: CrmHeaderProps) {
+export function CrmHeader({ title }: CrmHeaderProps) {
   return (
-    <header className="flex items-center justify-between pb-6">
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">{title}</h1>
-        {subtitle && <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>}
+    <header className="flex items-center justify-between pb-8">
+      {/* Left: back + title */}
+      <div className="flex items-center gap-4">
+        <h1 className="text-lg font-semibold tracking-tight text-foreground uppercase">{title}</h1>
       </div>
+
+      {/* Right: search + actions */}
       <div className="flex items-center gap-3">
-        <div className="relative hidden md:block">
+        <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Поиск..."
-            className="h-9 w-56 rounded-lg border border-border bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-shadow"
+            placeholder="Search here..."
+            className="h-10 w-60 rounded-xl border border-border bg-card pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow"
           />
+          <ChevronDown className="absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
         </div>
-        <button className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:bg-secondary active:scale-[0.96]">
-          <Bell className="h-4 w-4" />
-          <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-primary" />
+
+        <button className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition-all hover:bg-accent active:scale-95">
+          <Bell className="h-[18px] w-[18px]" strokeWidth={1.8} />
+          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-destructive ring-2 ring-card" />
         </button>
-        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-foreground text-xs font-semibold text-card">
-          АД
+
+        {/* Avatar */}
+        <div className="h-10 w-10 overflow-hidden rounded-xl">
+          <div className="flex h-full w-full items-center justify-center bg-muted text-xs font-semibold text-foreground">
+            АД
+          </div>
         </div>
       </div>
     </header>

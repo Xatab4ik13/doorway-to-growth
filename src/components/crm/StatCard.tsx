@@ -1,43 +1,48 @@
-import { cn } from "@/lib/utils";
-import { ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { ArrowUpRight, MoreHorizontal } from "lucide-react";
 
 interface StatCardProps {
-  title: string;
+  icon: React.ElementType;
+  label: string;
   value: string;
   change?: string;
-  changeType?: "positive" | "negative" | "neutral";
-  icon: React.ElementType;
+  changePositive?: boolean;
   delay?: number;
 }
 
-export function StatCard({ title, value, change, changeType = "neutral", icon: Icon, delay = 0 }: StatCardProps) {
+export function StatCard({ icon: Icon, label, value, change, changePositive = true, delay = 0 }: StatCardProps) {
   return (
     <div
-      className="group rounded-xl border border-border bg-card p-5 shadow-card transition-shadow duration-200 hover:shadow-card-hover opacity-0 animate-fade-in"
+      className="group flex flex-col justify-between rounded-2xl border border-border bg-card p-5 transition-shadow duration-200 hover:shadow-card-hover opacity-0 animate-fade-up"
       style={{ animationDelay: `${delay}ms` }}
     >
-      <div className="flex items-start justify-between">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary">
-          <Icon className="h-5 w-5 text-muted-foreground" />
+      {/* Top row: icon + label + arrow */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted">
+            <Icon className="h-4 w-4 text-muted-foreground" strokeWidth={1.8} />
+          </div>
+          <span className="text-sm font-medium text-foreground">{label}</span>
         </div>
-        {change && (
-          <span
-            className={cn(
-              "inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-xs font-medium",
-              changeType === "positive" && "bg-[hsl(152_60%_42%/0.1)] text-success",
-              changeType === "negative" && "bg-[hsl(0_72%_51%/0.1)] text-destructive",
-              changeType === "neutral" && "bg-secondary text-muted-foreground"
-            )}
-          >
-            {changeType === "positive" && <ArrowUpRight className="h-3 w-3" />}
-            {changeType === "negative" && <ArrowDownRight className="h-3 w-3" />}
-            {change}
-          </span>
-        )}
+        <button className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:scale-95">
+          <ArrowUpRight className="h-4 w-4" strokeWidth={2} />
+        </button>
       </div>
-      <div className="mt-4">
-        <p className="text-2xl font-semibold tracking-tight text-foreground tabular-nums">{value}</p>
-        <p className="mt-1 text-sm text-muted-foreground">{title}</p>
+
+      {/* Value */}
+      <div className="mt-6 flex items-end justify-between">
+        <span className="text-3xl font-semibold tracking-tight text-foreground tabular-nums leading-none">
+          {value}
+        </span>
+        <div className="flex items-center gap-2">
+          {change && (
+            <span className={`text-xs font-medium tabular-nums ${changePositive ? "text-success" : "text-destructive"}`}>
+              {change}
+            </span>
+          )}
+          <button className="flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted active:scale-95">
+            <MoreHorizontal className="h-4 w-4" />
+          </button>
+        </div>
       </div>
     </div>
   );
