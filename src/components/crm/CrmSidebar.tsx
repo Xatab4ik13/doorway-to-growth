@@ -8,6 +8,8 @@ import {
   Settings,
   Menu,
   X,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -28,9 +30,11 @@ const navItems: NavItem[] = [
 interface CrmSidebarProps {
   activeSection: string;
   onNavigate: (section: string) => void;
+  expanded: boolean;
+  onToggleExpand: () => void;
 }
 
-export function CrmSidebar({ activeSection, onNavigate }: CrmSidebarProps) {
+export function CrmSidebar({ activeSection, onNavigate, expanded, onToggleExpand }: CrmSidebarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleNavigate = (id: string) => {
@@ -51,11 +55,16 @@ export function CrmSidebar({ activeSection, onNavigate }: CrmSidebarProps) {
       {/* Mobile overlay */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 sm:hidden">
-          <div className="absolute inset-0 bg-foreground/20 animate-fade-in" onClick={() => setMobileOpen(false)} />
-          <aside className="absolute left-0 top-0 h-full w-[220px] bg-sidebar shadow-xl animate-slide-in-left flex flex-col">
+          <div
+            className="absolute inset-0 bg-foreground/20 animate-fade-in"
+            onClick={() => setMobileOpen(false)}
+          />
+          <aside className="absolute left-0 top-0 h-full w-[240px] bg-sidebar shadow-xl animate-slide-in-left flex flex-col">
             <div className="flex flex-col flex-1 py-5 px-3">
-              <div className="flex items-center justify-between mb-6 px-1">
-                <span className="text-sm font-bold text-sidebar-primary tracking-tight">Brandoors</span>
+              <div className="flex items-center justify-between mb-6 px-2">
+                <span className="text-sm font-bold text-sidebar-primary tracking-tight">
+                  Brandoors
+                </span>
                 <button
                   onClick={() => setMobileOpen(false)}
                   className="flex h-8 w-8 items-center justify-center rounded-lg text-sidebar-foreground hover:bg-sidebar-accent active:scale-95 transition-colors"
@@ -71,13 +80,13 @@ export function CrmSidebar({ activeSection, onNavigate }: CrmSidebarProps) {
                       key={item.id}
                       onClick={() => handleNavigate(item.id)}
                       className={cn(
-                        "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-150 active:scale-[0.97]",
+                        "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150 active:scale-[0.97]",
                         isActive
                           ? "bg-sidebar-primary text-sidebar-primary-foreground"
                           : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                       )}
                     >
-                      <item.icon className="h-[18px] w-[18px]" strokeWidth={1.8} />
+                      <item.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.8} />
                       {item.label}
                     </button>
                   );
@@ -86,13 +95,13 @@ export function CrmSidebar({ activeSection, onNavigate }: CrmSidebarProps) {
               <button
                 onClick={() => handleNavigate("settings")}
                 className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-150 active:scale-[0.97]",
+                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150 active:scale-[0.97]",
                   activeSection === "settings"
                     ? "bg-sidebar-primary text-sidebar-primary-foreground"
                     : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 )}
               >
-                <Settings className="h-[18px] w-[18px]" strokeWidth={1.8} />
+                <Settings className="h-[18px] w-[18px] shrink-0" strokeWidth={1.8} />
                 Настройки
               </button>
             </div>
@@ -101,61 +110,99 @@ export function CrmSidebar({ activeSection, onNavigate }: CrmSidebarProps) {
       )}
 
       {/* Desktop sidebar */}
-      <aside className="hidden sm:flex fixed left-0 top-0 z-40 h-screen w-[68px] flex-col items-center bg-sidebar py-5">
+      <aside
+        className={cn(
+          "hidden sm:flex fixed left-0 top-0 z-40 h-screen flex-col bg-sidebar transition-[width] duration-200 ease-out",
+          expanded ? "w-[220px]" : "w-[68px]"
+        )}
+      >
         {/* Divider line */}
         <div className="absolute right-0 top-0 h-full w-px bg-sidebar-border" />
 
-        {/* Logo */}
-        <div className="mb-8 flex h-10 w-10 items-center justify-center rounded-xl bg-sidebar-accent text-sidebar-primary text-sm font-bold">
-          B
+        {/* Header: Logo + collapse toggle */}
+        <div className={cn(
+          "flex items-center h-16 px-3 shrink-0",
+          expanded ? "justify-between" : "justify-center"
+        )}>
+          <div className={cn(
+            "flex items-center gap-3 overflow-hidden",
+            expanded ? "w-auto" : "w-10"
+          )}>
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sidebar-accent text-sidebar-primary text-sm font-bold">
+              B
+            </div>
+            {expanded && (
+              <span className="text-sm font-bold text-sidebar-primary whitespace-nowrap">
+                Brandoors
+              </span>
+            )}
+          </div>
+          <button
+            onClick={onToggleExpand}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors active:scale-95"
+          >
+            {expanded ? (
+              <ChevronsLeft className="h-4 w-4" />
+            ) : (
+              <ChevronsRight className="h-4 w-4" />
+            )}
+          </button>
         </div>
 
-        {/* Nav icons */}
-        <nav className="flex flex-1 flex-col items-center gap-1">
+        {/* Nav items */}
+        <nav className={cn(
+          "flex flex-1 flex-col gap-0.5 px-3 pt-2",
+          !expanded && "items-center"
+        )}>
           {navItems.map((item) => {
             const isActive = activeSection === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
-                title={item.label}
+                title={!expanded ? item.label : undefined}
                 className={cn(
-                  "group relative flex h-10 w-10 items-center justify-center rounded-xl transition-colors duration-150",
-                  "active:scale-95",
+                  "relative flex items-center rounded-lg transition-colors duration-150 active:scale-[0.97]",
+                  expanded ? "gap-3 px-3 py-2.5 w-full" : "h-10 w-10 justify-center",
                   isActive
                     ? "bg-sidebar-primary text-sidebar-primary-foreground"
                     : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 )}
               >
-                <item.icon className="h-[18px] w-[18px]" strokeWidth={1.8} />
-                {isActive && (
-                  <span className="absolute -left-px top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-sidebar-primary" />
+                <item.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.8} />
+                {expanded && (
+                  <span className="text-sm font-medium whitespace-nowrap">{item.label}</span>
                 )}
-                <span className="absolute left-full ml-3 rounded-lg bg-foreground px-2.5 py-1 text-xs font-medium text-primary-foreground opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap shadow-lg z-50">
-                  {item.label}
-                </span>
+                {/* Tooltip when collapsed */}
+                {!expanded && (
+                  <span className="absolute left-full ml-3 rounded-lg bg-foreground px-2.5 py-1 text-xs font-medium text-primary-foreground opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap shadow-lg z-50 group">
+                    {item.label}
+                  </span>
+                )}
               </button>
             );
           })}
         </nav>
 
         {/* Settings */}
-        <button
-          onClick={() => onNavigate("settings")}
-          title="Настройки"
-          className={cn(
-            "group relative flex h-10 w-10 items-center justify-center rounded-xl transition-colors duration-150",
-            "active:scale-95",
-            activeSection === "settings"
-              ? "bg-sidebar-primary text-sidebar-primary-foreground"
-              : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-          )}
-        >
-          <Settings className="h-[18px] w-[18px]" strokeWidth={1.8} />
-          <span className="absolute left-full ml-3 rounded-lg bg-foreground px-2.5 py-1 text-xs font-medium text-primary-foreground opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap shadow-lg z-50">
-            Настройки
-          </span>
-        </button>
+        <div className={cn("px-3 pb-5", !expanded && "flex justify-center")}>
+          <button
+            onClick={() => onNavigate("settings")}
+            title={!expanded ? "Настройки" : undefined}
+            className={cn(
+              "relative flex items-center rounded-lg transition-colors duration-150 active:scale-[0.97]",
+              expanded ? "gap-3 px-3 py-2.5 w-full" : "h-10 w-10 justify-center",
+              activeSection === "settings"
+                ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+            )}
+          >
+            <Settings className="h-[18px] w-[18px] shrink-0" strokeWidth={1.8} />
+            {expanded && (
+              <span className="text-sm font-medium whitespace-nowrap">Настройки</span>
+            )}
+          </button>
+        </div>
       </aside>
     </>
   );
