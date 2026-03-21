@@ -87,6 +87,7 @@ export function LeadsPage() {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [statusFilter] = useState<Lead["status"] | "all">("all");
   const [page, setPage] = useState(1);
+  const [detailTab, setDetailTab] = useState<"history" | "files">("history");
 
   // Drag & drop state
   const [draggedId, setDraggedId] = useState<number | null>(null);
