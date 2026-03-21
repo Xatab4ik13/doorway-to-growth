@@ -2,7 +2,7 @@ import { useState, useRef, useCallback } from "react";
 import { CrmHeader } from "@/components/crm/CrmHeader";
 import { Pagination } from "@/components/crm/Pagination";
 import { EmptyState } from "@/components/crm/EmptyState";
-import { Search, MoreHorizontal, ArrowUpDown, List, Columns3, MessageSquare, X, Send, GripVertical } from "lucide-react";
+import { Search, MoreHorizontal, ArrowUpDown, List, Columns3, MessageSquare, X, Send, GripVertical, Paperclip, FileImage, FileText as FileIcon, Clock, ChevronDown } from "lucide-react";
 
 interface Lead {
   id: number;
