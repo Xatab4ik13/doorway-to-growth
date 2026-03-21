@@ -22,7 +22,7 @@ export function Modal({ open, onClose, title, children, footer }: ModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-foreground/20 animate-fade-in" onClick={onClose} />
-      <div className="relative w-full max-w-lg mx-4 rounded-2xl border border-border bg-card shadow-xl animate-scale-in">
+      <div className="relative w-full max-w-lg mx-3 sm:mx-4 rounded-2xl border border-border bg-card shadow-xl animate-scale-in max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <h3 className="text-sm font-semibold text-foreground">{title}</h3>
           <button
