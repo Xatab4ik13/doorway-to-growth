@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { CrmSidebar } from "@/components/crm/CrmSidebar";
 import { DashboardPage } from "@/components/crm/pages/DashboardPage";
 import { PartnersPage } from "@/components/crm/pages/PartnersPage";
@@ -10,6 +10,7 @@ import { SettingsPage } from "@/components/crm/pages/SettingsPage";
 const Index = () => {
   const [activeSection, setActiveSection] = useState("dashboard");
   const [transitioning, setTransitioning] = useState(false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const prevSection = useRef(activeSection);
 
   const handleNavigate = (section: string) => {
@@ -19,7 +20,7 @@ const Index = () => {
       prevSection.current = section;
       setActiveSection(section);
       setTransitioning(false);
-    }, 180);
+    }, 150);
   };
 
   const renderPage = () => {
@@ -43,11 +44,16 @@ const Index = () => {
 
   return (
     <div className="flex min-h-screen bg-background">
-      <CrmSidebar activeSection={activeSection} onNavigate={handleNavigate} />
+      <CrmSidebar
+        activeSection={activeSection}
+        onNavigate={handleNavigate}
+        expanded={sidebarExpanded}
+        onToggleExpand={() => setSidebarExpanded(!sidebarExpanded)}
+      />
       <main
-        className={`sm:ml-[68px] flex-1 min-w-0 pt-14 sm:pt-0 transition-opacity duration-150 ease-out ${
-          transitioning ? "opacity-0" : "opacity-100"
-        }`}
+        className={`flex-1 min-w-0 pt-14 sm:pt-0 transition-all duration-200 ease-out ${
+          sidebarExpanded ? "sm:ml-[220px]" : "sm:ml-[68px]"
+        } ${transitioning ? "opacity-0" : "opacity-100"}`}
       >
         {renderPage()}
       </main>
