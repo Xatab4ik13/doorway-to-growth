@@ -2,8 +2,11 @@ import { useState } from "react";
 import { CrmHeader } from "@/components/crm/CrmHeader";
 import { Pagination } from "@/components/crm/Pagination";
 import { EmptyState } from "@/components/crm/EmptyState";
-import { Search, Plus, LayoutGrid, List, MoreHorizontal, ArrowUpDown, Download, Upload, CheckSquare, Package } from "lucide-react";
+import { Modal } from "@/components/crm/Modal";
+import { ConfirmDialog } from "@/components/crm/ConfirmDialog";
+import { Search, Plus, LayoutGrid, List, MoreHorizontal, ArrowUpDown, Download, Upload, CheckSquare, Package, Trash2 } from "lucide-react";
 import { ProductDetail } from "@/components/crm/ProductDetail";
+import { toast } from "@/hooks/use-toast";
 
 interface Product {
   id: number;
@@ -17,7 +20,7 @@ interface Product {
 
 const categories = ["Все", "Межкомнатные", "Входные", "Раздвижные", "Складные"];
 
-const products: Product[] = [
+const initialProducts: Product[] = [
   { id: 1, name: "Milano Premium", category: "Межкомнатные", rrp: 28500, material: "Экошпон", color: "Дуб натуральный", inStock: true },
   { id: 2, name: "Forte Shield", category: "Входные", rrp: 45200, material: "Сталь", color: "Венге", inStock: true },
   { id: 3, name: "Slide Pro", category: "Раздвижные", rrp: 34800, material: "МДФ", color: "Белый матовый", inStock: true },
@@ -33,6 +36,7 @@ const products: Product[] = [
 const PAGE_SIZE = 8;
 
 export function CatalogPage() {
+  const [products, setProducts] = useState<Product[]>(initialProducts);
   const [view, setView] = useState<"table" | "grid">("table");
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("Все");
@@ -40,6 +44,49 @@ export function CatalogPage() {
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [massMode, setMassMode] = useState(false);
   const [page, setPage] = useState(1);
+  const [addOpen, setAddOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+
+  // Form state
+  const [formName, setFormName] = useState("");
+  const [formCategory, setFormCategory] = useState("Межкомнатные");
+  const [formRrp, setFormRrp] = useState("");
+  const [formMaterial, setFormMaterial] = useState("");
+  const [formColor, setFormColor] = useState("");
+
+  const resetForm = () => {
+    setFormName(""); setFormCategory("Межкомнатные"); setFormRrp(""); setFormMaterial(""); setFormColor("");
+  };
+
+  const handleAdd = () => {
+    if (!formName.trim() || !formRrp.trim()) return;
+    const newProduct: Product = {
+      id: Date.now(),
+      name: formName.trim(),
+      category: formCategory,
+      rrp: Number(formRrp),
+      material: formMaterial.trim(),
+      color: formColor.trim(),
+      inStock: true,
+    };
+    setProducts((prev) => [newProduct, ...prev]);
+    setAddOpen(false);
+    resetForm();
+    toast({ title: "Товар добавлен", description: newProduct.name });
+  };
+
+  const handleDelete = (product: Product) => {
+    setProducts((prev) => prev.filter((p) => p.id !== product.id));
+    toast({ title: "Товар удалён", description: product.name, variant: "destructive" });
+  };
+
+  const handleBulkDelete = () => {
+    setProducts((prev) => prev.filter((p) => !selectedIds.has(p.id)));
+    toast({ title: `Удалено товаров: ${selectedIds.size}`, variant: "destructive" });
+    setSelectedIds(new Set());
+    setMassMode(false);
+  };
 
   const filtered = products.filter((p) => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
@@ -108,10 +155,14 @@ export function CatalogPage() {
           >
             <CheckSquare className="h-4 w-4" />
           </button>
-          <button className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground active:scale-95 transition-colors" title="Импорт">
+          <button className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground active:scale-95 transition-colors" title="Импорт"
+            onClick={() => toast({ title: "Импорт", description: "Функция будет доступна после подключения бекенда" })}
+          >
             <Upload className="h-4 w-4" />
           </button>
-          <button className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground active:scale-95 transition-colors" title="Экспорт">
+          <button className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground active:scale-95 transition-colors" title="Экспорт"
+            onClick={() => toast({ title: "Экспорт", description: "Функция будет доступна после подключения бекенда" })}
+          >
             <Download className="h-4 w-4" />
           </button>
           <div className="flex items-center rounded-xl border border-border bg-card overflow-hidden">
@@ -132,7 +183,10 @@ export function CatalogPage() {
               <LayoutGrid className="h-4 w-4" />
             </button>
           </div>
-          <button className="flex h-9 items-center gap-2 rounded-xl bg-foreground px-4 text-xs font-medium text-primary-foreground transition-colors hover:bg-foreground/90 active:scale-95">
+          <button
+            onClick={() => setAddOpen(true)}
+            className="flex h-9 items-center gap-2 rounded-xl bg-foreground px-4 text-xs font-medium text-primary-foreground transition-colors hover:bg-foreground/90 active:scale-95"
+          >
             <Plus className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Добавить</span>
           </button>
@@ -144,10 +198,22 @@ export function CatalogPage() {
         <div className="flex items-center gap-3 mb-4 rounded-xl bg-foreground/5 border border-border px-4 py-2.5 opacity-0 animate-scale-in">
           <span className="text-xs font-medium text-foreground">Выбрано: {selectedIds.size}</span>
           <div className="h-4 w-px bg-border" />
-          <button className="text-xs font-medium text-foreground hover:underline">Изменить цену</button>
-          <button className="text-xs font-medium text-foreground hover:underline">Изменить наличие</button>
-          <button className="text-xs font-medium text-foreground hover:underline hidden sm:block">Изменить категорию</button>
-          <button className="text-xs font-medium text-destructive hover:underline ml-auto">Удалить</button>
+          <button
+            onClick={() => {
+              setProducts(prev => prev.map(p => selectedIds.has(p.id) ? { ...p, inStock: !p.inStock } : p));
+              toast({ title: "Наличие обновлено" });
+              setSelectedIds(new Set());
+            }}
+            className="text-xs font-medium text-foreground hover:underline"
+          >
+            Изменить наличие
+          </button>
+          <button
+            onClick={() => setBulkDeleteOpen(true)}
+            className="text-xs font-medium text-destructive hover:underline ml-auto"
+          >
+            Удалить
+          </button>
         </div>
       )}
 
@@ -169,26 +235,17 @@ export function CatalogPage() {
                     <tr className="border-b border-border">
                       {massMode && (
                         <th className="px-3 py-3.5 w-10">
-                          <input
-                            type="checkbox"
-                            checked={selectedIds.size === filtered.length && filtered.length > 0}
-                            onChange={toggleAll}
-                            className="h-4 w-4 rounded border-border accent-foreground"
-                          />
+                          <input type="checkbox" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleAll} className="h-4 w-4 rounded border-border accent-foreground" />
                         </th>
                       )}
                       <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                        <div className="flex items-center gap-1 cursor-pointer hover:text-foreground transition-colors">
-                          Товар <ArrowUpDown className="h-3 w-3" />
-                        </div>
+                        <div className="flex items-center gap-1 cursor-pointer hover:text-foreground transition-colors">Товар <ArrowUpDown className="h-3 w-3" /></div>
                       </th>
                       <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Категория</th>
                       <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground hidden lg:table-cell">Материал</th>
                       <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground hidden xl:table-cell">Цвет</th>
                       <th className="px-5 py-3.5 text-right text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                        <div className="flex items-center justify-end gap-1 cursor-pointer hover:text-foreground transition-colors">
-                          РРЦ <ArrowUpDown className="h-3 w-3" />
-                        </div>
+                        <div className="flex items-center justify-end gap-1 cursor-pointer hover:text-foreground transition-colors">РРЦ <ArrowUpDown className="h-3 w-3" /></div>
                       </th>
                       <th className="px-5 py-3.5 text-center text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Наличие</th>
                       <th className="px-5 py-3.5 w-10"></th>
@@ -203,40 +260,28 @@ export function CatalogPage() {
                       >
                         {massMode && (
                           <td className="px-3 py-3.5">
-                            <input
-                              type="checkbox"
-                              checked={selectedIds.has(p.id)}
-                              onChange={() => toggleSelect(p.id)}
-                              onClick={(e) => e.stopPropagation()}
-                              className="h-4 w-4 rounded border-border accent-foreground"
-                            />
+                            <input type="checkbox" checked={selectedIds.has(p.id)} onChange={() => toggleSelect(p.id)} onClick={(e) => e.stopPropagation()} className="h-4 w-4 rounded border-border accent-foreground" />
                           </td>
                         )}
                         <td className="px-5 py-3.5">
                           <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted text-[10px] font-semibold text-muted-foreground">
-                              IMG
-                            </div>
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted text-[10px] font-semibold text-muted-foreground">IMG</div>
                             <span className="text-sm font-medium text-foreground">{p.name}</span>
                           </div>
                         </td>
                         <td className="px-5 py-3.5">
-                          <span className="inline-block rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground">
-                            {p.category}
-                          </span>
+                          <span className="inline-block rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground">{p.category}</span>
                         </td>
                         <td className="px-5 py-3.5 text-sm text-foreground hidden lg:table-cell">{p.material}</td>
                         <td className="px-5 py-3.5 text-sm text-muted-foreground hidden xl:table-cell">{p.color}</td>
-                        <td className="px-5 py-3.5 text-right text-sm font-semibold tabular-nums text-foreground">
-                          {p.rrp.toLocaleString("ru-RU")} ₽
-                        </td>
+                        <td className="px-5 py-3.5 text-right text-sm font-semibold tabular-nums text-foreground">{p.rrp.toLocaleString("ru-RU")} ₽</td>
                         <td className="px-5 py-3.5 text-center">
                           <span className={`inline-block h-2.5 w-2.5 rounded-full ${p.inStock ? "bg-success" : "bg-muted-foreground/30"}`} />
                         </td>
                         <td className="px-5 py-3.5">
                           <button
-                            onClick={(e) => e.stopPropagation()}
-                            className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors"
+                            onClick={(e) => { e.stopPropagation(); setDeleteTarget(p); }}
+                            className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-destructive active:scale-95 transition-colors"
                           >
                             <MoreHorizontal className="h-4 w-4" />
                           </button>
@@ -257,20 +302,14 @@ export function CatalogPage() {
                 <div
                   key={p.id}
                   onClick={() => setSelectedProduct(p)}
-                  className="group rounded-2xl border border-border bg-card overflow-hidden transition-all duration-200 hover:shadow-card-hover cursor-pointer opacity-0 animate-fade-up-stagger"
+                  className="group rounded-2xl border border-border bg-card overflow-hidden transition-all duration-200 hover:shadow-card-hover cursor-pointer opacity-0 animate-fade-up"
                   style={{ animationDelay: `${100 + i * 60}ms` }}
                 >
                   <div className="aspect-[4/3] bg-muted flex items-center justify-center text-xs text-muted-foreground font-medium relative">
                     Фото
                     {massMode && (
                       <div className="absolute top-2 left-2">
-                        <input
-                          type="checkbox"
-                          checked={selectedIds.has(p.id)}
-                          onChange={() => toggleSelect(p.id)}
-                          onClick={(e) => e.stopPropagation()}
-                          className="h-4 w-4 rounded border-border accent-foreground"
-                        />
+                        <input type="checkbox" checked={selectedIds.has(p.id)} onChange={() => toggleSelect(p.id)} onClick={(e) => e.stopPropagation()} className="h-4 w-4 rounded border-border accent-foreground" />
                       </div>
                     )}
                   </div>
@@ -292,9 +331,51 @@ export function CatalogPage() {
       )}
 
       {/* Product detail modal */}
-      {selectedProduct && (
-        <ProductDetail product={selectedProduct} onClose={() => setSelectedProduct(null)} />
-      )}
+      {selectedProduct && <ProductDetail product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
+
+      {/* Add product modal */}
+      <Modal
+        open={addOpen}
+        onClose={() => { setAddOpen(false); resetForm(); }}
+        title="Новый товар"
+        footer={
+          <>
+            <button onClick={() => { setAddOpen(false); resetForm(); }} className="h-9 px-4 rounded-xl border border-border text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors">Отмена</button>
+            <button onClick={handleAdd} disabled={!formName.trim() || !formRrp.trim()} className="h-9 px-4 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-40">Добавить</button>
+          </>
+        }
+      >
+        <div className="grid grid-cols-2 gap-4">
+          <div className="col-span-2">
+            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Название *</label>
+            <input value={formName} onChange={(e) => setFormName(e.target.value)} placeholder="Название двери" className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
+          </div>
+          <div>
+            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Категория</label>
+            <select value={formCategory} onChange={(e) => setFormCategory(e.target.value)} className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow">
+              {categories.filter(c => c !== "Все").map(c => <option key={c}>{c}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">РРЦ (₽) *</label>
+            <input value={formRrp} onChange={(e) => setFormRrp(e.target.value.replace(/\D/g, ""))} placeholder="25000" className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow tabular-nums" />
+          </div>
+          <div>
+            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Материал</label>
+            <input value={formMaterial} onChange={(e) => setFormMaterial(e.target.value)} placeholder="Экошпон" className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
+          </div>
+          <div>
+            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Цвет</label>
+            <input value={formColor} onChange={(e) => setFormColor(e.target.value)} placeholder="Дуб натуральный" className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
+          </div>
+        </div>
+      </Modal>
+
+      {/* Delete confirmation */}
+      <ConfirmDialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={() => deleteTarget && handleDelete(deleteTarget)} title="Удалить товар" description={`Удалить ${deleteTarget?.name}? Это действие нельзя отменить.`} confirmLabel="Удалить" destructive />
+
+      {/* Bulk delete */}
+      <ConfirmDialog open={bulkDeleteOpen} onClose={() => setBulkDeleteOpen(false)} onConfirm={handleBulkDelete} title="Массовое удаление" description={`Удалить выбранные товары (${selectedIds.size} шт.)? Это действие нельзя отменить.`} confirmLabel="Удалить все" destructive />
     </div>
   );
 }
