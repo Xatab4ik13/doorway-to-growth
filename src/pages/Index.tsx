@@ -45,8 +45,8 @@ const Index = () => {
     <div className="flex min-h-screen bg-background">
       <CrmSidebar activeSection={activeSection} onNavigate={handleNavigate} />
       <main
-        className={`sm:ml-[68px] flex-1 min-w-0 pt-14 sm:pt-0 transition-all duration-200 ease-out ${
-          transitioning ? "opacity-0 translate-x-3 scale-[0.998]" : "opacity-100 translate-x-0 scale-100"
+        className={`sm:ml-[68px] flex-1 min-w-0 pt-14 sm:pt-0 transition-opacity duration-150 ease-out ${
+          transitioning ? "opacity-0" : "opacity-100"
         }`}
       >
         {renderPage()}
