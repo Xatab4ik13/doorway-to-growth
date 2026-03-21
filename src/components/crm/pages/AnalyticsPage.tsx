@@ -38,29 +38,29 @@ const topProducts = [
 ];
 
 const PIE_COLORS = [
-  "hsl(210, 80%, 52%)",
-  "hsl(152, 60%, 42%)",
-  "hsl(38, 92%, 50%)",
-  "hsl(340, 65%, 52%)",
-  "hsl(270, 55%, 58%)",
+  "hsl(28, 55%, 38%)",
+  "hsl(158, 50%, 40%)",
+  "hsl(38, 88%, 50%)",
+  "hsl(340, 55%, 48%)",
+  "hsl(24, 40%, 55%)",
 ];
 
 const BAR_COLORS = [
-  "hsl(210, 80%, 52%)",
-  "hsl(210, 70%, 58%)",
-  "hsl(210, 60%, 64%)",
-  "hsl(210, 80%, 52%)",
-  "hsl(210, 85%, 48%)",
-  "hsl(210, 70%, 58%)",
-  "hsl(210, 60%, 64%)",
+  "hsl(28, 55%, 38%)",
+  "hsl(28, 50%, 45%)",
+  "hsl(28, 45%, 52%)",
+  "hsl(28, 55%, 38%)",
+  "hsl(28, 60%, 34%)",
+  "hsl(28, 50%, 45%)",
+  "hsl(28, 45%, 52%)",
 ];
 
 const PRODUCT_COLORS = [
-  "hsl(210, 80%, 52%)",
-  "hsl(152, 60%, 42%)",
-  "hsl(38, 92%, 50%)",
-  "hsl(340, 65%, 52%)",
-  "hsl(270, 55%, 58%)",
+  "hsl(28, 55%, 38%)",
+  "hsl(158, 50%, 40%)",
+  "hsl(38, 88%, 50%)",
+  "hsl(340, 55%, 48%)",
+  "hsl(24, 40%, 55%)",
 ];
 
 export function AnalyticsPage() {
@@ -118,7 +118,7 @@ export function AnalyticsPage() {
         <div className="rounded-2xl border border-border bg-card p-5 opacity-0 animate-fade-up" style={{ animationDelay: "160ms" }}>
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-sm font-semibold text-foreground">Конверсия</h3>
-            <span className="text-2xl font-semibold tabular-nums text-[hsl(152,60%,42%)]">12.4%</span>
+            <span className="text-2xl font-semibold tabular-nums text-success">12.4%</span>
           </div>
           <ResponsiveContainer width="100%" height={240}>
             <LineChart data={conversionTrend}>
@@ -136,10 +136,10 @@ export function AnalyticsPage() {
               <Line
                 type="monotone"
                 dataKey="value"
-                stroke="hsl(152, 60%, 42%)"
+                stroke="hsl(158, 50%, 40%)"
                 strokeWidth={2.5}
-                dot={{ r: 5, fill: "hsl(0 0% 100%)", stroke: "hsl(152, 60%, 42%)", strokeWidth: 2.5 }}
-                activeDot={{ r: 7, fill: "hsl(152, 60%, 42%)", stroke: "hsl(0 0% 100%)", strokeWidth: 2 }}
+                dot={{ r: 5, fill: "hsl(30 20% 99%)", stroke: "hsl(158, 50%, 40%)", strokeWidth: 2.5 }}
+                activeDot={{ r: 7, fill: "hsl(158, 50%, 40%)", stroke: "hsl(30 20% 99%)", strokeWidth: 2 }}
               />
             </LineChart>
           </ResponsiveContainer>

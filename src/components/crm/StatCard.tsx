@@ -18,8 +18,8 @@ export function StatCard({ icon: Icon, label, value, change, changePositive = tr
       {/* Top row: icon + label + arrow */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted">
-            <Icon className="h-4 w-4 text-muted-foreground" strokeWidth={1.8} />
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
+            <Icon className="h-4 w-4 text-primary" strokeWidth={1.8} />
           </div>
           <span className="text-sm font-medium text-foreground">{label}</span>
         </div>
