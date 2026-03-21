@@ -38,11 +38,29 @@ const topProducts = [
 ];
 
 const PIE_COLORS = [
-  "hsl(0, 0%, 15%)",
-  "hsl(0, 0%, 35%)",
-  "hsl(0, 0%, 55%)",
-  "hsl(0, 0%, 70%)",
-  "hsl(0, 0%, 82%)",
+  "hsl(210, 80%, 52%)",
+  "hsl(152, 60%, 42%)",
+  "hsl(38, 92%, 50%)",
+  "hsl(340, 65%, 52%)",
+  "hsl(270, 55%, 58%)",
+];
+
+const BAR_COLORS = [
+  "hsl(210, 80%, 52%)",
+  "hsl(210, 70%, 58%)",
+  "hsl(210, 60%, 64%)",
+  "hsl(210, 80%, 52%)",
+  "hsl(210, 85%, 48%)",
+  "hsl(210, 70%, 58%)",
+  "hsl(210, 60%, 64%)",
+];
+
+const PRODUCT_COLORS = [
+  "hsl(210, 80%, 52%)",
+  "hsl(152, 60%, 42%)",
+  "hsl(38, 92%, 50%)",
+  "hsl(340, 65%, 52%)",
+  "hsl(270, 55%, 58%)",
 ];
 
 export function AnalyticsPage() {
@@ -74,8 +92,8 @@ export function AnalyticsPage() {
         {/* Leads per day */}
         <div className="rounded-2xl border border-border bg-card p-5 opacity-0 animate-fade-up" style={{ animationDelay: "80ms" }}>
           <h3 className="text-sm font-semibold text-foreground mb-5">Заявки по дням</h3>
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={leadsPerDay} barSize={28}>
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={leadsPerDay} barSize={32}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 92%)" vertical={false} />
               <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(0 0% 45%)" }} />
               <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(0 0% 45%)" }} width={30} />
@@ -87,7 +105,11 @@ export function AnalyticsPage() {
                   fontSize: 12,
                 }}
               />
-              <Bar dataKey="leads" fill="hsl(0 0% 15%)" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="leads" radius={[6, 6, 0, 0]}>
+                {leadsPerDay.map((_, i) => (
+                  <Cell key={i} fill={BAR_COLORS[i]} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -96,9 +118,9 @@ export function AnalyticsPage() {
         <div className="rounded-2xl border border-border bg-card p-5 opacity-0 animate-fade-up" style={{ animationDelay: "160ms" }}>
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-sm font-semibold text-foreground">Конверсия</h3>
-            <span className="text-2xl font-semibold tabular-nums text-foreground">12.4%</span>
+            <span className="text-2xl font-semibold tabular-nums text-[hsl(152,60%,42%)]">12.4%</span>
           </div>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={240}>
             <LineChart data={conversionTrend}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 92%)" vertical={false} />
               <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(0 0% 45%)" }} />
@@ -111,7 +133,14 @@ export function AnalyticsPage() {
                   fontSize: 12,
                 }}
               />
-              <Line type="monotone" dataKey="value" stroke="hsl(0 0% 15%)" strokeWidth={2.5} dot={{ r: 4, fill: "hsl(0 0% 100%)", stroke: "hsl(0 0% 15%)", strokeWidth: 2 }} />
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke="hsl(152, 60%, 42%)"
+                strokeWidth={2.5}
+                dot={{ r: 5, fill: "hsl(0 0% 100%)", stroke: "hsl(152, 60%, 42%)", strokeWidth: 2.5 }}
+                activeDot={{ r: 7, fill: "hsl(152, 60%, 42%)", stroke: "hsl(0 0% 100%)", strokeWidth: 2 }}
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -119,22 +148,22 @@ export function AnalyticsPage() {
         {/* Partner distribution */}
         <div className="rounded-2xl border border-border bg-card p-5 opacity-0 animate-fade-up" style={{ animationDelay: "240ms" }}>
           <h3 className="text-sm font-semibold text-foreground mb-5">Заявки по партнёрам</h3>
-          <div className="flex items-center gap-6">
-            <ResponsiveContainer width={160} height={160}>
+          <div className="flex items-center gap-8">
+            <ResponsiveContainer width={180} height={180}>
               <PieChart>
-                <Pie data={partnerLeads} dataKey="value" cx="50%" cy="50%" innerRadius={45} outerRadius={70} strokeWidth={2} stroke="hsl(0 0% 100%)">
+                <Pie data={partnerLeads} dataKey="value" cx="50%" cy="50%" innerRadius={50} outerRadius={80} strokeWidth={3} stroke="hsl(0 0% 100%)">
                   {partnerLeads.map((_, i) => (
                     <Cell key={i} fill={PIE_COLORS[i]} />
                   ))}
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               {partnerLeads.map((p, i) => (
-                <div key={p.name} className="flex items-center gap-2">
-                  <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: PIE_COLORS[i] }} />
-                  <span className="text-xs text-muted-foreground">{p.name}</span>
-                  <span className="text-xs font-semibold tabular-nums text-foreground ml-auto">{p.value}</span>
+                <div key={p.name} className="flex items-center gap-3">
+                  <span className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: PIE_COLORS[i] }} />
+                  <span className="text-sm text-foreground min-w-[100px]">{p.name}</span>
+                  <span className="text-sm font-semibold tabular-nums text-foreground">{p.value}</span>
                 </div>
               ))}
             </div>
@@ -144,22 +173,25 @@ export function AnalyticsPage() {
         {/* Top products */}
         <div className="rounded-2xl border border-border bg-card p-5 opacity-0 animate-fade-up" style={{ animationDelay: "320ms" }}>
           <h3 className="text-sm font-semibold text-foreground mb-5">Популярные товары</h3>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {topProducts.map((p, i) => (
               <div key={p.name} className="flex items-center gap-3">
-                <span className="text-xs font-medium text-muted-foreground tabular-nums w-4">{i + 1}</span>
+                <span className="text-xs font-semibold tabular-nums w-4" style={{ color: PRODUCT_COLORS[i] }}>{i + 1}</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
-                  <div className="mt-1 h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                  <div className="mt-1.5 h-2 w-full rounded-full bg-muted overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-foreground transition-all duration-500"
-                      style={{ width: `${(p.leads / topProducts[0].leads) * 100}%` }}
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${(p.leads / topProducts[0].leads) * 100}%`,
+                        backgroundColor: PRODUCT_COLORS[i],
+                      }}
                     />
                   </div>
                 </div>
                 <div className="text-right shrink-0">
                   <p className="text-xs font-semibold tabular-nums text-foreground">{p.leads} заявок</p>
-                  <p className="text-[10px] text-muted-foreground tabular-nums">{p.conversion}% конв.</p>
+                  <p className="text-[10px] tabular-nums" style={{ color: PRODUCT_COLORS[i] }}>{p.conversion}% конв.</p>
                 </div>
               </div>
             ))}
