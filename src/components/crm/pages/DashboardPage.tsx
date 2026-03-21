@@ -2,6 +2,8 @@ import { CrmHeader } from "@/components/crm/CrmHeader";
 import { StatCard } from "@/components/crm/StatCard";
 import { RecentLeads } from "@/components/crm/RecentLeads";
 import { SchedulePanel } from "@/components/crm/SchedulePanel";
+import { ActivityFeed } from "@/components/crm/ActivityFeed";
+import { Announcements } from "@/components/crm/Announcements";
 import { FileText, Users, Package, TrendingUp } from "lucide-react";
 
 export function DashboardPage() {
@@ -20,10 +22,16 @@ export function DashboardPage() {
         <div className="mt-8">
           <RecentLeads />
         </div>
+
+        {/* Announcements */}
+        <div className="mt-8">
+          <Announcements />
+        </div>
       </div>
 
-      <aside className="hidden xl:block w-[320px] shrink-0 border-l border-border px-5 py-6">
+      <aside className="hidden xl:block w-[320px] shrink-0 border-l border-border px-5 py-6 space-y-6">
         <SchedulePanel />
+        <ActivityFeed />
       </aside>
     </div>
   );
