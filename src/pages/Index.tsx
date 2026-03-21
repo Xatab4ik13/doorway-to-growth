@@ -39,6 +39,8 @@ const Index = () => {
         return <LeadsPage />;
       case "analytics":
         return <AnalyticsPage />;
+      case "announcements":
+        return <AnnouncementsPage />;
       case "settings":
         return <SettingsPage />;
       case "notifications":

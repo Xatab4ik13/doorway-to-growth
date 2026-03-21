@@ -191,8 +191,7 @@ export function AnnouncementsPage() {
           icon={Megaphone}
           title="Нет объявлений"
           description={search ? "Попробуйте изменить поисковый запрос" : "Создайте первое объявление для партнёров"}
-          actionLabel="Создать объявление"
-          onAction={() => { resetForm(); setCreateOpen(true); }}
+          action={{ label: "Создать объявление", onClick: () => { resetForm(); setCreateOpen(true); } }}
         />
       ) : (
         <div className="space-y-3">
