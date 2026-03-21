@@ -43,7 +43,7 @@ export function CrmHeader({ title, breadcrumbs, onNavigate: onNavigateProp }: Cr
   }, [searchOpen]);
 
   return (
-    <header className="flex items-center justify-between pb-6 gap-4">
+    <header className="flex items-center justify-between pb-4 sm:pb-6 gap-2 sm:gap-4">
       {/* Left: breadcrumbs + title */}
       <div className="min-w-0">
         {breadcrumbs && breadcrumbs.length > 0 && (
@@ -68,7 +68,7 @@ export function CrmHeader({ title, breadcrumbs, onNavigate: onNavigateProp }: Cr
       </div>
 
       {/* Right: search + notifications + avatar */}
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
         {/* Global search */}
         <div className="relative">
           {searchOpen ? (
@@ -80,7 +80,7 @@ export function CrmHeader({ title, breadcrumbs, onNavigate: onNavigateProp }: Cr
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Поиск по CRM..."
-                  className="h-9 w-64 rounded-xl border border-border bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-all"
+                  className="h-9 w-48 sm:w-64 rounded-xl border border-border bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-all"
                 />
               </div>
               <button

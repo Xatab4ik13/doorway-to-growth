@@ -112,7 +112,7 @@ export function NotificationsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-1.5 mb-6 opacity-0 animate-fade-up" style={{ animationDelay: "60ms" }}>
+      <div className="flex items-center gap-1.5 mb-6 overflow-x-auto pb-1 opacity-0 animate-fade-up" style={{ animationDelay: "60ms" }}>
         <Filter className="h-4 w-4 text-muted-foreground mr-1" />
         {filterOptions.map((f) => (
           <button
@@ -150,7 +150,7 @@ export function NotificationsPage() {
                   return (
                     <div
                       key={n.id}
-                      className={`flex items-start gap-4 px-5 py-4 transition-colors hover:bg-muted/40 cursor-pointer ${
+                      className={`flex items-start gap-3 sm:gap-4 px-4 sm:px-5 py-3 sm:py-4 transition-colors hover:bg-muted/40 cursor-pointer ${
                         n.unread ? "bg-muted/20" : ""
                       }`}
                       onClick={() => markRead(n.id)}
@@ -172,7 +172,7 @@ export function NotificationsPage() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1 shrink-0">
+                      <div className="flex items-center gap-1 shrink-0 hidden sm:flex">
                         {n.unread && (
                           <button
                             onClick={(e) => { e.stopPropagation(); markRead(n.id); }}

@@ -56,12 +56,12 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="px-8 py-6">
+    <div className="px-4 sm:px-8 py-6">
       <CrmHeader title="Настройки" />
 
-      <div className="flex gap-8 opacity-0 animate-fade-up">
+      <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 opacity-0 animate-fade-up">
         {/* Sidebar tabs */}
-        <div className="w-52 shrink-0 space-y-1">
+        <div className="w-full sm:w-52 shrink-0 flex sm:flex-col gap-1 overflow-x-auto sm:overflow-visible pb-2 sm:pb-0">
           {tabs.map((tab) => (
             <button
               key={tab.id}

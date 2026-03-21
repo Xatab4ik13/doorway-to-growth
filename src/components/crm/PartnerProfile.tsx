@@ -65,17 +65,17 @@ export function PartnerProfile({ onBack }: PartnerProfileProps) {
   const [tab, setTab] = useState<"overview" | "leads" | "edit">("overview");
 
   return (
-    <div className="px-8 py-6">
+    <div className="px-4 sm:px-8 py-6">
       <CrmHeader
         title={partner.name}
         breadcrumbs={[{ label: "Партнёры", onClick: onBack }]}
       />
 
       {/* Back + name */}
-      <div className="flex items-center gap-4 mb-6 opacity-0 animate-fade-up">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6 opacity-0 animate-fade-up">
         <button
           onClick={onBack}
-          className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground hover:bg-muted active:scale-95 transition-colors"
+          className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground hover:bg-muted active:scale-95 transition-colors shrink-0"
         >
           <ArrowLeft className="h-4 w-4" />
         </button>
@@ -91,15 +91,16 @@ export function PartnerProfile({ onBack }: PartnerProfileProps) {
             <p className="text-sm text-muted-foreground">{partner.address} · {partner.zone}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
           <button
             onClick={() => setTab(tab === "edit" ? "overview" : "edit")}
-            className="flex h-9 items-center gap-2 rounded-xl border border-border bg-card px-4 text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors"
+            className="flex h-9 items-center gap-2 rounded-xl border border-border bg-card px-4 text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors flex-1 sm:flex-none justify-center"
           >
             <Edit3 className="h-3.5 w-3.5" />
-            {tab === "edit" ? "Отмена" : "Редактировать"}
+            <span className="hidden sm:inline">{tab === "edit" ? "Отмена" : "Редактировать"}</span>
+            <span className="sm:hidden">{tab === "edit" ? "Отмена" : "Ред."}</span>
           </button>
-          <button className="flex h-9 items-center gap-2 rounded-xl border border-border bg-card px-4 text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors">
+          <button className="flex h-9 items-center gap-2 rounded-xl border border-border bg-card px-4 text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors flex-1 sm:flex-none justify-center">
             <ExternalLink className="h-3.5 w-3.5" />
             Сайт
           </button>
@@ -107,7 +108,7 @@ export function PartnerProfile({ onBack }: PartnerProfileProps) {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-1 mb-6 opacity-0 animate-fade-up" style={{ animationDelay: "60ms" }}>
+      <div className="flex items-center gap-1 mb-6 overflow-x-auto pb-1 opacity-0 animate-fade-up" style={{ animationDelay: "60ms" }}>
         {([
           { id: "overview", label: "Обзор" },
           { id: "leads", label: "Заявки" },
@@ -338,7 +339,7 @@ export function PartnerProfile({ onBack }: PartnerProfileProps) {
         <div className="max-w-2xl opacity-0 animate-fade-up" style={{ animationDelay: "100ms" }}>
           <div className="rounded-2xl border border-border bg-card p-6">
             <h3 className="text-sm font-semibold text-foreground mb-6">Данные партнёра</h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Название</label>
                 <input
