@@ -5,10 +5,12 @@ import { RecentLeads } from "@/components/crm/RecentLeads";
 import { SchedulePanel } from "@/components/crm/SchedulePanel";
 import { ActivityFeed } from "@/components/crm/ActivityFeed";
 import { Announcements } from "@/components/crm/Announcements";
-import { FileText, Users, Package, TrendingUp, Plus, Eye, UserPlus } from "lucide-react";
+import { useCrmNavigation } from "@/components/crm/CrmNavigationContext";
+import { FileText, Users, Package, Ruler, Plus, Eye, UserPlus } from "lucide-react";
 
 export function DashboardPage() {
   const [period, setPeriod] = useState<"today" | "week" | "month">("today");
+  const { navigate } = useCrmNavigation();
 
   return (
     <div className="flex flex-1">
@@ -37,57 +39,66 @@ export function DashboardPage() {
         </div>
 
         {/* Quick actions */}
-        <div className="flex items-center gap-2 mb-6 opacity-0 animate-fade-up" style={{ animationDelay: "60ms" }}>
-          <button className="flex h-8 items-center gap-1.5 rounded-lg bg-foreground px-3 text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors">
+        <div className="flex items-center gap-2 mb-6 opacity-0 animate-fade-up flex-wrap" style={{ animationDelay: "60ms" }}>
+          <button
+            onClick={() => navigate("partners")}
+            className="flex h-8 items-center gap-1.5 rounded-lg bg-foreground px-3 text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors"
+          >
             <UserPlus className="h-3.5 w-3.5" />
-            Партнёр
+            Новый партнёр
           </button>
-          <button className="flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors">
+          <button
+            onClick={() => navigate("catalog")}
+            className="flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors"
+          >
             <Plus className="h-3.5 w-3.5" />
-            Товар
+            Добавить товар
           </button>
-          <button className="flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors">
+          <button
+            onClick={() => navigate("leads")}
+            className="flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors"
+          >
             <Eye className="h-3.5 w-3.5" />
-            Заявки
+            Все заявки
           </button>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
             icon={FileText}
-            label="Заявки"
-            value="47"
-            change="+12"
+            label="Заявки сегодня"
+            value="12"
+            change="+3"
             changePositive
             delay={0}
-            sparkline={[22, 28, 18, 35, 31, 42, 47]}
+            sparkline={[5, 8, 6, 9, 7, 10, 12]}
           />
           <StatCard
             icon={Users}
-            label="Партнёры"
+            label="Активные партнёры"
             value="5"
-            change="+1"
+            change="из 6"
             changePositive
             delay={80}
-            sparkline={[2, 2, 3, 3, 4, 4, 5]}
+            sparkline={[3, 3, 4, 4, 5, 5, 5]}
+          />
+          <StatCard
+            icon={Ruler}
+            label="Замеры на неделе"
+            value="8"
+            change="+2"
+            changePositive
+            delay={160}
+            sparkline={[4, 5, 6, 5, 7, 6, 8]}
           />
           <StatCard
             icon={Package}
-            label="Каталог"
+            label="Товаров в каталоге"
             value="247"
             change="+8"
             changePositive
-            delay={160}
-            sparkline={[210, 218, 225, 230, 235, 239, 247]}
-          />
-          <StatCard
-            icon={TrendingUp}
-            label="Конверсия"
-            value="12.4%"
-            change="+2.1%"
-            changePositive
             delay={240}
-            sparkline={[8.2, 9.1, 10.4, 9.8, 11.6, 12.4]}
+            sparkline={[210, 218, 225, 230, 235, 239, 247]}
           />
         </div>
 
