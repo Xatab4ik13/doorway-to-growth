@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { CrmHeader } from "@/components/crm/CrmHeader";
-import { User, Shield, Bell, Palette, Globe, Lock, ChevronRight, LogOut } from "lucide-react";
+import { ConfirmDialog } from "@/components/crm/ConfirmDialog";
+import { User, Shield, Bell, Palette, Globe, Lock, ChevronRight, LogOut, Moon, Sun } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 const tabs = [
   { id: "profile", label: "Профиль", icon: User },
@@ -19,8 +21,39 @@ const users = [
   { name: "Дмитрий Фёдоров", email: "sokolniki@brandoors.ru", role: "Партнёр", active: false },
 ];
 
+function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button
+      onClick={() => onChange(!checked)}
+      className={`relative h-6 w-11 rounded-full transition-colors active:scale-95 ${
+        checked ? "bg-foreground" : "bg-muted"
+      }`}
+    >
+      <span
+        className={`absolute top-0.5 h-5 w-5 rounded-full bg-card shadow-sm transition-transform ${
+          checked ? "left-[22px]" : "left-0.5"
+        }`}
+      />
+    </button>
+  );
+}
+
 export function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile");
+  const [logoutOpen, setLogoutOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains("dark"));
+  const [notifications, setNotifications] = useState({
+    newLeads: true,
+    partnerStatus: true,
+    catalogChanges: false,
+    emailReports: true,
+  });
+
+  const toggleDarkMode = (on: boolean) => {
+    setDarkMode(on);
+    document.documentElement.classList.toggle("dark", on);
+    localStorage.setItem("theme", on ? "dark" : "light");
+  };
 
   return (
     <div className="px-8 py-6">
@@ -44,7 +77,10 @@ export function SettingsPage() {
             </button>
           ))}
           <div className="pt-4">
-            <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors active:scale-[0.98]">
+            <button
+              onClick={() => setLogoutOpen(true)}
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors active:scale-[0.98]"
+            >
               <LogOut className="h-4 w-4" strokeWidth={1.8} />
               Выйти
             </button>
@@ -68,35 +104,26 @@ export function SettingsPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Имя</label>
-                  <input
-                    defaultValue="Александр"
-                    className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow"
-                  />
+                  <input defaultValue="Александр" className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
                 </div>
                 <div>
                   <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Фамилия</label>
-                  <input
-                    defaultValue="Дорохов"
-                    className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow"
-                  />
+                  <input defaultValue="Дорохов" className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
                 </div>
                 <div>
                   <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Email</label>
-                  <input
-                    defaultValue="admin@brandoors.ru"
-                    className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow"
-                  />
+                  <input defaultValue="admin@brandoors.ru" className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
                 </div>
                 <div>
                   <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Телефон</label>
-                  <input
-                    defaultValue="+7 (926) 000-00-00"
-                    className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow"
-                  />
+                  <input defaultValue="+7 (926) 000-00-00" className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
                 </div>
               </div>
               <div className="mt-6 flex justify-end">
-                <button className="h-9 px-5 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors">
+                <button
+                  onClick={() => toast({ title: "Профиль сохранён" })}
+                  className="h-9 px-5 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors"
+                >
                   Сохранить
                 </button>
               </div>
@@ -121,7 +148,10 @@ export function SettingsPage() {
                 </div>
               </div>
               <div className="mt-6">
-                <button className="h-9 px-5 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors">
+                <button
+                  onClick={() => toast({ title: "Пароль обновлён" })}
+                  className="h-9 px-5 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors"
+                >
                   Обновить пароль
                 </button>
               </div>
@@ -132,20 +162,21 @@ export function SettingsPage() {
             <div className="rounded-2xl border border-border bg-card p-6 opacity-0 animate-fade-up">
               <h3 className="text-sm font-semibold text-foreground mb-6">Уведомления</h3>
               <div className="space-y-4">
-                {[
-                  { label: "Новые заявки", desc: "Получать уведомления о новых заявках со всех сайтов" },
-                  { label: "Статус партнёра", desc: "Уведомления когда партнёр меняет статус" },
-                  { label: "Изменения каталога", desc: "Уведомления при добавлении/удалении товаров" },
-                  { label: "Email отчёты", desc: "Еженедельная сводка по почте" },
-                ].map((item) => (
-                  <div key={item.label} className="flex items-center justify-between py-2">
+                {([
+                  { key: "newLeads" as const, label: "Новые заявки", desc: "Получать уведомления о новых заявках со всех сайтов" },
+                  { key: "partnerStatus" as const, label: "Статус партнёра", desc: "Уведомления когда партнёр меняет статус" },
+                  { key: "catalogChanges" as const, label: "Изменения каталога", desc: "Уведомления при добавлении/удалении товаров" },
+                  { key: "emailReports" as const, label: "Email отчёты", desc: "Еженедельная сводка по почте" },
+                ]).map((item) => (
+                  <div key={item.key} className="flex items-center justify-between py-2">
                     <div>
                       <p className="text-sm font-medium text-foreground">{item.label}</p>
                       <p className="text-xs text-muted-foreground">{item.desc}</p>
                     </div>
-                    <button className="relative h-6 w-11 rounded-full bg-foreground transition-colors active:scale-95">
-                      <span className="absolute right-0.5 top-0.5 h-5 w-5 rounded-full bg-primary-foreground shadow-sm transition-transform" />
-                    </button>
+                    <Toggle
+                      checked={notifications[item.key]}
+                      onChange={(v) => setNotifications((prev) => ({ ...prev, [item.key]: v }))}
+                    />
                   </div>
                 ))}
               </div>
@@ -156,7 +187,10 @@ export function SettingsPage() {
             <div className="rounded-2xl border border-border bg-card overflow-hidden opacity-0 animate-fade-up">
               <div className="flex items-center justify-between px-6 py-4 border-b border-border">
                 <h3 className="text-sm font-semibold text-foreground">Пользователи</h3>
-                <button className="h-8 px-3.5 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors">
+                <button
+                  onClick={() => toast({ title: "Добавление пользователя", description: "Будет доступно после подключения бекенда" })}
+                  className="h-8 px-3.5 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors"
+                >
                   Добавить
                 </button>
               </div>
@@ -190,24 +224,14 @@ export function SettingsPage() {
               <h3 className="text-sm font-semibold text-foreground mb-6">Внешний вид</h3>
               <div className="space-y-4">
                 <div className="flex items-center justify-between py-2">
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Тёмная тема</p>
-                    <p className="text-xs text-muted-foreground">Переключить оформление интерфейса</p>
+                  <div className="flex items-center gap-3">
+                    {darkMode ? <Moon className="h-4 w-4 text-muted-foreground" /> : <Sun className="h-4 w-4 text-muted-foreground" />}
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Тёмная тема</p>
+                      <p className="text-xs text-muted-foreground">Переключить оформление интерфейса</p>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => {
-                      const html = document.documentElement;
-                      const isDark = html.classList.contains("dark");
-                      html.classList.toggle("dark", !isDark);
-                      localStorage.setItem("theme", isDark ? "light" : "dark");
-                    }}
-                    className="relative h-6 w-11 rounded-full bg-muted transition-colors active:scale-95 data-[state=on]:bg-foreground"
-                    data-state={typeof window !== 'undefined' && document.documentElement.classList.contains("dark") ? "on" : "off"}
-                  >
-                    <span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-card shadow-sm transition-transform data-[state=on]:translate-x-5"
-                      data-state={typeof window !== 'undefined' && document.documentElement.classList.contains("dark") ? "on" : "off"}
-                    />
-                  </button>
+                  <Toggle checked={darkMode} onChange={toggleDarkMode} />
                 </div>
               </div>
             </div>
@@ -217,27 +241,33 @@ export function SettingsPage() {
             <div className="rounded-2xl border border-border bg-card p-6 opacity-0 animate-fade-up">
               <h3 className="text-sm font-semibold text-foreground mb-6">Система</h3>
               <div className="space-y-3 text-sm">
-                <div className="flex items-center justify-between py-2 border-b border-border">
-                  <span className="text-muted-foreground">Версия</span>
-                  <span className="font-medium text-foreground tabular-nums">1.0.0</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b border-border">
-                  <span className="text-muted-foreground">Партнёров</span>
-                  <span className="font-medium text-foreground tabular-nums">5</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b border-border">
-                  <span className="text-muted-foreground">Товаров в каталоге</span>
-                  <span className="font-medium text-foreground tabular-nums">247</span>
-                </div>
-                <div className="flex items-center justify-between py-2">
-                  <span className="text-muted-foreground">Последнее обновление</span>
-                  <span className="font-medium text-foreground">21.03.2026</span>
-                </div>
+                {[
+                  { label: "Версия", value: "1.0.0" },
+                  { label: "Партнёров", value: "5" },
+                  { label: "Товаров в каталоге", value: "247" },
+                  { label: "Последнее обновление", value: "21.03.2026" },
+                ].map((item, i, arr) => (
+                  <div key={item.label} className={`flex items-center justify-between py-2 ${i < arr.length - 1 ? "border-b border-border" : ""}`}>
+                    <span className="text-muted-foreground">{item.label}</span>
+                    <span className="font-medium text-foreground tabular-nums">{item.value}</span>
+                  </div>
+                ))}
               </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* Logout confirmation */}
+      <ConfirmDialog
+        open={logoutOpen}
+        onClose={() => setLogoutOpen(false)}
+        onConfirm={() => toast({ title: "Выход выполнен" })}
+        title="Выход из системы"
+        description="Вы уверены, что хотите выйти из CRM?"
+        confirmLabel="Выйти"
+        destructive
+      />
     </div>
   );
 }
