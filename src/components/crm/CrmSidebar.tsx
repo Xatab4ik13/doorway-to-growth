@@ -8,6 +8,7 @@ import {
   BarChart3,
   Settings,
   Bell,
+  Megaphone,
   Menu,
   X,
   ChevronsLeft,
@@ -26,6 +27,7 @@ const navItems: NavItem[] = [
   { icon: Users, id: "partners", label: "Партнёры" },
   { icon: Package, id: "catalog", label: "Каталог" },
   { icon: FileText, id: "leads", label: "Заявки" },
+  { icon: Megaphone, id: "announcements", label: "Объявления" },
   { icon: BarChart3, id: "analytics", label: "Аналитика" },
   { icon: Bell, id: "notifications", label: "Уведомления" },
 ];

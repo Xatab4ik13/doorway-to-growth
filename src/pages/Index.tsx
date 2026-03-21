@@ -9,6 +9,7 @@ import { AnalyticsPage } from "@/components/crm/pages/AnalyticsPage";
 import { SettingsPage } from "@/components/crm/pages/SettingsPage";
 import { NotificationsPage } from "@/components/crm/pages/NotificationsPage";
 import { ProfilePage } from "@/components/crm/pages/ProfilePage";
+import { AnnouncementsPage } from "@/components/crm/pages/AnnouncementsPage";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -38,6 +39,8 @@ const Index = () => {
         return <LeadsPage />;
       case "analytics":
         return <AnalyticsPage />;
+      case "announcements":
+        return <AnnouncementsPage />;
       case "settings":
         return <SettingsPage />;
       case "notifications":
