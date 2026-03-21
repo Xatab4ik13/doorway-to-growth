@@ -11,7 +11,7 @@ interface Lead {
   type: string;
   partner: string;
   date: string;
-  status: "new" | "contact" | "measure" | "deal" | "done" | "rejected";
+  status: "new" | "contact" | "consult" | "measure" | "quote" | "contract" | "install" | "done" | "rejected";
   score: number;
   source: "phone" | "form" | "email";
 }
