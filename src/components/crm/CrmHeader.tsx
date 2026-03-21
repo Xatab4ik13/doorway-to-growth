@@ -15,7 +15,9 @@ const notifications = [
   { id: 4, text: "Партнёр Сокольники деактивирован", time: "3 ч назад", unread: false },
 ];
 
-export function CrmHeader({ title, breadcrumbs, onNavigate }: CrmHeaderProps) {
+export function CrmHeader({ title, breadcrumbs, onNavigate: onNavigateProp }: CrmHeaderProps) {
+  const { navigate: ctxNavigate } = useCrmNavigation();
+  const nav = onNavigateProp || ctxNavigate;
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [notifOpen, setNotifOpen] = useState(false);
