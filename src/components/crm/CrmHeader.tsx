@@ -139,7 +139,7 @@ export function CrmHeader({ title, breadcrumbs, onNavigate: onNavigateProp }: Cr
               </div>
               <div className="border-t border-border px-4 py-2.5">
                 <button
-                  onClick={() => { setNotifOpen(false); nav(("notifications"); }}
+                  onClick={() => { setNotifOpen(false); nav("notifications"); }}
                   className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors w-full text-center"
                 >
                   Все уведомления
