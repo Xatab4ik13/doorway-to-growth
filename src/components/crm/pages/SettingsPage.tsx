@@ -188,7 +188,28 @@ export function SettingsPage() {
           {activeTab === "appearance" && (
             <div className="rounded-2xl border border-border bg-card p-6 opacity-0 animate-fade-up">
               <h3 className="text-sm font-semibold text-foreground mb-6">Внешний вид</h3>
-              <p className="text-sm text-muted-foreground">Настройки темы и оформления будут доступны в следующем обновлении.</p>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between py-2">
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Тёмная тема</p>
+                    <p className="text-xs text-muted-foreground">Переключить оформление интерфейса</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const html = document.documentElement;
+                      const isDark = html.classList.contains("dark");
+                      html.classList.toggle("dark", !isDark);
+                      localStorage.setItem("theme", isDark ? "light" : "dark");
+                    }}
+                    className="relative h-6 w-11 rounded-full bg-muted transition-colors active:scale-95 data-[state=on]:bg-foreground"
+                    data-state={typeof window !== 'undefined' && document.documentElement.classList.contains("dark") ? "on" : "off"}
+                  >
+                    <span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-card shadow-sm transition-transform data-[state=on]:translate-x-5"
+                      data-state={typeof window !== 'undefined' && document.documentElement.classList.contains("dark") ? "on" : "off"}
+                    />
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 
