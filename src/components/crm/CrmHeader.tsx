@@ -68,7 +68,7 @@ export function CrmHeader({ title, breadcrumbs, onNavigate: onNavigateProp }: Cr
       </div>
 
       {/* Right: search + notifications + avatar */}
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
         {/* Global search */}
         <div className="relative">
           {searchOpen ? (
