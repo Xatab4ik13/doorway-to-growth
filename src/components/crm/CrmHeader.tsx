@@ -179,7 +179,7 @@ export function CrmHeader({ title, breadcrumbs, onNavigate: onNavigateProp }: Cr
                   Профиль
                 </button>
                 <button
-                  onClick={() => { setUserOpen(false); nav(("settings"); }}
+                  onClick={() => { setUserOpen(false); nav("settings"); }}
                   className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted/40 transition-colors"
                 >
                   <Settings className="h-4 w-4 text-muted-foreground" />
