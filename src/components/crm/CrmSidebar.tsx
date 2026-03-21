@@ -63,9 +63,7 @@ export function CrmSidebar({ activeSection, onNavigate, expanded, onToggleExpand
           <aside className="absolute left-0 top-0 h-full w-[240px] bg-sidebar shadow-xl animate-slide-in-left flex flex-col">
             <div className="flex flex-col flex-1 py-5 px-3">
               <div className="flex items-center justify-between mb-6 px-2">
-                <span className="text-sm font-bold text-sidebar-primary tracking-tight">
-                  Brandoors
-                </span>
+                <img src={logoFull} alt="Brandoors" className="h-5 object-contain" />
                 <button
                   onClick={() => setMobileOpen(false)}
                   className="flex h-8 w-8 items-center justify-center rounded-lg text-sidebar-foreground hover:bg-sidebar-accent active:scale-95 transition-colors"
