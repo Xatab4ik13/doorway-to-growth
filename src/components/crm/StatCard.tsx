@@ -28,21 +28,21 @@ export function StatCard({ icon: Icon, label, value, change, changePositive = tr
         </button>
       </div>
 
-      {/* Value */}
+      {/* Value with superscript change */}
       <div className="mt-6 flex items-end justify-between">
-        <span className="text-3xl font-semibold tracking-tight text-foreground tabular-nums leading-none">
-          {value}
-        </span>
-        <div className="flex items-center gap-2">
+        <div className="flex items-baseline gap-0.5">
+          <span className="text-3xl font-semibold tracking-tight text-foreground tabular-nums leading-none">
+            {value}
+          </span>
           {change && (
-            <span className={`text-xs font-medium tabular-nums ${changePositive ? "text-success" : "text-destructive"}`}>
+            <sup className={`text-[11px] font-semibold tabular-nums relative -top-3 ml-0.5 ${changePositive ? "text-success" : "text-destructive"}`}>
               {change}
-            </span>
+            </sup>
           )}
-          <button className="flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted active:scale-95">
-            <MoreHorizontal className="h-4 w-4" />
-          </button>
         </div>
+        <button className="flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted active:scale-95">
+          <MoreHorizontal className="h-4 w-4" />
+        </button>
       </div>
     </div>
   );

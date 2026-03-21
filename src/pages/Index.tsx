@@ -3,8 +3,8 @@ import { CrmSidebar } from "@/components/crm/CrmSidebar";
 import { CrmHeader } from "@/components/crm/CrmHeader";
 import { StatCard } from "@/components/crm/StatCard";
 import { RecentLeads } from "@/components/crm/RecentLeads";
-import { PartnersOverview } from "@/components/crm/PartnersOverview";
-import { Store, Package, FileText, TrendingUp } from "lucide-react";
+import { SchedulePanel } from "@/components/crm/SchedulePanel";
+import { Phone, Mail, PenLine } from "lucide-react";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -13,43 +13,51 @@ const Index = () => {
     <div className="flex min-h-screen bg-background">
       <CrmSidebar activeSection={activeSection} onNavigate={setActiveSection} />
 
-      <main className="ml-[68px] flex-1 px-8 py-6">
-        <CrmHeader title="Workspace" />
+      {/* Main content area */}
+      <div className="ml-[68px] flex flex-1">
+        {/* Left: main */}
+        <main className="flex-1 px-8 py-6 min-w-0">
+          <CrmHeader title="Workspace" />
 
-        {/* Stat cards — 3 columns like Flowly */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <StatCard
-            icon={Store}
-            label="Партнёры"
-            value="5"
-            change="+2"
-            changePositive
-            delay={0}
-          />
-          <StatCard
-            icon={Package}
-            label="Каталог"
-            value="247"
-            change="+12"
-            changePositive
-            delay={80}
-          />
-          <StatCard
-            icon={FileText}
-            label="Заявки"
-            value="94"
-            change="+18%"
-            changePositive
-            delay={160}
-          />
-        </div>
+          {/* Stat cards — 3 columns like Flowly */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <StatCard
+              icon={Phone}
+              label="Звонки"
+              value="2,556"
+              change="+32"
+              changePositive
+              delay={0}
+            />
+            <StatCard
+              icon={Mail}
+              label="Email"
+              value="2,244"
+              change="+15"
+              changePositive
+              delay={80}
+            />
+            <StatCard
+              icon={PenLine}
+              label="Просрочено"
+              value="1,244"
+              change="-28"
+              changePositive={false}
+              delay={160}
+            />
+          </div>
 
-        {/* Two columns: leads + partners */}
-        <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
-          <RecentLeads />
-          <PartnersOverview />
-        </div>
-      </main>
+          {/* Leads section */}
+          <div className="mt-8">
+            <RecentLeads />
+          </div>
+        </main>
+
+        {/* Right panel: Schedule */}
+        <aside className="hidden xl:block w-[320px] shrink-0 border-l border-border px-5 py-6">
+          <SchedulePanel />
+        </aside>
+      </div>
     </div>
   );
 };
