@@ -65,7 +65,7 @@ export function PartnerProfile({ onBack }: PartnerProfileProps) {
   const [tab, setTab] = useState<"overview" | "leads" | "edit">("overview");
 
   return (
-    <div className="px-8 py-6">
+    <div className="px-4 sm:px-8 py-6">
       <CrmHeader
         title={partner.name}
         breadcrumbs={[{ label: "Партнёры", onClick: onBack }]}
