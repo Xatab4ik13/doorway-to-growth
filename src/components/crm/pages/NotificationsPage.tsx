@@ -150,7 +150,7 @@ export function NotificationsPage() {
                   return (
                     <div
                       key={n.id}
-                      className={`flex items-start gap-4 px-5 py-4 transition-colors hover:bg-muted/40 cursor-pointer ${
+                      className={`flex items-start gap-3 sm:gap-4 px-4 sm:px-5 py-3 sm:py-4 transition-colors hover:bg-muted/40 cursor-pointer ${
                         n.unread ? "bg-muted/20" : ""
                       }`}
                       onClick={() => markRead(n.id)}
