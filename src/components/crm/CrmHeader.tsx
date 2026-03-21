@@ -139,7 +139,7 @@ export function CrmHeader({ title, breadcrumbs, onNavigate: onNavigateProp }: Cr
               </div>
               <div className="border-t border-border px-4 py-2.5">
                 <button
-                  onClick={() => { setNotifOpen(false); onNavigate?.("notifications"); }}
+                  onClick={() => { setNotifOpen(false); nav(("notifications"); }}
                   className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors w-full text-center"
                 >
                   Все уведомления
@@ -172,14 +172,14 @@ export function CrmHeader({ title, breadcrumbs, onNavigate: onNavigateProp }: Cr
               </div>
               <div className="py-1">
                 <button
-                  onClick={() => { setUserOpen(false); onNavigate?.("profile"); }}
+                  onClick={() => { setUserOpen(false); nav(("profile"); }}
                   className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted/40 transition-colors"
                 >
                   <User className="h-4 w-4 text-muted-foreground" />
                   Профиль
                 </button>
                 <button
-                  onClick={() => { setUserOpen(false); onNavigate?.("settings"); }}
+                  onClick={() => { setUserOpen(false); nav(("settings"); }}
                   className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted/40 transition-colors"
                 >
                   <Settings className="h-4 w-4 text-muted-foreground" />
