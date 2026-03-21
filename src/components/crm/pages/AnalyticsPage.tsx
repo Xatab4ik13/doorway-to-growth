@@ -67,7 +67,7 @@ export function AnalyticsPage() {
   const [period, setPeriod] = useState<"week" | "month" | "quarter">("week");
 
   return (
-    <div className="px-8 py-6">
+    <div className="px-4 sm:px-8 py-6">
       <CrmHeader title="Аналитика" />
 
       {/* Period selector */}
