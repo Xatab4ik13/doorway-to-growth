@@ -118,7 +118,7 @@ export function AnalyticsPage() {
         <div className="rounded-2xl border border-border bg-card p-5 opacity-0 animate-fade-up" style={{ animationDelay: "160ms" }}>
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-sm font-semibold text-foreground">Конверсия</h3>
-            <span className="text-2xl font-semibold tabular-nums text-[hsl(152,60%,42%)]">12.4%</span>
+            <span className="text-2xl font-semibold tabular-nums text-success">12.4%</span>
           </div>
           <ResponsiveContainer width="100%" height={240}>
             <LineChart data={conversionTrend}>
