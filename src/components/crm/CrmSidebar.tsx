@@ -7,6 +7,7 @@ import {
   FileText,
   BarChart3,
   Settings,
+  Bell,
   Menu,
   X,
   ChevronsLeft,

@@ -6,6 +6,8 @@ import { CatalogPage } from "@/components/crm/pages/CatalogPage";
 import { LeadsPage } from "@/components/crm/pages/LeadsPage";
 import { AnalyticsPage } from "@/components/crm/pages/AnalyticsPage";
 import { SettingsPage } from "@/components/crm/pages/SettingsPage";
+import { NotificationsPage } from "@/components/crm/pages/NotificationsPage";
+import { ProfilePage } from "@/components/crm/pages/ProfilePage";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -37,6 +39,10 @@ const Index = () => {
         return <AnalyticsPage />;
       case "settings":
         return <SettingsPage />;
+      case "notifications":
+        return <NotificationsPage />;
+      case "profile":
+        return <ProfilePage />;
       default:
         return <DashboardPage />;
     }
