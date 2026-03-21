@@ -168,9 +168,19 @@ export function CrmHeader({ title, breadcrumbs, onNavigate }: CrmHeaderProps) {
                 <p className="text-[11px] text-muted-foreground">admin@brandoors.ru</p>
               </div>
               <div className="py-1">
-                <button className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted/40 transition-colors">
+                <button
+                  onClick={() => { setUserOpen(false); onNavigate?.("profile"); }}
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted/40 transition-colors"
+                >
                   <User className="h-4 w-4 text-muted-foreground" />
                   Профиль
+                </button>
+                <button
+                  onClick={() => { setUserOpen(false); onNavigate?.("settings"); }}
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted/40 transition-colors"
+                >
+                  <Settings className="h-4 w-4 text-muted-foreground" />
+                  Настройки
                 </button>
                 <button className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted/40 transition-colors">
                   <Settings className="h-4 w-4 text-muted-foreground" />
