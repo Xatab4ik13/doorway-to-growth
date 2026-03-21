@@ -69,6 +69,13 @@ const mockHistory = [
   { time: "14:30", text: "Партнёр взял в работу", type: "system" as const },
   { time: "14:45", text: "Перезвонили клиенту, договорились на замер 23.03", type: "note" as const },
   { time: "15:10", text: "Клиент подтвердил время замера", type: "note" as const },
+  { time: "15:30", text: "Статус изменён: Новая → Консультация", type: "status" as const },
+  { time: "16:00", text: "Статус изменён: Консультация → Замер", type: "status" as const },
+];
+
+const mockFiles = [
+  { name: "Замер_прихожая.jpg", size: "2.4 MB", type: "image" as const },
+  { name: "КП_Петров_v2.pdf", size: "340 KB", type: "pdf" as const },
 ];
 
 const PAGE_SIZE = 10;
