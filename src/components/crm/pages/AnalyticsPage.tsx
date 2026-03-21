@@ -136,10 +136,10 @@ export function AnalyticsPage() {
               <Line
                 type="monotone"
                 dataKey="value"
-                stroke="hsl(152, 60%, 42%)"
+                stroke="hsl(158, 50%, 40%)"
                 strokeWidth={2.5}
-                dot={{ r: 5, fill: "hsl(0 0% 100%)", stroke: "hsl(152, 60%, 42%)", strokeWidth: 2.5 }}
-                activeDot={{ r: 7, fill: "hsl(152, 60%, 42%)", stroke: "hsl(0 0% 100%)", strokeWidth: 2 }}
+                dot={{ r: 5, fill: "hsl(30 20% 99%)", stroke: "hsl(158, 50%, 40%)", strokeWidth: 2.5 }}
+                activeDot={{ r: 7, fill: "hsl(158, 50%, 40%)", stroke: "hsl(30 20% 99%)", strokeWidth: 2 }}
               />
             </LineChart>
           </ResponsiveContainer>
