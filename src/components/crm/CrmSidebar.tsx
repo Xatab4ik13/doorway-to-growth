@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import logoFull from "@/assets/logo.png";
 import {
   LayoutDashboard,
   Package,
