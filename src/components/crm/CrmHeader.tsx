@@ -43,7 +43,7 @@ export function CrmHeader({ title, breadcrumbs, onNavigate: onNavigateProp }: Cr
   }, [searchOpen]);
 
   return (
-    <header className="flex items-center justify-between pb-6 gap-4">
+    <header className="flex items-center justify-between pb-4 sm:pb-6 gap-2 sm:gap-4">
       {/* Left: breadcrumbs + title */}
       <div className="min-w-0">
         {breadcrumbs && breadcrumbs.length > 0 && (
