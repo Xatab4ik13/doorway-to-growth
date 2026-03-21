@@ -124,15 +124,11 @@ export function CrmSidebar({ activeSection, onNavigate, expanded, onToggleExpand
           expanded ? "justify-between" : "justify-center"
         )}>
           <div className={cn(
-            "flex items-center gap-3 overflow-hidden",
-            expanded ? "w-auto" : "w-10"
+            "flex items-center overflow-hidden",
+            expanded ? "w-auto" : "w-10 justify-center"
           )}>
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sidebar-accent text-sidebar-primary text-sm font-bold">
-              B
-            </div>
-            {expanded && (
-              <span className="text-sm font-bold text-sidebar-primary whitespace-nowrap">
-                Brandoors
+            {expanded ? (
+              <img src={logoFull} alt="Brandoors" className="h-5 object-contain" />
               </span>
             )}
           </div>
