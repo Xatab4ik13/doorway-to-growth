@@ -4,6 +4,7 @@ import { Search, Bell, ChevronRight, LogOut, Settings, User, X } from "lucide-re
 interface CrmHeaderProps {
   title: string;
   breadcrumbs?: { label: string; onClick?: () => void }[];
+  onNavigate?: (section: string) => void;
 }
 
 const notifications = [
