@@ -55,13 +55,13 @@ const kanbanColumnColors: Record<KanbanStatus, string> = {
 
 const initialLeads: Lead[] = [
   { id: 1, name: "Алексей Петров", phone: "+7 (926) 123-45-67", type: "Замер двери", partner: "Brandoors Марьино", date: "21.03.2026 14:24", status: "new", score: 82, source: "phone" },
-  { id: 2, name: "Елена Сидорова", phone: "+7 (903) 234-56-78", type: "Консультация", partner: "Brandoors Митино", date: "21.03.2026 13:47", status: "contact", score: 64, source: "form" },
+  { id: 2, name: "Елена Сидорова", phone: "+7 (903) 234-56-78", type: "Консультация", partner: "Brandoors Митино", date: "21.03.2026 13:47", status: "consult", score: 64, source: "form" },
   { id: 3, name: "Дмитрий Козлов", phone: "+7 (915) 345-67-89", type: "Покупка двери", partner: "Brandoors Тёплый Стан", date: "21.03.2026 12:10", status: "done", score: 91, source: "phone" },
   { id: 4, name: "Ольга Иванова", phone: "+7 (977) 456-78-90", type: "Обратный звонок", partner: "Brandoors Люблино", date: "21.03.2026 11:33", status: "new", score: 20, source: "email" },
   { id: 5, name: "Сергей Морозов", phone: "+7 (916) 567-89-01", type: "Замер двери", partner: "Brandoors Марьино", date: "21.03.2026 10:15", status: "measure", score: 73, source: "form" },
   { id: 6, name: "Анна Белова", phone: "+7 (925) 678-90-12", type: "Покупка двери", partner: "Brandoors Сокольники", date: "20.03.2026 18:42", status: "rejected", score: 15, source: "email" },
-  { id: 7, name: "Виктор Чернов", phone: "+7 (909) 789-01-23", type: "Консультация", partner: "Brandoors Митино", date: "20.03.2026 16:30", status: "deal", score: 88, source: "phone" },
-  { id: 8, name: "Наталья Крылова", phone: "+7 (926) 890-12-34", type: "Замер двери", partner: "Brandoors Тёплый Стан", date: "20.03.2026 15:18", status: "contact", score: 56, source: "form" },
+  { id: 7, name: "Виктор Чернов", phone: "+7 (909) 789-01-23", type: "Консультация", partner: "Brandoors Митино", date: "20.03.2026 16:30", status: "contract", score: 88, source: "phone" },
+  { id: 8, name: "Наталья Крылова", phone: "+7 (926) 890-12-34", type: "Замер двери", partner: "Brandoors Тёплый Стан", date: "20.03.2026 15:18", status: "quote", score: 56, source: "form" },
 ];
 
 const mockHistory = [
