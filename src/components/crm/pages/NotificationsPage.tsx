@@ -172,7 +172,7 @@ export function NotificationsPage() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1 shrink-0">
+                      <div className="flex items-center gap-1 shrink-0 hidden sm:flex">
                         {n.unread && (
                           <button
                             onClick={(e) => { e.stopPropagation(); markRead(n.id); }}

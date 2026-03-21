@@ -339,7 +339,7 @@ export function PartnerProfile({ onBack }: PartnerProfileProps) {
         <div className="max-w-2xl opacity-0 animate-fade-up" style={{ animationDelay: "100ms" }}>
           <div className="rounded-2xl border border-border bg-card p-6">
             <h3 className="text-sm font-semibold text-foreground mb-6">Данные партнёра</h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Название</label>
                 <input
