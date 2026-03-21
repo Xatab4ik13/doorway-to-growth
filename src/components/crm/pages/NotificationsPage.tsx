@@ -112,7 +112,7 @@ export function NotificationsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-1.5 mb-6 opacity-0 animate-fade-up" style={{ animationDelay: "60ms" }}>
+      <div className="flex items-center gap-1.5 mb-6 overflow-x-auto pb-1 opacity-0 animate-fade-up" style={{ animationDelay: "60ms" }}>
         <Filter className="h-4 w-4 text-muted-foreground mr-1" />
         {filterOptions.map((f) => (
           <button

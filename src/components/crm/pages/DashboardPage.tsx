@@ -12,7 +12,7 @@ export function DashboardPage() {
 
   return (
     <div className="flex flex-1">
-      <div className="flex-1 px-8 py-6 min-w-0">
+      <div className="flex-1 px-4 sm:px-8 py-6 min-w-0">
         <CrmHeader title="Дашборд" />
 
         {/* Welcome + period selector */}

@@ -148,8 +148,8 @@ export function AnalyticsPage() {
         {/* Partner distribution */}
         <div className="rounded-2xl border border-border bg-card p-5 opacity-0 animate-fade-up" style={{ animationDelay: "240ms" }}>
           <h3 className="text-sm font-semibold text-foreground mb-5">Заявки по партнёрам</h3>
-          <div className="flex items-center gap-8">
-            <ResponsiveContainer width={180} height={180}>
+          <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
+            <ResponsiveContainer width={180} height={180} className="shrink-0">
               <PieChart>
                 <Pie data={partnerLeads} dataKey="value" cx="50%" cy="50%" innerRadius={50} outerRadius={80} strokeWidth={3} stroke="hsl(0 0% 100%)">
                   {partnerLeads.map((_, i) => (

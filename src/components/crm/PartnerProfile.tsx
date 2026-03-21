@@ -108,7 +108,7 @@ export function PartnerProfile({ onBack }: PartnerProfileProps) {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-1 mb-6 opacity-0 animate-fade-up" style={{ animationDelay: "60ms" }}>
+      <div className="flex items-center gap-1 mb-6 overflow-x-auto pb-1 opacity-0 animate-fade-up" style={{ animationDelay: "60ms" }}>
         {([
           { id: "overview", label: "Обзор" },
           { id: "leads", label: "Заявки" },
