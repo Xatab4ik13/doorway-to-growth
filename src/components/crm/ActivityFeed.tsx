@@ -1,12 +1,12 @@
-import { FileText, Users, Package, Bell, UserPlus, Edit } from "lucide-react";
+import { FileText, UserPlus, Edit, Package, Ruler, Wrench } from "lucide-react";
 
 const activities = [
-  { icon: FileText, text: "Новая заявка от Алексея Петрова", partner: "Марьино", time: "5 мин назад", color: "text-[hsl(210_80%_52%)]" },
+  { icon: FileText, text: "Новая заявка: Петров А. — Milano Premium", partner: "Марьино", time: "5 мин назад", color: "text-[hsl(210_80%_52%)]" },
+  { icon: Ruler, text: "Замер назначен: Кутузовский пр., 8", partner: "Тёплый Стан", time: "32 мин назад", color: "text-warning" },
   { icon: UserPlus, text: "Новый партнёр подключён", partner: "Сокольники", time: "1 час назад", color: "text-success" },
-  { icon: Edit, text: "Каталог обновлён: +3 товара", partner: "", time: "2 часа назад", color: "text-foreground" },
-  { icon: FileText, text: "Заявка завершена", partner: "Митино", time: "3 часа назад", color: "text-success" },
-  { icon: Package, text: "Цена изменена: Milano Premium", partner: "", time: "4 часа назад", color: "text-warning" },
-  { icon: Users, text: "Партнёр обновил контент", partner: "Тёплый Стан", time: "5 часов назад", color: "text-foreground" },
+  { icon: Wrench, text: "Монтаж завершён: Козлов Д.", partner: "Митино", time: "2 часа назад", color: "text-success" },
+  { icon: Package, text: "Цена обновлена: Torex Professor 4+", partner: "", time: "3 часа назад", color: "text-foreground" },
+  { icon: Edit, text: "Каталог: +3 новых модели", partner: "", time: "4 часа назад", color: "text-foreground" },
 ];
 
 export function ActivityFeed() {
