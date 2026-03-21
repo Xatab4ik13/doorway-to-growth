@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CrmHeader } from "@/components/crm/CrmHeader";
 import { User, Shield, Bell, Palette, Globe, Lock, ChevronRight, LogOut } from "lucide-react";
 
