@@ -7,6 +7,7 @@ import {
   FileText,
   BarChart3,
   Settings,
+  Bell,
   Menu,
   X,
   ChevronsLeft,
@@ -26,6 +27,7 @@ const navItems: NavItem[] = [
   { icon: Package, id: "catalog", label: "Каталог" },
   { icon: FileText, id: "leads", label: "Заявки" },
   { icon: BarChart3, id: "analytics", label: "Аналитика" },
+  { icon: Bell, id: "notifications", label: "Уведомления" },
 ];
 
 interface CrmSidebarProps {

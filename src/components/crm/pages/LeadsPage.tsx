@@ -2,7 +2,7 @@ import { useState, useRef, useCallback } from "react";
 import { CrmHeader } from "@/components/crm/CrmHeader";
 import { Pagination } from "@/components/crm/Pagination";
 import { EmptyState } from "@/components/crm/EmptyState";
-import { Search, MoreHorizontal, ArrowUpDown, List, Columns3, MessageSquare, X, Send, GripVertical } from "lucide-react";
+import { Search, MoreHorizontal, ArrowUpDown, List, Columns3, MessageSquare, X, Send, GripVertical, Paperclip, FileImage, FileText as FileIcon, Clock, ChevronDown } from "lucide-react";
 
 interface Lead {
   id: number;
@@ -11,19 +11,22 @@ interface Lead {
   type: string;
   partner: string;
   date: string;
-  status: "new" | "contact" | "measure" | "deal" | "done" | "rejected";
+  status: "new" | "contact" | "consult" | "measure" | "quote" | "contract" | "install" | "done" | "rejected";
   score: number;
   source: "phone" | "form" | "email";
 }
 
-const kanbanStatuses = ["new", "contact", "measure", "deal", "done"] as const;
+const kanbanStatuses = ["new", "consult", "measure", "quote", "contract", "install", "done"] as const;
 type KanbanStatus = (typeof kanbanStatuses)[number];
 
 const statusLabels: Record<Lead["status"], string> = {
   new: "Новая",
   contact: "Контакт",
+  consult: "Консультация",
   measure: "Замер",
-  deal: "Сделка",
+  quote: "КП",
+  contract: "Договор",
+  install: "Монтаж",
   done: "Завершена",
   rejected: "Отклонена",
 };
@@ -31,29 +34,34 @@ const statusLabels: Record<Lead["status"], string> = {
 const statusStyles: Record<Lead["status"], string> = {
   new: "bg-[hsl(210_80%_52%/0.12)] text-[hsl(210,80%,52%)]",
   contact: "bg-warning/12 text-warning",
+  consult: "bg-[hsl(190_60%_45%/0.12)] text-[hsl(190,60%,45%)]",
   measure: "bg-[hsl(270_60%_55%/0.12)] text-[hsl(270,60%,55%)]",
-  deal: "bg-success/12 text-success",
+  quote: "bg-[hsl(30_70%_50%/0.12)] text-[hsl(30,70%,50%)]",
+  contract: "bg-success/12 text-success",
+  install: "bg-[hsl(330_55%_50%/0.12)] text-[hsl(330,55%,50%)]",
   done: "bg-foreground/10 text-foreground",
   rejected: "bg-destructive/12 text-destructive",
 };
 
 const kanbanColumnColors: Record<KanbanStatus, string> = {
   new: "bg-[hsl(210,80%,52%)]",
-  contact: "bg-warning",
+  consult: "bg-[hsl(190,60%,45%)]",
   measure: "bg-[hsl(270,60%,55%)]",
-  deal: "bg-success",
+  quote: "bg-[hsl(30,70%,50%)]",
+  contract: "bg-success",
+  install: "bg-[hsl(330,55%,50%)]",
   done: "bg-foreground",
 };
 
 const initialLeads: Lead[] = [
   { id: 1, name: "Алексей Петров", phone: "+7 (926) 123-45-67", type: "Замер двери", partner: "Brandoors Марьино", date: "21.03.2026 14:24", status: "new", score: 82, source: "phone" },
-  { id: 2, name: "Елена Сидорова", phone: "+7 (903) 234-56-78", type: "Консультация", partner: "Brandoors Митино", date: "21.03.2026 13:47", status: "contact", score: 64, source: "form" },
+  { id: 2, name: "Елена Сидорова", phone: "+7 (903) 234-56-78", type: "Консультация", partner: "Brandoors Митино", date: "21.03.2026 13:47", status: "consult", score: 64, source: "form" },
   { id: 3, name: "Дмитрий Козлов", phone: "+7 (915) 345-67-89", type: "Покупка двери", partner: "Brandoors Тёплый Стан", date: "21.03.2026 12:10", status: "done", score: 91, source: "phone" },
   { id: 4, name: "Ольга Иванова", phone: "+7 (977) 456-78-90", type: "Обратный звонок", partner: "Brandoors Люблино", date: "21.03.2026 11:33", status: "new", score: 20, source: "email" },
   { id: 5, name: "Сергей Морозов", phone: "+7 (916) 567-89-01", type: "Замер двери", partner: "Brandoors Марьино", date: "21.03.2026 10:15", status: "measure", score: 73, source: "form" },
   { id: 6, name: "Анна Белова", phone: "+7 (925) 678-90-12", type: "Покупка двери", partner: "Brandoors Сокольники", date: "20.03.2026 18:42", status: "rejected", score: 15, source: "email" },
-  { id: 7, name: "Виктор Чернов", phone: "+7 (909) 789-01-23", type: "Консультация", partner: "Brandoors Митино", date: "20.03.2026 16:30", status: "deal", score: 88, source: "phone" },
-  { id: 8, name: "Наталья Крылова", phone: "+7 (926) 890-12-34", type: "Замер двери", partner: "Brandoors Тёплый Стан", date: "20.03.2026 15:18", status: "contact", score: 56, source: "form" },
+  { id: 7, name: "Виктор Чернов", phone: "+7 (909) 789-01-23", type: "Консультация", partner: "Brandoors Митино", date: "20.03.2026 16:30", status: "contract", score: 88, source: "phone" },
+  { id: 8, name: "Наталья Крылова", phone: "+7 (926) 890-12-34", type: "Замер двери", partner: "Brandoors Тёплый Стан", date: "20.03.2026 15:18", status: "quote", score: 56, source: "form" },
 ];
 
 const mockHistory = [
@@ -61,6 +69,13 @@ const mockHistory = [
   { time: "14:30", text: "Партнёр взял в работу", type: "system" as const },
   { time: "14:45", text: "Перезвонили клиенту, договорились на замер 23.03", type: "note" as const },
   { time: "15:10", text: "Клиент подтвердил время замера", type: "note" as const },
+  { time: "15:30", text: "Статус изменён: Новая → Консультация", type: "status" as const },
+  { time: "16:00", text: "Статус изменён: Консультация → Замер", type: "status" as const },
+];
+
+const mockFiles = [
+  { name: "Замер_прихожая.jpg", size: "2.4 MB", type: "image" as const },
+  { name: "КП_Петров_v2.pdf", size: "340 KB", type: "pdf" as const },
 ];
 
 const PAGE_SIZE = 10;
@@ -72,6 +87,7 @@ export function LeadsPage() {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [statusFilter] = useState<Lead["status"] | "all">("all");
   const [page, setPage] = useState(1);
+  const [detailTab, setDetailTab] = useState<"history" | "files">("history");
 
   // Drag & drop state
   const [draggedId, setDraggedId] = useState<number | null>(null);
@@ -356,9 +372,22 @@ export function LeadsPage() {
                 </div>
                 <div>
                   <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Статус</p>
-                  <span className={`mt-1 inline-block rounded-full px-2.5 py-0.5 text-[10px] font-medium ${statusStyles[selectedLead.status]}`}>
-                    {statusLabels[selectedLead.status]}
-                  </span>
+                  <div className="relative mt-1">
+                    <select
+                      value={selectedLead.status}
+                      onChange={(e) => {
+                        const newStatus = e.target.value as Lead["status"];
+                        setLeads(prev => prev.map(l => l.id === selectedLead.id ? { ...l, status: newStatus } : l));
+                        setSelectedLead({ ...selectedLead, status: newStatus });
+                      }}
+                      className={`appearance-none rounded-full pl-2.5 pr-6 py-0.5 text-[11px] font-medium border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring/20 ${statusStyles[selectedLead.status]}`}
+                    >
+                      {Object.entries(statusLabels).map(([key, label]) => (
+                        <option key={key} value={key}>{label}</option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 h-3 w-3 pointer-events-none" />
+                  </div>
                 </div>
                 <div>
                   <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Скоринг</p>
@@ -367,25 +396,75 @@ export function LeadsPage() {
               </div>
             </div>
 
-            {/* Communication history */}
-            <div className="flex-1 overflow-y-auto px-6 py-4">
-              <h4 className="text-xs font-semibold text-foreground uppercase tracking-wider mb-3">История</h4>
-              <div className="space-y-3">
-                {mockHistory.map((h, i) => (
-                  <div key={i} className="flex gap-3 opacity-0 animate-fade-up-stagger" style={{ animationDelay: `${i * 80}ms` }}>
-                    <span className="text-[10px] font-medium text-muted-foreground tabular-nums w-10 shrink-0 pt-0.5">{h.time}</span>
-                    <div className="flex-1">
-                      <div className={`rounded-xl px-3 py-2 text-sm ${
-                        h.type === "system"
-                          ? "bg-muted text-muted-foreground"
-                          : "bg-foreground/5 text-foreground"
-                      }`}>
-                        {h.text}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+            {/* Tabs: History / Files */}
+            <div className="flex-1 overflow-y-auto flex flex-col">
+              <div className="flex border-b border-border px-6">
+                <button
+                  onClick={() => setDetailTab("history")}
+                  className={`px-3 py-2.5 text-xs font-medium border-b-2 transition-colors ${
+                    detailTab === "history" ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Clock className="inline h-3.5 w-3.5 mr-1.5 -mt-0.5" />
+                  История
+                </button>
+                <button
+                  onClick={() => setDetailTab("files")}
+                  className={`px-3 py-2.5 text-xs font-medium border-b-2 transition-colors ${
+                    detailTab === "files" ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Paperclip className="inline h-3.5 w-3.5 mr-1.5 -mt-0.5" />
+                  Файлы ({mockFiles.length})
+                </button>
               </div>
+
+              {detailTab === "history" && (
+                <div className="flex-1 px-6 py-4">
+                  <div className="space-y-3">
+                    {mockHistory.map((h, i) => (
+                      <div key={i} className="flex gap-3 opacity-0 animate-fade-up-stagger" style={{ animationDelay: `${i * 80}ms` }}>
+                        <span className="text-[10px] font-medium text-muted-foreground tabular-nums w-10 shrink-0 pt-0.5">{h.time}</span>
+                        <div className="flex-1">
+                          <div className={`rounded-xl px-3 py-2 text-sm ${
+                            h.type === "system"
+                              ? "bg-muted text-muted-foreground"
+                              : h.type === "status"
+                              ? "bg-[hsl(210,80%,52%/0.08)] text-[hsl(210,80%,52%)] font-medium"
+                              : "bg-foreground/5 text-foreground"
+                          }`}>
+                            {h.text}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {detailTab === "files" && (
+                <div className="flex-1 px-6 py-4">
+                  <div className="space-y-2">
+                    {mockFiles.map((f, i) => (
+                      <div key={i} className="flex items-center gap-3 rounded-xl border border-border p-3 hover:bg-muted/40 transition-colors cursor-pointer">
+                        <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
+                          f.type === "image" ? "bg-[hsl(270,60%,55%/0.12)] text-[hsl(270,60%,55%)]" : "bg-destructive/12 text-destructive"
+                        }`}>
+                          {f.type === "image" ? <FileImage className="h-4 w-4" /> : <FileIcon className="h-4 w-4" />}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-foreground truncate">{f.name}</p>
+                          <p className="text-[10px] text-muted-foreground">{f.size}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <button className="mt-3 flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+                    <Paperclip className="h-3.5 w-3.5" />
+                    Прикрепить файл
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Note input */}

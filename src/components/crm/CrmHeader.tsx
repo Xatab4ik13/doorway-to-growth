@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { Search, Bell, ChevronRight, LogOut, Settings, User, X } from "lucide-react";
+import { useCrmNavigation } from "./CrmNavigationContext";
 
 interface CrmHeaderProps {
   title: string;
   breadcrumbs?: { label: string; onClick?: () => void }[];
+  onNavigate?: (section: string) => void;
 }
 
 const notifications = [
@@ -13,7 +15,9 @@ const notifications = [
   { id: 4, text: "Партнёр Сокольники деактивирован", time: "3 ч назад", unread: false },
 ];
 
-export function CrmHeader({ title, breadcrumbs }: CrmHeaderProps) {
+export function CrmHeader({ title, breadcrumbs, onNavigate: onNavigateProp }: CrmHeaderProps) {
+  const { navigate: ctxNavigate } = useCrmNavigation();
+  const nav = onNavigateProp || ctxNavigate;
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [notifOpen, setNotifOpen] = useState(false);
@@ -134,7 +138,10 @@ export function CrmHeader({ title, breadcrumbs }: CrmHeaderProps) {
                 ))}
               </div>
               <div className="border-t border-border px-4 py-2.5">
-                <button className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors w-full text-center">
+                <button
+                  onClick={() => { setNotifOpen(false); nav("notifications"); }}
+                  className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors w-full text-center"
+                >
                   Все уведомления
                 </button>
               </div>
@@ -164,9 +171,19 @@ export function CrmHeader({ title, breadcrumbs }: CrmHeaderProps) {
                 <p className="text-[11px] text-muted-foreground">admin@brandoors.ru</p>
               </div>
               <div className="py-1">
-                <button className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted/40 transition-colors">
+                <button
+                  onClick={() => { setUserOpen(false); nav("profile"); }}
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted/40 transition-colors"
+                >
                   <User className="h-4 w-4 text-muted-foreground" />
                   Профиль
+                </button>
+                <button
+                  onClick={() => { setUserOpen(false); nav("settings"); }}
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted/40 transition-colors"
+                >
+                  <Settings className="h-4 w-4 text-muted-foreground" />
+                  Настройки
                 </button>
                 <button className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted/40 transition-colors">
                   <Settings className="h-4 w-4 text-muted-foreground" />
