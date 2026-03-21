@@ -50,21 +50,23 @@ const Index = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <CrmSidebar
-        activeSection={activeSection}
-        onNavigate={handleNavigate}
-        expanded={sidebarExpanded}
-        onToggleExpand={() => setSidebarExpanded(!sidebarExpanded)}
-      />
-      <main
-        className={`flex-1 min-w-0 pt-14 sm:pt-0 transition-all duration-200 ease-out ${
-          sidebarExpanded ? "sm:ml-[220px]" : "sm:ml-[68px]"
-        } ${transitioning ? "opacity-0" : "opacity-100"}`}
-      >
-        {renderPage()}
-      </main>
-    </div>
+    <CrmNavigationProvider value={{ navigate: handleNavigate }}>
+      <div className="flex min-h-screen bg-background">
+        <CrmSidebar
+          activeSection={activeSection}
+          onNavigate={handleNavigate}
+          expanded={sidebarExpanded}
+          onToggleExpand={() => setSidebarExpanded(!sidebarExpanded)}
+        />
+        <main
+          className={`flex-1 min-w-0 pt-14 sm:pt-0 transition-all duration-200 ease-out ${
+            sidebarExpanded ? "sm:ml-[220px]" : "sm:ml-[68px]"
+          } ${transitioning ? "opacity-0" : "opacity-100"}`}
+        >
+          {renderPage()}
+        </main>
+      </div>
+    </CrmNavigationProvider>
   );
 };
 
