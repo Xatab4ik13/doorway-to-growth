@@ -372,9 +372,22 @@ export function LeadsPage() {
                 </div>
                 <div>
                   <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Статус</p>
-                  <span className={`mt-1 inline-block rounded-full px-2.5 py-0.5 text-[10px] font-medium ${statusStyles[selectedLead.status]}`}>
-                    {statusLabels[selectedLead.status]}
-                  </span>
+                  <div className="relative mt-1">
+                    <select
+                      value={selectedLead.status}
+                      onChange={(e) => {
+                        const newStatus = e.target.value as Lead["status"];
+                        setLeads(prev => prev.map(l => l.id === selectedLead.id ? { ...l, status: newStatus } : l));
+                        setSelectedLead({ ...selectedLead, status: newStatus });
+                      }}
+                      className={`appearance-none rounded-full pl-2.5 pr-6 py-0.5 text-[11px] font-medium border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring/20 ${statusStyles[selectedLead.status]}`}
+                    >
+                      {Object.entries(statusLabels).map(([key, label]) => (
+                        <option key={key} value={key}>{label}</option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 h-3 w-3 pointer-events-none" />
+                  </div>
                 </div>
                 <div>
                   <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Скоринг</p>
@@ -383,25 +396,75 @@ export function LeadsPage() {
               </div>
             </div>
 
-            {/* Communication history */}
-            <div className="flex-1 overflow-y-auto px-6 py-4">
-              <h4 className="text-xs font-semibold text-foreground uppercase tracking-wider mb-3">История</h4>
-              <div className="space-y-3">
-                {mockHistory.map((h, i) => (
-                  <div key={i} className="flex gap-3 opacity-0 animate-fade-up-stagger" style={{ animationDelay: `${i * 80}ms` }}>
-                    <span className="text-[10px] font-medium text-muted-foreground tabular-nums w-10 shrink-0 pt-0.5">{h.time}</span>
-                    <div className="flex-1">
-                      <div className={`rounded-xl px-3 py-2 text-sm ${
-                        h.type === "system"
-                          ? "bg-muted text-muted-foreground"
-                          : "bg-foreground/5 text-foreground"
-                      }`}>
-                        {h.text}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+            {/* Tabs: History / Files */}
+            <div className="flex-1 overflow-y-auto flex flex-col">
+              <div className="flex border-b border-border px-6">
+                <button
+                  onClick={() => setDetailTab("history")}
+                  className={`px-3 py-2.5 text-xs font-medium border-b-2 transition-colors ${
+                    detailTab === "history" ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Clock className="inline h-3.5 w-3.5 mr-1.5 -mt-0.5" />
+                  История
+                </button>
+                <button
+                  onClick={() => setDetailTab("files")}
+                  className={`px-3 py-2.5 text-xs font-medium border-b-2 transition-colors ${
+                    detailTab === "files" ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Paperclip className="inline h-3.5 w-3.5 mr-1.5 -mt-0.5" />
+                  Файлы ({mockFiles.length})
+                </button>
               </div>
+
+              {detailTab === "history" && (
+                <div className="flex-1 px-6 py-4">
+                  <div className="space-y-3">
+                    {mockHistory.map((h, i) => (
+                      <div key={i} className="flex gap-3 opacity-0 animate-fade-up-stagger" style={{ animationDelay: `${i * 80}ms` }}>
+                        <span className="text-[10px] font-medium text-muted-foreground tabular-nums w-10 shrink-0 pt-0.5">{h.time}</span>
+                        <div className="flex-1">
+                          <div className={`rounded-xl px-3 py-2 text-sm ${
+                            h.type === "system"
+                              ? "bg-muted text-muted-foreground"
+                              : h.type === "status"
+                              ? "bg-[hsl(210,80%,52%/0.08)] text-[hsl(210,80%,52%)] font-medium"
+                              : "bg-foreground/5 text-foreground"
+                          }`}>
+                            {h.text}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {detailTab === "files" && (
+                <div className="flex-1 px-6 py-4">
+                  <div className="space-y-2">
+                    {mockFiles.map((f, i) => (
+                      <div key={i} className="flex items-center gap-3 rounded-xl border border-border p-3 hover:bg-muted/40 transition-colors cursor-pointer">
+                        <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
+                          f.type === "image" ? "bg-[hsl(270,60%,55%/0.12)] text-[hsl(270,60%,55%)]" : "bg-destructive/12 text-destructive"
+                        }`}>
+                          {f.type === "image" ? <FileImage className="h-4 w-4" /> : <FileIcon className="h-4 w-4" />}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-foreground truncate">{f.name}</p>
+                          <p className="text-[10px] text-muted-foreground">{f.size}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <button className="mt-3 flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+                    <Paperclip className="h-3.5 w-3.5" />
+                    Прикрепить файл
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Note input */}
