@@ -6,26 +6,26 @@
 
 @layer base {
   :root {
-    --background: 30 18% 96%;
-    --foreground: 24 28% 14%;
+    --background: 220 14% 96%;
+    --foreground: 220 20% 14%;
 
-    --card: 30 20% 99%;
-    --card-foreground: 24 28% 14%;
+    --card: 220 14% 99%;
+    --card-foreground: 220 20% 14%;
 
-    --popover: 30 20% 99%;
-    --popover-foreground: 24 28% 14%;
+    --popover: 220 14% 99%;
+    --popover-foreground: 220 20% 14%;
 
-    --primary: 28 55% 38%;
-    --primary-foreground: 40 30% 96%;
+    --primary: 220 20% 14%;
+    --primary-foreground: 220 14% 97%;
 
-    --secondary: 30 14% 93%;
-    --secondary-foreground: 24 28% 14%;
+    --secondary: 220 10% 93%;
+    --secondary-foreground: 220 20% 14%;
 
-    --muted: 30 12% 93%;
-    --muted-foreground: 24 10% 46%;
+    --muted: 220 10% 93%;
+    --muted-foreground: 220 8% 46%;
 
-    --accent: 28 55% 38%;
-    --accent-foreground: 40 30% 96%;
+    --accent: 220 10% 93%;
+    --accent-foreground: 220 20% 14%;
 
     --destructive: 0 68% 52%;
     --destructive-foreground: 0 0% 100%;
@@ -36,20 +36,30 @@
     --warning: 38 88% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --border: 30 12% 89%;
-    --input: 30 12% 89%;
-    --ring: 28 55% 38%;
+    --border: 220 10% 90%;
+    --input: 220 10% 90%;
+    --ring: 220 20% 14%;
 
     --radius: 1rem;
 
-    --sidebar-background: 24 22% 12%;
-    --sidebar-foreground: 30 10% 58%;
-    --sidebar-primary: 28 55% 48%;
-    --sidebar-primary-foreground: 40 30% 96%;
-    --sidebar-accent: 24 18% 18%;
-    --sidebar-accent-foreground: 30 15% 82%;
-    --sidebar-border: 24 15% 18%;
-    --sidebar-ring: 28 55% 48%;
+    --sidebar-background: 220 20% 13%;
+    --sidebar-foreground: 220 8% 55%;
+    --sidebar-primary: 220 14% 97%;
+    --sidebar-primary-foreground: 220 20% 13%;
+    --sidebar-accent: 220 16% 19%;
+    --sidebar-accent-foreground: 220 10% 78%;
+    --sidebar-border: 220 14% 18%;
+    --sidebar-ring: 220 14% 97%;
+  }
+}
+
+@layer utilities {
+  .door-pattern {
+    background-image:
+      linear-gradient(hsl(220 14% 16%) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(220 14% 16%) 1px, transparent 1px);
+    background-size: 34px 34px;
+    background-position: center;
   }
 }
 
