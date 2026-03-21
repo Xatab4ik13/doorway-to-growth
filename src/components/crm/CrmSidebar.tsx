@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import logoFull from "@/assets/logo.png";
 import {
   LayoutDashboard,
   Package,
@@ -62,9 +63,7 @@ export function CrmSidebar({ activeSection, onNavigate, expanded, onToggleExpand
           <aside className="absolute left-0 top-0 h-full w-[240px] bg-sidebar shadow-xl animate-slide-in-left flex flex-col">
             <div className="flex flex-col flex-1 py-5 px-3">
               <div className="flex items-center justify-between mb-6 px-2">
-                <span className="text-sm font-bold text-sidebar-primary tracking-tight">
-                  Brandoors
-                </span>
+                <img src={logoFull} alt="Brandoors" className="h-5 object-contain" />
                 <button
                   onClick={() => setMobileOpen(false)}
                   className="flex h-8 w-8 items-center justify-center rounded-lg text-sidebar-foreground hover:bg-sidebar-accent active:scale-95 transition-colors"
@@ -125,16 +124,13 @@ export function CrmSidebar({ activeSection, onNavigate, expanded, onToggleExpand
           expanded ? "justify-between" : "justify-center"
         )}>
           <div className={cn(
-            "flex items-center gap-3 overflow-hidden",
-            expanded ? "w-auto" : "w-10"
+            "flex items-center overflow-hidden",
+            expanded ? "w-auto" : "w-10 justify-center"
           )}>
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sidebar-accent text-sidebar-primary text-sm font-bold">
-              B
-            </div>
-            {expanded && (
-              <span className="text-sm font-bold text-sidebar-primary whitespace-nowrap">
-                Brandoors
-              </span>
+            {expanded ? (
+              <img src={logoFull} alt="Brandoors" className="h-5 object-contain" />
+            ) : (
+              <img src={logoFull} alt="B" className="h-4 w-auto object-contain" />
             )}
           </div>
           <button
