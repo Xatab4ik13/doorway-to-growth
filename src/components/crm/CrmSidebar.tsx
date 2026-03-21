@@ -8,6 +8,7 @@ import {
   Settings,
   Menu,
   X,
+  DoorOpen,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -54,12 +55,15 @@ export function CrmSidebar({ activeSection, onNavigate }: CrmSidebarProps) {
           <div className="absolute inset-0 bg-foreground/20 animate-fade-in" onClick={() => setMobileOpen(false)} />
           <aside className="absolute left-0 top-0 h-full w-[220px] bg-sidebar border-r border-sidebar-border shadow-xl animate-slide-in-left flex flex-col py-5 px-3">
             <div className="flex items-center justify-between mb-6 px-1">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-foreground">
-                <span className="text-sm font-bold text-primary-foreground tracking-tight">B</span>
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sidebar-primary/20">
+                  <DoorOpen className="h-5 w-5 text-sidebar-primary" strokeWidth={1.8} />
+                </div>
+                <span className="text-sm font-bold text-sidebar-accent-foreground tracking-tight">Brandoors</span>
               </div>
               <button
                 onClick={() => setMobileOpen(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-sidebar-foreground hover:bg-sidebar-accent active:scale-95 transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -74,8 +78,8 @@ export function CrmSidebar({ activeSection, onNavigate }: CrmSidebarProps) {
                     className={cn(
                       "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 active:scale-[0.97]",
                       isActive
-                        ? "bg-foreground text-primary-foreground shadow-card"
-                        : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                        ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-card"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                     )}
                   >
                     <item.icon className="h-[18px] w-[18px]" strokeWidth={1.8} />
@@ -89,8 +93,8 @@ export function CrmSidebar({ activeSection, onNavigate }: CrmSidebarProps) {
               className={cn(
                 "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 active:scale-[0.97]",
                 activeSection === "settings"
-                  ? "bg-foreground text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                  ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               )}
             >
               <Settings className="h-[18px] w-[18px]" strokeWidth={1.8} />
@@ -103,8 +107,8 @@ export function CrmSidebar({ activeSection, onNavigate }: CrmSidebarProps) {
       {/* Desktop sidebar */}
       <aside className="hidden sm:flex fixed left-0 top-0 z-40 h-screen w-[68px] flex-col items-center border-r border-sidebar-border bg-sidebar py-5">
         {/* Logo */}
-        <div className="mb-8 flex h-10 w-10 items-center justify-center rounded-xl bg-foreground">
-          <span className="text-sm font-bold text-primary-foreground tracking-tight">B</span>
+        <div className="mb-8 flex h-10 w-10 items-center justify-center rounded-xl bg-sidebar-primary/20">
+          <DoorOpen className="h-5 w-5 text-sidebar-primary" strokeWidth={1.8} />
         </div>
 
         {/* Nav icons */}
@@ -120,13 +124,12 @@ export function CrmSidebar({ activeSection, onNavigate }: CrmSidebarProps) {
                   "group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200",
                   "active:scale-95",
                   isActive
-                    ? "bg-foreground text-primary-foreground shadow-card"
-                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                    ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-card"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 )}
               >
                 <item.icon className="h-[18px] w-[18px]" strokeWidth={1.8} />
-                {/* Tooltip */}
-                <span className="absolute left-full ml-3 rounded-lg bg-foreground px-2.5 py-1 text-xs font-medium text-primary-foreground opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap shadow-lg">
+                <span className="absolute left-full ml-3 rounded-lg bg-foreground px-2.5 py-1 text-xs font-medium text-primary-foreground opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap shadow-lg z-50">
                   {item.label}
                 </span>
               </button>
@@ -142,12 +145,12 @@ export function CrmSidebar({ activeSection, onNavigate }: CrmSidebarProps) {
             "group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200",
             "active:scale-95",
             activeSection === "settings"
-              ? "bg-foreground text-primary-foreground"
-              : "text-muted-foreground hover:bg-accent hover:text-foreground"
+              ? "bg-sidebar-primary text-sidebar-primary-foreground"
+              : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
           )}
         >
           <Settings className="h-[18px] w-[18px]" strokeWidth={1.8} />
-          <span className="absolute left-full ml-3 rounded-lg bg-foreground px-2.5 py-1 text-xs font-medium text-primary-foreground opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap shadow-lg">
+          <span className="absolute left-full ml-3 rounded-lg bg-foreground px-2.5 py-1 text-xs font-medium text-primary-foreground opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap shadow-lg z-50">
             Настройки
           </span>
         </button>
