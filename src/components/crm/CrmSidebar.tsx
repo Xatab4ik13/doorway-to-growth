@@ -128,9 +128,9 @@ export function CrmSidebar({ activeSection, onNavigate, expanded, onToggleExpand
             expanded ? "w-auto" : "w-10 justify-center"
           )}>
             {expanded ? (
-              <img src={logoFull} alt="Brandoors" className="h-9 object-contain" />
+              <img src={logoFull} alt="Brandoors" className="h-12 object-contain" />
             ) : (
-              <img src={logoFull} alt="B" className="h-7 w-auto object-contain" />
+              <img src={logoFull} alt="B" className="h-9 w-auto object-contain" />
             )}
           </div>
           <button
