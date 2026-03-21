@@ -1,4 +1,5 @@
 import { Megaphone, ArrowUpRight } from "lucide-react";
+import { useCrmNavigation } from "./CrmNavigationContext";
 
 const announcements = [
   {
@@ -22,6 +23,8 @@ const announcements = [
 ];
 
 export function Announcements() {
+  const { navigate } = useCrmNavigation();
+
   return (
     <div className="opacity-0 animate-fade-up" style={{ animationDelay: "500ms" }}>
       <div className="flex items-center justify-between mb-4">
@@ -29,7 +32,10 @@ export function Announcements() {
           <Megaphone className="h-4 w-4 text-muted-foreground" strokeWidth={1.8} />
           <h3 className="text-sm font-semibold text-foreground">Объявления для партнёров</h3>
         </div>
-        <button className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors active:scale-95">
+        <button
+          onClick={() => navigate("announcements")}
+          className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors active:scale-95"
+        >
           Все
           <ArrowUpRight className="h-3 w-3" />
         </button>
