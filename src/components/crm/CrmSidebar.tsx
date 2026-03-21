@@ -130,6 +130,8 @@ export function CrmSidebar({ activeSection, onNavigate, expanded, onToggleExpand
             {expanded ? (
               <img src={logoFull} alt="Brandoors" className="h-5 object-contain" />
               </span>
+            ) : (
+              <img src={logoFull} alt="B" className="h-4 w-auto object-contain" />
             )}
           </div>
           <button
