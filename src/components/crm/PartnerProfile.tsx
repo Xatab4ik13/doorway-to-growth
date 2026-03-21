@@ -72,10 +72,10 @@ export function PartnerProfile({ onBack }: PartnerProfileProps) {
       />
 
       {/* Back + name */}
-      <div className="flex items-center gap-4 mb-6 opacity-0 animate-fade-up">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6 opacity-0 animate-fade-up">
         <button
           onClick={onBack}
-          className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground hover:bg-muted active:scale-95 transition-colors"
+          className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground hover:bg-muted active:scale-95 transition-colors shrink-0"
         >
           <ArrowLeft className="h-4 w-4" />
         </button>
@@ -91,15 +91,16 @@ export function PartnerProfile({ onBack }: PartnerProfileProps) {
             <p className="text-sm text-muted-foreground">{partner.address} · {partner.zone}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
           <button
             onClick={() => setTab(tab === "edit" ? "overview" : "edit")}
-            className="flex h-9 items-center gap-2 rounded-xl border border-border bg-card px-4 text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors"
+            className="flex h-9 items-center gap-2 rounded-xl border border-border bg-card px-4 text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors flex-1 sm:flex-none justify-center"
           >
             <Edit3 className="h-3.5 w-3.5" />
-            {tab === "edit" ? "Отмена" : "Редактировать"}
+            <span className="hidden sm:inline">{tab === "edit" ? "Отмена" : "Редактировать"}</span>
+            <span className="sm:hidden">{tab === "edit" ? "Отмена" : "Ред."}</span>
           </button>
-          <button className="flex h-9 items-center gap-2 rounded-xl border border-border bg-card px-4 text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors">
+          <button className="flex h-9 items-center gap-2 rounded-xl border border-border bg-card px-4 text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors flex-1 sm:flex-none justify-center">
             <ExternalLink className="h-3.5 w-3.5" />
             Сайт
           </button>
