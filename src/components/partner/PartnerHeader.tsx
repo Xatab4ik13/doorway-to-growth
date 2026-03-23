@@ -103,7 +103,10 @@ export function PartnerHeader({ title, onNavigate }: PartnerHeaderProps) {
                 </button>
               </div>
               <div className="border-t border-border py-1">
-                <button className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-destructive hover:bg-destructive/5 transition-colors">
+                <button
+                  onClick={async () => { await signOut(); routerNavigate("/login"); }}
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-destructive hover:bg-destructive/5 transition-colors"
+                >
                   <LogOut className="h-4 w-4" />
                   Выйти
                 </button>
