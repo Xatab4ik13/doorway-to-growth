@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import heroDefault from "@/assets/hero-showroom.jpg";
+import brandoorsLogo from "@/assets/logo.png";
 
 interface Props {
   site: StorefrontSite;
