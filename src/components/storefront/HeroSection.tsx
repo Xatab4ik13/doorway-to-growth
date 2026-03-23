@@ -285,7 +285,7 @@ export function HeroSection({ site, banners }: Props) {
 
       {/* === Top nav === */}
       <motion.div
-        className="absolute top-0 left-20 right-0 z-40 hidden md:flex items-center justify-between px-6 lg:px-12 h-16"
+        className="absolute top-0 right-0 z-40 hidden md:flex items-center justify-between px-6 lg:px-12 h-16" style={{ left: "260px" }}
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.6, duration: 0.8 }}
