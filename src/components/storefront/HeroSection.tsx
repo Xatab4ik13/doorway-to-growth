@@ -224,7 +224,6 @@ export function HeroSection({ site, banners }: Props) {
       {/* === SLIDE ARROWS === */}
       <motion.div
         className="absolute z-20" style={{ left: "calc(260px + 2rem)", top: "42%" }}
-        style={{ top: "42%" }}
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 1.2, duration: 0.6 }}
