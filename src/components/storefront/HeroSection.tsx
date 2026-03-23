@@ -243,7 +243,7 @@ export function HeroSection({ site, banners }: Props) {
       </motion.div>
 
       {/* === MAIN TEXT CONTENT === */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 px-6 pb-14 lg:pb-20" style={{ paddingLeft: "calc(260px + 3rem)" }}
+      <div className="absolute bottom-0 left-0 right-0 z-20 px-6 pb-14 lg:pb-20" style={{ paddingLeft: "calc(260px + 3rem)" }}>
         <div className="max-w-[1400px] mx-auto">
           <div className="lg:ml-[20%] max-w-2xl">
             <AnimatePresence mode="wait">
