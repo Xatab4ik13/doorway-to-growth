@@ -20,6 +20,8 @@ const notifications = [
 export function CrmHeader({ title, breadcrumbs, onNavigate: onNavigateProp }: CrmHeaderProps) {
   const { navigate: ctxNavigate } = useCrmNavigation();
   const nav = onNavigateProp || ctxNavigate;
+  const { user, signOut } = useAuth();
+  const routerNavigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [notifOpen, setNotifOpen] = useState(false);
