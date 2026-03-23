@@ -160,10 +160,10 @@ export function CrmHeader({ title, breadcrumbs, onNavigate: onNavigateProp }: Cr
             className="flex items-center gap-2 rounded-xl px-1.5 py-1 hover:bg-muted transition-colors active:scale-[0.97]"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground text-xs font-semibold text-primary-foreground">
-              АД
+              {(user?.email?.[0] ?? "A").toUpperCase()}
             </div>
             <div className="hidden sm:block text-left">
-              <p className="text-xs font-medium text-foreground leading-none">Александр Д.</p>
+              <p className="text-xs font-medium text-foreground leading-none">{user?.email?.split("@")[0] ?? "Admin"}</p>
               <p className="text-[10px] text-muted-foreground leading-none mt-0.5">Администратор</p>
             </div>
           </button>
