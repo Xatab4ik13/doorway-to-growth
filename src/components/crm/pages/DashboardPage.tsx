@@ -2,12 +2,12 @@ import { useState } from "react";
 import { CrmHeader } from "@/components/crm/CrmHeader";
 import { StatCard } from "@/components/crm/StatCard";
 import { RecentLeads } from "@/components/crm/RecentLeads";
-import { SchedulePanel } from "@/components/crm/SchedulePanel";
 import { ActivityFeed } from "@/components/crm/ActivityFeed";
 import { Announcements } from "@/components/crm/Announcements";
+import { PartnersOverview } from "@/components/crm/PartnersOverview";
 import { useCrmNavigation } from "@/components/crm/CrmNavigationContext";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
-import { FileText, Users, Package, Ruler, Plus, Eye, UserPlus, Globe } from "lucide-react";
+import { FileText, Users, Package, Globe, Plus, Eye, UserPlus } from "lucide-react";
 
 export function DashboardPage() {
   const [period, setPeriod] = useState<"today" | "week" | "month">("today");
@@ -83,10 +83,9 @@ export function DashboardPage() {
             delay={80}
           />
           <StatCard
-            icon={Ruler}
-            label="Замеры на неделе"
-            value={isLoading ? "—" : String(stats?.measurementsWeek ?? 0)}
-            changePositive
+            icon={Globe}
+            label="Активные сайты"
+            value={isLoading ? "—" : String(stats?.activeSites ?? 0)}
             delay={160}
           />
           <StatCard
@@ -107,7 +106,7 @@ export function DashboardPage() {
       </div>
 
       <aside className="hidden xl:block w-[320px] shrink-0 border-l border-border px-5 py-6 space-y-6">
-        <SchedulePanel />
+        <PartnersOverview />
         <ActivityFeed />
       </aside>
     </div>

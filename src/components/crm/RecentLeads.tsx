@@ -6,10 +6,8 @@ import { ru } from "date-fns/locale";
 const funnelStages: Record<string, { label: string; class: string }> = {
   new: { label: "Новая", class: "bg-[hsl(210_80%_52%/0.12)] text-[hsl(210_80%_52%)]" },
   consultation: { label: "Консультация", class: "bg-[hsl(38_92%_50%/0.12)] text-warning" },
-  measurement: { label: "Замер", class: "bg-[hsl(270_60%_55%/0.12)] text-[hsl(270_60%_55%)]" },
-  calculation: { label: "Расчёт", class: "bg-[hsl(190_70%_42%/0.12)] text-[hsl(190_70%_42%)]" },
+  quote: { label: "КП", class: "bg-[hsl(30_70%_50%/0.12)] text-[hsl(30_70%_50%)]" },
   contract: { label: "Договор", class: "bg-success/12 text-success" },
-  installation: { label: "Монтаж", class: "bg-success/20 text-success" },
   completed: { label: "Завершена", class: "bg-muted text-muted-foreground" },
   cancelled: { label: "Отменена", class: "bg-destructive/12 text-destructive" },
 };

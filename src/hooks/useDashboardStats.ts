@@ -31,13 +31,6 @@ export function useDashboardStats() {
           .limit(5),
       ]);
 
-      // Count leads with stage 'measurement' this week
-      const { count: measurementsWeek } = await supabase
-        .from("leads")
-        .select("*", { count: "exact", head: true })
-        .eq("stage", "measurement")
-        .gte("created_at", weekStart);
-
       return {
         leadsToday: leadsToday ?? 0,
         leadsWeek: leadsWeek ?? 0,
@@ -45,7 +38,6 @@ export function useDashboardStats() {
         totalPartners: totalPartners ?? 0,
         totalProducts: totalProducts ?? 0,
         activeSites: activeSites ?? 0,
-        measurementsWeek: measurementsWeek ?? 0,
         recentLeads: (recentLeads ?? []).map((l: any) => ({
           ...l,
           partner: l.partners,
