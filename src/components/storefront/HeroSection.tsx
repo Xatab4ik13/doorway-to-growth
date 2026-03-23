@@ -204,7 +204,7 @@ export function HeroSection({ site, banners }: Props) {
           src={brandoorsLogo}
           alt="Brandoors"
           className="relative z-10"
-          style={{ filter: "brightness(0)", opacity: 0.85, transform: "rotate(-90deg)", width: "auto", height: "14px" }}
+          style={{ filter: "brightness(0)", opacity: 0.85, transform: "rotate(-90deg)", width: "auto", height: "35px" }}
         />
 
         <div className="flex flex-col gap-3 mb-4 relative z-10">
