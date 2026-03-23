@@ -132,6 +132,7 @@ export type Database = {
           partner_id: string | null
           phone: string | null
           product_id: string | null
+          site_id: string | null
           source: string | null
           stage: string
           updated_at: string
@@ -147,6 +148,7 @@ export type Database = {
           partner_id?: string | null
           phone?: string | null
           product_id?: string | null
+          site_id?: string | null
           source?: string | null
           stage?: string
           updated_at?: string
@@ -162,6 +164,7 @@ export type Database = {
           partner_id?: string | null
           phone?: string | null
           product_id?: string | null
+          site_id?: string | null
           source?: string | null
           stage?: string
           updated_at?: string
@@ -181,6 +184,13 @@ export type Database = {
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "leads_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
         ]
       }
       partner_banners: {
@@ -191,6 +201,7 @@ export type Database = {
           is_active: boolean | null
           link: string | null
           partner_id: string
+          site_id: string | null
           sort_order: number | null
           subtitle: string | null
           title: string | null
@@ -202,6 +213,7 @@ export type Database = {
           is_active?: boolean | null
           link?: string | null
           partner_id: string
+          site_id?: string | null
           sort_order?: number | null
           subtitle?: string | null
           title?: string | null
@@ -213,6 +225,7 @@ export type Database = {
           is_active?: boolean | null
           link?: string | null
           partner_id?: string
+          site_id?: string | null
           sort_order?: number | null
           subtitle?: string | null
           title?: string | null
@@ -225,6 +238,13 @@ export type Database = {
             referencedRelation: "partners"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "partner_banners_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
         ]
       }
       partner_reviews: {
@@ -235,6 +255,7 @@ export type Database = {
           is_published: boolean | null
           partner_id: string
           rating: number | null
+          site_id: string | null
           text: string | null
         }
         Insert: {
@@ -244,6 +265,7 @@ export type Database = {
           is_published?: boolean | null
           partner_id: string
           rating?: number | null
+          site_id?: string | null
           text?: string | null
         }
         Update: {
@@ -253,6 +275,7 @@ export type Database = {
           is_published?: boolean | null
           partner_id?: string
           rating?: number | null
+          site_id?: string | null
           text?: string | null
         }
         Relationships: [
@@ -261,6 +284,13 @@ export type Database = {
             columns: ["partner_id"]
             isOneToOne: false
             referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_reviews_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
             referencedColumns: ["id"]
           },
         ]
@@ -273,6 +303,7 @@ export type Database = {
           partner_id: string
           photo_url: string | null
           position: string | null
+          site_id: string | null
           sort_order: number | null
         }
         Insert: {
@@ -282,6 +313,7 @@ export type Database = {
           partner_id: string
           photo_url?: string | null
           position?: string | null
+          site_id?: string | null
           sort_order?: number | null
         }
         Update: {
@@ -291,6 +323,7 @@ export type Database = {
           partner_id?: string
           photo_url?: string | null
           position?: string | null
+          site_id?: string | null
           sort_order?: number | null
         }
         Relationships: [
@@ -299,6 +332,13 @@ export type Database = {
             columns: ["partner_id"]
             isOneToOne: false
             referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_staff_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
             referencedColumns: ["id"]
           },
         ]
@@ -318,6 +358,7 @@ export type Database = {
           longitude: number | null
           name: string
           phone: string | null
+          site_id: string | null
           slug: string
           updated_at: string
           user_id: string | null
@@ -337,6 +378,7 @@ export type Database = {
           longitude?: number | null
           name: string
           phone?: string | null
+          site_id?: string | null
           slug: string
           updated_at?: string
           user_id?: string | null
@@ -356,12 +398,21 @@ export type Database = {
           longitude?: number | null
           name?: string
           phone?: string | null
+          site_id?: string | null
           slug?: string
           updated_at?: string
           user_id?: string | null
           website?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "partners_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       product_images: {
         Row: {
@@ -521,6 +572,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           partner_id: string
+          site_id: string | null
           start_date: string | null
           title: string
           updated_at: string
@@ -534,6 +586,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           partner_id: string
+          site_id?: string | null
           start_date?: string | null
           title: string
           updated_at?: string
@@ -547,6 +600,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           partner_id?: string
+          site_id?: string | null
           start_date?: string | null
           title?: string
           updated_at?: string
@@ -559,7 +613,74 @@ export type Database = {
             referencedRelation: "partners"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "promotions_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      sites: {
+        Row: {
+          address: string | null
+          city: string
+          created_at: string
+          description: string | null
+          district: string | null
+          domain: string | null
+          email: string | null
+          id: string
+          is_active: boolean | null
+          latitude: number | null
+          logo_url: string | null
+          longitude: number | null
+          name: string
+          phone: string | null
+          slug: string
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          city: string
+          created_at?: string
+          description?: string | null
+          district?: string | null
+          domain?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          latitude?: number | null
+          logo_url?: string | null
+          longitude?: number | null
+          name: string
+          phone?: string | null
+          slug: string
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string
+          created_at?: string
+          description?: string | null
+          district?: string | null
+          domain?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          latitude?: number | null
+          logo_url?: string | null
+          longitude?: number | null
+          name?: string
+          phone?: string | null
+          slug?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
