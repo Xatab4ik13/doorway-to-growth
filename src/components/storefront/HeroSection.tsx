@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import heroDefault from "@/assets/hero-showroom.jpg";
+import brandoorsLogo from "@/assets/logo.png";
 
 interface Props {
   site: StorefrontSite;
@@ -46,7 +47,7 @@ export function HeroSection({ site, banners }: Props) {
     <section className="relative h-screen min-h-[750px] bg-[#0a0a0a] overflow-hidden select-none">
 
       {/* === HERO IMAGE — static === */}
-      <div className="absolute inset-0 lg:left-16">
+      <div className="absolute inset-0 lg:left-20">
         <img src={heroImage} alt="Салон дверей" className="w-full h-full object-cover" width={1920} height={1080} />
         <div className="absolute inset-0 bg-[#0a0a0a]/20" />
       </div>
@@ -163,12 +164,12 @@ export function HeroSection({ site, banners }: Props) {
 
       {/* === LEFT SIDEBAR — gold metallic panel === */}
       <motion.div
-        className="absolute left-0 top-0 bottom-0 w-16 z-20 hidden lg:flex flex-col items-center justify-between py-8"
+        className="absolute left-0 top-0 bottom-0 w-20 z-20 hidden lg:flex flex-col items-center justify-between py-8"
         style={{
           background: "linear-gradient(180deg, #d4b896 0%, #c5a572 15%, #b8944f 30%, #c9a85e 50%, #d4b87a 65%, #c5a572 80%, #a8874a 100%)",
           borderRight: "1px solid rgba(168,135,74,0.4)",
         }}
-        initial={{ x: -64 }}
+        initial={{ x: -80 }}
         animate={{ x: 0 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
       >
@@ -189,26 +190,26 @@ export function HeroSection({ site, banners }: Props) {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -10, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="text-3xl font-bold"
+              className="text-2xl font-bold"
               style={{ color: "#1a1408" }}
             >
               {String(current + 1).padStart(2, "0")}
             </motion.span>
           </AnimatePresence>
-          <span className="text-xs" style={{ color: "rgba(26,20,8,0.4)" }}>/ {String(SLIDES.length).padStart(2, "0")}</span>
+          <span className="text-[10px]" style={{ color: "rgba(26,20,8,0.4)" }}>/ {String(SLIDES.length).padStart(2, "0")}</span>
         </div>
 
-        {/* BRANDOORS vertical text */}
-        <span
-          className="text-[10px] tracking-[0.35em] uppercase font-semibold relative z-10"
-          style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", color: "#1a1408", letterSpacing: "0.4em" }}
-        >
-          BRANDOORS
-        </span>
+        {/* BRANDOORS logo — vertical, darkened for gold bg */}
+        <img
+          src={brandoorsLogo}
+          alt="Brandoors"
+          className="relative z-10 w-auto max-w-[14px]"
+          style={{ filter: "brightness(0)", opacity: 0.85, writingMode: "vertical-rl" as any }}
+        />
 
         <div className="flex flex-col gap-3 mb-4 relative z-10">
           {["Ig", "Vk", "Tg"].map((s) => (
-            <span key={s} className="w-6 h-6 flex items-center justify-center text-[8px] font-medium border transition-all duration-300 cursor-pointer"
+            <span key={s} className="w-7 h-7 flex items-center justify-center text-[8px] font-medium border transition-all duration-300 cursor-pointer"
               style={{ color: "rgba(26,20,8,0.5)", borderColor: "rgba(26,20,8,0.15)" }}
               onMouseEnter={(e) => { e.currentTarget.style.color = "#1a1408"; e.currentTarget.style.borderColor = "rgba(26,20,8,0.4)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(26,20,8,0.5)"; e.currentTarget.style.borderColor = "rgba(26,20,8,0.15)"; }}
@@ -221,7 +222,7 @@ export function HeroSection({ site, banners }: Props) {
 
       {/* === SLIDE ARROWS === */}
       <motion.div
-        className="absolute left-20 lg:left-28 z-20"
+        className="absolute left-24 lg:left-32 z-20"
         style={{ top: "42%" }}
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -241,7 +242,7 @@ export function HeroSection({ site, banners }: Props) {
       </motion.div>
 
       {/* === MAIN TEXT CONTENT === */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 px-6 lg:pl-28 lg:pr-16 pb-14 lg:pb-20">
+      <div className="absolute bottom-0 left-0 right-0 z-20 px-6 lg:pl-32 lg:pr-16 pb-14 lg:pb-20">
         <div className="max-w-[1400px] mx-auto">
           <div className="lg:ml-[20%] max-w-2xl">
             <AnimatePresence mode="wait">
@@ -283,7 +284,7 @@ export function HeroSection({ site, banners }: Props) {
 
       {/* === Top nav === */}
       <motion.div
-        className="absolute top-0 left-16 right-0 z-40 hidden md:flex items-center justify-between px-6 lg:px-12 h-16"
+        className="absolute top-0 left-20 right-0 z-40 hidden md:flex items-center justify-between px-6 lg:px-12 h-16"
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.6, duration: 0.8 }}
