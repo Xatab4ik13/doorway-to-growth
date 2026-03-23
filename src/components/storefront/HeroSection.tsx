@@ -223,7 +223,7 @@ export function HeroSection({ site, banners }: Props) {
 
       {/* === SLIDE ARROWS === */}
       <motion.div
-        className="absolute left-24 lg:left-32 z-20"
+        className="absolute z-20" style={{ left: "calc(260px + 2rem)", top: "42%" }}
         style={{ top: "42%" }}
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
