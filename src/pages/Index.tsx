@@ -32,6 +32,8 @@ const Index = () => {
     switch (activeSection) {
       case "dashboard":
         return <DashboardPage />;
+      case "sites":
+        return <SitesPage />;
       case "partners":
         return <PartnersPage />;
       case "catalog":

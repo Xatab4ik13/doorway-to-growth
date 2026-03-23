@@ -34,6 +34,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { icon: LayoutDashboard, id: "dashboard", label: "Дашборд" },
+  { icon: Globe, id: "sites", label: "Сайты" },
   { icon: Users, id: "partners", label: "Партнёры" },
   { icon: Package, id: "catalog", label: "Каталог" },
   { icon: FileText, id: "leads", label: "Заявки" },
