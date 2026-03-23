@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { CrmSidebar } from "@/components/crm/CrmSidebar";
 import { CrmNavigationProvider } from "@/components/crm/CrmNavigationContext";
 import { DashboardPage } from "@/components/crm/pages/DashboardPage";
+import { SitesPage } from "@/components/crm/pages/SitesPage";
 import { PartnersPage } from "@/components/crm/pages/PartnersPage";
 import { CatalogPage } from "@/components/crm/pages/CatalogPage";
 import { LeadsPage } from "@/components/crm/pages/LeadsPage";
