@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Bell, LogOut, Settings, User, ChevronRight } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 interface PartnerHeaderProps {
   title: string;
