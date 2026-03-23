@@ -1,8 +1,18 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import heroDefault from "@/assets/hero-showroom.jpg";
+
+/* ── helpers for morphing: circle path ↔ diamond path ── */
+function circlePath(cx: number, cy: number, r: number) {
+  const k = r * 0.5523; // bezier approximation of circle
+  return `M ${cx},${cy - r} C ${cx + k},${cy - r} ${cx + r},${cy - k} ${cx + r},${cy} C ${cx + r},${cy + k} ${cx + k},${cy + r} ${cx},${cy + r} C ${cx - k},${cy + r} ${cx - r},${cy + k} ${cx - r},${cy} C ${cx - r},${cy - k} ${cx - k},${cy - r} ${cx},${cy - r} Z`;
+}
+function diamondPath(cx: number, cy: number, r: number) {
+  const s = r * 0.15; // slight curve on corners
+  return `M ${cx},${cy - r} C ${cx + s},${cy - r + s} ${cx + r - s},${cy - s} ${cx + r},${cy} C ${cx + r - s},${cy + s} ${cx + s},${cy + r - s} ${cx},${cy + r} C ${cx - s},${cy + r - s} ${cx - r + s},${cy + s} ${cx - r},${cy} C ${cx - r + s},${cy - s} ${cx - s},${cy - r + s} ${cx},${cy - r} Z`;
+}
 
 interface Props {
   site: StorefrontSite;
