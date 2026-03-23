@@ -6,11 +6,13 @@ import { SchedulePanel } from "@/components/crm/SchedulePanel";
 import { ActivityFeed } from "@/components/crm/ActivityFeed";
 import { Announcements } from "@/components/crm/Announcements";
 import { useCrmNavigation } from "@/components/crm/CrmNavigationContext";
-import { FileText, Users, Package, Ruler, Plus, Eye, UserPlus } from "lucide-react";
+import { useDashboardStats } from "@/hooks/useDashboardStats";
+import { FileText, Users, Package, Ruler, Plus, Eye, UserPlus, Globe } from "lucide-react";
 
 export function DashboardPage() {
   const [period, setPeriod] = useState<"today" | "week" | "month">("today");
   const { navigate } = useCrmNavigation();
+  const { data: stats, isLoading } = useDashboardStats();
 
   return (
     <div className="flex flex-1">
@@ -20,7 +22,7 @@ export function DashboardPage() {
         {/* Welcome + period selector */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 opacity-0 animate-fade-up">
           <div>
-            <h2 className="text-xl font-semibold text-foreground">Добро пожаловать, Александр</h2>
+            <h2 className="text-xl font-semibold text-foreground">Добро пожаловать</h2>
             <p className="text-sm text-muted-foreground mt-0.5">Вот что происходит с вашим бизнесом сегодня</p>
           </div>
           <div className="flex items-center rounded-xl border border-border bg-card overflow-hidden shrink-0">
@@ -67,43 +69,36 @@ export function DashboardPage() {
           <StatCard
             icon={FileText}
             label="Заявки сегодня"
-            value="12"
-            change="+3"
+            value={isLoading ? "—" : String(stats?.leadsToday ?? 0)}
+            change={stats?.leadsWeek ? `${stats.leadsWeek} за неделю` : undefined}
             changePositive
             delay={0}
-            sparkline={[5, 8, 6, 9, 7, 10, 12]}
           />
           <StatCard
             icon={Users}
             label="Активные партнёры"
-            value="5"
-            change="из 6"
+            value={isLoading ? "—" : String(stats?.activePartners ?? 0)}
+            change={stats ? `из ${stats.totalPartners}` : undefined}
             changePositive
             delay={80}
-            sparkline={[3, 3, 4, 4, 5, 5, 5]}
           />
           <StatCard
             icon={Ruler}
             label="Замеры на неделе"
-            value="8"
-            change="+2"
+            value={isLoading ? "—" : String(stats?.measurementsWeek ?? 0)}
             changePositive
             delay={160}
-            sparkline={[4, 5, 6, 5, 7, 6, 8]}
           />
           <StatCard
             icon={Package}
             label="Товаров в каталоге"
-            value="247"
-            change="+8"
-            changePositive
+            value={isLoading ? "—" : String(stats?.totalProducts ?? 0)}
             delay={240}
-            sparkline={[210, 218, 225, 230, 235, 239, 247]}
           />
         </div>
 
         <div className="mt-8">
-          <RecentLeads />
+          <RecentLeads leads={stats?.recentLeads} isLoading={isLoading} />
         </div>
 
         <div className="mt-8">
