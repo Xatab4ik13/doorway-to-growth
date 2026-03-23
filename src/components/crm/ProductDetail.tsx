@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { X, ChevronLeft, ChevronRight, Pencil, Save, Plus, Trash2 } from "lucide-react";
+import { useState, useRef, useCallback } from "react";
+import { X, Pencil, Save, Plus, Trash2, Upload, ImageIcon, GripVertical } from "lucide-react";
 import { useUpdateProduct, type Product } from "@/hooks/useProducts";
+import { useProductImages } from "@/hooks/useProductImages";
 import { toast } from "@/hooks/use-toast";
 
 interface ProductDetailProps {
@@ -19,12 +20,12 @@ const SPEC_LABELS: Record<string, string> = {
 export function ProductDetail({ product, onClose }: ProductDetailProps) {
   const [activeImage, setActiveImage] = useState(0);
   const updateProduct = useUpdateProduct();
+  const { images, uploading, uploadImage, deleteImage } = useProductImages(product.id);
 
   const rawSpecs = (product.specifications ?? {}) as Record<string, any>;
   const sizes: any[] = Array.isArray(rawSpecs.sizes) ? rawSpecs.sizes : [];
   const flatSpecs = Object.entries(rawSpecs).filter(([k]) => k !== "sizes" && rawSpecs[k]);
 
-  // Edit mode
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState(product.name);
   const [editRrp, setEditRrp] = useState(String(product.rrp ?? ""));
@@ -35,36 +36,23 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
   const [editActive, setEditActive] = useState(product.is_active ?? true);
   const [newSpecKey, setNewSpecKey] = useState("");
   const [newSpecVal, setNewSpecVal] = useState("");
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSave = () => {
     const specsObj: Record<string, any> = {};
     editSpecs.forEach(([k, v]) => { if (k && v) specsObj[k] = v; });
     if (sizes.length > 0) specsObj.sizes = sizes;
-
     updateProduct.mutate(
-      {
-        id: product.id,
-        name: editName.trim(),
-        rrp: editRrp ? Number(editRrp) : null,
-        description: editDesc.trim() || null,
-        specifications: specsObj,
-        is_active: editActive,
-      } as any,
-      {
-        onSuccess: () => {
-          toast({ title: "Товар обновлён" });
-          setEditing(false);
-          onClose();
-        },
-      }
+      { id: product.id, name: editName.trim(), rrp: editRrp ? Number(editRrp) : null, description: editDesc.trim() || null, specifications: specsObj, is_active: editActive } as any,
+      { onSuccess: () => { toast({ title: "Товар обновлён" }); setEditing(false); onClose(); } }
     );
   };
 
   const addSpec = () => {
     if (newSpecKey.trim() && newSpecVal.trim()) {
       setEditSpecs([...editSpecs, [newSpecKey.trim(), newSpecVal.trim()]]);
-      setNewSpecKey("");
-      setNewSpecVal("");
+      setNewSpecKey(""); setNewSpecVal("");
     }
   };
 
@@ -75,13 +63,29 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
     setEditSpecs(next);
   };
 
+  const handleFiles = useCallback((files: FileList | null) => {
+    if (!files) return;
+    Array.from(files).forEach((file) => {
+      if (file.type.startsWith("image/")) {
+        uploadImage(file);
+      }
+    });
+  }, [uploadImage]);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault(); setDragOver(false);
+    handleFiles(e.dataTransfer.files);
+  }, [handleFiles]);
+
+  const allImages = images.length > 0 ? images : (product.primary_image ? [{ id: "legacy", url: product.primary_image, is_primary: true }] : []);
+  const currentImage = allImages[activeImage] ?? allImages[0];
+
   const inputCls = "h-9 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-foreground/20" onClick={onClose} />
       <div className="relative w-full max-w-3xl max-h-[90vh] rounded-2xl border border-border bg-card shadow-xl overflow-y-auto animate-fade-up">
-        {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between px-4 sm:px-6 py-4 border-b border-border bg-card">
           <h3 className="text-sm font-semibold text-foreground truncate mr-2">{product.name}</h3>
           <div className="flex items-center gap-1.5 shrink-0">
@@ -102,20 +106,73 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
 
         <div className="p-4 sm:p-6">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {/* Gallery */}
+            {/* Gallery + Upload */}
             <div>
-              <div className="relative aspect-square rounded-2xl bg-muted flex items-center justify-center text-sm text-muted-foreground font-medium overflow-hidden">
-                {product.primary_image ? (
-                  <img src={product.primary_image} alt={product.name} className="w-full h-full object-cover" />
+              <div
+                className={`relative aspect-square rounded-2xl bg-muted flex items-center justify-center overflow-hidden transition-colors ${dragOver ? "ring-2 ring-primary bg-primary/5" : ""}`}
+                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={handleDrop}
+              >
+                {currentImage ? (
+                  <img src={currentImage.url} alt={product.name} className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-muted-foreground">Нет фото</span>
+                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                    <ImageIcon className="h-10 w-10" />
+                    <span className="text-xs">Перетащите фото сюда</span>
+                  </div>
                 )}
+                {uploading && (
+                  <div className="absolute inset-0 bg-background/60 flex items-center justify-center">
+                    <div className="h-6 w-6 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin" />
+                  </div>
+                )}
+                {dragOver && (
+                  <div className="absolute inset-0 bg-primary/10 flex items-center justify-center">
+                    <Upload className="h-8 w-8 text-primary" />
+                  </div>
+                )}
+              </div>
+
+              {/* Thumbnails + upload button */}
+              <div className="flex gap-2 mt-3 overflow-x-auto">
+                {allImages.map((img, i) => (
+                  <div key={img.id} className="relative group shrink-0">
+                    <button
+                      onClick={() => setActiveImage(i)}
+                      className={`h-14 w-14 rounded-xl overflow-hidden transition-all active:scale-95 ${activeImage === i ? "ring-2 ring-foreground" : "hover:ring-1 hover:ring-border"}`}
+                    >
+                      <img src={img.url} alt="" className="w-full h-full object-cover" />
+                    </button>
+                    {img.id !== "legacy" && (
+                      <button
+                        onClick={() => deleteImage(img.id)}
+                        className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="h-14 w-14 rounded-xl border-2 border-dashed border-border flex items-center justify-center text-muted-foreground hover:border-foreground hover:text-foreground transition-colors active:scale-95 shrink-0"
+                >
+                  <Plus className="h-5 w-5" />
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => handleFiles(e.target.files)}
+                />
               </div>
             </div>
 
             {/* Info / Edit */}
             <div>
-              {/* Status + Category */}
               <div className="flex items-center gap-2 mb-3 flex-wrap">
                 <span className="inline-block rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground">
                   {product.category?.name ?? "Без категории"}
@@ -133,14 +190,12 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
                 )}
               </div>
 
-              {/* Name */}
               {editing ? (
                 <input value={editName} onChange={(e) => setEditName(e.target.value)} className={`${inputCls} mb-2 text-lg font-semibold`} />
               ) : (
                 <h2 className="text-xl font-semibold text-foreground mb-1">{product.name}</h2>
               )}
 
-              {/* Price */}
               {editing ? (
                 <div className="mb-3">
                   <label className="block text-[10px] uppercase tracking-wider font-medium text-muted-foreground mb-1">РРЦ (₽)</label>
@@ -152,7 +207,6 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
                 </p>
               )}
 
-              {/* Description */}
               {editing ? (
                 <div className="mb-4">
                   <label className="block text-[10px] uppercase tracking-wider font-medium text-muted-foreground mb-1">Описание</label>
@@ -162,7 +216,6 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
                 <p className="text-sm text-muted-foreground mb-4 line-clamp-4">{product.description}</p>
               ) : null}
 
-              {/* Specs */}
               <h4 className="text-[10px] uppercase tracking-wider font-medium text-muted-foreground mb-2">Характеристики</h4>
               {editing ? (
                 <div className="space-y-2 mb-4">
@@ -175,7 +228,6 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
                       </button>
                     </div>
                   ))}
-                  {/* Add new spec */}
                   <div className="flex items-center gap-2 pt-1">
                     <input value={newSpecKey} onChange={(e) => setNewSpecKey(e.target.value)} placeholder="Ключ" className={`${inputCls} w-24 shrink-0`} />
                     <input value={newSpecVal} onChange={(e) => setNewSpecVal(e.target.value)} placeholder="Значение" className={`${inputCls} flex-1`} />
@@ -197,19 +249,14 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
                 </div>
               )}
 
-              {/* Sizes */}
               {sizes.length > 0 && (
                 <>
                   <h4 className="text-[10px] uppercase tracking-wider font-medium text-muted-foreground mb-2">Размеры (мм)</h4>
                   <div className="grid grid-cols-2 gap-1.5">
                     {sizes.map((s: any, i: number) => (
                       <div key={i} className="rounded-lg bg-muted px-3 py-2 text-xs text-foreground">
-                        {s.h_from || s.h_to ? (
-                          <span>В: {s.h_from ?? "—"}–{s.h_to ?? "—"}</span>
-                        ) : null}
-                        {s.w_from || s.w_to ? (
-                          <span className="ml-2">Ш: {s.w_from ?? "—"}–{s.w_to ?? "—"}</span>
-                        ) : null}
+                        {s.h_from || s.h_to ? <span>В: {s.h_from ?? "—"}–{s.h_to ?? "—"}</span> : null}
+                        {s.w_from || s.w_to ? <span className="ml-2">Ш: {s.w_from ?? "—"}–{s.w_to ?? "—"}</span> : null}
                       </div>
                     ))}
                   </div>
