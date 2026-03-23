@@ -311,7 +311,7 @@ export function SitesPage() {
         </div>
       </Modal>
 
-      <ConfirmDialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={() => deleteTarget && deleteSiteMut.mutate(deleteTarget.id) && setDeleteTarget(null)} title="Удалить сайт" description={`Удалить сайт ${deleteTarget?.name}? Весь контент сайта будет потерян.`} confirmLabel="Удалить" destructive />
+      <ConfirmDialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={() => { if (deleteTarget) { deleteSiteMut.mutate(deleteTarget.id); setDeleteTarget(null); } }} title="Удалить сайт" description={`Удалить сайт ${deleteTarget?.name}? Весь контент сайта будет потерян.`} confirmLabel="Удалить" destructive />
     </div>
   );
 }

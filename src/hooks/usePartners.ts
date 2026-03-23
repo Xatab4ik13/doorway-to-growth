@@ -18,6 +18,7 @@ export type Partner = {
   latitude: number | null;
   longitude: number | null;
   user_id: string | null;
+  site_id: string | null;
   created_at: string;
   updated_at: string;
   leads_count?: number;
