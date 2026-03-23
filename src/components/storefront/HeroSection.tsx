@@ -161,14 +161,27 @@ export function HeroSection({ site, banners }: Props) {
       {/* Mobile gradient */}
       <div className="absolute bottom-0 left-0 right-0 h-[55%] z-[5] lg:hidden bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent" />
 
-      {/* === LEFT SIDEBAR === */}
+      {/* === LEFT SIDEBAR — gold metallic panel === */}
       <motion.div
-        className="absolute left-0 top-0 bottom-0 w-16 z-20 hidden lg:flex flex-col items-center justify-between py-8 bg-[#0a0a0a]/85 backdrop-blur-sm border-r border-white/[0.03]"
+        className="absolute left-0 top-0 bottom-0 w-16 z-20 hidden lg:flex flex-col items-center justify-between py-8"
+        style={{
+          background: "linear-gradient(180deg, #d4b896 0%, #c5a572 15%, #b8944f 30%, #c9a85e 50%, #d4b87a 65%, #c5a572 80%, #a8874a 100%)",
+          borderRight: "1px solid rgba(168,135,74,0.4)",
+        }}
         initial={{ x: -64 }}
         animate={{ x: 0 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
       >
-        <div className="flex flex-col items-center gap-1 mt-16">
+        {/* Metallic sheen overlay */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          background: "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 40%, rgba(255,255,255,0.05) 60%, transparent 100%)",
+        }} />
+        {/* Right edge dark line accent */}
+        <div className="absolute top-0 right-0 bottom-0 w-[2px]" style={{
+          background: "linear-gradient(180deg, rgba(80,60,30,0.4) 0%, rgba(60,45,20,0.6) 50%, rgba(80,60,30,0.4) 100%)",
+        }} />
+
+        <div className="flex flex-col items-center gap-1 mt-16 relative z-10">
           <AnimatePresence mode="wait">
             <motion.span
               key={current}
@@ -176,19 +189,30 @@ export function HeroSection({ site, banners }: Props) {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -10, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="text-3xl font-bold text-storefront-text"
+              className="text-3xl font-bold"
+              style={{ color: "#1a1408" }}
             >
               {String(current + 1).padStart(2, "0")}
             </motion.span>
           </AnimatePresence>
-          <span className="text-xs text-storefront-muted/50">/ {String(SLIDES.length).padStart(2, "0")}</span>
+          <span className="text-xs" style={{ color: "rgba(26,20,8,0.4)" }}>/ {String(SLIDES.length).padStart(2, "0")}</span>
         </div>
-        <span className="text-[10px] tracking-[0.35em] uppercase text-storefront-muted/20 font-light" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
+
+        {/* BRANDOORS vertical text */}
+        <span
+          className="text-[10px] tracking-[0.35em] uppercase font-semibold relative z-10"
+          style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", color: "#1a1408", letterSpacing: "0.4em" }}
+        >
           BRANDOORS
         </span>
-        <div className="flex flex-col gap-3 mb-4">
+
+        <div className="flex flex-col gap-3 mb-4 relative z-10">
           {["Ig", "Vk", "Tg"].map((s) => (
-            <span key={s} className="w-6 h-6 flex items-center justify-center text-[8px] text-storefront-muted/30 border border-white/[0.04] hover:text-storefront-gold hover:border-storefront-gold/30 transition-all duration-300 cursor-pointer">
+            <span key={s} className="w-6 h-6 flex items-center justify-center text-[8px] font-medium border transition-all duration-300 cursor-pointer"
+              style={{ color: "rgba(26,20,8,0.5)", borderColor: "rgba(26,20,8,0.15)" }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = "#1a1408"; e.currentTarget.style.borderColor = "rgba(26,20,8,0.4)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(26,20,8,0.5)"; e.currentTarget.style.borderColor = "rgba(26,20,8,0.15)"; }}
+            >
               {s}
             </span>
           ))}
