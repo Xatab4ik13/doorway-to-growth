@@ -15,6 +15,8 @@ const notifications = [
 ];
 
 export function PartnerHeader({ title, onNavigate }: PartnerHeaderProps) {
+  const { user, signOut } = useAuth();
+  const routerNavigate = useNavigate();
   const [notifOpen, setNotifOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
