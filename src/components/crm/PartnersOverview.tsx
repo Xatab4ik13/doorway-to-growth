@@ -1,17 +1,39 @@
 import { MapPin, ArrowUpRight } from "lucide-react";
-
-const partners = [
-  { name: "Brandoors Марьино", zone: "ЮВАО", leads: 24, active: true },
-  { name: "Brandoors Тёплый Стан", zone: "ЮЗАО", leads: 18, active: true },
-  { name: "Brandoors Митино", zone: "СЗАО", leads: 31, active: true },
-  { name: "Brandoors Люблино", zone: "ЮВАО", leads: 12, active: true },
-  { name: "Brandoors Сокольники", zone: "ВАО", leads: 9, active: false },
-];
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export function PartnersOverview() {
+  const { data: partners = [] } = useQuery({
+    queryKey: ["partners-overview"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("partners")
+        .select("id, name, district, is_active, leads(count)")
+        .order("created_at", { ascending: false })
+        .limit(6);
+      if (error) throw error;
+      return (data ?? []).map((p: any) => ({
+        name: p.name,
+        zone: p.district || "—",
+        leads: p.leads?.[0]?.count ?? 0,
+        active: p.is_active ?? true,
+      }));
+    },
+  });
+
+  if (partners.length === 0) {
+    return (
+      <div className="rounded-2xl border border-border bg-card opacity-0 animate-fade-up" style={{ animationDelay: "400ms" }}>
+        <div className="flex items-center justify-between border-b border-border px-5 py-4">
+          <h3 className="text-sm font-semibold text-foreground">Партнёры</h3>
+        </div>
+        <div className="px-5 py-8 text-center text-sm text-muted-foreground">Партнёры пока не добавлены</div>
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-2xl border border-border bg-card opacity-0 animate-fade-up" style={{ animationDelay: "400ms" }}>
-      {/* Header */}
       <div className="flex items-center justify-between border-b border-border px-5 py-4">
         <h3 className="text-sm font-semibold text-foreground">Партнёры</h3>
         <button className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors active:scale-95">
@@ -19,8 +41,6 @@ export function PartnersOverview() {
           <ArrowUpRight className="h-3 w-3" />
         </button>
       </div>
-
-      {/* Partner items */}
       <div className="divide-y divide-border">
         {partners.map((p, i) => (
           <div key={i} className="flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-muted/40">
