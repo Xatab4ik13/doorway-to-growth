@@ -171,8 +171,8 @@ export function CrmHeader({ title, breadcrumbs, onNavigate: onNavigateProp }: Cr
           {userOpen && (
             <div className="absolute right-0 top-full mt-2 w-52 rounded-2xl border border-border bg-card shadow-lg z-50 overflow-hidden animate-scale-in">
               <div className="px-4 py-3 border-b border-border">
-                <p className="text-sm font-medium text-foreground">Александр Дорохов</p>
-                <p className="text-[11px] text-muted-foreground">admin@brandoors.ru</p>
+                <p className="text-sm font-medium text-foreground">{user?.email?.split("@")[0] ?? "Admin"}</p>
+                <p className="text-[11px] text-muted-foreground">{user?.email ?? ""}</p>
               </div>
               <div className="py-1">
                 <button
