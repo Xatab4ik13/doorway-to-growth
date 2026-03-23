@@ -15,15 +15,6 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react";
-  BarChart3,
-  Settings,
-  Bell,
-  Megaphone,
-  Menu,
-  X,
-  ChevronsLeft,
-  ChevronsRight,
-} from "lucide-react";
 import { useState } from "react";
 
 interface NavItem {
