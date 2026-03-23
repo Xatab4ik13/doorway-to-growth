@@ -123,6 +123,8 @@ export function HeroSection({ site, banners }: Props) {
             filter: "blur(40px)",
           }}
         />
+      </motion.div>
+
       {/* === CONTENT AREA — bottom with semi-transparent backdrop === */}
       <motion.div
         className="absolute bottom-0 left-0 right-0 z-[5]"
