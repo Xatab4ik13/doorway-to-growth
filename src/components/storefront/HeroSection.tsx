@@ -203,8 +203,8 @@ export function HeroSection({ site, banners }: Props) {
         <img
           src={brandoorsLogo}
           alt="Brandoors"
-          className="relative z-10 w-auto max-w-[14px]"
-          style={{ filter: "brightness(0)", opacity: 0.85, writingMode: "vertical-rl" as any }}
+          className="relative z-10"
+          style={{ filter: "brightness(0)", opacity: 0.85, transform: "rotate(-90deg)", width: "auto", height: "14px" }}
         />
 
         <div className="flex flex-col gap-3 mb-4 relative z-10">
