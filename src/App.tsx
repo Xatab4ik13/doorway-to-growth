@@ -9,6 +9,7 @@ import Index from "./pages/Index.tsx";
 import Partner from "./pages/Partner.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Login from "./pages/Login.tsx";
+import Storefront from "./pages/Storefront.tsx";
 
 const queryClient = new QueryClient();
 
