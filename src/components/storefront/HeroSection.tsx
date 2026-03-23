@@ -67,33 +67,33 @@ export function HeroSection({ site, banners }: Props) {
       >
         <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            {/* Larger tile: 260x260, cell = 130px */}
-            <pattern id="brandoors-pattern" x="0" y="0" width="260" height="260" patternUnits="userSpaceOnUse">
+            {/* Tile = 2x2 cells, each cell 200px. Total tile 400x400 */}
+            <pattern id="brandoors-pattern" x="0" y="0" width="400" height="400" patternUnits="userSpaceOnUse">
               {/* Grid lines */}
-              <line x1="0" y1="0" x2="260" y2="0" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
-              <line x1="0" y1="130" x2="260" y2="130" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
-              <line x1="0" y1="260" x2="260" y2="260" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
-              <line x1="0" y1="0" x2="0" y2="260" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
-              <line x1="130" y1="0" x2="130" y2="260" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
-              <line x1="260" y1="0" x2="260" y2="260" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
+              <line x1="0" y1="0" x2="400" y2="0" stroke="rgba(255,255,255,0.06)" strokeWidth="0.6" />
+              <line x1="0" y1="200" x2="400" y2="200" stroke="rgba(255,255,255,0.06)" strokeWidth="0.6" />
+              <line x1="0" y1="400" x2="400" y2="400" stroke="rgba(255,255,255,0.06)" strokeWidth="0.6" />
+              <line x1="0" y1="0" x2="0" y2="400" stroke="rgba(255,255,255,0.06)" strokeWidth="0.6" />
+              <line x1="200" y1="0" x2="200" y2="400" stroke="rgba(255,255,255,0.06)" strokeWidth="0.6" />
+              <line x1="400" y1="0" x2="400" y2="400" stroke="rgba(255,255,255,0.06)" strokeWidth="0.6" />
 
-              {/* Cell [0,0] — quarter arcs from corners */}
-              <path d="M 65,0 A 65,65 0 0,1 130,65" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-              <path d="M 130,65 A 65,65 0 0,1 65,130" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-              <path d="M 0,65 A 65,65 0 0,0 65,0" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-              <path d="M 65,130 A 65,65 0 0,0 0,65" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+              {/* Cell [0,0] — quarter arcs from each corner toward cell center */}
+              <path d="M 100,0 A 100,100 0 0,1 200,100" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
+              <path d="M 200,100 A 100,100 0 0,1 100,200" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
+              <path d="M 0,100 A 100,100 0 0,0 100,0" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
+              <path d="M 100,200 A 100,100 0 0,0 0,100" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
 
               {/* Cell [1,0] — full circle */}
-              <circle cx="195" cy="65" r="60" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+              <circle cx="300" cy="100" r="95" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
 
               {/* Cell [0,1] — full circle */}
-              <circle cx="65" cy="195" r="60" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+              <circle cx="100" cy="300" r="95" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
 
-              {/* Cell [1,1] — quarter arcs from corners */}
-              <path d="M 195,130 A 65,65 0 0,1 260,195" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-              <path d="M 260,195 A 65,65 0 0,1 195,260" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-              <path d="M 130,195 A 65,65 0 0,0 195,130" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-              <path d="M 195,260 A 65,65 0 0,0 130,195" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+              {/* Cell [1,1] — quarter arcs from each corner */}
+              <path d="M 300,200 A 100,100 0 0,1 400,300" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
+              <path d="M 400,300 A 100,100 0 0,1 300,400" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
+              <path d="M 200,300 A 100,100 0 0,0 300,200" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
+              <path d="M 300,400 A 100,100 0 0,0 200,300" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
             </pattern>
 
             {/* Diagonal fade mask: bright top-right → transparent bottom-left */}
