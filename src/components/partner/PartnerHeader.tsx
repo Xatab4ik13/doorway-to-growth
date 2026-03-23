@@ -93,8 +93,8 @@ export function PartnerHeader({ title, onNavigate }: PartnerHeaderProps) {
           {userOpen && (
             <div className="absolute right-0 top-full mt-2 w-52 rounded-2xl border border-border bg-card shadow-lg z-50 overflow-hidden animate-scale-in">
               <div className="px-4 py-3 border-b border-border">
-                <p className="text-sm font-medium text-foreground">Салон дверей «Митино»</p>
-                <p className="text-[11px] text-muted-foreground">partner@mitino.ru</p>
+                <p className="text-sm font-medium text-foreground">{user?.email?.split("@")[0] ?? "Партнёр"}</p>
+                <p className="text-[11px] text-muted-foreground">{user?.email ?? ""}</p>
               </div>
               <div className="py-1">
                 <button onClick={() => { setUserOpen(false); onNavigate("settings"); }} className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted/40 transition-colors">
