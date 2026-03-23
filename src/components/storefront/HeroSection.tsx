@@ -47,7 +47,7 @@ export function HeroSection({ site, banners }: Props) {
     <section className="relative h-screen min-h-[750px] bg-[#0a0a0a] overflow-hidden select-none">
 
       {/* === HERO IMAGE — static === */}
-      <div className="absolute inset-0 lg:left-20">
+      <div className="absolute inset-0 lg:left-[260px]">
         <img src={heroImage} alt="Салон дверей" className="w-full h-full object-cover" width={1920} height={1080} />
         <div className="absolute inset-0 bg-[#0a0a0a]/20" />
       </div>
@@ -162,27 +162,28 @@ export function HeroSection({ site, banners }: Props) {
       {/* Mobile gradient */}
       <div className="absolute bottom-0 left-0 right-0 h-[55%] z-[5] lg:hidden bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent" />
 
-      {/* === LEFT SIDEBAR — gold metallic panel === */}
+      {/* === LEFT SIDEBAR — gold metallic panel (matching brandbook cover) === */}
       <motion.div
-        className="absolute left-0 top-0 bottom-0 w-20 z-20 hidden lg:flex flex-col items-center justify-between py-8"
+        className="absolute left-0 top-0 bottom-0 z-20 hidden lg:flex flex-col items-center justify-between py-10"
         style={{
-          background: "linear-gradient(180deg, #d4b896 0%, #c5a572 15%, #b8944f 30%, #c9a85e 50%, #d4b87a 65%, #c5a572 80%, #a8874a 100%)",
-          borderRight: "1px solid rgba(168,135,74,0.4)",
+          width: "260px",
+          background: "linear-gradient(180deg, #cfbb96 0%, #c2b08c 10%, #b2a07c 25%, #a59370 40%, #9a8a69 55%, #887555 70%, #78674b 85%, #6e5f40 100%)",
+          borderRight: "2px solid rgba(40,30,15,0.5)",
         }}
-        initial={{ x: -80 }}
+        initial={{ x: -260 }}
         animate={{ x: 0 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
       >
         {/* Metallic sheen overlay */}
         <div className="absolute inset-0 pointer-events-none" style={{
-          background: "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 40%, rgba(255,255,255,0.05) 60%, transparent 100%)",
+          background: "linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 35%, rgba(255,255,255,0.04) 55%, transparent 100%)",
         }} />
         {/* Right edge dark line accent */}
-        <div className="absolute top-0 right-0 bottom-0 w-[2px]" style={{
-          background: "linear-gradient(180deg, rgba(80,60,30,0.4) 0%, rgba(60,45,20,0.6) 50%, rgba(80,60,30,0.4) 100%)",
+        <div className="absolute top-0 right-[2px] bottom-0 w-[3px]" style={{
+          background: "linear-gradient(180deg, rgba(50,40,20,0.3) 0%, rgba(30,20,10,0.6) 50%, rgba(50,40,20,0.3) 100%)",
         }} />
 
-        <div className="flex flex-col items-center gap-1 mt-16 relative z-10">
+        <div className="flex flex-col items-center gap-1 mt-12 relative z-10">
           <AnimatePresence mode="wait">
             <motion.span
               key={current}
@@ -190,13 +191,13 @@ export function HeroSection({ site, banners }: Props) {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -10, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="text-2xl font-bold"
+              className="text-3xl font-bold"
               style={{ color: "#1a1408" }}
             >
               {String(current + 1).padStart(2, "0")}
             </motion.span>
           </AnimatePresence>
-          <span className="text-[10px]" style={{ color: "rgba(26,20,8,0.4)" }}>/ {String(SLIDES.length).padStart(2, "0")}</span>
+          <span className="text-xs" style={{ color: "rgba(26,20,8,0.35)" }}>/ {String(SLIDES.length).padStart(2, "0")}</span>
         </div>
 
         {/* BRANDOORS logo — vertical, darkened for gold bg */}
@@ -204,12 +205,12 @@ export function HeroSection({ site, banners }: Props) {
           src={brandoorsLogo}
           alt="Brandoors"
           className="relative z-10"
-          style={{ filter: "brightness(0)", opacity: 0.85, transform: "rotate(-90deg)", width: "auto", height: "35px" }}
+          style={{ filter: "brightness(0)", opacity: 0.8, transform: "rotate(-90deg)", width: "auto", height: "55px" }}
         />
 
         <div className="flex flex-col gap-3 mb-4 relative z-10">
           {["Ig", "Vk", "Tg"].map((s) => (
-            <span key={s} className="w-7 h-7 flex items-center justify-center text-[8px] font-medium border transition-all duration-300 cursor-pointer"
+            <span key={s} className="w-8 h-8 flex items-center justify-center text-[9px] font-medium border transition-all duration-300 cursor-pointer"
               style={{ color: "rgba(26,20,8,0.5)", borderColor: "rgba(26,20,8,0.15)" }}
               onMouseEnter={(e) => { e.currentTarget.style.color = "#1a1408"; e.currentTarget.style.borderColor = "rgba(26,20,8,0.4)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(26,20,8,0.5)"; e.currentTarget.style.borderColor = "rgba(26,20,8,0.15)"; }}
@@ -222,8 +223,7 @@ export function HeroSection({ site, banners }: Props) {
 
       {/* === SLIDE ARROWS === */}
       <motion.div
-        className="absolute left-24 lg:left-32 z-20"
-        style={{ top: "42%" }}
+        className="absolute z-20" style={{ left: "calc(260px + 2rem)", top: "42%" }}
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 1.2, duration: 0.6 }}
@@ -242,7 +242,7 @@ export function HeroSection({ site, banners }: Props) {
       </motion.div>
 
       {/* === MAIN TEXT CONTENT === */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 px-6 lg:pl-32 lg:pr-16 pb-14 lg:pb-20">
+      <div className="absolute bottom-0 left-0 right-0 z-20 px-6 pb-14 lg:pb-20" style={{ paddingLeft: "calc(260px + 3rem)" }}>
         <div className="max-w-[1400px] mx-auto">
           <div className="lg:ml-[20%] max-w-2xl">
             <AnimatePresence mode="wait">
@@ -284,7 +284,7 @@ export function HeroSection({ site, banners }: Props) {
 
       {/* === Top nav === */}
       <motion.div
-        className="absolute top-0 left-20 right-0 z-40 hidden md:flex items-center justify-between px-6 lg:px-12 h-16"
+        className="absolute top-0 right-0 z-40 hidden md:flex items-center justify-between px-6 lg:px-12 h-16" style={{ left: "260px" }}
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.6, duration: 0.8 }}
