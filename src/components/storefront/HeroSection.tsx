@@ -1,8 +1,18 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import heroDefault from "@/assets/hero-showroom.jpg";
+
+/* ── helpers for morphing: circle path ↔ diamond path ── */
+function circlePath(cx: number, cy: number, r: number) {
+  const k = r * 0.5523; // bezier approximation of circle
+  return `M ${cx},${cy - r} C ${cx + k},${cy - r} ${cx + r},${cy - k} ${cx + r},${cy} C ${cx + r},${cy + k} ${cx + k},${cy + r} ${cx},${cy + r} C ${cx - k},${cy + r} ${cx - r},${cy + k} ${cx - r},${cy} C ${cx - r},${cy - k} ${cx - k},${cy - r} ${cx},${cy - r} Z`;
+}
+function diamondPath(cx: number, cy: number, r: number) {
+  const s = r * 0.15; // slight curve on corners
+  return `M ${cx},${cy - r} C ${cx + s},${cy - r + s} ${cx + r - s},${cy - s} ${cx + r},${cy} C ${cx + r - s},${cy + s} ${cx + s},${cy + r - s} ${cx},${cy + r} C ${cx - s},${cy + r - s} ${cx - r + s},${cy + s} ${cx - r},${cy} C ${cx - r + s},${cy - s} ${cx - s},${cy - r + s} ${cx},${cy - r} Z`;
+}
 
 interface Props {
   site: StorefrontSite;
@@ -42,7 +52,7 @@ export function HeroSection({ site, banners }: Props) {
         <div className="absolute inset-0 bg-[#0a0a0a]/20" />
       </div>
 
-      {/* === BRANDOORS GEOMETRIC PATTERN — draw-on animation === */}
+      {/* === BRANDOORS PATTERN — 3-phase cycle: draw → gold → morph → reset === */}
       <div className="absolute inset-0 z-[2] pointer-events-none overflow-hidden">
         <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -57,65 +67,72 @@ export function HeroSection({ site, banners }: Props) {
           </defs>
 
           <g mask="url(#diagonal-mask)">
-            {/* Generate grid manually for draw animation */}
             {Array.from({ length: 8 }).map((_, col) =>
               Array.from({ length: 5 }).map((_, row) => {
                 const x = col * 200;
                 const y = row * 200;
                 const isArcs = (col + row) % 2 === 0;
-                const delay = (col + row) * 0.15;
-                const dashLen = isArcs ? 628 : 597;
+                const d = (col + row) * 0.12; // stagger delay
+
+                /* Total cycle: 18s
+                   Phase 1 (0s–3s):  Draw on — dashoffset → 0
+                   Phase 2 (3s–7s):  Color white → gold
+                   Phase 3 (7s–13s): Morph circles↔diamonds (circles only)
+                   Phase 4 (13s–16s): Color gold → white
+                   Phase 5 (16s–18s): Fade out, then restart
+                */
+                const dur = 18;
+
                 return (
                   <g key={`${col}-${row}`}>
-                    {/* Grid lines for this cell */}
+                    {/* Grid lines */}
                     <line x1={x} y1={y} x2={x + 200} y2={y} stroke="rgba(255,255,255,0.06)" strokeWidth="0.6">
-                      <animate attributeName="opacity" from="0" to="1" begin={`${delay}s`} dur="0.8s" fill="freeze" />
+                      <animate attributeName="opacity" values="0;0;1;1;1;0" keyTimes="0;0.01;0.1;0.85;0.9;1" dur={`${dur}s`} begin={`${d}s`} repeatCount="indefinite" />
                     </line>
                     <line x1={x} y1={y} x2={x} y2={y + 200} stroke="rgba(255,255,255,0.06)" strokeWidth="0.6">
-                      <animate attributeName="opacity" from="0" to="1" begin={`${delay}s`} dur="0.8s" fill="freeze" />
+                      <animate attributeName="opacity" values="0;0;1;1;1;0" keyTimes="0;0.01;0.1;0.85;0.9;1" dur={`${dur}s`} begin={`${d}s`} repeatCount="indefinite" />
                     </line>
 
                     {isArcs ? (
-                      /* Quarter arcs from corners */
+                      /* Quarter arcs — draw on, color cycle, no morph */
                       <>
-                        <path
-                          d={`M ${x + 100},${y} A 100,100 0 0,1 ${x + 200},${y + 100}`}
-                          fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2"
-                          strokeDasharray="157" strokeDashoffset="157"
-                        >
-                          <animate attributeName="stroke-dashoffset" to="0" begin={`${delay}s`} dur="1.2s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" />
-                        </path>
-                        <path
-                          d={`M ${x + 200},${y + 100} A 100,100 0 0,1 ${x + 100},${y + 200}`}
-                          fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2"
-                          strokeDasharray="157" strokeDashoffset="157"
-                        >
-                          <animate attributeName="stroke-dashoffset" to="0" begin={`${delay + 0.2}s`} dur="1.2s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" />
-                        </path>
-                        <path
-                          d={`M ${x},${y + 100} A 100,100 0 0,0 ${x + 100},${y}`}
-                          fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2"
-                          strokeDasharray="157" strokeDashoffset="157"
-                        >
-                          <animate attributeName="stroke-dashoffset" to="0" begin={`${delay + 0.1}s`} dur="1.2s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" />
-                        </path>
-                        <path
-                          d={`M ${x + 100},${y + 200} A 100,100 0 0,0 ${x},${y + 100}`}
-                          fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2"
-                          strokeDasharray="157" strokeDashoffset="157"
-                        >
-                          <animate attributeName="stroke-dashoffset" to="0" begin={`${delay + 0.3}s`} dur="1.2s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" />
-                        </path>
+                        {[
+                          `M ${x+100},${y} A 100,100 0 0,1 ${x+200},${y+100}`,
+                          `M ${x+200},${y+100} A 100,100 0 0,1 ${x+100},${y+200}`,
+                          `M ${x},${y+100} A 100,100 0 0,0 ${x+100},${y}`,
+                          `M ${x+100},${y+200} A 100,100 0 0,0 ${x},${y+100}`,
+                        ].map((arcD, ai) => (
+                          <path key={ai} d={arcD} fill="none" strokeWidth="1.2"
+                            stroke="rgba(255,255,255,0.11)"
+                            strokeDasharray="157" strokeDashoffset="157"
+                          >
+                            {/* Phase 1: draw */}
+                            <animate attributeName="stroke-dashoffset" values="157;157;0;0;0;157" keyTimes="0;0.01;0.17;0.85;0.9;1" dur={`${dur}s`} begin={`${d + ai * 0.08}s`} repeatCount="indefinite" />
+                            {/* Phase 2-4: color cycle */}
+                            <animate attributeName="stroke" values="rgba(255,255,255,0.11);rgba(255,255,255,0.11);rgba(197,165,114,0.35);rgba(197,165,114,0.35);rgba(255,255,255,0.11);rgba(255,255,255,0.11)" keyTimes="0;0.17;0.33;0.56;0.72;1" dur={`${dur}s`} begin={`${d}s`} repeatCount="indefinite" />
+                          </path>
+                        ))}
                       </>
                     ) : (
-                      /* Full circle */
-                      <circle
-                        cx={x + 100} cy={y + 100} r="95"
-                        fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2"
-                        strokeDasharray="597" strokeDashoffset="597"
+                      /* Full circle → morph to diamond and back */
+                      <path
+                        fill="none" strokeWidth="1.2"
+                        stroke="rgba(255,255,255,0.11)"
+                        d={circlePath(x + 100, y + 100, 95)}
+                        strokeDasharray="600" strokeDashoffset="600"
                       >
-                        <animate attributeName="stroke-dashoffset" to="0" begin={`${delay}s`} dur="1.8s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" />
-                      </circle>
+                        {/* Phase 1: draw */}
+                        <animate attributeName="stroke-dashoffset" values="600;600;0;0;0;600" keyTimes="0;0.01;0.17;0.85;0.9;1" dur={`${dur}s`} begin={`${d}s`} repeatCount="indefinite" />
+                        {/* Phase 2-4: color */}
+                        <animate attributeName="stroke" values="rgba(255,255,255,0.11);rgba(255,255,255,0.11);rgba(197,165,114,0.35);rgba(197,165,114,0.35);rgba(255,255,255,0.11);rgba(255,255,255,0.11)" keyTimes="0;0.17;0.33;0.56;0.72;1" dur={`${dur}s`} begin={`${d}s`} repeatCount="indefinite" />
+                        {/* Phase 3: morph circle → diamond → circle */}
+                        <animate attributeName="d"
+                          values={`${circlePath(x+100,y+100,95)};${circlePath(x+100,y+100,95)};${diamondPath(x+100,y+100,95)};${diamondPath(x+100,y+100,95)};${circlePath(x+100,y+100,95)};${circlePath(x+100,y+100,95)}`}
+                          keyTimes="0;0.39;0.50;0.61;0.72;1"
+                          dur={`${dur}s`} begin={`${d}s`} repeatCount="indefinite"
+                          calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1"
+                        />
+                      </path>
                     )}
                   </g>
                 );
@@ -125,7 +142,7 @@ export function HeroSection({ site, banners }: Props) {
         </svg>
       </div>
 
-      {/* === TOP-RIGHT CORNER GLOW — static, no pulse === */}
+      {/* === TOP-RIGHT CORNER GLOW === */}
       <div className="absolute inset-0 z-[3] pointer-events-none">
         <div
           style={{
