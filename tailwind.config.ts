@@ -68,6 +68,16 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        storefront: {
+          bg: "#111111",
+          card: "#1a1a1a",
+          text: "#f5f5f0",
+          muted: "#8a8a7a",
+          gold: {
+            DEFAULT: "#c5a572",
+            light: "#d4b88a",
+          },
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
