@@ -11,22 +11,20 @@ interface Lead {
   type: string;
   partner: string;
   date: string;
-  status: "new" | "contact" | "consult" | "measure" | "quote" | "contract" | "install" | "done" | "rejected";
+  status: "new" | "contact" | "consult" | "quote" | "contract" | "done" | "rejected";
   score: number;
   source: "phone" | "form" | "email";
 }
 
-const kanbanStatuses = ["new", "consult", "measure", "quote", "contract", "install", "done"] as const;
+const kanbanStatuses = ["new", "consult", "quote", "contract", "done"] as const;
 type KanbanStatus = (typeof kanbanStatuses)[number];
 
 const statusLabels: Record<Lead["status"], string> = {
   new: "Новая",
   contact: "Контакт",
   consult: "Консультация",
-  measure: "Замер",
   quote: "КП",
   contract: "Договор",
-  install: "Монтаж",
   done: "Завершена",
   rejected: "Отклонена",
 };
@@ -35,10 +33,8 @@ const statusStyles: Record<Lead["status"], string> = {
   new: "bg-[hsl(210_80%_52%/0.12)] text-[hsl(210,80%,52%)]",
   contact: "bg-warning/12 text-warning",
   consult: "bg-[hsl(190_60%_45%/0.12)] text-[hsl(190,60%,45%)]",
-  measure: "bg-[hsl(270_60%_55%/0.12)] text-[hsl(270,60%,55%)]",
   quote: "bg-[hsl(30_70%_50%/0.12)] text-[hsl(30,70%,50%)]",
   contract: "bg-success/12 text-success",
-  install: "bg-[hsl(330_55%_50%/0.12)] text-[hsl(330,55%,50%)]",
   done: "bg-foreground/10 text-foreground",
   rejected: "bg-destructive/12 text-destructive",
 };
@@ -46,10 +42,8 @@ const statusStyles: Record<Lead["status"], string> = {
 const kanbanColumnColors: Record<KanbanStatus, string> = {
   new: "bg-[hsl(210,80%,52%)]",
   consult: "bg-[hsl(190,60%,45%)]",
-  measure: "bg-[hsl(270,60%,55%)]",
   quote: "bg-[hsl(30,70%,50%)]",
   contract: "bg-success",
-  install: "bg-[hsl(330,55%,50%)]",
   done: "bg-foreground",
 };
 
