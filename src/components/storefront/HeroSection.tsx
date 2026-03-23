@@ -26,23 +26,12 @@ const SLIDES = [
 
 export function HeroSection({ site, banners }: Props) {
   const [current, setCurrent] = useState(0);
-  const [mouseX, setMouseX] = useState(0);
-  const [mouseY, setMouseY] = useState(0);
 
   const heroImage = banners[0]?.image_url || heroDefault;
   const slide = SLIDES[current] || SLIDES[0];
 
   const prev = () => setCurrent((c) => (c === 0 ? SLIDES.length - 1 : c - 1));
   const next = () => setCurrent((c) => (c === SLIDES.length - 1 ? 0 : c + 1));
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      setMouseX((e.clientX / window.innerWidth - 0.5) * 2);
-      setMouseY((e.clientY / window.innerHeight - 0.5) * 2);
-    };
-    window.addEventListener("mousemove", handler);
-    return () => window.removeEventListener("mousemove", handler);
-  }, []);
 
   return (
     <section className="relative h-screen min-h-[750px] bg-[#0a0a0a] overflow-hidden select-none">
