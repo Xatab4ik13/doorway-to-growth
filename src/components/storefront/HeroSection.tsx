@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -26,8 +26,6 @@ const SLIDES = [
 
 export function HeroSection({ site, banners }: Props) {
   const [current, setCurrent] = useState(0);
-  const [mouseX, setMouseX] = useState(0);
-  const [mouseY, setMouseY] = useState(0);
 
   const heroImage = banners[0]?.image_url || heroDefault;
   const slide = SLIDES[current] || SLIDES[0];
@@ -35,68 +33,19 @@ export function HeroSection({ site, banners }: Props) {
   const prev = () => setCurrent((c) => (c === 0 ? SLIDES.length - 1 : c - 1));
   const next = () => setCurrent((c) => (c === SLIDES.length - 1 ? 0 : c + 1));
 
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      setMouseX((e.clientX / window.innerWidth - 0.5) * 2);
-      setMouseY((e.clientY / window.innerHeight - 0.5) * 2);
-    };
-    window.addEventListener("mousemove", handler);
-    return () => window.removeEventListener("mousemove", handler);
-  }, []);
-
   return (
     <section className="relative h-screen min-h-[750px] bg-[#0a0a0a] overflow-hidden select-none">
 
-      {/* === HERO IMAGE — large, visible, with subtle parallax === */}
-      <motion.div
-        className="absolute inset-0 lg:left-16"
-        style={{ x: mouseX * -6, y: mouseY * -6, scale: 1.04 }}
-        transition={{ type: "tween", duration: 0.8, ease: "easeOut" }}
-      >
+      {/* === HERO IMAGE — static, no parallax === */}
+      <div className="absolute inset-0 lg:left-16">
         <img src={heroImage} alt="Салон дверей" className="w-full h-full object-cover" width={1920} height={1080} />
-        {/* Light darken — keep image visible */}
         <div className="absolute inset-0 bg-[#0a0a0a]/20" />
-      </motion.div>
+      </div>
 
-      {/* === BRANDOORS GEOMETRIC PATTERN — larger scale, diagonal fade === */}
-      <motion.div
-        className="absolute inset-0 z-[2] pointer-events-none overflow-hidden"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 2.5, delay: 0.2 }}
-      >
+      {/* === BRANDOORS GEOMETRIC PATTERN — draw-on animation === */}
+      <div className="absolute inset-0 z-[2] pointer-events-none overflow-hidden">
         <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            {/* Tile = 2x2 cells, each cell 200px. Total tile 400x400 */}
-            <pattern id="brandoors-pattern" x="0" y="0" width="400" height="400" patternUnits="userSpaceOnUse">
-              {/* Grid lines */}
-              <line x1="0" y1="0" x2="400" y2="0" stroke="rgba(255,255,255,0.06)" strokeWidth="0.6" />
-              <line x1="0" y1="200" x2="400" y2="200" stroke="rgba(255,255,255,0.06)" strokeWidth="0.6" />
-              <line x1="0" y1="400" x2="400" y2="400" stroke="rgba(255,255,255,0.06)" strokeWidth="0.6" />
-              <line x1="0" y1="0" x2="0" y2="400" stroke="rgba(255,255,255,0.06)" strokeWidth="0.6" />
-              <line x1="200" y1="0" x2="200" y2="400" stroke="rgba(255,255,255,0.06)" strokeWidth="0.6" />
-              <line x1="400" y1="0" x2="400" y2="400" stroke="rgba(255,255,255,0.06)" strokeWidth="0.6" />
-
-              {/* Cell [0,0] — quarter arcs from each corner toward cell center */}
-              <path d="M 100,0 A 100,100 0 0,1 200,100" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
-              <path d="M 200,100 A 100,100 0 0,1 100,200" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
-              <path d="M 0,100 A 100,100 0 0,0 100,0" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
-              <path d="M 100,200 A 100,100 0 0,0 0,100" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
-
-              {/* Cell [1,0] — full circle */}
-              <circle cx="300" cy="100" r="95" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
-
-              {/* Cell [0,1] — full circle */}
-              <circle cx="100" cy="300" r="95" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
-
-              {/* Cell [1,1] — quarter arcs from each corner */}
-              <path d="M 300,200 A 100,100 0 0,1 400,300" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
-              <path d="M 400,300 A 100,100 0 0,1 300,400" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
-              <path d="M 200,300 A 100,100 0 0,0 300,200" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
-              <path d="M 300,400 A 100,100 0 0,0 200,300" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
-            </pattern>
-
-            {/* Diagonal fade mask: bright top-right → transparent bottom-left */}
             <linearGradient id="pattern-fade" x1="1" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="white" stopOpacity="1" />
               <stop offset="50%" stopColor="white" stopOpacity="0.4" />
@@ -106,21 +55,85 @@ export function HeroSection({ site, banners }: Props) {
               <rect width="100%" height="100%" fill="url(#pattern-fade)" />
             </mask>
           </defs>
-          <rect width="100%" height="100%" fill="url(#brandoors-pattern)" mask="url(#diagonal-mask)" />
-        </svg>
-      </motion.div>
 
-      {/* === TOP-RIGHT CORNER ANIMATION — sweeping light === */}
-      <div className="absolute inset-0 z-[3] pointer-events-none overflow-hidden">
-        <motion.div
-          className="absolute"
+          <g mask="url(#diagonal-mask)">
+            {/* Generate grid manually for draw animation */}
+            {Array.from({ length: 8 }).map((_, col) =>
+              Array.from({ length: 5 }).map((_, row) => {
+                const x = col * 200;
+                const y = row * 200;
+                const isArcs = (col + row) % 2 === 0;
+                const delay = (col + row) * 0.15;
+                const dashLen = isArcs ? 628 : 597;
+                return (
+                  <g key={`${col}-${row}`}>
+                    {/* Grid lines for this cell */}
+                    <line x1={x} y1={y} x2={x + 200} y2={y} stroke="rgba(255,255,255,0.06)" strokeWidth="0.6">
+                      <animate attributeName="opacity" from="0" to="1" begin={`${delay}s`} dur="0.8s" fill="freeze" />
+                    </line>
+                    <line x1={x} y1={y} x2={x} y2={y + 200} stroke="rgba(255,255,255,0.06)" strokeWidth="0.6">
+                      <animate attributeName="opacity" from="0" to="1" begin={`${delay}s`} dur="0.8s" fill="freeze" />
+                    </line>
+
+                    {isArcs ? (
+                      /* Quarter arcs from corners */
+                      <>
+                        <path
+                          d={`M ${x + 100},${y} A 100,100 0 0,1 ${x + 200},${y + 100}`}
+                          fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2"
+                          strokeDasharray="157" strokeDashoffset="157"
+                        >
+                          <animate attributeName="stroke-dashoffset" to="0" begin={`${delay}s`} dur="1.2s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" />
+                        </path>
+                        <path
+                          d={`M ${x + 200},${y + 100} A 100,100 0 0,1 ${x + 100},${y + 200}`}
+                          fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2"
+                          strokeDasharray="157" strokeDashoffset="157"
+                        >
+                          <animate attributeName="stroke-dashoffset" to="0" begin={`${delay + 0.2}s`} dur="1.2s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" />
+                        </path>
+                        <path
+                          d={`M ${x},${y + 100} A 100,100 0 0,0 ${x + 100},${y}`}
+                          fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2"
+                          strokeDasharray="157" strokeDashoffset="157"
+                        >
+                          <animate attributeName="stroke-dashoffset" to="0" begin={`${delay + 0.1}s`} dur="1.2s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" />
+                        </path>
+                        <path
+                          d={`M ${x + 100},${y + 200} A 100,100 0 0,0 ${x},${y + 100}`}
+                          fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2"
+                          strokeDasharray="157" strokeDashoffset="157"
+                        >
+                          <animate attributeName="stroke-dashoffset" to="0" begin={`${delay + 0.3}s`} dur="1.2s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" />
+                        </path>
+                      </>
+                    ) : (
+                      /* Full circle */
+                      <circle
+                        cx={x + 100} cy={y + 100} r="95"
+                        fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2"
+                        strokeDasharray="597" strokeDashoffset="597"
+                      >
+                        <animate attributeName="stroke-dashoffset" to="0" begin={`${delay}s`} dur="1.8s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" />
+                      </circle>
+                    )}
+                  </g>
+                );
+              })
+            )}
+          </g>
+        </svg>
+      </div>
+
+      {/* === TOP-RIGHT CORNER GLOW — static, no pulse === */}
+      <div className="absolute inset-0 z-[3] pointer-events-none">
+        <div
           style={{
-            top: "-20%", right: "-20%", width: "80%", height: "80%",
-            background: "conic-gradient(from 200deg at 70% 30%, rgba(197,165,114,0.12) 0deg, transparent 60deg, transparent 300deg, rgba(197,165,114,0.06) 360deg)",
-            filter: "blur(30px)",
+            position: "absolute",
+            top: "-10%", right: "-10%", width: "60%", height: "60%",
+            background: "radial-gradient(ellipse at center, rgba(197,165,114,0.1) 0%, transparent 70%)",
+            filter: "blur(40px)",
           }}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
         />
       </div>
 
