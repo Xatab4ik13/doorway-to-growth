@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Search, Bell, ChevronRight, LogOut, Settings, User, X } from "lucide-react";
 import { useCrmNavigation } from "./CrmNavigationContext";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 interface CrmHeaderProps {
   title: string;
