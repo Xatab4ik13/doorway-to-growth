@@ -58,70 +58,61 @@ export function HeroSection({ site, banners }: Props) {
         <div className="absolute inset-0 bg-[#0a0a0a]/20" />
       </motion.div>
 
-      {/* === REPEATING GEOMETRIC PATTERN overlay === */}
-      <div className="absolute inset-0 z-[2] pointer-events-none overflow-hidden">
-        <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1400 900">
+      {/* === BRANDOORS GEOMETRIC PATTERN — circles & quarter-circles grid === */}
+      <motion.div
+        className="absolute inset-0 z-[2] pointer-events-none overflow-hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2, delay: 0.3 }}
+      >
+        <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            {/* Repeating diamond/rhombus pattern */}
-            <pattern id="geo-diamonds" x="0" y="0" width="140" height="140" patternUnits="userSpaceOnUse">
-              {/* Diamond shape */}
-              <polygon points="70,5 135,70 70,135 5,70" fill="none" stroke="rgba(197,165,114,0.12)" strokeWidth="0.6" />
-              {/* Inner smaller diamond */}
-              <polygon points="70,25 115,70 70,115 25,70" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="0.4" />
-              {/* Center dot */}
-              <circle cx="70" cy="70" r="1.5" fill="rgba(197,165,114,0.15)" />
-              {/* Corner accents */}
-              <line x1="0" y1="0" x2="20" y2="20" stroke="rgba(197,165,114,0.06)" strokeWidth="0.4" />
-              <line x1="140" y1="0" x2="120" y2="20" stroke="rgba(197,165,114,0.06)" strokeWidth="0.4" />
-              <line x1="0" y1="140" x2="20" y2="120" stroke="rgba(197,165,114,0.06)" strokeWidth="0.4" />
-              <line x1="140" y1="140" x2="120" y2="120" stroke="rgba(197,165,114,0.06)" strokeWidth="0.4" />
+            <pattern id="brandoors-geo" x="0" y="0" width="180" height="180" patternUnits="userSpaceOnUse">
+              {/* Grid lines */}
+              <line x1="0" y1="0" x2="180" y2="0" stroke="rgba(197,165,114,0.08)" strokeWidth="0.5" />
+              <line x1="0" y1="90" x2="180" y2="90" stroke="rgba(197,165,114,0.08)" strokeWidth="0.5" />
+              <line x1="0" y1="0" x2="0" y2="180" stroke="rgba(197,165,114,0.08)" strokeWidth="0.5" />
+              <line x1="90" y1="0" x2="90" y2="180" stroke="rgba(197,165,114,0.08)" strokeWidth="0.5" />
+              {/* Top-left cell: full circle */}
+              <circle cx="45" cy="45" r="40" fill="none" stroke="rgba(197,165,114,0.12)" strokeWidth="0.8" />
+              {/* Top-right cell: quarter circle from top-right corner */}
+              <path d="M 180 0 A 85 85 0 0 0 95 85" fill="none" stroke="rgba(197,165,114,0.1)" strokeWidth="0.8" />
+              {/* Bottom-left cell: quarter circle from bottom-left corner */}
+              <path d="M 0 180 A 85 85 0 0 0 85 95" fill="none" stroke="rgba(197,165,114,0.1)" strokeWidth="0.8" />
+              {/* Bottom-right cell: full circle */}
+              <circle cx="135" cy="135" r="40" fill="none" stroke="rgba(197,165,114,0.12)" strokeWidth="0.8" />
+              {/* Extra quarter arcs for density */}
+              <path d="M 0 0 A 85 85 0 0 1 85 85" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+              <path d="M 180 180 A 85 85 0 0 1 95 95" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
             </pattern>
           </defs>
-          <rect width="100%" height="100%" fill="url(#geo-diamonds)" />
+          <rect width="100%" height="100%" fill="url(#brandoors-geo)" />
         </svg>
-      </div>
+      </motion.div>
 
-      {/* === ANIMATED FLOATING GEOMETRIC SHAPES — sparse, large === */}
+      {/* === ANIMATED FLOATING CIRCLES — slow drift === */}
       <div className="absolute inset-0 z-[3] pointer-events-none hidden lg:block">
-        {/* Large rotating diamond — top right */}
-        <motion.div
-          className="absolute"
-          style={{ top: "8%", right: "12%", width: 220, height: 220 }}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-        >
-          <svg viewBox="0 0 220 220" className="w-full h-full">
-            <polygon points="110,5 215,110 110,215 5,110" fill="none" stroke="rgba(197,165,114,0.18)" strokeWidth="0.8" />
-            <polygon points="110,30 190,110 110,190 30,110" fill="none" stroke="rgba(197,165,114,0.08)" strokeWidth="0.5" />
-          </svg>
-        </motion.div>
-
-        {/* Medium diamond — center left */}
-        <motion.div
-          className="absolute"
-          style={{ top: "35%", left: "18%", width: 160, height: 160 }}
-          animate={{ rotate: -360 }}
-          transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
-        >
-          <svg viewBox="0 0 160 160" className="w-full h-full">
-            <polygon points="80,5 155,80 80,155 5,80" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.6" />
-          </svg>
-        </motion.div>
-
-        {/* Small diamond — bottom center */}
-        <motion.div
-          className="absolute"
-          style={{ bottom: "25%", left: "45%", width: 100, height: 100 }}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
-        >
-          <svg viewBox="0 0 100 100" className="w-full h-full">
-            <polygon points="50,3 97,50 50,97 3,50" fill="none" stroke="rgba(197,165,114,0.1)" strokeWidth="0.5" />
-          </svg>
-        </motion.div>
+        {[
+          { size: 300, top: "5%", left: "60%", dur: 50, dir: 1, stroke: "rgba(197,165,114,0.1)" },
+          { size: 220, top: "40%", left: "10%", dur: 65, dir: -1, stroke: "rgba(197,165,114,0.07)" },
+          { size: 180, top: "60%", left: "70%", dur: 45, dir: 1, stroke: "rgba(255,255,255,0.04)" },
+        ].map((c, i) => (
+          <motion.div
+            key={i}
+            className="absolute"
+            style={{ top: c.top, left: c.left, width: c.size, height: c.size }}
+            animate={{ rotate: 360 * c.dir, scale: [1, 1.05, 1] }}
+            transition={{ rotate: { duration: c.dur, repeat: Infinity, ease: "linear" }, scale: { duration: 12, repeat: Infinity, ease: "easeInOut" } }}
+          >
+            <svg viewBox={`0 0 ${c.size} ${c.size}`} className="w-full h-full">
+              <circle cx={c.size / 2} cy={c.size / 2} r={c.size / 2 - 4} fill="none" stroke={c.stroke} strokeWidth="0.8" />
+              <path d={`M 0 0 A ${c.size / 2} ${c.size / 2} 0 0 1 ${c.size / 2} ${c.size / 2}`} fill="none" stroke={c.stroke} strokeWidth="0.6" />
+            </svg>
+          </motion.div>
+        ))}
       </div>
 
-      {/* === DIAGONAL GOLD BEAMS — parallax === */}
+      {/* === GOLD ACCENT LINES — parallax === */}
       <motion.div
         className="absolute inset-0 z-[4] pointer-events-none hidden lg:block"
         initial={{ opacity: 0 }}
@@ -132,20 +123,10 @@ export function HeroSection({ site, banners }: Props) {
           className="absolute"
           style={{
             top: 0, left: "58%", width: "1px", height: "120%",
-            background: "linear-gradient(180deg, transparent 5%, rgba(197,165,114,0.35) 30%, rgba(197,165,114,0.1) 70%, transparent 95%)",
+            background: "linear-gradient(180deg, transparent 5%, rgba(197,165,114,0.25) 30%, rgba(197,165,114,0.08) 70%, transparent 95%)",
             transform: `rotate(18deg) translateX(${mouseX * 4}px)`,
             transformOrigin: "top center",
             transition: "transform 1s ease-out",
-          }}
-        />
-        <div
-          className="absolute"
-          style={{
-            top: 0, left: "63%", width: "1px", height: "120%",
-            background: "linear-gradient(180deg, transparent 10%, rgba(197,165,114,0.15) 40%, transparent 85%)",
-            transform: `rotate(18deg) translateX(${mouseX * 6}px)`,
-            transformOrigin: "top center",
-            transition: "transform 1.2s ease-out",
           }}
         />
       </motion.div>
