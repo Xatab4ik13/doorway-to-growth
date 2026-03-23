@@ -58,7 +58,7 @@ export function HeroSection({ site, banners }: Props) {
         <div className="absolute inset-0 bg-[#0a0a0a]/20" />
       </motion.div>
 
-      {/* === BRANDOORS GEOMETRIC PATTERN — exact checkerboard: circles + quarter-arcs === */}
+      {/* === BRANDOORS GEOMETRIC PATTERN — larger scale, diagonal fade === */}
       <motion.div
         className="absolute inset-0 z-[2] pointer-events-none overflow-hidden"
         initial={{ opacity: 0 }}
@@ -67,63 +67,62 @@ export function HeroSection({ site, banners }: Props) {
       >
         <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            {/* One tile = 2x2 cells. Cell size = 90px. Tile = 180x180 */}
-            <pattern id="brandoors-pattern" x="0" y="0" width="180" height="180" patternUnits="userSpaceOnUse">
-              {/* Grid lines — all 3 internal + borders */}
-              <line x1="0" y1="0" x2="180" y2="0" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
-              <line x1="0" y1="90" x2="180" y2="90" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
-              <line x1="0" y1="180" x2="180" y2="180" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
-              <line x1="0" y1="0" x2="0" y2="180" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
-              <line x1="90" y1="0" x2="90" y2="180" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
-              <line x1="180" y1="0" x2="180" y2="180" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
+            {/* Larger tile: 260x260, cell = 130px */}
+            <pattern id="brandoors-pattern" x="0" y="0" width="260" height="260" patternUnits="userSpaceOnUse">
+              {/* Grid lines */}
+              <line x1="0" y1="0" x2="260" y2="0" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
+              <line x1="0" y1="130" x2="260" y2="130" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
+              <line x1="0" y1="260" x2="260" y2="260" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
+              <line x1="0" y1="0" x2="0" y2="260" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
+              <line x1="130" y1="0" x2="130" y2="260" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
+              <line x1="260" y1="0" x2="260" y2="260" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
 
-              {/* Cell [0,0] — quarter arcs from all 4 corners */}
-              <path d="M 0,0 A 42,42 0 0,1 42,0" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" transform="translate(0,0) rotate(90,0,0)" />
-              <path d="M 45,0 A 45,45 0 0,1 90,45" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-              <path d="M 90,45 A 45,45 0 0,1 45,90" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-              <path d="M 0,45 A 45,45 0 0,0 45,0" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-              <path d="M 45,90 A 45,45 0 0,0 0,45" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+              {/* Cell [0,0] — quarter arcs from corners */}
+              <path d="M 65,0 A 65,65 0 0,1 130,65" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+              <path d="M 130,65 A 65,65 0 0,1 65,130" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+              <path d="M 0,65 A 65,65 0 0,0 65,0" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+              <path d="M 65,130 A 65,65 0 0,0 0,65" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
 
               {/* Cell [1,0] — full circle */}
-              <circle cx="135" cy="45" r="42" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+              <circle cx="195" cy="65" r="60" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
 
               {/* Cell [0,1] — full circle */}
-              <circle cx="45" cy="135" r="42" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+              <circle cx="65" cy="195" r="60" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
 
-              {/* Cell [1,1] — quarter arcs from all 4 corners */}
-              <path d="M 135,90 A 45,45 0 0,1 180,135" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-              <path d="M 180,135 A 45,45 0 0,1 135,180" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-              <path d="M 90,135 A 45,45 0 0,0 135,90" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-              <path d="M 135,180 A 45,45 0 0,0 90,135" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+              {/* Cell [1,1] — quarter arcs from corners */}
+              <path d="M 195,130 A 65,65 0 0,1 260,195" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+              <path d="M 260,195 A 65,65 0 0,1 195,260" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+              <path d="M 130,195 A 65,65 0 0,0 195,130" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+              <path d="M 195,260 A 65,65 0 0,0 130,195" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
             </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#brandoors-pattern)" />
-        </svg>
 
-        {/* Diagonal glow: bright top-right, fading to bottom-left */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: "radial-gradient(ellipse at 95% 5%, rgba(197,165,114,0.15) 0%, rgba(197,165,114,0.06) 25%, transparent 60%)",
-          }}
-        />
+            {/* Diagonal fade mask: bright top-right → transparent bottom-left */}
+            <linearGradient id="pattern-fade" x1="1" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="white" stopOpacity="1" />
+              <stop offset="50%" stopColor="white" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="white" stopOpacity="0.05" />
+            </linearGradient>
+            <mask id="diagonal-mask">
+              <rect width="100%" height="100%" fill="url(#pattern-fade)" />
+            </mask>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#brandoors-pattern)" mask="url(#diagonal-mask)" />
+        </svg>
       </motion.div>
 
-      {/* === ANIMATED GLOW PULSE — top-right corner === */}
-      <motion.div
-        className="absolute inset-0 z-[3] pointer-events-none"
-        animate={{ opacity: [0.4, 1, 0.4] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <div
+      {/* === TOP-RIGHT CORNER ANIMATION — sweeping light === */}
+      <div className="absolute inset-0 z-[3] pointer-events-none overflow-hidden">
+        <motion.div
           className="absolute"
           style={{
-            top: "-10%", right: "-10%", width: "70%", height: "70%",
-            background: "radial-gradient(ellipse at center, rgba(197,165,114,0.08) 0%, transparent 70%)",
-            filter: "blur(40px)",
+            top: "-20%", right: "-20%", width: "80%", height: "80%",
+            background: "conic-gradient(from 200deg at 70% 30%, rgba(197,165,114,0.12) 0deg, transparent 60deg, transparent 300deg, rgba(197,165,114,0.06) 360deg)",
+            filter: "blur(30px)",
           }}
+          animate={{ rotate: 360 }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
         />
-      </motion.div>
+      </div>
 
       {/* === CONTENT AREA — bottom with semi-transparent backdrop === */}
       <motion.div
