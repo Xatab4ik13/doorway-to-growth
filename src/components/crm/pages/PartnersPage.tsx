@@ -4,15 +4,23 @@ import { Pagination } from "@/components/crm/Pagination";
 import { EmptyState } from "@/components/crm/EmptyState";
 import { Modal } from "@/components/crm/Modal";
 import { ConfirmDialog } from "@/components/crm/ConfirmDialog";
-import { Search, Plus, MapPin, MoreHorizontal, ArrowUpDown, Star, Users, Trash2 } from "lucide-react";
+import { Search, Plus, MapPin, MoreHorizontal, Users, Trash2, KeyRound, Loader2 } from "lucide-react";
 import { PartnerProfile } from "@/components/crm/PartnerProfile";
 import { toast } from "@/hooks/use-toast";
 import { usePartners, useCreatePartner, useDeletePartner, useUpdatePartner, type Partner } from "@/hooks/usePartners";
+import { supabase } from "@/integrations/supabase/client";
 
 const PAGE_SIZE = 10;
 
 function slugify(text: string) {
   return text.toLowerCase().replace(/[^a-zа-яё0-9]+/gi, "-").replace(/^-|-$/g, "");
+}
+
+function generatePassword() {
+  const chars = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+  let pw = "";
+  for (let i = 0; i < 10; i++) pw += chars[Math.floor(Math.random() * chars.length)];
+  return pw;
 }
 
 export function PartnersPage() {
@@ -28,6 +36,7 @@ export function PartnersPage() {
   const [addOpen, setAddOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Partner | null>(null);
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
 
   // Form state
   const [formName, setFormName] = useState("");
@@ -36,24 +45,58 @@ export function PartnersPage() {
   const [formAddress, setFormAddress] = useState("");
   const [formPhone, setFormPhone] = useState("");
   const [formEmail, setFormEmail] = useState("");
+  const [createAccount, setCreateAccount] = useState(true);
+
+  // Credentials modal
+  const [credentials, setCredentials] = useState<{ email: string; password: string } | null>(null);
 
   const resetForm = () => {
-    setFormName(""); setFormCity("Москва"); setFormDistrict(""); setFormAddress(""); setFormPhone(""); setFormEmail("");
+    setFormName(""); setFormCity("Москва"); setFormDistrict(""); setFormAddress(""); setFormPhone(""); setFormEmail(""); setCreateAccount(true);
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!formName.trim() || !formDistrict.trim()) return;
-    createPartner.mutate({
-      name: formName.trim(),
-      slug: slugify(formName),
-      city: formCity.trim(),
-      district: formDistrict.trim(),
-      address: formAddress.trim() || undefined,
-      phone: formPhone.trim() || undefined,
-      email: formEmail.trim() || undefined,
-    });
-    setAddOpen(false);
-    resetForm();
+    setCreating(true);
+
+    try {
+      let userId: string | undefined;
+
+      if (createAccount && formEmail.trim()) {
+        const password = generatePassword();
+        const { data, error } = await supabase.functions.invoke("create-user", {
+          body: {
+            email: formEmail.trim(),
+            password,
+            role: "partner",
+            full_name: formName.trim(),
+          },
+        });
+
+        if (error) throw new Error(error.message);
+        if (data?.error) throw new Error(data.error);
+
+        userId = data.user_id;
+        setCredentials({ email: formEmail.trim(), password });
+      }
+
+      createPartner.mutate({
+        name: formName.trim(),
+        slug: slugify(formName),
+        city: formCity.trim(),
+        district: formDistrict.trim(),
+        address: formAddress.trim() || undefined,
+        phone: formPhone.trim() || undefined,
+        email: formEmail.trim() || undefined,
+        user_id: userId,
+      } as any);
+
+      setAddOpen(false);
+      resetForm();
+    } catch (e: any) {
+      toast({ title: "Ошибка создания аккаунта", description: e.message, variant: "destructive" });
+    } finally {
+      setCreating(false);
+    }
   };
 
   const handleDelete = (partner: Partner) => {
@@ -69,6 +112,8 @@ export function PartnersPage() {
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const inputCls = "h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow";
 
   if (selectedPartner !== null) {
     return <PartnerProfile onBack={() => setSelectedPartner(null)} />;
@@ -144,6 +189,7 @@ export function PartnersPage() {
                   <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Район</th>
                   <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground hidden lg:table-cell">Телефон</th>
                   <th className="px-5 py-3.5 text-right text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Заявки</th>
+                  <th className="px-5 py-3.5 text-center text-[11px] font-medium uppercase tracking-wider text-muted-foreground w-20">Аккаунт</th>
                   <th className="px-5 py-3.5 text-center text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Статус</th>
                   <th className="px-5 py-3.5 w-10"></th>
                 </tr>
@@ -173,6 +219,15 @@ export function PartnersPage() {
                     </td>
                     <td className="px-5 py-3.5 text-sm text-foreground hidden lg:table-cell">{p.phone ?? "—"}</td>
                     <td className="px-5 py-3.5 text-right text-sm font-semibold tabular-nums text-foreground">{p.leads_count ?? 0}</td>
+                    <td className="px-5 py-3.5 text-center">
+                      {p.user_id ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-medium text-success">
+                          <KeyRound className="h-3 w-3" /> Есть
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-muted-foreground">—</span>
+                      )}
+                    </td>
                     <td className="px-5 py-3.5 text-center">
                       <span className={`inline-block h-2.5 w-2.5 rounded-full ${p.is_active ? "bg-success" : "bg-muted-foreground/30"}`} />
                     </td>
@@ -223,6 +278,7 @@ export function PartnersPage() {
         </div>
       )}
 
+      {/* Add partner modal */}
       <Modal
         open={addOpen}
         onClose={() => { setAddOpen(false); resetForm(); }}
@@ -230,34 +286,80 @@ export function PartnersPage() {
         footer={
           <>
             <button onClick={() => { setAddOpen(false); resetForm(); }} className="h-9 px-4 rounded-xl border border-border text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors">Отмена</button>
-            <button onClick={handleAdd} disabled={!formName.trim() || !formDistrict.trim()} className="h-9 px-4 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-40">Добавить</button>
+            <button onClick={handleAdd} disabled={!formName.trim() || !formDistrict.trim() || creating} className="h-9 px-4 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-40 flex items-center gap-2">
+              {creating && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+              Добавить
+            </button>
           </>
         }
       >
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
             <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Название *</label>
-            <input value={formName} onChange={(e) => setFormName(e.target.value)} placeholder="Brandoors Район" className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
+            <input value={formName} onChange={(e) => setFormName(e.target.value)} placeholder="Brandoors Район" className={inputCls} />
           </div>
           <div>
             <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Город</label>
-            <input value={formCity} onChange={(e) => setFormCity(e.target.value)} className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
+            <input value={formCity} onChange={(e) => setFormCity(e.target.value)} className={inputCls} />
           </div>
           <div>
             <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Район *</label>
-            <input value={formDistrict} onChange={(e) => setFormDistrict(e.target.value)} placeholder="ЮВАО" className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
+            <input value={formDistrict} onChange={(e) => setFormDistrict(e.target.value)} placeholder="ЮВАО" className={inputCls} />
           </div>
           <div className="col-span-2">
             <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Адрес</label>
-            <input value={formAddress} onChange={(e) => setFormAddress(e.target.value)} placeholder="ул. Примерная, 1" className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
+            <input value={formAddress} onChange={(e) => setFormAddress(e.target.value)} placeholder="ул. Примерная, 1" className={inputCls} />
           </div>
           <div>
             <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Телефон</label>
-            <input value={formPhone} onChange={(e) => setFormPhone(e.target.value)} placeholder="+7 (999) 123-45-67" className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
+            <input value={formPhone} onChange={(e) => setFormPhone(e.target.value)} placeholder="+7 (999) 123-45-67" className={inputCls} />
           </div>
           <div>
             <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Email</label>
-            <input value={formEmail} onChange={(e) => setFormEmail(e.target.value)} placeholder="partner@brandoors.ru" className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
+            <input value={formEmail} onChange={(e) => setFormEmail(e.target.value)} placeholder="partner@brandoors.ru" className={inputCls} />
+          </div>
+
+          {/* Account toggle */}
+          <div className="col-span-2 rounded-xl border border-border bg-muted/30 p-3">
+            <label className="flex items-center gap-2.5 cursor-pointer">
+              <input type="checkbox" checked={createAccount} onChange={(e) => setCreateAccount(e.target.checked)} className="h-4 w-4 rounded accent-foreground" />
+              <div>
+                <p className="text-xs font-medium text-foreground">Создать аккаунт для партнёра</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Логин и пароль будут сгенерированы автоматически. Email обязателен.</p>
+              </div>
+            </label>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Credentials modal */}
+      <Modal
+        open={!!credentials}
+        onClose={() => setCredentials(null)}
+        title="Аккаунт партнёра создан"
+        footer={
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(`Email: ${credentials?.email}\nПароль: ${credentials?.password}`);
+              toast({ title: "Скопировано в буфер обмена" });
+            }}
+            className="h-9 px-4 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors"
+          >
+            Скопировать
+          </button>
+        }
+      >
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">Сохраните данные — пароль показывается только один раз.</p>
+          <div className="rounded-xl bg-muted p-4 space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Email:</span>
+              <span className="font-medium text-foreground font-mono">{credentials?.email}</span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Пароль:</span>
+              <span className="font-medium text-foreground font-mono">{credentials?.password}</span>
+            </div>
           </div>
         </div>
       </Modal>
