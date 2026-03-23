@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Search, Bell, ChevronRight, LogOut, Settings, User, X } from "lucide-react";
 import { useCrmNavigation } from "./CrmNavigationContext";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 interface CrmHeaderProps {
   title: string;
@@ -18,6 +20,8 @@ const notifications = [
 export function CrmHeader({ title, breadcrumbs, onNavigate: onNavigateProp }: CrmHeaderProps) {
   const { navigate: ctxNavigate } = useCrmNavigation();
   const nav = onNavigateProp || ctxNavigate;
+  const { user, signOut } = useAuth();
+  const routerNavigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [notifOpen, setNotifOpen] = useState(false);
@@ -156,10 +160,10 @@ export function CrmHeader({ title, breadcrumbs, onNavigate: onNavigateProp }: Cr
             className="flex items-center gap-2 rounded-xl px-1.5 py-1 hover:bg-muted transition-colors active:scale-[0.97]"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground text-xs font-semibold text-primary-foreground">
-              АД
+              {(user?.email?.[0] ?? "A").toUpperCase()}
             </div>
             <div className="hidden sm:block text-left">
-              <p className="text-xs font-medium text-foreground leading-none">Александр Д.</p>
+              <p className="text-xs font-medium text-foreground leading-none">{user?.email?.split("@")[0] ?? "Admin"}</p>
               <p className="text-[10px] text-muted-foreground leading-none mt-0.5">Администратор</p>
             </div>
           </button>
@@ -167,8 +171,8 @@ export function CrmHeader({ title, breadcrumbs, onNavigate: onNavigateProp }: Cr
           {userOpen && (
             <div className="absolute right-0 top-full mt-2 w-52 rounded-2xl border border-border bg-card shadow-lg z-50 overflow-hidden animate-scale-in">
               <div className="px-4 py-3 border-b border-border">
-                <p className="text-sm font-medium text-foreground">Александр Дорохов</p>
-                <p className="text-[11px] text-muted-foreground">admin@brandoors.ru</p>
+                <p className="text-sm font-medium text-foreground">{user?.email?.split("@")[0] ?? "Admin"}</p>
+                <p className="text-[11px] text-muted-foreground">{user?.email ?? ""}</p>
               </div>
               <div className="py-1">
                 <button
@@ -187,7 +191,10 @@ export function CrmHeader({ title, breadcrumbs, onNavigate: onNavigateProp }: Cr
                 </button>
               </div>
               <div className="border-t border-border py-1">
-                <button className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-destructive hover:bg-destructive/5 transition-colors">
+                <button
+                  onClick={async () => { await signOut(); routerNavigate("/login"); }}
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-destructive hover:bg-destructive/5 transition-colors"
+                >
                   <LogOut className="h-4 w-4" />
                   Выйти
                 </button>

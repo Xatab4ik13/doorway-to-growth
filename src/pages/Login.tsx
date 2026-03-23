@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import logoFull from "@/assets/logo.png";
 
 export default function LoginPage() {
@@ -7,12 +9,24 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Mock login — will be connected to backend later
-    setTimeout(() => setLoading(false), 1500);
+    setError(null);
+
+    const { error } = await signIn(email, password);
+    if (error) {
+      setError(error === "Invalid login credentials" ? "Неверный email или пароль" : error);
+      setLoading(false);
+      return;
+    }
+
+    // Role-based redirect will happen via AuthRedirect
+    navigate("/");
   };
 
   return (
@@ -34,7 +48,6 @@ export default function LoginPage() {
       {/* Right panel — form */}
       <div className="flex-1 flex items-center justify-center px-6">
         <div className="w-full max-w-sm">
-          {/* Mobile logo */}
           <div className="lg:hidden mb-10 flex justify-center">
             <img src={logoFull} alt="Brandoors" className="h-7 object-contain" />
           </div>
@@ -42,6 +55,12 @@ export default function LoginPage() {
           <div className="rounded-2xl border border-border bg-card p-8 shadow-lg">
             <h2 className="text-lg font-semibold text-foreground text-center">Вход в CRM</h2>
             <p className="text-sm text-muted-foreground text-center mt-1 mb-8">Введите данные для входа в систему</p>
+
+            {error && (
+              <div className="mb-4 rounded-xl bg-destructive/10 border border-destructive/20 px-4 py-3 text-sm text-destructive">
+                {error}
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
