@@ -7,41 +7,26 @@ import { ConfirmDialog } from "@/components/crm/ConfirmDialog";
 import { Search, Plus, LayoutGrid, List, MoreHorizontal, ArrowUpDown, Download, Upload, CheckSquare, Package, Trash2 } from "lucide-react";
 import { ProductDetail } from "@/components/crm/ProductDetail";
 import { toast } from "@/hooks/use-toast";
-
-interface Product {
-  id: number;
-  name: string;
-  category: string;
-  rrp: number;
-  material: string;
-  color: string;
-  inStock: boolean;
-}
-
-const categories = ["Все", "Межкомнатные", "Входные", "Раздвижные", "Складные"];
-
-const initialProducts: Product[] = [
-  { id: 1, name: "Milano Premium", category: "Межкомнатные", rrp: 28500, material: "Экошпон", color: "Дуб натуральный", inStock: true },
-  { id: 2, name: "Forte Shield", category: "Входные", rrp: 45200, material: "Сталь", color: "Венге", inStock: true },
-  { id: 3, name: "Slide Pro", category: "Раздвижные", rrp: 34800, material: "МДФ", color: "Белый матовый", inStock: true },
-  { id: 4, name: "Classic Oak", category: "Межкомнатные", rrp: 19900, material: "Массив", color: "Дуб античный", inStock: true },
-  { id: 5, name: "Loft Steel", category: "Входные", rrp: 52100, material: "Сталь", color: "Чёрный", inStock: false },
-  { id: 6, name: "Elegance White", category: "Межкомнатные", rrp: 22300, material: "Экошпон", color: "Белый ясень", inStock: true },
-  { id: 7, name: "Compact Fold", category: "Складные", rrp: 31400, material: "МДФ", color: "Серый", inStock: true },
-  { id: 8, name: "Guardian Max", category: "Входные", rrp: 67800, material: "Сталь", color: "Бронза", inStock: true },
-  { id: 9, name: "Natura Soft", category: "Межкомнатные", rrp: 25600, material: "Массив", color: "Орех", inStock: false },
-  { id: 10, name: "Slide Glass", category: "Раздвижные", rrp: 41200, material: "Стекло/Алюминий", color: "Прозрачный", inStock: true },
-];
+import { useProducts, useCategories, useCreateProduct, useDeleteProduct, useUpdateProduct, type Product } from "@/hooks/useProducts";
 
 const PAGE_SIZE = 8;
 
+function slugify(text: string) {
+  return text.toLowerCase().replace(/[^a-zа-яё0-9]+/gi, "-").replace(/^-|-$/g, "");
+}
+
 export function CatalogPage() {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const { data: products = [], isLoading } = useProducts();
+  const { data: categories = [] } = useCategories();
+  const createProduct = useCreateProduct();
+  const deleteProduct = useDeleteProduct();
+  const updateProduct = useUpdateProduct();
+
   const [view, setView] = useState<"table" | "grid">("table");
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("Все");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [massMode, setMassMode] = useState(false);
   const [page, setPage] = useState(1);
   const [addOpen, setAddOpen] = useState(false);
@@ -50,54 +35,55 @@ export function CatalogPage() {
 
   // Form state
   const [formName, setFormName] = useState("");
-  const [formCategory, setFormCategory] = useState("Межкомнатные");
+  const [formCategoryId, setFormCategoryId] = useState("");
   const [formRrp, setFormRrp] = useState("");
   const [formMaterial, setFormMaterial] = useState("");
   const [formColor, setFormColor] = useState("");
 
   const resetForm = () => {
-    setFormName(""); setFormCategory("Межкомнатные"); setFormRrp(""); setFormMaterial(""); setFormColor("");
+    setFormName(""); setFormCategoryId(""); setFormRrp(""); setFormMaterial(""); setFormColor("");
   };
 
   const handleAdd = () => {
     if (!formName.trim() || !formRrp.trim()) return;
-    const newProduct: Product = {
-      id: Date.now(),
+    createProduct.mutate({
       name: formName.trim(),
-      category: formCategory,
+      slug: slugify(formName),
+      category_id: formCategoryId || undefined,
       rrp: Number(formRrp),
-      material: formMaterial.trim(),
-      color: formColor.trim(),
-      inStock: true,
-    };
-    setProducts((prev) => [newProduct, ...prev]);
+      specifications: {
+        ...(formMaterial ? { material: formMaterial } : {}),
+        ...(formColor ? { color: formColor } : {}),
+      },
+    });
     setAddOpen(false);
     resetForm();
-    toast({ title: "Товар добавлен", description: newProduct.name });
   };
 
   const handleDelete = (product: Product) => {
-    setProducts((prev) => prev.filter((p) => p.id !== product.id));
-    toast({ title: "Товар удалён", description: product.name, variant: "destructive" });
+    deleteProduct.mutate(product.id);
+    setDeleteTarget(null);
   };
 
   const handleBulkDelete = () => {
-    setProducts((prev) => prev.filter((p) => !selectedIds.has(p.id)));
-    toast({ title: `Удалено товаров: ${selectedIds.size}`, variant: "destructive" });
+    selectedIds.forEach((id) => deleteProduct.mutate(id));
     setSelectedIds(new Set());
     setMassMode(false);
+    setBulkDeleteOpen(false);
   };
+
+  const categoryNames = ["Все", ...categories.map((c) => c.name)];
 
   const filtered = products.filter((p) => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
-    const matchCat = activeCategory === "Все" || p.category === activeCategory;
+    const matchCat = activeCategory === "Все" || p.category?.name === activeCategory;
     return matchSearch && matchCat;
   });
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  const toggleSelect = (id: number) => {
+  const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
       next.has(id) ? next.delete(id) : next.add(id);
@@ -113,12 +99,25 @@ export function CatalogPage() {
     }
   };
 
+  const specs = (p: Product) => p.specifications as Record<string, string> | null;
+
+  if (isLoading) {
+    return (
+      <div className="px-4 sm:px-8 py-6">
+        <CrmHeader title="Каталог" />
+        <div className="flex items-center justify-center py-20">
+          <div className="h-8 w-8 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="px-4 sm:px-8 py-6">
       <CrmHeader title="Каталог" />
 
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6 opacity-0 animate-fade-up">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-2 flex-wrap">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -130,7 +129,7 @@ export function CatalogPage() {
             />
           </div>
           <div className="flex items-center gap-1 overflow-x-auto">
-            {categories.map((cat) => (
+            {categoryNames.map((cat) => (
               <button
                 key={cat}
                 onClick={() => { setActiveCategory(cat); setPage(1); }}
@@ -156,37 +155,24 @@ export function CatalogPage() {
             <CheckSquare className="h-4 w-4" />
           </button>
           <button className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground active:scale-95 transition-colors" title="Импорт"
-            onClick={() => toast({ title: "Импорт", description: "Функция будет доступна после подключения бекенда" })}
+            onClick={() => toast({ title: "Импорт", description: "Загрузите Excel/CSV файл для импорта товаров" })}
           >
             <Upload className="h-4 w-4" />
           </button>
           <button className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground active:scale-95 transition-colors" title="Экспорт"
-            onClick={() => toast({ title: "Экспорт", description: "Функция будет доступна после подключения бекенда" })}
+            onClick={() => toast({ title: "Экспорт", description: "Функция экспорта будет добавлена" })}
           >
             <Download className="h-4 w-4" />
           </button>
           <div className="flex items-center rounded-xl border border-border bg-card overflow-hidden">
-            <button
-              onClick={() => setView("table")}
-              className={`flex h-9 w-9 items-center justify-center transition-colors active:scale-95 ${
-                view === "table" ? "bg-foreground text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
+            <button onClick={() => setView("table")} className={`flex h-9 w-9 items-center justify-center transition-colors active:scale-95 ${view === "table" ? "bg-foreground text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
               <List className="h-4 w-4" />
             </button>
-            <button
-              onClick={() => setView("grid")}
-              className={`flex h-9 w-9 items-center justify-center transition-colors active:scale-95 ${
-                view === "grid" ? "bg-foreground text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
+            <button onClick={() => setView("grid")} className={`flex h-9 w-9 items-center justify-center transition-colors active:scale-95 ${view === "grid" ? "bg-foreground text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
               <LayoutGrid className="h-4 w-4" />
             </button>
           </div>
-          <button
-            onClick={() => setAddOpen(true)}
-            className="flex h-9 items-center gap-2 rounded-xl bg-foreground px-4 text-xs font-medium text-primary-foreground transition-colors hover:bg-foreground/90 active:scale-95"
-          >
+          <button onClick={() => setAddOpen(true)} className="flex h-9 items-center gap-2 rounded-xl bg-foreground px-4 text-xs font-medium text-primary-foreground transition-colors hover:bg-foreground/90 active:scale-95">
             <Plus className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Добавить</span>
           </button>
@@ -195,23 +181,22 @@ export function CatalogPage() {
 
       {/* Mass actions bar */}
       {massMode && selectedIds.size > 0 && (
-        <div className="flex items-center gap-3 mb-4 rounded-xl bg-foreground/5 border border-border px-4 py-2.5 opacity-0 animate-scale-in">
+        <div className="flex items-center gap-3 mb-4 rounded-xl bg-foreground/5 border border-border px-4 py-2.5">
           <span className="text-xs font-medium text-foreground">Выбрано: {selectedIds.size}</span>
           <div className="h-4 w-px bg-border" />
           <button
             onClick={() => {
-              setProducts(prev => prev.map(p => selectedIds.has(p.id) ? { ...p, inStock: !p.inStock } : p));
-              toast({ title: "Наличие обновлено" });
+              selectedIds.forEach((id) => {
+                const p = products.find((pr) => pr.id === id);
+                if (p) updateProduct.mutate({ id, is_active: !p.is_active });
+              });
               setSelectedIds(new Set());
             }}
             className="text-xs font-medium text-foreground hover:underline"
           >
-            Изменить наличие
+            Переключить активность
           </button>
-          <button
-            onClick={() => setBulkDeleteOpen(true)}
-            className="text-xs font-medium text-destructive hover:underline ml-auto"
-          >
+          <button onClick={() => setBulkDeleteOpen(true)} className="text-xs font-medium text-destructive hover:underline ml-auto">
             Удалить
           </button>
         </div>
@@ -220,15 +205,17 @@ export function CatalogPage() {
       {filtered.length === 0 ? (
         <EmptyState
           icon={Package}
-          title="Товары не найдены"
-          description="Нет товаров по заданным фильтрам"
-          action={{ label: "Сбросить фильтры", onClick: () => { setSearch(""); setActiveCategory("Все"); } }}
+          title={products.length === 0 ? "Каталог пуст" : "Товары не найдены"}
+          description={products.length === 0 ? "Добавьте первый товар или импортируйте каталог" : "Нет товаров по заданным фильтрам"}
+          action={products.length === 0
+            ? { label: "Добавить товар", onClick: () => setAddOpen(true) }
+            : { label: "Сбросить фильтры", onClick: () => { setSearch(""); setActiveCategory("Все"); } }
+          }
         />
       ) : (
         <>
-          {/* Table view */}
           {view === "table" && (
-            <div className="rounded-2xl border border-border bg-card overflow-hidden opacity-0 animate-fade-up" style={{ animationDelay: "100ms" }}>
+            <div className="rounded-2xl border border-border bg-card overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[650px]">
                   <thead>
@@ -238,16 +225,12 @@ export function CatalogPage() {
                           <input type="checkbox" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleAll} className="h-4 w-4 rounded border-border accent-foreground" />
                         </th>
                       )}
-                      <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                        <div className="flex items-center gap-1 cursor-pointer hover:text-foreground transition-colors">Товар <ArrowUpDown className="h-3 w-3" /></div>
-                      </th>
+                      <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Товар</th>
                       <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Категория</th>
                       <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground hidden lg:table-cell">Материал</th>
                       <th className="px-5 py-3.5 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground hidden xl:table-cell">Цвет</th>
-                      <th className="px-5 py-3.5 text-right text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                        <div className="flex items-center justify-end gap-1 cursor-pointer hover:text-foreground transition-colors">РРЦ <ArrowUpDown className="h-3 w-3" /></div>
-                      </th>
-                      <th className="px-5 py-3.5 text-center text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Наличие</th>
+                      <th className="px-5 py-3.5 text-right text-[11px] font-medium uppercase tracking-wider text-muted-foreground">РРЦ</th>
+                      <th className="px-5 py-3.5 text-center text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Статус</th>
                       <th className="px-5 py-3.5 w-10"></th>
                     </tr>
                   </thead>
@@ -265,18 +248,26 @@ export function CatalogPage() {
                         )}
                         <td className="px-5 py-3.5">
                           <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted text-[10px] font-semibold text-muted-foreground">IMG</div>
+                            {p.primary_image ? (
+                              <img src={p.primary_image} alt={p.name} className="h-10 w-10 rounded-xl object-cover shrink-0" />
+                            ) : (
+                              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted text-[10px] font-semibold text-muted-foreground">IMG</div>
+                            )}
                             <span className="text-sm font-medium text-foreground">{p.name}</span>
                           </div>
                         </td>
                         <td className="px-5 py-3.5">
-                          <span className="inline-block rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground">{p.category}</span>
+                          <span className="inline-block rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground">
+                            {p.category?.name ?? "—"}
+                          </span>
                         </td>
-                        <td className="px-5 py-3.5 text-sm text-foreground hidden lg:table-cell">{p.material}</td>
-                        <td className="px-5 py-3.5 text-sm text-muted-foreground hidden xl:table-cell">{p.color}</td>
-                        <td className="px-5 py-3.5 text-right text-sm font-semibold tabular-nums text-foreground">{p.rrp.toLocaleString("ru-RU")} ₽</td>
+                        <td className="px-5 py-3.5 text-sm text-foreground hidden lg:table-cell">{specs(p)?.material ?? "—"}</td>
+                        <td className="px-5 py-3.5 text-sm text-muted-foreground hidden xl:table-cell">{specs(p)?.color ?? "—"}</td>
+                        <td className="px-5 py-3.5 text-right text-sm font-semibold tabular-nums text-foreground">
+                          {p.rrp ? `${p.rrp.toLocaleString("ru-RU")} ₽` : "—"}
+                        </td>
                         <td className="px-5 py-3.5 text-center">
-                          <span className={`inline-block h-2.5 w-2.5 rounded-full ${p.inStock ? "bg-success" : "bg-muted-foreground/30"}`} />
+                          <span className={`inline-block h-2.5 w-2.5 rounded-full ${p.is_active ? "bg-success" : "bg-muted-foreground/30"}`} />
                         </td>
                         <td className="px-5 py-3.5">
                           <button
@@ -295,18 +286,14 @@ export function CatalogPage() {
             </div>
           )}
 
-          {/* Grid view */}
           {view === "grid" && (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 opacity-0 animate-fade-up" style={{ animationDelay: "100ms" }}>
-              {paginated.map((p, i) => (
-                <div
-                  key={p.id}
-                  onClick={() => setSelectedProduct(p)}
-                  className="group rounded-2xl border border-border bg-card overflow-hidden transition-all duration-200 hover:shadow-card-hover cursor-pointer opacity-0 animate-fade-up"
-                  style={{ animationDelay: `${100 + i * 60}ms` }}
-                >
-                  <div className="aspect-[4/3] bg-muted flex items-center justify-center text-xs text-muted-foreground font-medium relative">
-                    Фото
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+              {paginated.map((p) => (
+                <div key={p.id} onClick={() => setSelectedProduct(p)} className="group rounded-2xl border border-border bg-card overflow-hidden transition-all duration-200 hover:shadow-card-hover cursor-pointer">
+                  <div className="aspect-[4/3] bg-muted flex items-center justify-center text-xs text-muted-foreground font-medium relative overflow-hidden">
+                    {p.primary_image ? (
+                      <img src={p.primary_image} alt={p.name} className="w-full h-full object-cover" />
+                    ) : "Фото"}
                     {massMode && (
                       <div className="absolute top-2 left-2">
                         <input type="checkbox" checked={selectedIds.has(p.id)} onChange={() => toggleSelect(p.id)} onClick={(e) => e.stopPropagation()} className="h-4 w-4 rounded border-border accent-foreground" />
@@ -317,11 +304,13 @@ export function CatalogPage() {
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <p className="text-sm font-medium text-foreground">{p.name}</p>
-                        <p className="mt-0.5 text-[11px] text-muted-foreground">{p.category} · {p.material}</p>
+                        <p className="mt-0.5 text-[11px] text-muted-foreground">{p.category?.name ?? "—"} · {specs(p)?.material ?? "—"}</p>
                       </div>
-                      <span className={`mt-1 h-2 w-2 shrink-0 rounded-full ${p.inStock ? "bg-success" : "bg-muted-foreground/30"}`} />
+                      <span className={`mt-1 h-2 w-2 shrink-0 rounded-full ${p.is_active ? "bg-success" : "bg-muted-foreground/30"}`} />
                     </div>
-                    <p className="mt-3 text-base font-semibold tabular-nums text-foreground">{p.rrp.toLocaleString("ru-RU")} ₽</p>
+                    <p className="mt-3 text-base font-semibold tabular-nums text-foreground">
+                      {p.rrp ? `${p.rrp.toLocaleString("ru-RU")} ₽` : "—"}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -330,10 +319,8 @@ export function CatalogPage() {
         </>
       )}
 
-      {/* Product detail modal */}
       {selectedProduct && <ProductDetail product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
 
-      {/* Add product modal */}
       <Modal
         open={addOpen}
         onClose={() => { setAddOpen(false); resetForm(); }}
@@ -352,8 +339,9 @@ export function CatalogPage() {
           </div>
           <div>
             <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Категория</label>
-            <select value={formCategory} onChange={(e) => setFormCategory(e.target.value)} className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow">
-              {categories.filter(c => c !== "Все").map(c => <option key={c}>{c}</option>)}
+            <select value={formCategoryId} onChange={(e) => setFormCategoryId(e.target.value)} className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow">
+              <option value="">Без категории</option>
+              {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
           <div>
@@ -371,10 +359,7 @@ export function CatalogPage() {
         </div>
       </Modal>
 
-      {/* Delete confirmation */}
       <ConfirmDialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={() => deleteTarget && handleDelete(deleteTarget)} title="Удалить товар" description={`Удалить ${deleteTarget?.name}? Это действие нельзя отменить.`} confirmLabel="Удалить" destructive />
-
-      {/* Bulk delete */}
       <ConfirmDialog open={bulkDeleteOpen} onClose={() => setBulkDeleteOpen(false)} onConfirm={handleBulkDelete} title="Массовое удаление" description={`Удалить выбранные товары (${selectedIds.size} шт.)? Это действие нельзя отменить.`} confirmLabel="Удалить все" destructive />
     </div>
   );
