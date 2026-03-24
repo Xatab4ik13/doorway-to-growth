@@ -352,7 +352,7 @@ export default function StorefrontCatalog() {
                   <p className="text-lg mb-2">Товары не найдены</p>
                   <button
                     onClick={() => { selectCategory(null); setPriceFrom(""); setPriceTo(""); }}
-                    className="text-storefront-gold text-sm hover:underline"
+                    className="text-storefront-gold text-sm"
                   >
                     Сбросить фильтры
                   </button>
