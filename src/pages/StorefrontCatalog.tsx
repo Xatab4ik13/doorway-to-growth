@@ -149,19 +149,20 @@ export default function StorefrontCatalog() {
 
           <div className="flex gap-8">
             {/* ===== LEFT SIDEBAR ===== */}
-            <aside className="hidden md:block w-[240px] shrink-0">
+            <aside className="hidden md:block w-[260px] shrink-0">
               {/* Categories tree */}
-              <div className="mb-6">
-                <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-storefront-text mb-3">Категории</h3>
+              <div className="mb-8">
+                <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-storefront-text mb-4">Категории</h3>
 
                 {/* "Все товары" */}
                 <button
                   onClick={() => selectCategory(null)}
-                  className={`w-full text-left text-sm py-2 px-3 mb-0.5 transition-colors ${
+                  className={`w-full text-left text-[15px] font-semibold py-2.5 px-4 mb-0.5 transition-colors ${
                     !selectedCategory
-                      ? "bg-storefront-gold text-[#07090d] font-semibold"
+                      ? "text-[#07090d]"
                       : "text-storefront-muted hover:text-storefront-text hover:bg-white/5"
                   }`}
+                  style={!selectedCategory ? { background: "linear-gradient(180deg, #cfbb96 0%, #a8956e 50%, #6e5f40 100%)" } : undefined}
                 >
                   Все товары
                 </button>
@@ -176,9 +177,9 @@ export default function StorefrontCatalog() {
                       <div className="flex items-center">
                         <button
                           onClick={() => selectCategory(parent.id)}
-                          className={`flex-1 text-left text-sm py-2 px-3 transition-colors ${
+                          className={`flex-1 text-left text-[15px] font-semibold py-2.5 px-4 transition-colors ${
                             isActive
-                              ? "text-storefront-gold font-semibold"
+                              ? "text-[#cfbb96]"
                               : "text-storefront-muted hover:text-storefront-text"
                           }`}
                         >
@@ -187,23 +188,23 @@ export default function StorefrontCatalog() {
                         {children.length > 0 && (
                           <button
                             onClick={() => toggleParent(parent.id)}
-                            className="p-1 text-storefront-muted hover:text-storefront-text transition-colors"
+                            className="p-1.5 text-storefront-muted hover:text-storefront-text transition-colors"
                           >
-                            <ChevronRight className={`w-3.5 h-3.5 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
+                            <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
                           </button>
                         )}
                       </div>
 
                       {/* Children */}
                       {isExpanded && children.length > 0 && (
-                        <div className="ml-3 border-l border-white/5 pl-3 mb-1">
+                        <div className="ml-4 border-l border-white/8 pl-4 mb-2">
                           {children.map((child) => (
                             <button
                               key={child.id}
                               onClick={() => selectCategory(child.id)}
-                              className={`w-full text-left text-[13px] py-1.5 px-2 transition-colors ${
+                              className={`w-full text-left text-[13px] font-medium py-2 px-2 transition-colors ${
                                 selectedCategory === child.id
-                                  ? "text-storefront-gold font-medium"
+                                  ? "text-[#cfbb96]"
                                   : "text-storefront-muted hover:text-storefront-text"
                               }`}
                             >
@@ -228,11 +229,12 @@ export default function StorefrontCatalog() {
                   <button
                     key={tab.key}
                     onClick={() => { setActiveTab(tab.key); setPage(1); }}
-                    className={`px-3 py-1.5 text-[11px] uppercase tracking-wider transition-all ${
+                    className={`px-3.5 py-2 text-[11px] font-semibold uppercase tracking-wider transition-all ${
                       activeTab === tab.key
-                        ? "bg-storefront-gold text-[#07090d] font-semibold"
+                        ? "text-[#07090d]"
                         : "bg-white/5 text-storefront-muted hover:bg-white/10 hover:text-storefront-text"
                     }`}
+                    style={activeTab === tab.key ? { background: "linear-gradient(135deg, #cfbb96, #a8956e)" } : undefined}
                   >
                     {tab.label}
                   </button>
@@ -309,8 +311,8 @@ export default function StorefrontCatalog() {
                         to={`/store/${slug}/product/${product.slug}`}
                         className="group block"
                       >
-                        {/* Image — tall, full-height door */}
-                        <div className="relative aspect-[2/5] overflow-hidden bg-[#0c0e14]">
+                        {/* Image — fits the door, no extra space */}
+                        <div className="relative overflow-hidden bg-[#0c0e14] flex items-center justify-center" style={{ minHeight: "280px" }}>
                           {img ? (
                             <img
                               src={img}
