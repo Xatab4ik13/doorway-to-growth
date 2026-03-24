@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
-import heroBg from "@/assets/hero-bg-clean.jpg";
+import heroOverlayRight from "@/assets/hero-overlay-right.png";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Props {
@@ -49,7 +49,7 @@ export function HeroSection({ site: _site, banners }: Props) {
 
   return (
     <section className="relative h-screen min-h-[700px] overflow-hidden select-none bg-[#111111]">
-      {/* Layer 1: Banner slider (full width, behind everything) */}
+      {/* Layer 1: Banner slider — fills entire section, visible through the left cutout */}
       <div className="absolute inset-0">
         {hasSlides ? (
           <AnimatePresence custom={direction} mode="wait">
@@ -70,9 +70,9 @@ export function HeroSection({ site: _site, banners }: Props) {
           <div className="absolute inset-0 bg-[#1a1a1a]" />
         )}
 
-        {/* Banner text overlay */}
+        {/* Banner text overlay — positioned in the left (visible) area */}
         {hasSlides && banners[currentSlide].title && (
-          <div className="absolute bottom-24 left-12 z-10 max-w-[40%]">
+          <div className="absolute bottom-24 left-12 z-10 max-w-[35%]">
             <motion.h2
               key={`title-${currentSlide}`}
               initial={{ opacity: 0, y: 20 }}
@@ -99,25 +99,21 @@ export function HeroSection({ site: _site, banners }: Props) {
         )}
       </div>
 
-      {/* Layer 2: Decorative overlay — right part of hero image, diagonal clip */}
+      {/* Layer 2: Right decorative overlay — gold ribbons, cut along diagonal */}
       <motion.div
-        className="absolute inset-0 pointer-events-none"
-        initial={{ opacity: 0, x: 40 }}
+        className="absolute inset-0 pointer-events-none z-10"
+        initial={{ opacity: 0, x: 30 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 1, ease: EASE, delay: 0.2 }}
-        style={{
-          clipPath: "polygon(52% 0%, 100% 0%, 100% 100%, 49% 100%, 37% 47%)",
-        }}
       >
         <img
-          src={heroBg}
+          src={heroOverlayRight}
           alt=""
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ objectPosition: "right center" }}
         />
       </motion.div>
 
-      {/* Slider navigation arrows */}
+      {/* Slider navigation — in the left visible area */}
       {hasSlides && banners.length > 1 && (
         <div className="absolute bottom-8 left-12 z-20 flex gap-3">
           <button
@@ -132,7 +128,6 @@ export function HeroSection({ site: _site, banners }: Props) {
           >
             <ChevronRight className="w-5 h-5" />
           </button>
-          {/* Slide indicators */}
           <div className="flex items-center gap-2 ml-3">
             {banners.map((_, i) => (
               <button
