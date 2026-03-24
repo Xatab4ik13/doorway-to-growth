@@ -106,189 +106,260 @@ function AmbientParticles({ color, count = 30 }: { color: string; count?: number
   );
 }
 
-/* Architectural line drawing per room */
+/* Architectural line drawing per room — based on real BRANDOORS door silhouettes */
 function RoomArchitecture({ roomIndex, accent }: { roomIndex: number; accent: string }) {
   const architectures = [
-    // ESTETICA — arched doorway with ornamental frame
-    <svg key="est" viewBox="0 0 400 500" className="w-full h-full">
+    // ESTETICA — clean minimal single door, smooth surface, thin vertical line accent (like ESTETICA 01-04)
+    <svg key="est" viewBox="0 0 400 550" className="w-full h-full">
       <defs>
-        <linearGradient id={`glow-${roomIndex}`} x1="0.5" y1="0" x2="0.5" y2="1">
-          <stop offset="0%" stopColor={accent} stopOpacity="0.3" />
+        <linearGradient id={`est-glow-${roomIndex}`} x1="0.5" y1="0" x2="0.5" y2="1">
+          <stop offset="0%" stopColor={accent} stopOpacity="0.12" />
           <stop offset="100%" stopColor={accent} stopOpacity="0" />
         </linearGradient>
       </defs>
-      {/* Inner glow */}
-      <rect x="120" y="80" width="160" height="380" fill={`url(#glow-${roomIndex})`} opacity="0.15" />
-      {/* Main arch */}
-      <motion.path
-        d="M 120,460 L 120,180 Q 120,60 200,60 Q 280,60 280,180 L 280,460"
-        fill="none" stroke={accent} strokeWidth="1.5" opacity="0.6"
+      {/* Door frame — wall opening */}
+      <motion.rect x="110" y="30" width="180" height="460" rx="1"
+        fill="none" stroke={accent} strokeWidth="1" opacity="0.2"
         initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
-        transition={{ duration: 2.5, ease: "easeOut" }}
+        transition={{ duration: 2, ease: "easeOut" }}
       />
-      {/* Inner arch */}
-      <motion.path
-        d="M 140,460 L 140,190 Q 140,85 200,85 Q 260,85 260,190 L 260,460"
-        fill="none" stroke={accent} strokeWidth="0.8" opacity="0.3"
-        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
-        transition={{ duration: 2.5, ease: "easeOut", delay: 0.3 }}
-      />
-      {/* Ornamental circle at top */}
-      <motion.circle cx="200" cy="120" r="25" fill="none" stroke={accent} strokeWidth="0.6" opacity="0.25"
-        initial={{ scale: 0 }} animate={{ scale: 1 }}
-        transition={{ duration: 1, delay: 1.5 }}
-      />
-      {/* Handle */}
-      <motion.line x1="250" y1="280" x2="250" y2="320" stroke={accent} strokeWidth="1.5" opacity="0.5"
-        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
-        transition={{ duration: 0.8, delay: 2 }}
-      />
-    </svg>,
-
-    // GHOST — invisible/hidden door lines
-    <svg key="gho" viewBox="0 0 400 500" className="w-full h-full">
-      {/* Barely visible door outline — "ghost" */}
-      <motion.rect x="130" y="50" width="140" height="400" rx="2"
-        fill="none" stroke={accent} strokeWidth="0.5" opacity="0.15"
-        strokeDasharray="4 8"
-        initial={{ opacity: 0 }} animate={{ opacity: 0.15 }}
-        transition={{ duration: 3 }}
-      />
-      {/* Hidden frame lines */}
-      {[0, 1, 2].map((i) => (
-        <motion.line key={i}
-          x1="130" y1={150 + i * 100} x2="270" y2={150 + i * 100}
-          stroke={accent} strokeWidth="0.3" opacity="0.1"
-          initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
-          transition={{ duration: 2, delay: 0.5 + i * 0.3 }}
-        />
-      ))}
-      {/* Magnetic field lines */}
-      {Array.from({ length: 5 }).map((_, i) => (
-        <motion.ellipse key={`field-${i}`}
-          cx="200" cy="250" rx={30 + i * 25} ry={60 + i * 40}
-          fill="none" stroke={accent} strokeWidth="0.3" opacity={0.08 - i * 0.01}
-          initial={{ scale: 0 }} animate={{ scale: 1 }}
-          transition={{ duration: 2, delay: 1 + i * 0.2 }}
-        />
-      ))}
-    </svg>,
-
-    // HEAVY — bold industrial frame
-    <svg key="hea" viewBox="0 0 400 500" className="w-full h-full">
-      {/* Thick frame */}
-      <motion.rect x="100" y="40" width="200" height="420" rx="0"
-        fill="none" stroke={accent} strokeWidth="3" opacity="0.5"
-        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
-        transition={{ duration: 2 }}
-      />
-      {/* Inner panel */}
-      <motion.rect x="120" y="60" width="160" height="380" rx="0"
-        fill="none" stroke={accent} strokeWidth="1.5" opacity="0.25"
-        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
-        transition={{ duration: 2, delay: 0.4 }}
-      />
-      {/* Cross beam */}
-      <motion.line x1="100" y1="250" x2="300" y2="250"
-        stroke={accent} strokeWidth="2" opacity="0.35"
-        initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
-        transition={{ duration: 1.5, delay: 1 }}
-      />
-      {/* Rivets */}
-      {[[110, 50], [290, 50], [110, 450], [290, 450]].map(([cx, cy], i) => (
-        <motion.circle key={i} cx={cx} cy={cy} r="4"
-          fill="none" stroke={accent} strokeWidth="1.5" opacity="0.4"
-          initial={{ scale: 0 }} animate={{ scale: 1 }}
-          transition={{ duration: 0.5, delay: 2 + i * 0.15 }}
-        />
-      ))}
-      {/* Heavy handle bar */}
-      <motion.rect x="260" y="230" width="8" height="40" rx="4"
-        fill={accent} opacity="0.3"
-        initial={{ scaleY: 0 }} animate={{ scaleY: 1 }}
-        transition={{ duration: 0.6, delay: 2.5 }}
-      />
-    </svg>,
-
-    // PRIME — classic double door
-    <svg key="pri" viewBox="0 0 400 500" className="w-full h-full">
-      {/* Left door */}
-      <motion.rect x="95" y="50" width="100" height="400"
-        fill="none" stroke={accent} strokeWidth="1.2" opacity="0.45"
-        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
-        transition={{ duration: 2 }}
-      />
-      {/* Right door */}
-      <motion.rect x="205" y="50" width="100" height="400"
-        fill="none" stroke={accent} strokeWidth="1.2" opacity="0.45"
-        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
-        transition={{ duration: 2, delay: 0.2 }}
-      />
-      {/* Panel insets left */}
-      <motion.rect x="110" y="70" width="70" height="150" rx="2"
-        fill="none" stroke={accent} strokeWidth="0.6" opacity="0.2"
-        initial={{ opacity: 0 }} animate={{ opacity: 0.2 }}
-        transition={{ duration: 1, delay: 1.5 }}
-      />
-      <motion.rect x="110" y="250" width="70" height="180" rx="2"
-        fill="none" stroke={accent} strokeWidth="0.6" opacity="0.2"
-        initial={{ opacity: 0 }} animate={{ opacity: 0.2 }}
-        transition={{ duration: 1, delay: 1.7 }}
-      />
-      {/* Panel insets right */}
-      <motion.rect x="220" y="70" width="70" height="150" rx="2"
-        fill="none" stroke={accent} strokeWidth="0.6" opacity="0.2"
-        initial={{ opacity: 0 }} animate={{ opacity: 0.2 }}
-        transition={{ duration: 1, delay: 1.9 }}
-      />
-      <motion.rect x="220" y="250" width="70" height="180" rx="2"
-        fill="none" stroke={accent} strokeWidth="0.6" opacity="0.2"
-        initial={{ opacity: 0 }} animate={{ opacity: 0.2 }}
-        transition={{ duration: 1, delay: 2.1 }}
-      />
-      {/* Handles */}
-      <motion.circle cx="185" cy="260" r="3" fill={accent} opacity="0.4"
-        initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 2.5 }}
-      />
-      <motion.circle cx="215" cy="260" r="3" fill={accent} opacity="0.4"
-        initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 2.6 }}
-      />
-    </svg>,
-
-    // REFLECT — glass/mirror effect
-    <svg key="ref" viewBox="0 0 400 500" className="w-full h-full">
-      <defs>
-        <linearGradient id={`mirror-${roomIndex}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor={accent} stopOpacity="0.15" />
-          <stop offset="50%" stopColor={accent} stopOpacity="0.03" />
-          <stop offset="100%" stopColor={accent} stopOpacity="0.1" />
-        </linearGradient>
-      </defs>
-      {/* Glass panel */}
-      <motion.rect x="120" y="50" width="160" height="400" rx="3"
-        fill={`url(#mirror-${roomIndex})`}
-        stroke={accent} strokeWidth="1" opacity="0.5"
+      {/* Door panel — smooth surface */}
+      <motion.rect x="118" y="38" width="164" height="444" rx="1"
+        fill={`url(#est-glow-${roomIndex})`} stroke={accent} strokeWidth="0.6" opacity="0.5"
         initial={{ opacity: 0 }} animate={{ opacity: 0.5 }}
-        transition={{ duration: 2 }}
+        transition={{ duration: 1.5, delay: 0.5 }}
       />
-      {/* Reflection lines */}
-      {Array.from({ length: 6 }).map((_, i) => (
-        <motion.line key={i}
-          x1={140 + i * 15} y1="60" x2={130 + i * 15} y2="440"
-          stroke={accent} strokeWidth="0.3" opacity={0.06 + (i === 2 ? 0.08 : 0)}
-          initial={{ opacity: 0 }} animate={{ opacity: 0.06 + (i === 2 ? 0.08 : 0) }}
-          transition={{ duration: 1.5, delay: 1 + i * 0.15 }}
-        />
-      ))}
-      {/* Highlight streak */}
-      <motion.line x1="165" y1="60" x2="155" y2="440"
-        stroke={accent} strokeWidth="1.5" opacity="0.12"
+      {/* Single thin vertical groove — signature ESTETICA detail */}
+      <motion.line x1="200" y1="60" x2="200" y2="460"
+        stroke={accent} strokeWidth="0.8" opacity="0.35"
         initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+        transition={{ duration: 2, delay: 1 }}
+      />
+      {/* Invisible frame hint (скрытый короб) */}
+      <motion.rect x="105" y="25" width="190" height="470" rx="0"
+        fill="none" stroke={accent} strokeWidth="0.3" opacity="0.1"
+        strokeDasharray="3 6"
+        initial={{ opacity: 0 }} animate={{ opacity: 0.1 }}
         transition={{ duration: 2, delay: 1.5 }}
       />
-      {/* Handle - minimal line */}
-      <motion.line x1="265" y1="240" x2="265" y2="270"
-        stroke={accent} strokeWidth="1.5" opacity="0.5"
+      {/* Handle — minimal L-shape */}
+      <motion.path d="M 265,270 L 265,290 L 270,290"
+        fill="none" stroke={accent} strokeWidth="1.5" opacity="0.5" strokeLinecap="round"
+        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+        transition={{ duration: 0.6, delay: 2.2 }}
+      />
+      {/* AGB lock indicator */}
+      <motion.circle cx="268" cy="280" r="2" fill={accent} opacity="0.3"
+        initial={{ scale: 0 }} animate={{ scale: 1 }}
+        transition={{ delay: 2.5 }}
+      />
+    </svg>,
+
+    // GHOST — fully hidden door, flush with wall, NO visible frame/наличники
+    <svg key="gho" viewBox="0 0 400 550" className="w-full h-full">
+      {/* Wall texture — horizontal lines suggesting plaster */}
+      {Array.from({ length: 20 }).map((_, i) => (
+        <motion.line key={`wall-${i}`}
+          x1="50" y1={30 + i * 25} x2="350" y2={30 + i * 25}
+          stroke={accent} strokeWidth="0.2" opacity="0.06"
+          initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
+          transition={{ duration: 1.5, delay: i * 0.05 }}
+        />
+      ))}
+      {/* Ghost door — barely visible, same plane as wall */}
+      <motion.rect x="140" y="30" width="120" height="460" rx="0"
+        fill="none" stroke={accent} strokeWidth="0.4" opacity="0"
+        animate={{ opacity: [0, 0.2, 0.1, 0.2, 0] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+      />
+      {/* Hidden hinge points — AGB petli */}
+      {[80, 200, 400].map((y, i) => (
+        <motion.circle key={`hinge-${i}`}
+          cx="140" cy={y} r="1.5"
+          fill={accent} opacity="0"
+          animate={{ opacity: [0, 0.3, 0] }}
+          transition={{ duration: 4, delay: 2 + i * 0.3, repeat: Infinity }}
+        />
+      ))}
+      {/* Minimal handle — flush */}
+      <motion.line x1="248" y1="255" x2="248" y2="275"
+        stroke={accent} strokeWidth="1" opacity="0"
+        animate={{ opacity: [0, 0.4, 0] }}
+        transition={{ duration: 5, delay: 1, repeat: Infinity }}
+      />
+      {/* "Under painting" text hint */}
+      <motion.text x="200" y="520" textAnchor="middle"
+        fill={accent} opacity="0.15" fontSize="9"
+        style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: "0.3em" }}
+        initial={{ opacity: 0 }} animate={{ opacity: 0.15 }}
+        transition={{ delay: 2 }}
+      >
+        ПОД ПОКРАСКУ
+      </motion.text>
+    </svg>,
+
+    // HEAVY — thick 60mm panel, tall (up to 3000mm), aluminum frame, industrial
+    <svg key="hea" viewBox="0 0 400 550" className="w-full h-full">
+      {/* Aluminum frame — thick double border */}
+      <motion.rect x="100" y="20" width="200" height="490" rx="0"
+        fill="none" stroke={accent} strokeWidth="3.5" opacity="0.5"
+        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+        transition={{ duration: 2 }}
+      />
+      <motion.rect x="106" y="26" width="188" height="478" rx="0"
+        fill="none" stroke={accent} strokeWidth="1" opacity="0.25"
+        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+        transition={{ duration: 2, delay: 0.3 }}
+      />
+      {/* 60mm thick panel fill — subtle */}
+      <motion.rect x="108" y="28" width="184" height="474" rx="0"
+        fill={accent} opacity="0"
+        animate={{ opacity: [0, 0.04, 0.02] }}
+        transition={{ duration: 4, repeat: Infinity, repeatType: "reverse" }}
+      />
+      {/* HPL/PET surface — horizontal texture lines */}
+      {Array.from({ length: 8 }).map((_, i) => (
+        <motion.line key={`tex-${i}`}
+          x1="112" y1={80 + i * 55} x2="288" y2={80 + i * 55}
+          stroke={accent} strokeWidth="0.3" opacity="0.08"
+          initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
+          transition={{ duration: 1.2, delay: 1 + i * 0.1 }}
+        />
+      ))}
+      {/* Height dimension line — showing 3000mm capability */}
+      <motion.line x1="85" y1="25" x2="85" y2="505"
+        stroke={accent} strokeWidth="0.5" opacity="0.2"
+        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+        transition={{ duration: 1.5, delay: 2 }}
+      />
+      <motion.text x="80" y="270" textAnchor="middle"
+        fill={accent} opacity="0.2" fontSize="8"
+        transform="rotate(-90, 80, 270)"
+        style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: "0.2em" }}
+        initial={{ opacity: 0 }} animate={{ opacity: 0.2 }}
+        transition={{ delay: 2.5 }}
+      >
+        3000 MM
+      </motion.text>
+      {/* Heavy bar handle */}
+      <motion.rect x="270" y="245" width="6" height="45" rx="3"
+        fill={accent} opacity="0.4"
+        initial={{ scaleY: 0 }} animate={{ scaleY: 1 }}
+        transition={{ duration: 0.5, delay: 2.8 }}
+      />
+    </svg>,
+
+    // PRIME — царговые двери, неоклассика, paneled door with moldings
+    <svg key="pri" viewBox="0 0 400 550" className="w-full h-full">
+      {/* Main door frame */}
+      <motion.rect x="130" y="30" width="140" height="460" rx="1"
+        fill="none" stroke={accent} strokeWidth="1.2" opacity="0.45"
+        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+        transition={{ duration: 2 }}
+      />
+      {/* Top panel (shorter) */}
+      <motion.rect x="146" y="55" width="108" height="140" rx="2"
+        fill="none" stroke={accent} strokeWidth="0.7" opacity="0.25"
+        initial={{ opacity: 0 }} animate={{ opacity: 0.25 }}
+        transition={{ duration: 1, delay: 1.2 }}
+      />
+      {/* Bottom panel (taller) */}
+      <motion.rect x="146" y="220" width="108" height="245" rx="2"
+        fill="none" stroke={accent} strokeWidth="0.7" opacity="0.25"
+        initial={{ opacity: 0 }} animate={{ opacity: 0.25 }}
+        transition={{ duration: 1, delay: 1.5 }}
+      />
+      {/* Царга — horizontal bar between panels */}
+      <motion.line x1="138" y1="207" x2="262" y2="207"
+        stroke={accent} strokeWidth="1" opacity="0.3"
+        initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
+        transition={{ duration: 0.8, delay: 1.8 }}
+      />
+      {/* Inner panel molding detail — top */}
+      <motion.rect x="152" y="61" width="96" height="128" rx="1"
+        fill="none" stroke={accent} strokeWidth="0.3" opacity="0.12"
+        initial={{ opacity: 0 }} animate={{ opacity: 0.12 }}
+        transition={{ delay: 2 }}
+      />
+      {/* Inner panel molding detail — bottom */}
+      <motion.rect x="152" y="226" width="96" height="233" rx="1"
+        fill="none" stroke={accent} strokeWidth="0.3" opacity="0.12"
+        initial={{ opacity: 0 }} animate={{ opacity: 0.12 }}
+        transition={{ delay: 2.2 }}
+      />
+      {/* Эмалевое покрытие — subtle surface sheen */}
+      <motion.rect x="136" y="36" width="128" height="448"
+        fill={accent} opacity="0"
+        animate={{ opacity: [0, 0.03, 0.01] }}
+        transition={{ duration: 5, repeat: Infinity, repeatType: "reverse" }}
+      />
+      {/* Handle */}
+      <motion.line x1="253" y1="270" x2="253" y2="300"
+        stroke={accent} strokeWidth="1.5" opacity="0.45" strokeLinecap="round"
+        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+        transition={{ duration: 0.5, delay: 2.5 }}
+      />
+      <motion.circle cx="253" cy="285" r="2.5" fill="none" stroke={accent} strokeWidth="1" opacity="0.3"
+        initial={{ scale: 0 }} animate={{ scale: 1 }}
+        transition={{ delay: 2.7 }}
+      />
+    </svg>,
+
+    // REFLECT — mirror/lacobel door, full glass panel with aluminum edge
+    <svg key="ref" viewBox="0 0 400 550" className="w-full h-full">
+      <defs>
+        <linearGradient id={`mirror-${roomIndex}`} x1="0" y1="0" x2="0.7" y2="1">
+          <stop offset="0%" stopColor={accent} stopOpacity="0.18" />
+          <stop offset="30%" stopColor={accent} stopOpacity="0.04" />
+          <stop offset="60%" stopColor={accent} stopOpacity="0.12" />
+          <stop offset="100%" stopColor={accent} stopOpacity="0.06" />
+        </linearGradient>
+        <linearGradient id={`edge-${roomIndex}`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor={accent} stopOpacity="0.5" />
+          <stop offset="100%" stopColor={accent} stopOpacity="0.15" />
+        </linearGradient>
+      </defs>
+      {/* Aluminum frame */}
+      <motion.rect x="120" y="30" width="160" height="460" rx="1"
+        fill="none" stroke={accent} strokeWidth="1.5" opacity="0.4"
+        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+        transition={{ duration: 2 }}
+      />
+      {/* Mirror/lacobel panel */}
+      <motion.rect x="124" y="34" width="152" height="452" rx="0"
+        fill={`url(#mirror-${roomIndex})`}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+        transition={{ duration: 2, delay: 0.5 }}
+      />
+      {/* Aluminum edge — Al Black/Gold/White Edition */}
+      <motion.line x1="124" y1="34" x2="124" y2="486"
+        stroke={`url(#edge-${roomIndex})`} strokeWidth="2"
+        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+        transition={{ duration: 1.5, delay: 1.2 }}
+      />
+      {/* Mirror reflection — diagonal light streak */}
+      <motion.line x1="160" y1="50" x2="145" y2="470"
+        stroke={accent} strokeWidth="1.5" opacity="0"
+        animate={{ opacity: [0, 0.15, 0.03, 0.1, 0] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+      />
+      {/* Secondary reflection */}
+      <motion.line x1="210" y1="40" x2="200" y2="480"
+        stroke={accent} strokeWidth="0.5" opacity="0"
+        animate={{ opacity: [0, 0.08, 0] }}
+        transition={{ duration: 5, delay: 1, repeat: Infinity }}
+      />
+      {/* Surface shimmer dots */}
+      {[[180, 120], [230, 300], [155, 380], [240, 200]].map(([x, y], i) => (
+        <motion.circle key={`shimmer-${i}`} cx={x} cy={y} r="1"
+          fill={accent} opacity="0"
+          animate={{ opacity: [0, 0.3, 0] }}
+          transition={{ duration: 3, delay: 2 + i * 0.8, repeat: Infinity }}
+        />
+      ))}
+      {/* Handle — minimal */}
+      <motion.line x1="262" y1="255" x2="262" y2="280"
+        stroke={accent} strokeWidth="1.5" opacity="0.5" strokeLinecap="round"
         initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
         transition={{ duration: 0.5, delay: 2.5 }}
       />
