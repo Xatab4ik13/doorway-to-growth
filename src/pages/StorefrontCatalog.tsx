@@ -229,11 +229,12 @@ export default function StorefrontCatalog() {
                   <button
                     key={tab.key}
                     onClick={() => { setActiveTab(tab.key); setPage(1); }}
-                    className={`px-3 py-1.5 text-[11px] uppercase tracking-wider transition-all ${
+                    className={`px-3.5 py-2 text-[11px] font-semibold uppercase tracking-wider transition-all ${
                       activeTab === tab.key
-                        ? "bg-storefront-gold text-[#07090d] font-semibold"
+                        ? "text-[#07090d]"
                         : "bg-white/5 text-storefront-muted hover:bg-white/10 hover:text-storefront-text"
                     }`}
+                    style={activeTab === tab.key ? { background: "linear-gradient(135deg, #cfbb96, #a8956e)" } : undefined}
                   >
                     {tab.label}
                   </button>
