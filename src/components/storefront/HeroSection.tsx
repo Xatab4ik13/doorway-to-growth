@@ -608,6 +608,26 @@ export function HeroSection({ site, banners }: Props) {
               </motion.p>
             </AnimatePresence>
 
+            {/* Model count badge */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`models-${activeRoom}`}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                transition={{ duration: 0.4, delay: 0.45 }}
+                className="mb-8 flex items-center gap-3"
+              >
+                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: room.accent, opacity: 0.6 }} />
+                <span
+                  className="text-xs tracking-[0.2em] uppercase"
+                  style={{ color: `${room.accent}80`, fontFamily: "'Raleway', sans-serif" }}
+                >
+                  {room.models}
+                </span>
+              </motion.div>
+            </AnimatePresence>
+
             {/* CTA Button */}
             <motion.button
               className="group relative overflow-hidden px-8 py-3 border text-sm tracking-[0.2em] uppercase transition-all duration-500"
