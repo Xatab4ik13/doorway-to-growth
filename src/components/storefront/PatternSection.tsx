@@ -1,13 +1,11 @@
 /**
  * Empty section with Brandoors geometric pattern background.
- * Pattern: grid of squares with inscribed circles that visually overlap
- * at cell boundaries, creating arc intersections at every corner.
- * Exact colors: bg #07090d, lines #000000.
+ * Pattern: simple grid of squares, each with ONE inscribed circle.
+ * No corner arcs. Exact colors: bg #07090d, lines #000000.
  */
 export function PatternSection() {
   const cell = 230;
   const half = cell / 2;
-  const sw = 3;
 
   return (
     <section className="relative w-full min-h-[600px] overflow-hidden" style={{ backgroundColor: "#07090d" }}>
@@ -30,24 +28,15 @@ export function PatternSection() {
               width={cell} height={cell}
               fill="none"
               stroke="#000000"
-              strokeWidth={sw}
+              strokeWidth={2}
             />
-            {/* Main circle — centered, inscribed */}
+            {/* Single inscribed circle */}
             <circle
               cx={half} cy={half} r={half}
               fill="none"
               stroke="#000000"
-              strokeWidth={sw}
+              strokeWidth={2}
             />
-            {/* Quarter-circle arcs from neighboring cells' circles */}
-            {/* Top-left corner: arc from cell at (-1,-1) */}
-            <circle cx={0} cy={0} r={half} fill="none" stroke="#000000" strokeWidth={sw} />
-            {/* Top-right corner: arc from cell at (+1,-1) */}
-            <circle cx={cell} cy={0} r={half} fill="none" stroke="#000000" strokeWidth={sw} />
-            {/* Bottom-left corner: arc from cell at (-1,+1) */}
-            <circle cx={0} cy={cell} r={half} fill="none" stroke="#000000" strokeWidth={sw} />
-            {/* Bottom-right corner: arc from cell at (+1,+1) */}
-            <circle cx={cell} cy={cell} r={half} fill="none" stroke="#000000" strokeWidth={sw} />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill="url(#brandoors-circles-grid)" />
