@@ -213,22 +213,35 @@ export function HeroSection({ site, banners }: Props) {
         {/* Nav links in top tab */}
         <div className="absolute top-0 left-[280px] h-[56px] flex items-center gap-8 xl:gap-10">
           {[
-            { label: "Каталог", href: "#catalog" },
-            { label: "Акции", href: "#promotions" },
-            { label: "О салоне", href: "#about" },
-            { label: "Контакты", href: "#contacts" },
-          ].map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="text-[14px] font-semibold uppercase tracking-[0.25em] transition-colors duration-300"
-              style={{ fontFamily: "'Raleway', sans-serif", color: "rgba(26,20,8,0.6)" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.95)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.6)"; }}
-            >
-              {item.label}
-            </a>
-          ))}
+            { label: "Каталог", href: `/store/${site.slug}/catalog`, isRoute: true },
+            { label: "Акции", href: "#promotions", isRoute: false },
+            { label: "О салоне", href: "#about", isRoute: false },
+            { label: "Контакты", href: "#contacts", isRoute: false },
+          ].map((item) =>
+            item.isRoute ? (
+              <Link
+                key={item.href}
+                to={item.href}
+                className="text-[14px] font-semibold uppercase tracking-[0.25em] transition-colors duration-300"
+                style={{ fontFamily: "'Raleway', sans-serif", color: "rgba(26,20,8,0.6)" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.95)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.6)"; }}
+              >
+                {item.label}
+              </Link>
+            ) : (
+              <a
+                key={item.href}
+                href={item.href}
+                className="text-[14px] font-semibold uppercase tracking-[0.25em] transition-colors duration-300"
+                style={{ fontFamily: "'Raleway', sans-serif", color: "rgba(26,20,8,0.6)" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.95)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.6)"; }}
+              >
+                {item.label}
+              </a>
+            )
+          )}
         </div>
 
         {/* Room counter */}
