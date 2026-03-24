@@ -44,7 +44,7 @@ export function HeroSection({ site, banners }: Props) {
 
       {/* Scroll hint */}
       <motion.div
-        className="absolute bottom-16 left-1/2 lg:left-[calc(260px+(100%-260px)/2)] -translate-x-1/2 z-20"
+        className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20"
         initial={{ opacity: 0 }} animate={{ opacity: 1, y: [0, 8, 0] }}
         transition={{ opacity: { delay: 1.5 }, y: { duration: 2, repeat: Infinity } }}
       >
