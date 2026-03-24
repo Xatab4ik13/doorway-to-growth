@@ -22,8 +22,8 @@ const INTERIOR_DOORS: DoorItem[] = [
 ];
 
 const TABS = [
-  { key: "entrance", label: "ENTRANCE" },
-  { key: "interior", label: "INTERIOR" },
+  { key: "entrance", label: "ВХОДНЫЕ" },
+  { key: "interior", label: "МЕЖКОМНАТНЫЕ" },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];
