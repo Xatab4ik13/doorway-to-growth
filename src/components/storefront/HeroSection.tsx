@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import brandoorsLogo from "@/assets/logo.png";
-import heroBg from "@/assets/hero-bg-hq.jpg";
+import heroBg from "@/assets/hero-bg-hq-crop.jpg";
 
 interface Props {
   site: StorefrontSite;
