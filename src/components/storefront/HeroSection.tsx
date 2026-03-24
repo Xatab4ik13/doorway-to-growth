@@ -51,9 +51,22 @@ export function HeroSection({ site, banners }: Props) {
   return (
     <section className="relative h-screen min-h-[750px] bg-[#0a0a0a] overflow-hidden select-none">
 
-      {/* === HERO IMAGE — static === */}
+      {/* === HERO IMAGE — crossfade on slide change === */}
       <div className="absolute inset-0">
-        <img src={heroImage} alt="Салон дверей" className="w-full h-full object-cover" width={1920} height={1080} />
+        <AnimatePresence mode="sync">
+          <motion.img
+            key={current}
+            src={heroImage}
+            alt="Салон дверей"
+            className="absolute inset-0 w-full h-full object-cover"
+            width={1920}
+            height={1080}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1, ease: "easeInOut" }}
+          />
+        </AnimatePresence>
         <div className="absolute inset-0 bg-[#0a0a0a]/20" />
       </div>
 
