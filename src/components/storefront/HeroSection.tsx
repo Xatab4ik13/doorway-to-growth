@@ -125,7 +125,7 @@ export function HeroSection({ site, banners }: Props) {
     <section className="relative h-screen min-h-[700px] overflow-hidden select-none bg-storefront-bg">
 
       {/* === FULLSCREEN SLIDES with clip-path transition === */}
-      <AnimatePresence initial={false} custom={direction} mode="popLayout">
+      <AnimatePresence initial={false} custom={direction}>
         <motion.div
           key={active}
           custom={direction}
