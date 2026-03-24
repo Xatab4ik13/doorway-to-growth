@@ -49,6 +49,24 @@ export default function StorefrontCatalog() {
     setPage(1);
   };
 
+  const toggleMaterial = (mat: string) => {
+    setSelectedMaterials((prev) => {
+      const next = new Set(prev);
+      next.has(mat) ? next.delete(mat) : next.add(mat);
+      return next;
+    });
+    setPage(1);
+  };
+
+  const toggleColor = (color: string) => {
+    setSelectedColors((prev) => {
+      const next = new Set(prev);
+      next.has(color) ? next.delete(color) : next.add(color);
+      return next;
+    });
+    setPage(1);
+  };
+
   // Get all descendant IDs for a parent
   const getDescendantIds = (parentId: string): string[] => {
     const children = getChildren(parentId);
