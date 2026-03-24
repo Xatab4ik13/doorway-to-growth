@@ -12,152 +12,224 @@ interface Props {
 }
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
-
-// Thick band slope: from (650,0) to (1400,450) → slope = 450/750 = 0.6
 const SLOPE = 0.6;
 
 export function HeroSection({ site: _site, banners: _banners }: Props) {
-  // Top-right thin lines: parallel to thick band, shifted toward corner
   const topLines = Array.from({ length: 10 }, (_, i) => {
-    const gap = 28;
-    const x1 = 690 + i * gap;  // start on top edge, shifted right from thick band
+    const gap = 30;
+    const x1 = 694 + i * gap;
     const y1 = 0;
     const x2 = 1400;
-    const y2 = SLOPE * (1400 - x1);  // parallel to thick band
-    const sw = i === 0 ? 2 : i < 3 ? 1.4 : 1;
-    const op = 1 - i * 0.065;
-    return { x1, y1, x2, y2, sw, op };
+    const y2 = SLOPE * (1400 - x1);
+    return {
+      x1,
+      y1,
+      x2,
+      y2,
+      sw: i === 0 ? 2.1 : i < 3 ? 1.55 : 1.05,
+      op: 1 - i * 0.07,
+    };
   });
 
-  // Bottom-right thin lines: mirrored
   const bottomLines = Array.from({ length: 10 }, (_, i) => {
-    const gap = 28;
-    const x1 = 690 + i * gap;
+    const gap = 30;
+    const x1 = 694 + i * gap;
     const y1 = 900;
     const x2 = 1400;
     const y2 = 900 - SLOPE * (1400 - x1);
-    const sw = i === 0 ? 2 : i < 3 ? 1.4 : 1;
-    const op = 1 - i * 0.065;
-    return { x1, y1, x2, y2, sw, op };
+    return {
+      x1,
+      y1,
+      x2,
+      y2,
+      sw: i === 0 ? 2.1 : i < 3 ? 1.55 : 1.05,
+      op: 1 - i * 0.07,
+    };
   });
 
   return (
-    <section className="relative h-screen min-h-[700px] overflow-hidden select-none">
-      {/* Base background */}
+    <section className="relative h-screen min-h-[700px] overflow-hidden select-none bg-storefront-bg">
       <div
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 80% 70% at 55% 48%, hsla(220, 18%, 12%, 1) 0%, hsla(222, 20%, 8%, 1) 40%, hsla(225, 22%, 5%, 1) 70%, hsla(0, 0%, 2%, 1) 100%)",
+            "radial-gradient(ellipse 78% 74% at 56% 48%, hsl(220 18% 15%) 0%, hsl(220 18% 11%) 34%, hsl(224 20% 7%) 68%, hsl(0 0% 3%) 100%)",
+        }}
+      />
+
+      <div
+        className="absolute inset-0 z-[1]"
+        style={{
+          background:
+            "linear-gradient(90deg, hsl(0 0% 2% / 0.86) 0%, hsl(0 0% 2% / 0.18) 24%, transparent 43%)",
         }}
       />
 
       <motion.svg
-        className="absolute inset-0 z-[2] w-full h-full"
+        className="absolute inset-0 z-[2] h-full w-full"
         viewBox="0 0 1400 900"
         preserveAspectRatio="xMidYMid slice"
         xmlns="http://www.w3.org/2000/svg"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, ease: EASE }}
+        initial={{ opacity: 0, scale: 1.01 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.9, ease: EASE }}
       >
         <defs>
-          <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#7a6438" />
-            <stop offset="20%" stopColor="#b8954e" />
-            <stop offset="50%" stopColor="#d4b88a" />
-            <stop offset="80%" stopColor="#b8954e" />
-            <stop offset="100%" stopColor="#7a6438" />
+          <linearGradient id="panelOuter" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="hsl(221 17% 16%)" />
+            <stop offset="55%" stopColor="hsl(221 15% 13%)" />
+            <stop offset="100%" stopColor="hsl(220 14% 9%)" />
+          </linearGradient>
+          <linearGradient id="panelInner" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="hsl(221 18% 13%)" />
+            <stop offset="50%" stopColor="hsl(220 17% 11%)" />
+            <stop offset="100%" stopColor="hsl(219 16% 8%)" />
+          </linearGradient>
+          <linearGradient id="goldLine" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="hsl(40 35% 38%)" />
+            <stop offset="22%" stopColor="hsl(41 45% 57%)" />
+            <stop offset="50%" stopColor="hsl(43 61% 80%)" />
+            <stop offset="78%" stopColor="hsl(41 46% 56%)" />
+            <stop offset="100%" stopColor="hsl(39 33% 34%)" />
           </linearGradient>
           <linearGradient id="goldBand" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#5a4828" />
-            <stop offset="15%" stopColor="#b8954e" />
-            <stop offset="35%" stopColor="#ddc99a" />
-            <stop offset="50%" stopColor="#e8d5a8" />
-            <stop offset="65%" stopColor="#ddc99a" />
-            <stop offset="85%" stopColor="#b8954e" />
-            <stop offset="100%" stopColor="#5a4828" />
+            <stop offset="0%" stopColor="hsl(36 33% 26%)" />
+            <stop offset="16%" stopColor="hsl(40 46% 45%)" />
+            <stop offset="31%" stopColor="hsl(43 59% 73%)" />
+            <stop offset="46%" stopColor="hsl(46 70% 87%)" />
+            <stop offset="54%" stopColor="hsl(44 65% 78%)" />
+            <stop offset="73%" stopColor="hsl(40 46% 44%)" />
+            <stop offset="100%" stopColor="hsl(36 30% 24%)" />
           </linearGradient>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="1.5" result="blur" />
+          <linearGradient id="bandShadow" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="hsl(0 0% 2% / 0.95)" />
+            <stop offset="50%" stopColor="hsl(220 10% 8% / 0.9)" />
+            <stop offset="100%" stopColor="hsl(0 0% 1% / 0.95)" />
+          </linearGradient>
+          <radialGradient id="crossGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="hsl(46 70% 90% / 0.72)" />
+            <stop offset="18%" stopColor="hsl(44 67% 82% / 0.42)" />
+            <stop offset="44%" stopColor="hsl(42 41% 56% / 0.18)" />
+            <stop offset="100%" stopColor="hsl(42 41% 56% / 0)" />
+          </radialGradient>
+          <radialGradient id="crossShadow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="hsl(0 0% 2% / 0.58)" />
+            <stop offset="100%" stopColor="hsl(0 0% 2% / 0)" />
+          </radialGradient>
+          <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="2.2" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
+          <filter id="crossBlur" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="10" />
+          </filter>
         </defs>
 
-        {/* Dark panels — top-right triangle */}
-        <polygon points="650,0 1400,0 1400,450" fill="hsla(222, 20%, 9%, 0.98)" />
-        <polygon points="690,0 1400,0 1400,426" fill="hsla(222, 18%, 11%, 0.96)" />
-        <polygon points="730,0 1400,0 1400,402" fill="hsla(222, 16%, 13%, 0.93)" />
+        <polygon points="650,0 1400,0 1400,450" fill="url(#panelOuter)" />
+        <polygon points="690,0 1400,0 1400,426" fill="url(#panelInner)" />
+        <polygon points="730,0 1400,0 1400,402" fill="hsl(220 15% 10% / 0.82)" />
 
-        {/* Dark panels — bottom-right triangle */}
-        <polygon points="650,900 1400,900 1400,450" fill="hsla(222, 20%, 9%, 0.98)" />
-        <polygon points="690,900 1400,900 1400,474" fill="hsla(222, 18%, 11%, 0.96)" />
-        <polygon points="730,900 1400,900 1400,498" fill="hsla(222, 16%, 13%, 0.93)" />
+        <polygon points="650,900 1400,900 1400,450" fill="url(#panelOuter)" />
+        <polygon points="690,900 1400,900 1400,474" fill="url(#panelInner)" />
+        <polygon points="730,900 1400,900 1400,498" fill="hsl(220 15% 10% / 0.82)" />
 
-        {/* Thick gold band — top */}
+        <ellipse cx="1392" cy="450" rx="125" ry="118" fill="url(#crossShadow)" filter="url(#crossBlur)" />
+
         <motion.line
-          x1="650" y1="0" x2="1400" y2="450"
-          stroke="url(#goldBand)"
-          strokeWidth="14"
-          filter="url(#glow)"
+          x1="650"
+          y1="0"
+          x2="1400"
+          y2="450"
+          stroke="url(#bandShadow)"
+          strokeWidth="25"
+          strokeLinecap="square"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.9, delay: 0.35 }}
+          animate={{ opacity: 0.62 }}
+          transition={{ duration: 0.9, delay: 0.18 }}
+        />
+        <motion.line
+          x1="650"
+          y1="900"
+          x2="1400"
+          y2="450"
+          stroke="url(#bandShadow)"
+          strokeWidth="25"
+          strokeLinecap="square"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.62 }}
+          transition={{ duration: 0.9, delay: 0.24 }}
         />
 
-        {/* Thick gold band — bottom */}
         <motion.line
-          x1="650" y1="900" x2="1400" y2="450"
+          x1="650"
+          y1="0"
+          x2="1400"
+          y2="450"
           stroke="url(#goldBand)"
-          strokeWidth="14"
-          filter="url(#glow)"
+          strokeWidth="16"
+          strokeLinecap="square"
+          filter="url(#softGlow)"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.9, delay: 0.45 }}
+          transition={{ duration: 0.9, delay: 0.3 }}
+        />
+        <motion.line
+          x1="650"
+          y1="900"
+          x2="1400"
+          y2="450"
+          stroke="url(#goldBand)"
+          strokeWidth="16"
+          strokeLinecap="square"
+          filter="url(#softGlow)"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.9, delay: 0.38 }}
         />
 
-        {/* Top-right thin gold lines (parallel to thick band) */}
+        <line x1="650" y1="0" x2="1400" y2="450" stroke="hsl(46 78% 90% / 0.52)" strokeWidth="3.4" strokeLinecap="square" />
+        <line x1="650" y1="900" x2="1400" y2="450" stroke="hsl(46 78% 90% / 0.52)" strokeWidth="3.4" strokeLinecap="square" />
+
         {topLines.map(({ x1, y1, x2, y2, sw, op }, i) => (
           <motion.line
             key={`top-${i}`}
-            x1={x1} y1={y1} x2={x2} y2={y2}
-            stroke="url(#gold)"
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
+            stroke="url(#goldLine)"
             strokeWidth={sw}
             opacity={op}
-            filter={i < 2 ? "url(#glow)" : undefined}
+            filter={i < 3 ? "url(#softGlow)" : undefined}
             initial={{ opacity: 0 }}
             animate={{ opacity: op }}
-            transition={{ duration: 0.8, ease: EASE, delay: 0.2 + i * 0.04 }}
+            transition={{ duration: 0.72, ease: EASE, delay: 0.18 + i * 0.035 }}
           />
         ))}
 
-        {/* Bottom-right thin gold lines (parallel to thick band) */}
         {bottomLines.map(({ x1, y1, x2, y2, sw, op }, i) => (
           <motion.line
-            key={`bot-${i}`}
-            x1={x1} y1={y1} x2={x2} y2={y2}
-            stroke="url(#gold)"
+            key={`bottom-${i}`}
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
+            stroke="url(#goldLine)"
             strokeWidth={sw}
             opacity={op}
-            filter={i < 2 ? "url(#glow)" : undefined}
+            filter={i < 3 ? "url(#softGlow)" : undefined}
             initial={{ opacity: 0 }}
             animate={{ opacity: op }}
-            transition={{ duration: 0.8, ease: EASE, delay: 0.25 + i * 0.04 }}
+            transition={{ duration: 0.72, ease: EASE, delay: 0.22 + i * 0.035 }}
           />
         ))}
-      </motion.svg>
 
-      {/* Left vignette */}
-      <div
-        className="absolute inset-0 z-[3] pointer-events-none"
-        style={{
-          background:
-            "linear-gradient(90deg, hsla(0, 0%, 1%, 0.65) 0%, hsla(0, 0%, 1%, 0.2) 22%, transparent 40%)",
-        }}
-      />
+        <ellipse cx="1392" cy="450" rx="72" ry="66" fill="url(#crossGlow)" />
+        <ellipse cx="1368" cy="428" rx="34" ry="14" fill="hsl(46 77% 90% / 0.34)" filter="url(#softGlow)" transform="rotate(-32 1368 428)" />
+      </motion.svg>
     </section>
   );
 }
