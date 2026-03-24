@@ -293,7 +293,7 @@ export default function StorefrontCatalog() {
               </div>
 
               {/* Grid */}
-              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[1px] bg-white/5">
+              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {paginated.map((product: any, i: number) => {
                   const img = getPrimaryImage(product);
                   const catName = getCategoryName(product.category_id);
@@ -307,16 +307,16 @@ export default function StorefrontCatalog() {
                     >
                       <Link
                         to={`/store/${slug}/product/${product.slug}`}
-                        className="group block bg-[#0c0e14] hover:bg-[#12151d] transition-colors"
+                        className="group block"
                       >
-                        {/* Image */}
-                        <div className="relative aspect-[3/4] overflow-hidden">
+                        {/* Image — tall, full-height door */}
+                        <div className="relative aspect-[2/5] overflow-hidden bg-[#0c0e14]">
                           {img ? (
                             <img
                               src={img}
                               alt={product.name}
                               loading="lazy"
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center bg-[#0f1218]">
@@ -326,13 +326,13 @@ export default function StorefrontCatalog() {
                         </div>
 
                         {/* Info */}
-                        <div className="p-4">
+                        <div className="pt-3">
                           {catName && (
-                            <span className="text-[10px] uppercase tracking-[0.15em] text-storefront-gold/60 block mb-1">
+                            <span className="text-[10px] uppercase tracking-[0.15em] text-storefront-muted/60 block mb-1">
                               {catName}
                             </span>
                           )}
-                          <h3 className="text-xs font-semibold text-storefront-text uppercase tracking-wider leading-snug mb-2 line-clamp-2">
+                          <h3 className="text-xs font-semibold text-storefront-text uppercase tracking-wider leading-snug mb-1 line-clamp-2">
                             {product.name}
                           </h3>
                           {product.rrp && (
@@ -352,7 +352,7 @@ export default function StorefrontCatalog() {
                   <p className="text-lg mb-2">Товары не найдены</p>
                   <button
                     onClick={() => { selectCategory(null); setPriceFrom(""); setPriceTo(""); }}
-                    className="text-storefront-gold text-sm hover:underline"
+                    className="text-storefront-gold text-sm"
                   >
                     Сбросить фильтры
                   </button>
