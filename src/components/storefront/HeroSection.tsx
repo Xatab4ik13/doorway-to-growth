@@ -106,7 +106,7 @@ export function HeroSection({ site: _site, banners }: Props) {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 1, ease: EASE, delay: 0.2 }}
         style={{
-          clipPath: "polygon(42% 0%, 100% 0%, 100% 100%, 42% 100%, 22% 55%, 42% 0%)",
+          clipPath: "polygon(52% 0%, 100% 0%, 100% 100%, 49% 100%, 37% 47%)",
         }}
       >
         <img
