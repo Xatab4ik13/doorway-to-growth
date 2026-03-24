@@ -73,6 +73,25 @@ export default function StorefrontCatalog() {
     return children.map((c) => c.id);
   };
 
+  // Extract unique colors and glazings from product specifications
+  const availableColors = useMemo(() => {
+    const colors = new Set<string>();
+    (products as any[]).forEach((p) => {
+      const c = p.specifications?.color;
+      if (c) colors.add(c);
+    });
+    return Array.from(colors).sort();
+  }, [products]);
+
+  const availableGlazings = useMemo(() => {
+    const glazings = new Set<string>();
+    (products as any[]).forEach((p) => {
+      const g = p.specifications?.glazing;
+      if (g) glazings.add(g);
+    });
+    return Array.from(glazings).sort();
+  }, [products]);
+
   // Filter
   const filtered = useMemo(() => {
     let result = [...(products as any[])];
@@ -92,6 +111,22 @@ export default function StorefrontCatalog() {
     if (pf > 0) result = result.filter((p) => !p.rrp || p.rrp >= pf);
     if (pt > 0) result = result.filter((p) => !p.rrp || p.rrp <= pt);
 
+    // Color filter from specifications
+    if (selectedColors.size > 0) {
+      result = result.filter((p) => {
+        const c = p.specifications?.color;
+        return c && selectedColors.has(c);
+      });
+    }
+
+    // Glazing filter from specifications
+    if (selectedGlazings.size > 0) {
+      result = result.filter((p) => {
+        const g = p.specifications?.glazing;
+        return g && selectedGlazings.has(g);
+      });
+    }
+
     switch (sortBy) {
       case "price-asc":
         result.sort((a, b) => (a.rrp || 0) - (b.rrp || 0));
@@ -107,7 +142,7 @@ export default function StorefrontCatalog() {
     }
 
     return result;
-  }, [products, categories, selectedCategory, priceFrom, priceTo, sortBy]);
+  }, [products, categories, selectedCategory, priceFrom, priceTo, sortBy, selectedColors, selectedGlazings]);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
