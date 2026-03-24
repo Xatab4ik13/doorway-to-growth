@@ -272,6 +272,7 @@ export function HeroSection({ site, banners }: Props) {
                   exit={{ y: -20, opacity: 0 }}
                   transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
                   className="text-4xl sm:text-5xl lg:text-[60px] font-bold leading-[1.02] tracking-tight text-storefront-text whitespace-pre-line"
+                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
                 >
                   {slide.title}
                 </motion.h1>
