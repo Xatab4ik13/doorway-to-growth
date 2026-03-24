@@ -59,20 +59,6 @@ export function HeroSection({ site, banners }: Props) {
         />
       )}
 
-      {/* Gold ribbons overlay */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none z-10"
-        style={{ mixBlendMode: "multiply" }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.5, delay: 0.3, ease: EASE }}
-      >
-        <img
-          src={ribbonsOverlay}
-          alt=""
-          className="w-full h-full object-cover"
-        />
-      </motion.div>
 
       {/* Banner text overlay */}
       {slides && slides[current].title && (
