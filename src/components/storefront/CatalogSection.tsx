@@ -37,6 +37,12 @@ export function CatalogSection({ products, categories, siteSlug }: Props) {
               Наши <span className="text-storefront-gold">двери</span>
             </h2>
           </div>
+          <Link
+            to={`/store/${siteSlug}/catalog`}
+            className="text-xs uppercase tracking-wider text-storefront-gold border border-storefront-gold/30 px-5 py-2.5 hover:bg-storefront-gold hover:text-storefront-bg transition-all"
+          >
+            Смотреть все
+          </Link>
         </div>
 
         {/* Category pills */}
