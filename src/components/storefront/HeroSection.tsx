@@ -12,48 +12,53 @@ interface Props {
 const ROOMS = [
   {
     collection: "ESTETICA",
-    tagline: "Итальянская\nэлегантность",
-    description: "Утончённые линии, натуральный шпон, безупречные пропорции",
-    accent: "#c5a572",       // warm gold
-    bg: "#0c0a08",           // warm black
+    tagline: "Современный\nминимализм",
+    description: "Гладкое однотонное покрытие, скрытый короб Invisible, итальянский замок AGB 2.0. Чистые линии для современного интерьера.",
+    accent: "#c5a572",
+    bg: "#0c0a08",
     ambient: "#1a1408",
     particleColor: "197,165,114",
+    models: "856 моделей",
   },
   {
     collection: "GHOST",
-    tagline: "Невидимое\nсовершенство",
-    description: "Скрытые коробки, минимальные зазоры, абсолютная интеграция",
-    accent: "#8fa4b8",       // steel blue
-    bg: "#080a0e",           // cold black
+    tagline: "Невидимая\nинтеграция",
+    description: "Каркасно-щитовые двери под покраску с коробом INVISIBLE. Монтаж в одной плоскости со стеной, без наличников. Итальянские петли AGB.",
+    accent: "#8fa4b8",
+    bg: "#080a0e",
     ambient: "#0c1220",
     particleColor: "143,164,184",
+    models: "12 моделей",
   },
   {
     collection: "HEAVY",
     tagline: "Монументальная\nсила",
-    description: "Массивные полотна, индустриальный характер, бескомпромиссная надёжность",
-    accent: "#b87a4a",       // copper
-    bg: "#0a0806",           // deep brown-black
+    description: "Полотно 60 мм на скрытом коробе. HPL-пластик, PET, глянец. До 3000 мм без перемычки. Алюминиевый короб, партнёры: Arpa, Cleaf, Renolit.",
+    accent: "#b87a4a",
+    bg: "#0a0806",
     ambient: "#1a1006",
     particleColor: "184,122,74",
+    models: "288 моделей",
   },
   {
     collection: "PRIME",
-    tagline: "Безупречный\nстандарт",
-    description: "Классические решения в современном исполнении для требовательных интерьеров",
-    accent: "#a8b89a",       // sage
-    bg: "#080a08",           // green-black
+    tagline: "Неоклассика\nбез компромиссов",
+    description: "Царговые двери с эмалевым покрытием Renolit (Германия). Гладкая однотонная поверхность передаёт эффект эмалевых дверей.",
+    accent: "#a8b89a",
+    bg: "#080a08",
     ambient: "#0c180c",
     particleColor: "168,184,154",
+    models: "666 моделей",
   },
   {
     collection: "REFLECT",
-    tagline: "Зеркальная\nглубина",
-    description: "Стекло, свет, отражения — двери как архитектурный акцент пространства",
-    accent: "#b8b0c8",       // lavender
-    bg: "#0a080e",           // purple-black
+    tagline: "Зеркало\nи свет",
+    description: "Двери с зеркалом и лакобелью. Итальянский замок AGB 2.0, 3.0. Алюминиевые кромки: Al, Black Edition, Gold Edition, White Edition.",
+    accent: "#b8b0c8",
+    bg: "#0a080e",
     ambient: "#14101e",
     particleColor: "184,176,200",
+    models: "180 моделей",
   },
 ];
 
