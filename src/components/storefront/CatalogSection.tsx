@@ -111,7 +111,7 @@ export function CatalogSection({ products, categories, siteSlug }: Props) {
               </div>
             );
           })}
-        </div>
+              </Link>
 
         {products.length === 0 && (
           <div className="text-center py-20 text-storefront-muted">
