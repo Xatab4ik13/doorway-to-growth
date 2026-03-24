@@ -20,6 +20,10 @@ export default function StorefrontCatalog() {
   const [priceFrom, setPriceFrom] = useState("");
   const [priceTo, setPriceTo] = useState("");
   const [priceOpen, setPriceOpen] = useState(true);
+  const [materialOpen, setMaterialOpen] = useState(true);
+  const [colorOpen, setColorOpen] = useState(true);
+  const [selectedMaterials, setSelectedMaterials] = useState<Set<string>>(new Set());
+  const [selectedColors, setSelectedColors] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState("default");
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState<"all" | "popular" | "new" | "sale">("all");
@@ -42,6 +46,24 @@ export default function StorefrontCatalog() {
 
   const selectCategory = (id: string | null) => {
     setSelectedCategory(id);
+    setPage(1);
+  };
+
+  const toggleMaterial = (mat: string) => {
+    setSelectedMaterials((prev) => {
+      const next = new Set(prev);
+      next.has(mat) ? next.delete(mat) : next.add(mat);
+      return next;
+    });
+    setPage(1);
+  };
+
+  const toggleColor = (color: string) => {
+    setSelectedColors((prev) => {
+      const next = new Set(prev);
+      next.has(color) ? next.delete(color) : next.add(color);
+      return next;
+    });
     setPage(1);
   };
 
@@ -150,9 +172,9 @@ export default function StorefrontCatalog() {
 
           <div className="flex gap-6 lg:gap-10">
             {/* ===== LEFT SIDEBAR — Metallic L-Panel ===== */}
-            <aside className="hidden md:block w-[270px] shrink-0">
+            <aside className="hidden md:block w-[300px] shrink-0">
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden sticky top-6"
                 style={{
                   borderRadius: "24px",
                   background: "linear-gradient(175deg, #cfbb96 0%, #bda67a 15%, #a8956e 35%, #8d7c5a 55%, #7a6b4d 70%, #6e5f40 85%, #5c5035 100%)",
@@ -160,16 +182,17 @@ export default function StorefrontCatalog() {
                 }}
               >
                 {/* Logo at top */}
-                <div className="flex items-center justify-center py-6 px-4 border-b border-black/10">
-                  <img src={brandoorsLogo} alt="Brandoors" className="h-8 opacity-90" />
+                <div className="flex items-center justify-center py-7 px-5 border-b border-black/10">
+                  <img src={brandoorsLogo} alt="Brandoors" className="h-9 opacity-90" />
                 </div>
 
                 {/* Categories */}
-                <div className="px-2 py-4">
-                  {/* "Все товары" */}
+                <div className="px-3 py-5">
+                  <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#1a1408]/40 px-4 mb-3">Категории</span>
+                  
                   <button
                     onClick={() => selectCategory(null)}
-                    className={`w-full text-left text-[14px] font-bold py-3 px-4 mb-0.5 rounded-xl transition-all duration-300 ${
+                    className={`w-full text-left text-[16px] font-bold py-3.5 px-4 mb-1 rounded-xl transition-all duration-300 ${
                       !selectedCategory
                         ? "bg-black/20 text-white shadow-[inset_0_0_20px_rgba(0,0,0,0.15)]"
                         : "text-[#1a1408]/70 hover:text-[#1a1408] hover:bg-black/5"
@@ -189,7 +212,7 @@ export default function StorefrontCatalog() {
                         <div className="flex items-center">
                           <button
                             onClick={() => { selectCategory(parent.id); if (children.length > 0 && !isExpanded) toggleParent(parent.id); }}
-                            className={`flex-1 text-left text-[14px] font-bold py-3 px-4 rounded-xl transition-all duration-300 ${
+                            className={`flex-1 text-left text-[16px] font-bold py-3.5 px-4 rounded-xl transition-all duration-300 ${
                               isActive || hasActiveChild
                                 ? "bg-black/20 text-white shadow-[inset_0_0_20px_rgba(0,0,0,0.15)]"
                                 : "text-[#1a1408]/70 hover:text-[#1a1408] hover:bg-black/5"
@@ -200,14 +223,13 @@ export default function StorefrontCatalog() {
                           {children.length > 0 && (
                             <button
                               onClick={() => toggleParent(parent.id)}
-                              className="p-2 text-[#1a1408]/50 hover:text-[#1a1408] transition-colors"
+                              className="p-2.5 text-[#1a1408]/50 hover:text-[#1a1408] transition-colors"
                             >
-                              <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-90" : ""}`} />
+                              <ChevronRight className={`w-5 h-5 transition-transform duration-300 ${isExpanded ? "rotate-90" : ""}`} />
                             </button>
                           )}
                         </div>
 
-                        {/* Children with animation */}
                         <AnimatePresence>
                           {isExpanded && children.length > 0 && (
                             <motion.div
@@ -217,12 +239,12 @@ export default function StorefrontCatalog() {
                               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                               className="overflow-hidden"
                             >
-                              <div className="ml-4 pl-3 mb-1 border-l border-black/10">
+                              <div className="ml-5 pl-3 mb-1 border-l-2 border-black/10">
                                 {children.map((child) => (
                                   <button
                                     key={child.id}
                                     onClick={() => selectCategory(child.id)}
-                                    className={`w-full text-left text-[13px] font-semibold py-2 px-3 rounded-lg transition-all duration-200 ${
+                                    className={`w-full text-left text-[14px] font-semibold py-2.5 px-3 rounded-lg transition-all duration-200 ${
                                       selectedCategory === child.id
                                         ? "bg-black/15 text-white"
                                         : "text-[#1a1408]/55 hover:text-[#1a1408] hover:bg-black/5"
@@ -240,41 +262,20 @@ export default function StorefrontCatalog() {
                   })}
                 </div>
 
-                {/* Tabs */}
-                <div className="px-4 pb-4">
-                  <div className="flex flex-wrap gap-1.5">
-                    {[
-                      { key: "all" as const, label: "Все" },
-                      { key: "popular" as const, label: "Популярное" },
-                      { key: "new" as const, label: "Новинки" },
-                      { key: "sale" as const, label: "Скидки" },
-                    ].map((tab) => (
-                      <button
-                        key={tab.key}
-                        onClick={() => { setActiveTab(tab.key); setPage(1); }}
-                        className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all duration-200 ${
-                          activeTab === tab.key
-                            ? "bg-black/20 text-white shadow-[inset_0_0_12px_rgba(0,0,0,0.1)]"
-                            : "text-[#1a1408]/50 hover:text-[#1a1408] hover:bg-black/5"
-                        }`}
-                      >
-                        {tab.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
+                {/* Divider */}
+                <div className="mx-5 border-t border-black/10" />
 
-              {/* Filters below the panel — on dark bg */}
-              <div className="mt-6 space-y-4">
-                {/* Price */}
-                <div>
+                {/* Price Filter */}
+                <div className="px-5 pt-5 pb-1">
                   <button
                     onClick={() => setPriceOpen(!priceOpen)}
                     className="flex items-center justify-between w-full mb-3"
                   >
-                    <span className="text-xs font-bold uppercase tracking-[0.15em] text-storefront-text">Цена</span>
-                    {priceOpen ? <ChevronUp className="w-3.5 h-3.5 text-storefront-muted" /> : <ChevronDown className="w-3.5 h-3.5 text-storefront-muted" />}
+                    <span className="text-[13px] font-bold uppercase tracking-[0.15em] text-[#1a1408]/80">Цена, ₽</span>
+                    {priceOpen
+                      ? <ChevronUp className="w-4 h-4 text-[#1a1408]/40" />
+                      : <ChevronDown className="w-4 h-4 text-[#1a1408]/40" />
+                    }
                   </button>
                   <AnimatePresence>
                     {priceOpen && (
@@ -285,21 +286,21 @@ export default function StorefrontCatalog() {
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden"
                       >
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 mb-2">
                           <input
                             type="number"
                             placeholder="от"
                             value={priceFrom}
                             onChange={(e) => { setPriceFrom(e.target.value); setPage(1); }}
-                            className="w-full bg-white/5 border border-white/10 text-storefront-text text-xs px-3 py-2.5 rounded-lg placeholder:text-storefront-muted/40 focus:outline-none focus:border-[#cfbb96]/40"
+                            className="w-full bg-black/10 border border-black/10 text-[#1a1408] text-[13px] font-medium px-3 py-2.5 rounded-lg placeholder:text-[#1a1408]/30 focus:outline-none focus:border-black/25 focus:bg-black/15 transition-all"
                           />
-                          <span className="text-storefront-muted text-xs">—</span>
+                          <span className="text-[#1a1408]/30 text-sm font-bold">—</span>
                           <input
                             type="number"
                             placeholder="до"
                             value={priceTo}
                             onChange={(e) => { setPriceTo(e.target.value); setPage(1); }}
-                            className="w-full bg-white/5 border border-white/10 text-storefront-text text-xs px-3 py-2.5 rounded-lg placeholder:text-storefront-muted/40 focus:outline-none focus:border-[#cfbb96]/40"
+                            className="w-full bg-black/10 border border-black/10 text-[#1a1408] text-[13px] font-medium px-3 py-2.5 rounded-lg placeholder:text-[#1a1408]/30 focus:outline-none focus:border-black/25 focus:bg-black/15 transition-all"
                           />
                         </div>
                       </motion.div>
@@ -307,20 +308,134 @@ export default function StorefrontCatalog() {
                   </AnimatePresence>
                 </div>
 
-                {/* Material */}
-                <div className="border-t border-white/5 pt-4">
-                  <button className="flex items-center justify-between w-full">
-                    <span className="text-xs font-bold uppercase tracking-[0.15em] text-storefront-text">Материал</span>
-                    <ChevronDown className="w-3.5 h-3.5 text-storefront-muted" />
+                {/* Divider */}
+                <div className="mx-5 border-t border-black/10" />
+
+                {/* Material Filter */}
+                <div className="px-5 pt-4 pb-1">
+                  <button
+                    onClick={() => setMaterialOpen(!materialOpen)}
+                    className="flex items-center justify-between w-full mb-3"
+                  >
+                    <span className="text-[13px] font-bold uppercase tracking-[0.15em] text-[#1a1408]/80">Материал</span>
+                    {materialOpen
+                      ? <ChevronUp className="w-4 h-4 text-[#1a1408]/40" />
+                      : <ChevronDown className="w-4 h-4 text-[#1a1408]/40" />
+                    }
                   </button>
+                  <AnimatePresence>
+                    {materialOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="space-y-1.5 mb-2">
+                          {["Металл", "Массив", "Экошпон", "Стекло", "ПВХ"].map((mat) => (
+                            <label key={mat} className="flex items-center gap-3 py-1.5 px-2 rounded-lg hover:bg-black/5 cursor-pointer transition-colors group">
+                              <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                                selectedMaterials.has(mat)
+                                  ? "bg-[#1a1408] border-[#1a1408]"
+                                  : "border-[#1a1408]/25 group-hover:border-[#1a1408]/40"
+                              }`}>
+                                {selectedMaterials.has(mat) && (
+                                  <svg className="w-3 h-3 text-[#cfbb96]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                )}
+                              </div>
+                              <span className="text-[14px] font-semibold text-[#1a1408]/70">{mat}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
-                {/* Color */}
-                <div className="border-t border-white/5 pt-4">
-                  <button className="flex items-center justify-between w-full">
-                    <span className="text-xs font-bold uppercase tracking-[0.15em] text-storefront-text">Цвет / Покрытие</span>
-                    <ChevronDown className="w-3.5 h-3.5 text-storefront-muted" />
+                {/* Divider */}
+                <div className="mx-5 border-t border-black/10" />
+
+                {/* Color Filter */}
+                <div className="px-5 pt-4 pb-5">
+                  <button
+                    onClick={() => setColorOpen(!colorOpen)}
+                    className="flex items-center justify-between w-full mb-3"
+                  >
+                    <span className="text-[13px] font-bold uppercase tracking-[0.15em] text-[#1a1408]/80">Цвет / Покрытие</span>
+                    {colorOpen
+                      ? <ChevronUp className="w-4 h-4 text-[#1a1408]/40" />
+                      : <ChevronDown className="w-4 h-4 text-[#1a1408]/40" />
+                    }
                   </button>
+                  <AnimatePresence>
+                    {colorOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="flex flex-wrap gap-2 mb-2">
+                          {[
+                            { name: "Белый", color: "#f5f5f0" },
+                            { name: "Чёрный", color: "#1a1a1a" },
+                            { name: "Венге", color: "#3d2b1f" },
+                            { name: "Дуб", color: "#c4a882" },
+                            { name: "Орех", color: "#6b4226" },
+                            { name: "Серый", color: "#8a8a8a" },
+                            { name: "Антрацит", color: "#2d2d2d" },
+                            { name: "Бетон", color: "#a0a0a0" },
+                          ].map((c) => (
+                            <button
+                              key={c.name}
+                              onClick={() => toggleColor(c.name)}
+                              className="flex flex-col items-center gap-1 group"
+                              title={c.name}
+                            >
+                              <div
+                                className={`w-8 h-8 rounded-full border-2 transition-all ${
+                                  selectedColors.has(c.name)
+                                    ? "border-[#1a1408] scale-110 shadow-[0_0_0_2px_rgba(26,20,8,0.3)]"
+                                    : "border-black/15 group-hover:border-black/30"
+                                }`}
+                                style={{ backgroundColor: c.color }}
+                              />
+                              <span className="text-[9px] font-semibold text-[#1a1408]/50 leading-none">{c.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Tabs at bottom */}
+                <div className="px-4 pb-5 pt-1 border-t border-black/10">
+                  <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#1a1408]/40 px-1 pt-4 mb-3">Фильтр</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      { key: "all" as const, label: "Все" },
+                      { key: "popular" as const, label: "Популярное" },
+                      { key: "new" as const, label: "Новинки" },
+                      { key: "sale" as const, label: "Скидки" },
+                    ].map((tab) => (
+                      <button
+                        key={tab.key}
+                        onClick={() => { setActiveTab(tab.key); setPage(1); }}
+                        className={`px-3.5 py-2 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-all duration-200 ${
+                          activeTab === tab.key
+                            ? "bg-black/20 text-white shadow-[inset_0_0_12px_rgba(0,0,0,0.1)]"
+                            : "text-[#1a1408]/50 hover:text-[#1a1408] hover:bg-black/5"
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </aside>
