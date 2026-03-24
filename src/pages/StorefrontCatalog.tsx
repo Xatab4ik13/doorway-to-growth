@@ -3,8 +3,9 @@ import { useParams, Link } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
-import { motion } from "framer-motion";
-import { ChevronRight, ChevronDown, ChevronUp, ArrowRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
+import brandoorsLogo from "@/assets/logo.png";
 
 const ITEMS_PER_PAGE = 16;
 
@@ -147,143 +148,180 @@ export default function StorefrontCatalog() {
             </select>
           </div>
 
-          <div className="flex gap-8">
-            {/* ===== LEFT SIDEBAR ===== */}
-            <aside className="hidden md:block w-[260px] shrink-0">
-              {/* Categories tree */}
-              <div className="mb-8">
-                <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-storefront-text mb-4">Категории</h3>
+          <div className="flex gap-6 lg:gap-10">
+            {/* ===== LEFT SIDEBAR — Metallic L-Panel ===== */}
+            <aside className="hidden md:block w-[270px] shrink-0">
+              <div
+                className="relative overflow-hidden"
+                style={{
+                  borderRadius: "24px",
+                  background: "linear-gradient(175deg, #cfbb96 0%, #bda67a 15%, #a8956e 35%, #8d7c5a 55%, #7a6b4d 70%, #6e5f40 85%, #5c5035 100%)",
+                  boxShadow: "0 8px 40px rgba(207, 187, 150, 0.15), 0 0 80px rgba(207, 187, 150, 0.05)",
+                }}
+              >
+                {/* Logo at top */}
+                <div className="flex items-center justify-center py-6 px-4 border-b border-black/10">
+                  <img src={brandoorsLogo} alt="Brandoors" className="h-8 opacity-90" />
+                </div>
 
-                {/* "Все товары" */}
-                <button
-                  onClick={() => selectCategory(null)}
-                  className={`w-full text-left text-[15px] font-semibold py-2.5 px-4 mb-0.5 transition-colors ${
-                    !selectedCategory
-                      ? "text-[#07090d]"
-                      : "text-storefront-muted hover:text-storefront-text hover:bg-white/5"
-                  }`}
-                  style={!selectedCategory ? { background: "linear-gradient(180deg, #cfbb96 0%, #a8956e 50%, #6e5f40 100%)" } : undefined}
-                >
-                  Все товары
-                </button>
-
-                {parentCategories.map((parent) => {
-                  const children = getChildren(parent.id);
-                  const isExpanded = expandedParents.has(parent.id);
-                  const isActive = selectedCategory === parent.id;
-
-                  return (
-                    <div key={parent.id}>
-                      <div className="flex items-center">
-                        <button
-                          onClick={() => selectCategory(parent.id)}
-                          className={`flex-1 text-left text-[15px] font-semibold py-2.5 px-4 transition-colors ${
-                            isActive
-                              ? "text-[#cfbb96]"
-                              : "text-storefront-muted hover:text-storefront-text"
-                          }`}
-                        >
-                          {parent.name}
-                        </button>
-                        {children.length > 0 && (
-                          <button
-                            onClick={() => toggleParent(parent.id)}
-                            className="p-1.5 text-storefront-muted hover:text-storefront-text transition-colors"
-                          >
-                            <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
-                          </button>
-                        )}
-                      </div>
-
-                      {/* Children */}
-                      {isExpanded && children.length > 0 && (
-                        <div className="ml-4 border-l border-white/8 pl-4 mb-2">
-                          {children.map((child) => (
-                            <button
-                              key={child.id}
-                              onClick={() => selectCategory(child.id)}
-                              className={`w-full text-left text-[13px] font-medium py-2 px-2 transition-colors ${
-                                selectedCategory === child.id
-                                  ? "text-[#cfbb96]"
-                                  : "text-storefront-muted hover:text-storefront-text"
-                              }`}
-                            >
-                              {child.name}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Tabs: Все / Популярное / Новинки / Скидки */}
-              <div className="flex flex-wrap gap-1.5 mb-6">
-                {[
-                  { key: "all" as const, label: "Все" },
-                  { key: "popular" as const, label: "Популярное" },
-                  { key: "new" as const, label: "Новинки" },
-                  { key: "sale" as const, label: "Скидки" },
-                ].map((tab) => (
+                {/* Categories */}
+                <div className="px-2 py-4">
+                  {/* "Все товары" */}
                   <button
-                    key={tab.key}
-                    onClick={() => { setActiveTab(tab.key); setPage(1); }}
-                    className={`px-3.5 py-2 text-[11px] font-semibold uppercase tracking-wider transition-all ${
-                      activeTab === tab.key
-                        ? "text-[#07090d]"
-                        : "bg-white/5 text-storefront-muted hover:bg-white/10 hover:text-storefront-text"
+                    onClick={() => selectCategory(null)}
+                    className={`w-full text-left text-[14px] font-bold py-3 px-4 mb-0.5 rounded-xl transition-all duration-300 ${
+                      !selectedCategory
+                        ? "bg-black/20 text-white shadow-[inset_0_0_20px_rgba(0,0,0,0.15)]"
+                        : "text-[#1a1408]/70 hover:text-[#1a1408] hover:bg-black/5"
                     }`}
-                    style={activeTab === tab.key ? { background: "linear-gradient(135deg, #cfbb96, #a8956e)" } : undefined}
                   >
-                    {tab.label}
+                    Все товары
                   </button>
-                ))}
-              </div>
 
-              {/* Price filter */}
-              <div className="border-t border-white/5 pt-4 mb-6">
-                <button
-                  onClick={() => setPriceOpen(!priceOpen)}
-                  className="flex items-center justify-between w-full mb-3"
-                >
-                  <span className="text-xs font-semibold uppercase tracking-[0.15em] text-storefront-text">Цена</span>
-                  {priceOpen ? <ChevronUp className="w-3.5 h-3.5 text-storefront-muted" /> : <ChevronDown className="w-3.5 h-3.5 text-storefront-muted" />}
-                </button>
-                {priceOpen && (
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="number"
-                      placeholder="от"
-                      value={priceFrom}
-                      onChange={(e) => { setPriceFrom(e.target.value); setPage(1); }}
-                      className="w-full bg-[#0f1218] border border-white/10 text-storefront-text text-xs px-3 py-2 placeholder:text-storefront-muted/40 focus:outline-none focus:border-storefront-gold/40"
-                    />
-                    <span className="text-storefront-muted text-xs">—</span>
-                    <input
-                      type="number"
-                      placeholder="до"
-                      value={priceTo}
-                      onChange={(e) => { setPriceTo(e.target.value); setPage(1); }}
-                      className="w-full bg-[#0f1218] border border-white/10 text-storefront-text text-xs px-3 py-2 placeholder:text-storefront-muted/40 focus:outline-none focus:border-storefront-gold/40"
-                    />
+                  {parentCategories.map((parent) => {
+                    const children = getChildren(parent.id);
+                    const isExpanded = expandedParents.has(parent.id);
+                    const isActive = selectedCategory === parent.id;
+                    const hasActiveChild = children.some((c) => c.id === selectedCategory);
+
+                    return (
+                      <div key={parent.id}>
+                        <div className="flex items-center">
+                          <button
+                            onClick={() => { selectCategory(parent.id); if (children.length > 0 && !isExpanded) toggleParent(parent.id); }}
+                            className={`flex-1 text-left text-[14px] font-bold py-3 px-4 rounded-xl transition-all duration-300 ${
+                              isActive || hasActiveChild
+                                ? "bg-black/20 text-white shadow-[inset_0_0_20px_rgba(0,0,0,0.15)]"
+                                : "text-[#1a1408]/70 hover:text-[#1a1408] hover:bg-black/5"
+                            }`}
+                          >
+                            {parent.name}
+                          </button>
+                          {children.length > 0 && (
+                            <button
+                              onClick={() => toggleParent(parent.id)}
+                              className="p-2 text-[#1a1408]/50 hover:text-[#1a1408] transition-colors"
+                            >
+                              <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-90" : ""}`} />
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Children with animation */}
+                        <AnimatePresence>
+                          {isExpanded && children.length > 0 && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                              className="overflow-hidden"
+                            >
+                              <div className="ml-4 pl-3 mb-1 border-l border-black/10">
+                                {children.map((child) => (
+                                  <button
+                                    key={child.id}
+                                    onClick={() => selectCategory(child.id)}
+                                    className={`w-full text-left text-[13px] font-semibold py-2 px-3 rounded-lg transition-all duration-200 ${
+                                      selectedCategory === child.id
+                                        ? "bg-black/15 text-white"
+                                        : "text-[#1a1408]/55 hover:text-[#1a1408] hover:bg-black/5"
+                                    }`}
+                                  >
+                                    {child.name}
+                                  </button>
+                                ))}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Tabs */}
+                <div className="px-4 pb-4">
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      { key: "all" as const, label: "Все" },
+                      { key: "popular" as const, label: "Популярное" },
+                      { key: "new" as const, label: "Новинки" },
+                      { key: "sale" as const, label: "Скидки" },
+                    ].map((tab) => (
+                      <button
+                        key={tab.key}
+                        onClick={() => { setActiveTab(tab.key); setPage(1); }}
+                        className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all duration-200 ${
+                          activeTab === tab.key
+                            ? "bg-black/20 text-white shadow-[inset_0_0_12px_rgba(0,0,0,0.1)]"
+                            : "text-[#1a1408]/50 hover:text-[#1a1408] hover:bg-black/5"
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
                   </div>
-                )}
+                </div>
               </div>
 
-              {/* Material filter placeholder */}
-              <div className="border-t border-white/5 pt-4 mb-6">
-                <button className="flex items-center justify-between w-full">
-                  <span className="text-xs font-semibold uppercase tracking-[0.15em] text-storefront-text">Материал</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-storefront-muted" />
-                </button>
-              </div>
+              {/* Filters below the panel — on dark bg */}
+              <div className="mt-6 space-y-4">
+                {/* Price */}
+                <div>
+                  <button
+                    onClick={() => setPriceOpen(!priceOpen)}
+                    className="flex items-center justify-between w-full mb-3"
+                  >
+                    <span className="text-xs font-bold uppercase tracking-[0.15em] text-storefront-text">Цена</span>
+                    {priceOpen ? <ChevronUp className="w-3.5 h-3.5 text-storefront-muted" /> : <ChevronDown className="w-3.5 h-3.5 text-storefront-muted" />}
+                  </button>
+                  <AnimatePresence>
+                    {priceOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            placeholder="от"
+                            value={priceFrom}
+                            onChange={(e) => { setPriceFrom(e.target.value); setPage(1); }}
+                            className="w-full bg-white/5 border border-white/10 text-storefront-text text-xs px-3 py-2.5 rounded-lg placeholder:text-storefront-muted/40 focus:outline-none focus:border-[#cfbb96]/40"
+                          />
+                          <span className="text-storefront-muted text-xs">—</span>
+                          <input
+                            type="number"
+                            placeholder="до"
+                            value={priceTo}
+                            onChange={(e) => { setPriceTo(e.target.value); setPage(1); }}
+                            className="w-full bg-white/5 border border-white/10 text-storefront-text text-xs px-3 py-2.5 rounded-lg placeholder:text-storefront-muted/40 focus:outline-none focus:border-[#cfbb96]/40"
+                          />
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
 
-              <div className="border-t border-white/5 pt-4 mb-6">
-                <button className="flex items-center justify-between w-full">
-                  <span className="text-xs font-semibold uppercase tracking-[0.15em] text-storefront-text">Цвет / Покрытие</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-storefront-muted" />
-                </button>
+                {/* Material */}
+                <div className="border-t border-white/5 pt-4">
+                  <button className="flex items-center justify-between w-full">
+                    <span className="text-xs font-bold uppercase tracking-[0.15em] text-storefront-text">Материал</span>
+                    <ChevronDown className="w-3.5 h-3.5 text-storefront-muted" />
+                  </button>
+                </div>
+
+                {/* Color */}
+                <div className="border-t border-white/5 pt-4">
+                  <button className="flex items-center justify-between w-full">
+                    <span className="text-xs font-bold uppercase tracking-[0.15em] text-storefront-text">Цвет / Покрытие</span>
+                    <ChevronDown className="w-3.5 h-3.5 text-storefront-muted" />
+                  </button>
+                </div>
               </div>
             </aside>
 
