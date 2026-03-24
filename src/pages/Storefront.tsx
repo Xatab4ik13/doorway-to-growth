@@ -45,7 +45,7 @@ export default function Storefront() {
     <StorefrontLayout site={site}>
       <HeroSection site={site} banners={banners} />
       <PatternSection />
-      <CatalogSection products={products as any} categories={categories} />
+      <CatalogSection products={products as any} categories={categories} siteSlug={slug || ""} />
       <AboutSection site={site} staff={staff} />
       <ContactSection site={site} />
     </StorefrontLayout>
