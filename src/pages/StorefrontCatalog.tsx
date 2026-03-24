@@ -24,7 +24,6 @@ export default function StorefrontCatalog() {
   const [glazingOpen, setGlazingOpen] = useState(true);
   const [selectedColors, setSelectedColors] = useState<Set<string>>(new Set());
   const [selectedGlazings, setSelectedGlazings] = useState<Set<string>>(new Set());
-  const [selectedColors, setSelectedColors] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState("default");
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState<"all" | "popular" | "new" | "sale">("all");
@@ -50,19 +49,19 @@ export default function StorefrontCatalog() {
     setPage(1);
   };
 
-  const toggleMaterial = (mat: string) => {
-    setSelectedMaterials((prev) => {
+  const toggleColor = (color: string) => {
+    setSelectedColors((prev) => {
       const next = new Set(prev);
-      next.has(mat) ? next.delete(mat) : next.add(mat);
+      next.has(color) ? next.delete(color) : next.add(color);
       return next;
     });
     setPage(1);
   };
 
-  const toggleColor = (color: string) => {
-    setSelectedColors((prev) => {
+  const toggleGlazing = (g: string) => {
+    setSelectedGlazings((prev) => {
       const next = new Set(prev);
-      next.has(color) ? next.delete(color) : next.add(color);
+      next.has(g) ? next.delete(g) : next.add(g);
       return next;
     });
     setPage(1);
