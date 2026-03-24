@@ -13,39 +13,32 @@ interface Props {
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
-export function HeroSection({ site: _site, banners: _banners }: Props) {
-  // All lines converge toward the right edge center (~1400, 450)
-  const meetX = 1400;
-  const meetY = 450;
+// Thick band slope: from (650,0) to (1400,450) → slope = 450/750 = 0.6
+const SLOPE = 0.6;
 
+export function HeroSection({ site: _site, banners: _banners }: Props) {
+  // Top-right thin lines: parallel to thick band, shifted toward corner
   const topLines = Array.from({ length: 10 }, (_, i) => {
-    const gap = 30;
-    // Start from top edge, each line shifted right
-    const x1 = 680 + i * gap;
+    const gap = 28;
+    const x1 = 690 + i * gap;  // start on top edge, shifted right from thick band
     const y1 = 0;
-    // End at right edge, proportionally
-    const ratio = (meetX - x1) / meetX;
-    const endY = meetY * (1 - ratio) + 0 * ratio;
-    return {
-      x1, y1,
-      x2: meetX,
-      y2: Math.max(0, meetY - (meetX - x1)),
-      sw: i === 0 ? 2.5 : i < 3 ? 1.6 : 1.1,
-      op: 1 - i * 0.06,
-    };
+    const x2 = 1400;
+    const y2 = SLOPE * (1400 - x1);  // parallel to thick band
+    const sw = i === 0 ? 2 : i < 3 ? 1.4 : 1;
+    const op = 1 - i * 0.065;
+    return { x1, y1, x2, y2, sw, op };
   });
 
+  // Bottom-right thin lines: mirrored
   const bottomLines = Array.from({ length: 10 }, (_, i) => {
-    const gap = 30;
-    const x1 = 680 + i * gap;
+    const gap = 28;
+    const x1 = 690 + i * gap;
     const y1 = 900;
-    return {
-      x1, y1,
-      x2: meetX,
-      y2: Math.min(900, meetY + (meetX - x1)),
-      sw: i === 0 ? 2.5 : i < 3 ? 1.6 : 1.1,
-      op: 1 - i * 0.06,
-    };
+    const x2 = 1400;
+    const y2 = 900 - SLOPE * (1400 - x1);
+    const sw = i === 0 ? 2 : i < 3 ? 1.4 : 1;
+    const op = 1 - i * 0.065;
+    return { x1, y1, x2, y2, sw, op };
   });
 
   return (
@@ -95,18 +88,18 @@ export function HeroSection({ site: _site, banners: _banners }: Props) {
         </defs>
 
         {/* Dark panels — top-right triangle */}
-        <polygon points={`660,0 1400,0 1400,${meetY}`} fill="hsla(222, 20%, 9%, 0.98)" />
-        <polygon points={`700,0 1400,0 1400,${meetY - 30}`} fill="hsla(222, 18%, 11%, 0.96)" />
-        <polygon points={`740,0 1400,0 1400,${meetY - 60}`} fill="hsla(222, 16%, 13%, 0.93)" />
+        <polygon points="650,0 1400,0 1400,450" fill="hsla(222, 20%, 9%, 0.98)" />
+        <polygon points="690,0 1400,0 1400,426" fill="hsla(222, 18%, 11%, 0.96)" />
+        <polygon points="730,0 1400,0 1400,402" fill="hsla(222, 16%, 13%, 0.93)" />
 
         {/* Dark panels — bottom-right triangle */}
-        <polygon points={`660,900 1400,900 1400,${meetY}`} fill="hsla(222, 20%, 9%, 0.98)" />
-        <polygon points={`700,900 1400,900 1400,${meetY + 30}`} fill="hsla(222, 18%, 11%, 0.96)" />
-        <polygon points={`740,900 1400,900 1400,${meetY + 60}`} fill="hsla(222, 16%, 13%, 0.93)" />
+        <polygon points="650,900 1400,900 1400,450" fill="hsla(222, 20%, 9%, 0.98)" />
+        <polygon points="690,900 1400,900 1400,474" fill="hsla(222, 18%, 11%, 0.96)" />
+        <polygon points="730,900 1400,900 1400,498" fill="hsla(222, 16%, 13%, 0.93)" />
 
-        {/* Thick gold band — top diagonal */}
+        {/* Thick gold band — top */}
         <motion.line
-          x1="650" y1="0" x2={meetX} y2={meetY}
+          x1="650" y1="0" x2="1400" y2="450"
           stroke="url(#goldBand)"
           strokeWidth="14"
           filter="url(#glow)"
@@ -115,9 +108,9 @@ export function HeroSection({ site: _site, banners: _banners }: Props) {
           transition={{ duration: 0.9, delay: 0.35 }}
         />
 
-        {/* Thick gold band — bottom diagonal */}
+        {/* Thick gold band — bottom */}
         <motion.line
-          x1="650" y1="900" x2={meetX} y2={meetY}
+          x1="650" y1="900" x2="1400" y2="450"
           stroke="url(#goldBand)"
           strokeWidth="14"
           filter="url(#glow)"
@@ -126,7 +119,7 @@ export function HeroSection({ site: _site, banners: _banners }: Props) {
           transition={{ duration: 0.9, delay: 0.45 }}
         />
 
-        {/* Top-right thin gold lines */}
+        {/* Top-right thin gold lines (parallel to thick band) */}
         {topLines.map(({ x1, y1, x2, y2, sw, op }, i) => (
           <motion.line
             key={`top-${i}`}
@@ -141,7 +134,7 @@ export function HeroSection({ site: _site, banners: _banners }: Props) {
           />
         ))}
 
-        {/* Bottom-right thin gold lines */}
+        {/* Bottom-right thin gold lines (parallel to thick band) */}
         {bottomLines.map(({ x1, y1, x2, y2, sw, op }, i) => (
           <motion.line
             key={`bot-${i}`}
