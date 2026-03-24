@@ -64,10 +64,6 @@ export function PatternSection() {
         >
           Коллекция входных дверей
         </h2>
-        <div
-          className="mx-auto mt-5 w-16 h-px"
-          style={{ backgroundColor: "rgba(197,165,114,0.4)" }}
-        />
       </motion.div>
 
       {/* Carousel */}
