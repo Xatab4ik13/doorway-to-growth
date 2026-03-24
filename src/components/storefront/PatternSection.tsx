@@ -82,7 +82,10 @@ export function PatternSection() {
       className="relative w-full overflow-hidden py-20 lg:py-32"
       style={{ backgroundColor: "#07090d" }}
     >
-      <div className="relative mx-auto h-[420px] md:h-[520px] lg:h-[640px]" style={{ perspective: "1200px" }}>
+      <FloatingPaths position={1} />
+      <FloatingPaths position={-1} />
+
+      <div className="relative mx-auto h-[420px] md:h-[520px] lg:h-[640px] z-10" style={{ perspective: "1200px" }}>
         {positions.map((doorIdx, posIdx) => {
           const cfg = configs[posIdx];
           return (
