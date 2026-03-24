@@ -67,9 +67,10 @@ export function CatalogSection({ products, categories, siteSlug }: Props) {
           {products.slice(0, 8).map((product) => {
             const img = getPrimaryImage(product);
             return (
-              <div
+              <Link
                 key={product.id}
-                className="group relative aspect-[3/4] bg-storefront-card overflow-hidden cursor-pointer"
+                to={`/store/${siteSlug}/product/${product.slug}`}
+                className="group relative aspect-[3/4] bg-storefront-card overflow-hidden cursor-pointer block"
               >
                 {img ? (
                   <img
