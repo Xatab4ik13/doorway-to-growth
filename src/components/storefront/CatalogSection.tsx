@@ -108,10 +108,9 @@ export function CatalogSection({ products, categories, siteSlug }: Props) {
                 <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                   <ChevronRight className="w-5 h-5 text-storefront-gold" />
                 </div>
-              </div>
+              </Link>
             );
           })}
-              </Link>
 
         {products.length === 0 && (
           <div className="text-center py-20 text-storefront-muted">
