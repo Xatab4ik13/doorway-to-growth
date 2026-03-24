@@ -33,8 +33,8 @@ const SLIDES = [
 export function HeroSection({ site, banners }: Props) {
   const [current, setCurrent] = useState(0);
 
-  const heroImage = banners[0]?.image_url || heroDefault;
   const slide = SLIDES[current] || SLIDES[0];
+  const heroImage = banners[current]?.image_url || slide.image;
 
   const prev = () => setCurrent((c) => (c === 0 ? SLIDES.length - 1 : c - 1));
   const next = () => setCurrent((c) => (c === SLIDES.length - 1 ? 0 : c + 1));
