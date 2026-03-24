@@ -197,14 +197,14 @@ export default function StorefrontCatalog() {
 
                       {/* Children */}
                       {isExpanded && children.length > 0 && (
-                        <div className="ml-3 border-l border-white/5 pl-3 mb-1">
+                        <div className="ml-4 border-l border-white/8 pl-4 mb-2">
                           {children.map((child) => (
                             <button
                               key={child.id}
                               onClick={() => selectCategory(child.id)}
-                              className={`w-full text-left text-[13px] py-1.5 px-2 transition-colors ${
+                              className={`w-full text-left text-[13px] font-medium py-2 px-2 transition-colors ${
                                 selectedCategory === child.id
-                                  ? "text-storefront-gold font-medium"
+                                  ? "text-[#cfbb96]"
                                   : "text-storefront-muted hover:text-storefront-text"
                               }`}
                             >
