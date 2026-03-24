@@ -20,6 +20,10 @@ export default function StorefrontCatalog() {
   const [priceFrom, setPriceFrom] = useState("");
   const [priceTo, setPriceTo] = useState("");
   const [priceOpen, setPriceOpen] = useState(true);
+  const [materialOpen, setMaterialOpen] = useState(true);
+  const [colorOpen, setColorOpen] = useState(true);
+  const [selectedMaterials, setSelectedMaterials] = useState<Set<string>>(new Set());
+  const [selectedColors, setSelectedColors] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState("default");
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState<"all" | "popular" | "new" | "sale">("all");
