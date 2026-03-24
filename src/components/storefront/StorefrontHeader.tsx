@@ -33,16 +33,27 @@ export function StorefrontHeader({ site }: Props) {
         </div>
         {mobileOpen && (
           <div className="bg-storefront-bg border-t border-white/5 px-5 py-4 space-y-1">
-            {NAV_ITEMS.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileOpen(false)}
-                className="block text-sm uppercase tracking-widest text-storefront-muted hover:text-storefront-gold transition-colors py-2.5"
-              >
-                {item.label}
-              </a>
-            ))}
+            {NAV_ITEMS.map((item) =>
+              item.isRoute ? (
+                <Link
+                  key={item.href}
+                  to={`/store/${site.slug}/${item.href}`}
+                  onClick={() => setMobileOpen(false)}
+                  className="block text-sm uppercase tracking-widest text-storefront-muted hover:text-storefront-gold transition-colors py-2.5"
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="block text-sm uppercase tracking-widest text-storefront-muted hover:text-storefront-gold transition-colors py-2.5"
+                >
+                  {item.label}
+                </a>
+              )
+            )}
             {site.phone && (
               <a href={`tel:${site.phone}`} className="flex items-center gap-2 text-sm text-storefront-gold pt-3 border-t border-white/5 mt-2">
                 <Phone className="w-4 h-4" />
