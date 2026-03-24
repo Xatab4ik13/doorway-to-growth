@@ -17,25 +17,30 @@ export function PatternSection() {
         className="absolute inset-0 w-full h-full object-cover pointer-events-none"
         draggable={false}
       />
-      <div className="relative z-10 mx-auto max-w-[1400px] px-6 py-24">
-        <div className="flex items-end justify-center gap-6 md:gap-10 lg:gap-14">
+      <div className="relative z-10 mx-auto max-w-[1400px] px-8 py-20 lg:py-28">
+        <div className="grid grid-cols-5 gap-4 lg:gap-6 items-end">
           {DOORS.map((src, i) => (
             <motion.div
               key={i}
-              className="flex-shrink-0"
-              initial={{ opacity: 0, y: 40 }}
+              className="flex items-end justify-center cursor-pointer"
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{
-                duration: 0.8,
-                delay: i * 0.12,
+                duration: 0.7,
+                delay: i * 0.1,
                 ease: [0.25, 0.46, 0.45, 0.94],
+              }}
+              whileHover={{
+                scale: 1.06,
+                y: -12,
+                transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] },
               }}
             >
               <img
                 src={src}
                 alt=""
-                className="h-[340px] md:h-[440px] lg:h-[540px] w-auto object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
+                className="w-full h-auto object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.6)]"
                 draggable={false}
               />
             </motion.div>
