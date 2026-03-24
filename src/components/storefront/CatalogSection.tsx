@@ -17,7 +17,7 @@ interface Props {
   siteSlug: string;
 }
 
-export function CatalogSection({ products, categories }: Props) {
+export function CatalogSection({ products, categories, siteSlug }: Props) {
   const getPrimaryImage = (p: Product) => {
     const primary = p.product_images?.find((i) => i.is_primary);
     return primary?.url || p.product_images?.[0]?.url;
