@@ -2,7 +2,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import heroDefault from "@/assets/hero-showroom.jpg";
+import heroSlide1 from "@/assets/hero-slide-1.jpg";
+import heroSlide2 from "@/assets/hero-slide-2.jpg";
+import heroSlide3 from "@/assets/hero-slide-3.jpg";
 import brandoorsLogo from "@/assets/logo.png";
 
 interface Props {
@@ -14,22 +16,25 @@ const SLIDES = [
   {
     title: "МЕЖКОМНАТНЫЕ\nДВЕРИ",
     subtitle: "Салон дверей нового поколения — пространство, в котором дизайн, качество и комфорт объединяются в каждой детали.",
+    image: heroSlide1,
   },
   {
     title: "ПРЕМИУМ\nКОЛЛЕКЦИЯ",
     subtitle: "Эксклюзивные модели из натуральных материалов. Итальянский дизайн, российское производство.",
+    image: heroSlide2,
   },
   {
     title: "ИНДИВИДУАЛЬНЫЙ\nПОДХОД",
     subtitle: "Персональная консультация, 3D-визуализация, профессиональный замер и установка под ключ.",
+    image: heroSlide3,
   },
 ];
 
 export function HeroSection({ site, banners }: Props) {
   const [current, setCurrent] = useState(0);
 
-  const heroImage = banners[0]?.image_url || heroDefault;
   const slide = SLIDES[current] || SLIDES[0];
+  const heroImage = banners[current]?.image_url || slide.image;
 
   const prev = () => setCurrent((c) => (c === 0 ? SLIDES.length - 1 : c - 1));
   const next = () => setCurrent((c) => (c === SLIDES.length - 1 ? 0 : c + 1));
@@ -46,9 +51,22 @@ export function HeroSection({ site, banners }: Props) {
   return (
     <section className="relative h-screen min-h-[750px] bg-[#0a0a0a] overflow-hidden select-none">
 
-      {/* === HERO IMAGE — static === */}
+      {/* === HERO IMAGE — crossfade on slide change === */}
       <div className="absolute inset-0">
-        <img src={heroImage} alt="Салон дверей" className="w-full h-full object-cover" width={1920} height={1080} />
+        <AnimatePresence mode="sync">
+          <motion.img
+            key={current}
+            src={heroImage}
+            alt="Салон дверей"
+            className="absolute inset-0 w-full h-full object-cover"
+            width={1920}
+            height={1080}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1, ease: "easeInOut" }}
+          />
+        </AnimatePresence>
         <div className="absolute inset-0 bg-[#0a0a0a]/20" />
       </div>
 
