@@ -1,152 +1,154 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
-import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
 import brandoorsLogo from "@/assets/logo.png";
+import heroSlide1 from "@/assets/hero-slide-1.jpg";
+import heroSlide2 from "@/assets/hero-slide-2.jpg";
+import heroSlide3 from "@/assets/hero-slide-3.jpg";
 
 interface Props {
   site: StorefrontSite;
   banners: Array<{ id: string; title: string | null; subtitle: string | null; image_url: string }>;
 }
 
-/* Collection metadata */
-const COLLECTIONS = [
+const SLIDES = [
   {
-    slug: "estetica",
-    name: "ESTETICA",
-    tagline: "Современный минимализм",
+    image: heroSlide1,
+    title: "ESTETICA",
+    subtitle: "Современный минимализм",
     description: "Гладкое однотонное покрытие, скрытый короб Invisible, итальянский замок AGB 2.0.",
   },
   {
-    slug: "ghost",
-    name: "GHOST",
-    tagline: "Невидимая интеграция",
+    image: heroSlide2,
+    title: "GHOST",
+    subtitle: "Невидимая интеграция",
     description: "Двери под покраску с коробом INVISIBLE. Монтаж в одной плоскости со стеной.",
   },
   {
-    slug: "heavy",
-    name: "HEAVY",
-    tagline: "Монументальная сила",
-    description: "Полотно 60 мм, HPL-пластик, PET, глянец. До 3000 мм без перемычки.",
-  },
-  {
-    slug: "prime",
-    name: "PRIME",
-    tagline: "Неоклассика без компромиссов",
+    image: heroSlide3,
+    title: "PRIME",
+    subtitle: "Неоклассика без компромиссов",
     description: "Царговые двери с эмалевым покрытием Renolit. Неоклассический стиль.",
-  },
-  {
-    slug: "reflect",
-    name: "REFLECT",
-    tagline: "Зеркало и свет",
-    description: "Двери с зеркалом и лакобелью. Алюминиевые кромки: Black, Gold, White Edition.",
   },
 ];
 
-/* Fetch one hero image per category from the database */
-function useCollectionHeroImages() {
-  return useQuery({
-    queryKey: ["collection-hero-images"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("products")
-        .select("category_id, categories(slug), product_images(url, is_primary, sort_order)")
-        .eq("is_active", true)
-        .order("sort_order", { ascending: true });
-      if (error) throw error;
+/* Clip-path based reveal transition — dramatic diagonal wipe with parallax */
+const EASE_OUT: [number, number, number, number] = [0.76, 0, 0.24, 1];
+const EASE_SMOOTH: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
-      // Group by category slug, pick first product that has an image
-      const bySlug: Record<string, string> = {};
-      for (const p of data ?? []) {
-        const slug = (p.categories as any)?.slug;
-        if (!slug || bySlug[slug]) continue;
-        const imgs = (p.product_images as any[]) ?? [];
-        const primary = imgs.find((i: any) => i.is_primary);
-        const url = primary?.url ?? imgs[0]?.url;
-        if (url) bySlug[slug] = url;
-      }
-      return bySlug;
+const slideVariants = {
+  enter: (direction: number) => ({
+    clipPath: direction > 0
+      ? "polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)"
+      : "polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)",
+    scale: 1.15,
+    filter: "brightness(0.3)",
+  }),
+  center: {
+    clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+    scale: 1,
+    filter: "brightness(1)",
+    transition: {
+      clipPath: { duration: 1.2, ease: EASE_OUT },
+      scale: { duration: 1.8, ease: EASE_SMOOTH },
+      filter: { duration: 1.4, ease: "easeOut" as const },
     },
-    staleTime: 60_000,
-  });
-}
+  },
+  exit: (direction: number) => ({
+    clipPath: direction > 0
+      ? "polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)"
+      : "polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)",
+    scale: 1.08,
+    filter: "brightness(0.2)",
+    transition: {
+      clipPath: { duration: 1.2, ease: EASE_OUT },
+      scale: { duration: 1.2, ease: EASE_SMOOTH },
+      filter: { duration: 0.8, ease: "easeIn" as const },
+    },
+  }),
+};
+
+const textVariants = {
+  enter: { opacity: 0, y: 80, filter: "blur(20px)" },
+  center: {
+    opacity: 1, y: 0, filter: "blur(0px)",
+    transition: { duration: 1, ease: EASE_SMOOTH, delay: 0.6 },
+  },
+  exit: {
+    opacity: 0, y: -60, filter: "blur(15px)",
+    transition: { duration: 0.6, ease: EASE_OUT },
+  },
+};
+
+const lineVariants = {
+  enter: { scaleX: 0, opacity: 0 },
+  center: {
+    scaleX: 1, opacity: 1,
+    transition: { duration: 0.8, ease: EASE_SMOOTH, delay: 0.8 },
+  },
+  exit: { scaleX: 0, opacity: 0, transition: { duration: 0.4 } },
+};
 
 export function HeroSection({ site, banners }: Props) {
-  const [active, setActive] = useState(0);
-  const { data: heroImages = {} } = useCollectionHeroImages();
+  const [[active, direction], setActive] = useState([0, 0]);
   const timerRef = useRef<ReturnType<typeof setInterval>>();
+  const slide = SLIDES[active];
 
-  // Only show collections that have images
-  const slides = useMemo(() => {
-    const result = COLLECTIONS.filter((c) => heroImages[c.slug]);
-    return result.length > 0 ? result : COLLECTIONS; // fallback to all if no images yet
-  }, [heroImages]);
-
-  const slide = slides[active % slides.length];
-  const imageUrl = heroImages[slide.slug];
-
-  // Auto-advance
-  useEffect(() => {
-    timerRef.current = setInterval(() => {
-      setActive((r) => (r + 1) % slides.length);
-    }, 6000);
-    return () => clearInterval(timerRef.current);
-  }, [slides.length]);
-
-  // Reset timer on manual navigation
-  const goTo = useCallback((i: number) => {
-    setActive(i);
+  const startTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
-      setActive((r) => (r + 1) % slides.length);
-    }, 6000);
-  }, [slides.length]);
+      setActive(([prev]) => [(prev + 1) % SLIDES.length, 1]);
+    }, 7000);
+  }, []);
 
-  // Keyboard
+  useEffect(() => {
+    startTimer();
+    return () => clearInterval(timerRef.current);
+  }, [startTimer]);
+
+  const goTo = useCallback((i: number) => {
+    setActive(([prev]) => [i, i > prev ? 1 : -1]);
+    startTimer();
+  }, [startTimer]);
+
+  // Keyboard navigation
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") goTo((active + 1) % slides.length);
-      if (e.key === "ArrowLeft") goTo((active - 1 + slides.length) % slides.length);
+      if (e.key === "ArrowRight") goTo((active + 1) % SLIDES.length);
+      if (e.key === "ArrowLeft") goTo((active - 1 + SLIDES.length) % SLIDES.length);
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [active, slides.length, goTo]);
+  }, [active, goTo]);
 
   return (
     <section className="relative h-screen min-h-[700px] overflow-hidden select-none bg-storefront-bg">
 
-      {/* === FULLSCREEN PHOTO BACKGROUND === */}
-      <AnimatePresence mode="wait">
+      {/* === FULLSCREEN SLIDES with clip-path transition === */}
+      <AnimatePresence initial={false} custom={direction} mode="popLayout">
         <motion.div
-          key={`bg-${active}`}
+          key={active}
+          custom={direction}
+          variants={slideVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
           className="absolute inset-0 z-0"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.2, ease: "easeInOut" }}
         >
-          {imageUrl ? (
-            <motion.img
-              src={imageUrl}
-              alt={slide.name}
-              className="absolute inset-0 w-full h-full object-contain"
-              style={{ objectPosition: "center 40%" }}
-              initial={{ scale: 1.05 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 8, ease: "linear" }}
-            />
-          ) : (
-            <div className="absolute inset-0 bg-storefront-bg" />
-          )}
-
-          {/* Dark overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-storefront-bg/95 via-storefront-bg/60 to-storefront-bg/30" />
-          <div className="absolute inset-0 bg-gradient-to-t from-storefront-bg/80 via-transparent to-storefront-bg/40" />
+          <img
+            src={slide.image}
+            alt={slide.title}
+            className="absolute inset-0 w-full h-full object-cover"
+            width={1920}
+            height={1080}
+          />
+          {/* Gradient overlays for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-storefront-bg/90 via-storefront-bg/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-storefront-bg/70 via-transparent to-storefront-bg/30" />
         </motion.div>
       </AnimatePresence>
 
-      {/* === LEFT SIDEBAR — gold metallic panel === */}
+      {/* === GOLD SIDEBAR === */}
       <motion.div
         className="absolute left-0 top-0 bottom-0 z-20 hidden lg:flex flex-col items-center justify-between py-10 overflow-hidden"
         style={{
@@ -174,7 +176,7 @@ export function HeroSection({ site, banners }: Props) {
             </motion.span>
           </AnimatePresence>
           <span className="text-xs" style={{ color: "rgba(26,20,8,0.35)" }}>
-            / {String(slides.length).padStart(2, "0")}
+            / {String(SLIDES.length).padStart(2, "0")}
           </span>
         </div>
 
@@ -206,27 +208,22 @@ export function HeroSection({ site, banners }: Props) {
         </div>
       </motion.div>
 
-      {/* === MAIN CONTENT AREA === */}
+      {/* === MAIN TEXT CONTENT === */}
       <div className="absolute inset-0 z-10 lg:pl-[260px] flex items-center">
         <div className="w-full h-full flex items-center px-8 lg:px-16 xl:px-24">
           <div className="max-w-xl">
-            {/* Collection label */}
+            {/* Label */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={`label-${active}`}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.5 }}
-                className="mb-6"
+                variants={lineVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                className="mb-6 origin-left"
               >
                 <div className="flex items-center gap-4">
-                  <motion.div
-                    className="h-px bg-storefront-gold"
-                    initial={{ width: 0 }}
-                    animate={{ width: 60 }}
-                    transition={{ duration: 0.8, delay: 0.3 }}
-                  />
+                  <div className="h-px w-[60px] bg-storefront-gold" />
                   <span className="text-xs tracking-[0.4em] uppercase text-storefront-gold"
                     style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 500 }}>
                     Коллекция
@@ -235,33 +232,32 @@ export function HeroSection({ site, banners }: Props) {
               </motion.div>
             </AnimatePresence>
 
-            {/* Collection name */}
+            {/* Title */}
             <AnimatePresence mode="wait">
               <motion.h1
-                key={`name-${active}`}
-                initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: -40, filter: "blur(10px)" }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                key={`title-${active}`}
+                variants={textVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
                 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-light leading-[0.9] mb-4 text-storefront-text"
                 style={{ fontFamily: "'Cormorant Garamond', serif" }}
               >
-                {slide.name}
+                {slide.title}
               </motion.h1>
             </AnimatePresence>
 
-            {/* Tagline */}
+            {/* Subtitle */}
             <AnimatePresence mode="wait">
               <motion.p
-                key={`tag-${active}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.6, delay: 0.15 }}
+                key={`sub-${active}`}
+                initial={{ opacity: 0, y: 40, filter: "blur(12px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.9, delay: 0.75, ease: EASE_SMOOTH } }}
+                exit={{ opacity: 0, y: -30, filter: "blur(10px)", transition: { duration: 0.5 } }}
                 className="text-xl md:text-2xl font-light leading-tight mb-4 text-storefront-gold-light"
                 style={{ fontFamily: "'Cormorant Garamond', serif" }}
               >
-                {slide.tagline}
+                {slide.subtitle}
               </motion.p>
             </AnimatePresence>
 
@@ -269,10 +265,9 @@ export function HeroSection({ site, banners }: Props) {
             <AnimatePresence mode="wait">
               <motion.p
                 key={`desc-${active}`}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0, transition: { duration: 0.8, delay: 0.9, ease: EASE_SMOOTH } }}
+                exit={{ opacity: 0, y: -20, transition: { duration: 0.4 } }}
                 className="text-sm md:text-base leading-relaxed max-w-md mb-10 text-storefront-muted"
                 style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 300 }}
               >
@@ -303,9 +298,9 @@ export function HeroSection({ site, banners }: Props) {
 
       {/* === NAVIGATION DOTS — right side === */}
       <div className="absolute right-8 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-4">
-        {slides.map((s, i) => (
+        {SLIDES.map((s, i) => (
           <button
-            key={s.slug}
+            key={i}
             onClick={() => goTo(i)}
             className="group relative flex items-center justify-end gap-3"
           >
@@ -316,7 +311,7 @@ export function HeroSection({ site, banners }: Props) {
                 fontFamily: "'Raleway', sans-serif",
               }}
             >
-              {s.name}
+              {s.title}
             </span>
             <motion.div
               animate={{
@@ -334,14 +329,15 @@ export function HeroSection({ site, banners }: Props) {
       {/* === PROGRESS BAR — bottom === */}
       <div className="absolute bottom-0 left-0 right-0 z-30 lg:pl-[260px]">
         <div className="flex gap-1 px-8 lg:px-16 pb-6">
-          {slides.map((_, i) => (
+          {SLIDES.map((_, i) => (
             <div key={i} className="flex-1 h-[2px] bg-white/10 overflow-hidden cursor-pointer" onClick={() => goTo(i)}>
               {i === active && (
                 <motion.div
                   className="h-full bg-storefront-gold"
                   initial={{ width: "0%" }}
                   animate={{ width: "100%" }}
-                  transition={{ duration: 6, ease: "linear" }}
+                  transition={{ duration: 7, ease: "linear" }}
+                  key={`progress-${active}`}
                 />
               )}
               {i < active && <div className="h-full w-full bg-storefront-gold/40" />}
