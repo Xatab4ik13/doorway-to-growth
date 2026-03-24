@@ -168,7 +168,7 @@ export function HeroSection({ site, banners }: Props) {
         style={{
           width: "260px",
           background: "linear-gradient(180deg, #cfbb96 0%, #c2b08c 10%, #b2a07c 25%, #a59370 40%, #9a8a69 55%, #887555 70%, #78674b 85%, #6e5f40 100%)",
-          borderRadius: "0 24px 24px 0",
+          borderRadius: "0 48px 48px 0",
         }}
         initial={{ x: -260 }}
         animate={{ x: 0 }}
