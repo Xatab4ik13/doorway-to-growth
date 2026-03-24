@@ -348,7 +348,7 @@ export default function StorefrontCatalog() {
                       >
                         <div className="space-y-0.5 mb-1">
                           {availableColors.map((color) => (
-                            <label key={color} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-black/5 cursor-pointer transition-colors group">
+                            <label key={color} onClick={() => toggleColor(color)} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-black/5 cursor-pointer transition-colors group">
                               <div className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center transition-all ${
                                 selectedColors.has(color)
                                   ? "bg-[#1a1408] border-[#1a1408]"
