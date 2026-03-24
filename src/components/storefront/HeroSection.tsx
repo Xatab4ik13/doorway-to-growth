@@ -47,7 +47,7 @@ export function HeroSection({ site, banners }: Props) {
     <section className="relative h-screen min-h-[750px] bg-[#0a0a0a] overflow-hidden select-none">
 
       {/* === HERO IMAGE — static === */}
-      <div className="absolute inset-0 lg:left-[260px]">
+      <div className="absolute inset-0">
         <img src={heroImage} alt="Салон дверей" className="w-full h-full object-cover" width={1920} height={1080} />
         <div className="absolute inset-0 bg-[#0a0a0a]/20" />
       </div>
@@ -168,7 +168,7 @@ export function HeroSection({ site, banners }: Props) {
         style={{
           width: "260px",
           background: "linear-gradient(180deg, #cfbb96 0%, #c2b08c 10%, #b2a07c 25%, #a59370 40%, #9a8a69 55%, #887555 70%, #78674b 85%, #6e5f40 100%)",
-          borderRadius: "0 24px 24px 0",
+          borderRadius: "0 48px 48px 0",
         }}
         initial={{ x: -260 }}
         animate={{ x: 0 }}
