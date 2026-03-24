@@ -3,8 +3,10 @@ import { useParams, Link } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
-import { motion, AnimatePresence } from "framer-motion";
-import { SlidersHorizontal, X, ChevronDown, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { ChevronRight, ChevronDown, ChevronUp, ArrowRight } from "lucide-react";
+
+const ITEMS_PER_PAGE = 16;
 
 export default function StorefrontCatalog() {
   const { slug } = useParams<{ slug: string }>();
@@ -12,61 +14,60 @@ export default function StorefrontCatalog() {
   const { data: products = [] } = useStorefrontProducts(site?.id);
   const { data: categories = [] } = useStorefrontCategories();
 
-  const [selectedParentCategory, setSelectedParentCategory] = useState<string | null>(null);
-  const [selectedCollection, setSelectedCollection] = useState<string | null>(null);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 999999]);
-  const [filtersOpen, setFiltersOpen] = useState(false);
-  const [sortBy, setSortBy] = useState<"name" | "price-asc" | "price-desc">("name");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [expandedParents, setExpandedParents] = useState<Set<string>>(new Set());
+  const [priceFrom, setPriceFrom] = useState("");
+  const [priceTo, setPriceTo] = useState("");
+  const [priceOpen, setPriceOpen] = useState(true);
+  const [sortBy, setSortBy] = useState("default");
+  const [page, setPage] = useState(1);
+  const [activeTab, setActiveTab] = useState<"all" | "popular" | "new" | "sale">("all");
 
-  // Separate parent categories and subcategories (collections)
+  // Category tree
   const parentCategories = useMemo(
     () => (categories as any[]).filter((c) => !c.parent_id).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)),
     [categories]
   );
+  const getChildren = (parentId: string) =>
+    (categories as any[]).filter((c) => c.parent_id === parentId).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
 
-  const subcategories = useMemo(
-    () => (categories as any[]).filter((c) => c.parent_id).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)),
-    [categories]
-  );
+  const toggleParent = (id: string) => {
+    setExpandedParents((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
 
-  // Collections for the selected parent category
-  const visibleCollections = useMemo(() => {
-    if (!selectedParentCategory) return subcategories;
-    return subcategories.filter((c) => c.parent_id === selectedParentCategory);
-  }, [subcategories, selectedParentCategory]);
+  const selectCategory = (id: string | null) => {
+    setSelectedCategory(id);
+    setPage(1);
+  };
 
-  // Get price bounds
-  const priceBounds = useMemo(() => {
-    const prices = (products as any[]).filter((p) => p.rrp).map((p) => Number(p.rrp));
-    if (prices.length === 0) return { min: 0, max: 100000 };
-    return { min: Math.min(...prices), max: Math.max(...prices) };
-  }, [products]);
+  // Get all descendant IDs for a parent
+  const getDescendantIds = (parentId: string): string[] => {
+    const children = getChildren(parentId);
+    return children.map((c) => c.id);
+  };
 
-  // Get all subcategory IDs for the selected parent
-  const parentSubcategoryIds = useMemo(() => {
-    if (!selectedParentCategory) return null;
-    return subcategories.filter((c) => c.parent_id === selectedParentCategory).map((c) => c.id);
-  }, [subcategories, selectedParentCategory]);
-
-  // Filter and sort
+  // Filter
   const filtered = useMemo(() => {
     let result = [...(products as any[])];
 
-    // Filter by parent category (match any of its subcategories)
-    if (parentSubcategoryIds) {
-      result = result.filter((p) => parentSubcategoryIds.includes(p.category_id));
+    if (selectedCategory) {
+      const children = getChildren(selectedCategory);
+      if (children.length > 0) {
+        const ids = [selectedCategory, ...children.map((c) => c.id)];
+        result = result.filter((p) => ids.includes(p.category_id));
+      } else {
+        result = result.filter((p) => p.category_id === selectedCategory);
+      }
     }
 
-    // Filter by specific collection
-    if (selectedCollection) {
-      result = result.filter((p) => p.category_id === selectedCollection);
-    }
-
-    // Price filter
-    result = result.filter((p) => {
-      if (!p.rrp) return true;
-      return p.rrp >= priceRange[0] && p.rrp <= priceRange[1];
-    });
+    const pf = Number(priceFrom);
+    const pt = Number(priceTo);
+    if (pf > 0) result = result.filter((p) => !p.rrp || p.rrp >= pf);
+    if (pt > 0) result = result.filter((p) => !p.rrp || p.rrp <= pt);
 
     switch (sortBy) {
       case "price-asc":
@@ -75,36 +76,33 @@ export default function StorefrontCatalog() {
       case "price-desc":
         result.sort((a, b) => (b.rrp || 0) - (a.rrp || 0));
         break;
+      case "name":
+        result.sort((a, b) => a.name.localeCompare(b.name));
+        break;
       default:
         result.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
     }
 
     return result;
-  }, [products, parentSubcategoryIds, selectedCollection, priceRange, sortBy]);
+  }, [products, categories, selectedCategory, priceFrom, priceTo, sortBy]);
+
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   const getPrimaryImage = (p: any) => {
     const primary = p.product_images?.find((i: any) => i.is_primary);
     return primary?.url || p.product_images?.[0]?.url;
   };
 
-  const activeFiltersCount =
-    [selectedParentCategory, selectedCollection].filter(Boolean).length +
-    (priceRange[0] > 0 || priceRange[1] < 999999 ? 1 : 0);
-
-  const clearFilters = () => {
-    setSelectedParentCategory(null);
-    setSelectedCollection(null);
-    setPriceRange([0, 999999]);
-  };
-
-  const selectParent = (id: string | null) => {
-    setSelectedParentCategory(id);
-    setSelectedCollection(null); // reset collection when changing parent
+  // Find category name for product
+  const getCategoryName = (categoryId: string) => {
+    const cat = (categories as any[]).find((c) => c.id === categoryId);
+    return cat?.name || "";
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-storefront-bg flex items-center justify-center">
+      <div className="min-h-screen bg-[#07090d] flex items-center justify-center">
         <div className="h-8 w-8 border-2 border-storefront-gold/20 border-t-storefront-gold rounded-full animate-spin" />
       </div>
     );
@@ -112,7 +110,7 @@ export default function StorefrontCatalog() {
 
   if (!site) {
     return (
-      <div className="min-h-screen bg-storefront-bg flex items-center justify-center text-storefront-text">
+      <div className="min-h-screen bg-[#07090d] flex items-center justify-center text-storefront-text">
         <h1 className="text-2xl">Сайт не найден</h1>
       </div>
     );
@@ -120,248 +118,287 @@ export default function StorefrontCatalog() {
 
   return (
     <StorefrontLayout site={site}>
-      <div className="min-h-screen pt-14 md:pt-0">
-        {/* Hero banner */}
-        <div className="bg-storefront-bg border-b border-white/5">
-          <div className="max-w-[1400px] mx-auto px-6 py-16 md:py-24">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <Link
-                  to={`/store/${slug}`}
-                  className="text-xs uppercase tracking-[0.2em] text-storefront-muted hover:text-storefront-gold transition-colors"
-                >
-                  Главная
-                </Link>
-                <span className="text-storefront-muted/40">/</span>
-                <span className="text-xs uppercase tracking-[0.2em] text-storefront-gold">Каталог</span>
-              </div>
-              <h1
-                className="text-4xl sm:text-5xl lg:text-6xl font-bold text-storefront-text uppercase tracking-wide"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
-              >
-                DOORS <span className="text-storefront-gold">COLLECTION</span>
-              </h1>
-              <p className="mt-4 text-storefront-muted text-sm max-w-md">
-                Полный каталог входных и межкомнатных дверей Brandoors
-              </p>
-            </motion.div>
-          </div>
-        </div>
-
-        <div className="max-w-[1400px] mx-auto px-6 py-10">
-          {/* Parent category tabs */}
-          <div className="flex flex-wrap gap-2 mb-8">
-            <button
-              onClick={() => selectParent(null)}
-              className={`px-5 py-2.5 text-xs uppercase tracking-wider font-semibold transition-all ${
-                !selectedParentCategory
-                  ? "bg-storefront-gold text-storefront-bg"
-                  : "border border-storefront-gold/20 text-storefront-muted hover:border-storefront-gold hover:text-storefront-gold"
-              }`}
-            >
-              Все
-            </button>
-            {parentCategories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => selectParent(cat.id)}
-                className={`px-5 py-2.5 text-xs uppercase tracking-wider font-semibold transition-all ${
-                  selectedParentCategory === cat.id
-                    ? "bg-storefront-gold text-storefront-bg"
-                    : "border border-storefront-gold/20 text-storefront-muted hover:border-storefront-gold hover:text-storefront-gold"
-                }`}
-              >
-                {cat.name}
-              </button>
-            ))}
+      <div className="min-h-screen pt-14 md:pt-0 bg-[#07090d]">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 md:py-12">
+          {/* Breadcrumbs */}
+          <div className="flex items-center gap-2 mb-6 text-xs">
+            <Link to={`/store/${slug}`} className="uppercase tracking-[0.15em] text-storefront-muted hover:text-storefront-gold transition-colors">
+              Главная
+            </Link>
+            <span className="text-storefront-muted/40">/</span>
+            <span className="uppercase tracking-[0.15em] text-storefront-text">Каталог</span>
           </div>
 
-          {/* Collection pills (subcategories) */}
-          {visibleCollections.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mb-8">
-              <button
-                onClick={() => setSelectedCollection(null)}
-                className={`px-3 py-1.5 text-[11px] uppercase tracking-wider transition-all ${
-                  !selectedCollection
-                    ? "text-storefront-gold border-b border-storefront-gold"
-                    : "text-storefront-muted hover:text-storefront-text"
-                }`}
-              >
-                Все коллекции
-              </button>
-              {visibleCollections.map((col) => (
+          {/* Title row */}
+          <div className="flex items-end justify-between mb-8">
+            <h1 className="text-3xl sm:text-4xl font-bold text-storefront-text uppercase tracking-wide">
+              Каталог
+            </h1>
+            {/* Sort */}
+            <select
+              value={sortBy}
+              onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
+              className="appearance-none bg-[#0f1218] border border-white/10 text-storefront-text text-xs px-4 py-2.5 pr-8 cursor-pointer hover:border-storefront-gold/40 transition-colors focus:outline-none focus:border-storefront-gold/60"
+            >
+              <option value="default">По умолчанию</option>
+              <option value="price-asc">Цена ↑</option>
+              <option value="price-desc">Цена ↓</option>
+              <option value="name">По названию</option>
+            </select>
+          </div>
+
+          <div className="flex gap-8">
+            {/* ===== LEFT SIDEBAR ===== */}
+            <aside className="hidden md:block w-[240px] shrink-0">
+              {/* Categories tree */}
+              <div className="mb-6">
+                <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-storefront-text mb-3">Категории</h3>
+
+                {/* "Все товары" */}
                 <button
-                  key={col.id}
-                  onClick={() => setSelectedCollection(col.id)}
-                  className={`px-3 py-1.5 text-[11px] uppercase tracking-wider transition-all ${
-                    selectedCollection === col.id
-                      ? "text-storefront-gold border-b border-storefront-gold"
-                      : "text-storefront-muted hover:text-storefront-text"
+                  onClick={() => selectCategory(null)}
+                  className={`w-full text-left text-sm py-2 px-3 mb-0.5 transition-colors ${
+                    !selectedCategory
+                      ? "bg-storefront-gold text-[#07090d] font-semibold"
+                      : "text-storefront-muted hover:text-storefront-text hover:bg-white/5"
                   }`}
                 >
-                  {col.name}
+                  Все товары
                 </button>
-              ))}
-            </div>
-          )}
 
-          {/* Toolbar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setFiltersOpen(!filtersOpen)}
-                className="flex items-center gap-2 px-4 py-2.5 border border-storefront-gold/20 text-storefront-text text-xs uppercase tracking-wider hover:border-storefront-gold transition-colors"
-              >
-                <SlidersHorizontal className="w-4 h-4" />
-                Фильтры
-                {activeFiltersCount > 0 && (
-                  <span className="ml-1 w-5 h-5 bg-storefront-gold text-storefront-bg text-[10px] flex items-center justify-center font-bold">
-                    {activeFiltersCount}
-                  </span>
-                )}
-              </button>
-              {activeFiltersCount > 0 && (
-                <button
-                  onClick={clearFilters}
-                  className="text-xs text-storefront-muted hover:text-storefront-gold transition-colors flex items-center gap-1"
-                >
-                  <X className="w-3 h-3" /> Сбросить
-                </button>
-              )}
-            </div>
+                {parentCategories.map((parent) => {
+                  const children = getChildren(parent.id);
+                  const isExpanded = expandedParents.has(parent.id);
+                  const isActive = selectedCategory === parent.id;
 
-            <div className="flex items-center gap-4">
-              <span className="text-xs text-storefront-muted">
-                {filtered.length} {filtered.length === 1 ? "товар" : filtered.length < 5 ? "товара" : "товаров"}
-              </span>
-              <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
-                  className="appearance-none bg-transparent border border-storefront-gold/20 text-storefront-text text-xs uppercase tracking-wider px-4 py-2.5 pr-8 cursor-pointer hover:border-storefront-gold transition-colors focus:outline-none"
-                >
-                  <option value="name" className="bg-storefront-bg">По умолчанию</option>
-                  <option value="price-asc" className="bg-storefront-bg">Цена ↑</option>
-                  <option value="price-desc" className="bg-storefront-bg">Цена ↓</option>
-                </select>
-                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-storefront-muted pointer-events-none" />
-              </div>
-            </div>
-          </div>
+                  return (
+                    <div key={parent.id}>
+                      <div className="flex items-center">
+                        <button
+                          onClick={() => selectCategory(parent.id)}
+                          className={`flex-1 text-left text-sm py-2 px-3 transition-colors ${
+                            isActive
+                              ? "text-storefront-gold font-semibold"
+                              : "text-storefront-muted hover:text-storefront-text"
+                          }`}
+                        >
+                          {parent.name}
+                        </button>
+                        {children.length > 0 && (
+                          <button
+                            onClick={() => toggleParent(parent.id)}
+                            className="p-1 text-storefront-muted hover:text-storefront-text transition-colors"
+                          >
+                            <ChevronRight className={`w-3.5 h-3.5 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
+                          </button>
+                        )}
+                      </div>
 
-          {/* Price filter panel */}
-          <AnimatePresence>
-            {filtersOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden mb-8"
-              >
-                <div className="p-6 border border-storefront-gold/10 bg-storefront-card">
-                  <h3 className="text-xs uppercase tracking-[0.2em] text-storefront-gold mb-3">Цена, ₽</h3>
-                  <div className="flex items-center gap-3 max-w-md">
-                    <div className="flex-1">
-                      <label className="text-[10px] uppercase text-storefront-muted mb-1 block">От</label>
-                      <input
-                        type="number"
-                        value={priceRange[0] || ""}
-                        onChange={(e) => setPriceRange([Number(e.target.value) || 0, priceRange[1]])}
-                        placeholder={String(priceBounds.min)}
-                        className="w-full bg-transparent border border-storefront-gold/20 text-storefront-text text-sm px-3 py-2 focus:outline-none focus:border-storefront-gold"
-                      />
-                    </div>
-                    <span className="text-storefront-muted mt-4">—</span>
-                    <div className="flex-1">
-                      <label className="text-[10px] uppercase text-storefront-muted mb-1 block">До</label>
-                      <input
-                        type="number"
-                        value={priceRange[1] < 999999 ? priceRange[1] : ""}
-                        onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value) || 999999])}
-                        placeholder={String(priceBounds.max)}
-                        className="w-full bg-transparent border border-storefront-gold/20 text-storefront-text text-sm px-3 py-2 focus:outline-none focus:border-storefront-gold"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Product grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1">
-            <AnimatePresence mode="popLayout">
-              {filtered.map((product: any, i: number) => {
-                const img = getPrimaryImage(product);
-                // Find collection name
-                const collection = subcategories.find((c) => c.id === product.category_id);
-                return (
-                  <motion.div
-                    key={product.id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.3, delay: Math.min(i * 0.03, 0.3) }}
-                  >
-                    <Link
-                      to={`/store/${slug}/product/${product.slug}`}
-                      className="group relative aspect-[3/4] bg-storefront-card overflow-hidden block"
-                    >
-                      {img ? (
-                        <img
-                          src={img}
-                          alt={product.name}
-                          loading="lazy"
-                          className="w-full h-full object-cover opacity-70 group-hover:opacity-90 group-hover:scale-105 transition-all duration-500"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-storefront-card flex items-center justify-center">
-                          <span className="text-storefront-muted/30 text-6xl font-bold">B</span>
+                      {/* Children */}
+                      {isExpanded && children.length > 0 && (
+                        <div className="ml-3 border-l border-white/5 pl-3 mb-1">
+                          {children.map((child) => (
+                            <button
+                              key={child.id}
+                              onClick={() => selectCategory(child.id)}
+                              className={`w-full text-left text-[13px] py-1.5 px-2 transition-colors ${
+                                selectedCategory === child.id
+                                  ? "text-storefront-gold font-medium"
+                                  : "text-storefront-muted hover:text-storefront-text"
+                              }`}
+                            >
+                              {child.name}
+                            </button>
+                          ))}
                         </div>
                       )}
+                    </div>
+                  );
+                })}
+              </div>
 
-                      <div className="absolute inset-0 bg-gradient-to-t from-storefront-bg via-storefront-bg/20 to-transparent" />
+              {/* Tabs: Все / Популярное / Новинки / Скидки */}
+              <div className="flex flex-wrap gap-1.5 mb-6">
+                {[
+                  { key: "all" as const, label: "Все" },
+                  { key: "popular" as const, label: "Популярное" },
+                  { key: "new" as const, label: "Новинки" },
+                  { key: "sale" as const, label: "Скидки" },
+                ].map((tab) => (
+                  <button
+                    key={tab.key}
+                    onClick={() => { setActiveTab(tab.key); setPage(1); }}
+                    className={`px-3 py-1.5 text-[11px] uppercase tracking-wider transition-all ${
+                      activeTab === tab.key
+                        ? "bg-storefront-gold text-[#07090d] font-semibold"
+                        : "bg-white/5 text-storefront-muted hover:bg-white/10 hover:text-storefront-text"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
 
-                      <div className="absolute bottom-0 left-0 right-0 p-5">
-                        {collection && (
-                          <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-gold/70 mb-1 block">
-                            {collection.name}
-                          </span>
+              {/* Price filter */}
+              <div className="border-t border-white/5 pt-4 mb-6">
+                <button
+                  onClick={() => setPriceOpen(!priceOpen)}
+                  className="flex items-center justify-between w-full mb-3"
+                >
+                  <span className="text-xs font-semibold uppercase tracking-[0.15em] text-storefront-text">Цена</span>
+                  {priceOpen ? <ChevronUp className="w-3.5 h-3.5 text-storefront-muted" /> : <ChevronDown className="w-3.5 h-3.5 text-storefront-muted" />}
+                </button>
+                {priceOpen && (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      placeholder="от"
+                      value={priceFrom}
+                      onChange={(e) => { setPriceFrom(e.target.value); setPage(1); }}
+                      className="w-full bg-[#0f1218] border border-white/10 text-storefront-text text-xs px-3 py-2 placeholder:text-storefront-muted/40 focus:outline-none focus:border-storefront-gold/40"
+                    />
+                    <span className="text-storefront-muted text-xs">—</span>
+                    <input
+                      type="number"
+                      placeholder="до"
+                      value={priceTo}
+                      onChange={(e) => { setPriceTo(e.target.value); setPage(1); }}
+                      className="w-full bg-[#0f1218] border border-white/10 text-storefront-text text-xs px-3 py-2 placeholder:text-storefront-muted/40 focus:outline-none focus:border-storefront-gold/40"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Material filter placeholder */}
+              <div className="border-t border-white/5 pt-4 mb-6">
+                <button className="flex items-center justify-between w-full">
+                  <span className="text-xs font-semibold uppercase tracking-[0.15em] text-storefront-text">Материал</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-storefront-muted" />
+                </button>
+              </div>
+
+              <div className="border-t border-white/5 pt-4 mb-6">
+                <button className="flex items-center justify-between w-full">
+                  <span className="text-xs font-semibold uppercase tracking-[0.15em] text-storefront-text">Цвет / Покрытие</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-storefront-muted" />
+                </button>
+              </div>
+            </aside>
+
+            {/* ===== PRODUCTS GRID ===== */}
+            <div className="flex-1 min-w-0">
+              {/* Count */}
+              <div className="text-xs text-storefront-muted mb-4">
+                Найдено: {filtered.length} товаров · Страница {page} из {totalPages || 1}
+              </div>
+
+              {/* Grid */}
+              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[1px] bg-white/5">
+                {paginated.map((product: any, i: number) => {
+                  const img = getPrimaryImage(product);
+                  const catName = getCategoryName(product.category_id);
+
+                  return (
+                    <motion.div
+                      key={product.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.25, delay: Math.min(i * 0.03, 0.3) }}
+                    >
+                      <Link
+                        to={`/store/${slug}/product/${product.slug}`}
+                        className="group block bg-[#0c0e14] hover:bg-[#12151d] transition-colors"
+                      >
+                        {/* Image */}
+                        <div className="relative aspect-[3/4] overflow-hidden">
+                          {img ? (
+                            <img
+                              src={img}
+                              alt={product.name}
+                              loading="lazy"
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-[#0f1218]">
+                              <span className="text-storefront-muted/20 text-5xl font-bold">B</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Info */}
+                        <div className="p-4">
+                          {catName && (
+                            <span className="text-[10px] uppercase tracking-[0.15em] text-storefront-gold/60 block mb-1">
+                              {catName}
+                            </span>
+                          )}
+                          <h3 className="text-xs font-semibold text-storefront-text uppercase tracking-wider leading-snug mb-2 line-clamp-2">
+                            {product.name}
+                          </h3>
+                          {product.rrp && (
+                            <p className="text-sm font-medium text-storefront-text">
+                              {Number(product.rrp).toLocaleString("ru-RU")} ₽
+                            </p>
+                          )}
+                        </div>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              {filtered.length === 0 && (
+                <div className="text-center py-20 text-storefront-muted">
+                  <p className="text-lg mb-2">Товары не найдены</p>
+                  <button
+                    onClick={() => { selectCategory(null); setPriceFrom(""); setPriceTo(""); }}
+                    className="text-storefront-gold text-sm hover:underline"
+                  >
+                    Сбросить фильтры
+                  </button>
+                </div>
+              )}
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-1 mt-8">
+                  <button
+                    onClick={() => setPage(Math.max(1, page - 1))}
+                    disabled={page <= 1}
+                    className="px-3 py-2 text-xs text-storefront-muted hover:text-storefront-text disabled:opacity-30 transition-colors"
+                  >
+                    ←
+                  </button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 2)
+                    .map((p, idx, arr) => (
+                      <span key={p} className="contents">
+                        {idx > 0 && arr[idx - 1] !== p - 1 && (
+                          <span className="px-2 text-storefront-muted/40 text-xs">…</span>
                         )}
-                        <h3 className="text-sm font-semibold text-storefront-text leading-snug uppercase tracking-wide">
-                          {product.name}
-                        </h3>
-                        {product.rrp && (
-                          <p className="mt-1 text-sm text-storefront-gold font-medium">
-                            от {Number(product.rrp).toLocaleString("ru-RU")} ₽
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <ArrowRight className="w-5 h-5 text-storefront-gold" />
-                      </div>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
-          </div>
-
-          {filtered.length === 0 && (
-            <div className="text-center py-20 text-storefront-muted">
-              <p className="text-lg mb-2">Товары не найдены</p>
-              <button onClick={clearFilters} className="text-storefront-gold text-sm hover:underline">
-                Сбросить фильтры
-              </button>
+                        <button
+                          onClick={() => setPage(p)}
+                          className={`w-8 h-8 text-xs transition-colors ${
+                            p === page
+                              ? "bg-storefront-gold text-[#07090d] font-bold"
+                              : "text-storefront-muted hover:text-storefront-text hover:bg-white/5"
+                          }`}
+                        >
+                          {p}
+                        </button>
+                      </span>
+                    ))}
+                  <button
+                    onClick={() => setPage(Math.min(totalPages, page + 1))}
+                    disabled={page >= totalPages}
+                    className="px-3 py-2 text-xs text-storefront-muted hover:text-storefront-text disabled:opacity-30 transition-colors"
+                  >
+                    →
+                  </button>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </StorefrontLayout>
