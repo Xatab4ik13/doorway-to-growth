@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import brandoorsLogo from "@/assets/logo.png";
+import heroBg from "@/assets/hero-bg.png";
 
 interface Props {
   site: StorefrontSite;
@@ -9,144 +10,24 @@ interface Props {
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
-interface LineConfig {
-  dist: number;
-  width: number;
-  type: "thin" | "thick";
-  delay: number;
-}
-
-const LINES: LineConfig[] = [
-  { dist: 40, width: 2, type: "thin", delay: 0 },
-  { dist: 65, width: 2, type: "thin", delay: 0.03 },
-  { dist: 90, width: 2, type: "thin", delay: 0.06 },
-  { dist: 115, width: 2, type: "thin", delay: 0.09 },
-  { dist: 140, width: 2, type: "thin", delay: 0.12 },
-  { dist: 165, width: 2, type: "thin", delay: 0.15 },
-  { dist: 190, width: 2, type: "thin", delay: 0.18 },
-  { dist: 250, width: 16, type: "thick", delay: 0.25 },
-  { dist: 310, width: 24, type: "thick", delay: 0.35 },
-  { dist: 400, width: 40, type: "thick", delay: 0.45 },
-];
-
-function GoldStripe({ line, corner }: { line: LineConfig; corner: "tr" | "bl" }) {
-  const isThin = line.type === "thin";
-
-  const gradient = isThin
-    ? `linear-gradient(90deg, transparent 0%, #a08c50 15%, #c5a572 35%, #d4bc8a 50%, #c5a572 65%, #a08c50 85%, transparent 100%)`
-    : `linear-gradient(90deg, 
-        transparent 0%,
-        #7a6838 6%,
-        #a89050 14%,
-        #c5a572 24%,
-        #d8c490 36%,
-        #e8d8a8 46%,
-        #f2e8b8 50%,
-        #e8d8a8 54%,
-        #d8c490 64%,
-        #c5a572 76%,
-        #a89050 86%,
-        #7a6838 94%,
-        transparent 100%)`;
-
-  const shadow = isThin
-    ? "0 1px 4px rgba(0,0,0,0.5)"
-    : `0 ${line.width * 0.6}px ${line.width * 2}px rgba(0,0,0,0.85),
-       0 ${line.width * 0.2}px ${line.width * 0.6}px rgba(0,0,0,0.7),
-       inset 0 1px 0 rgba(255,245,210,0.25),
-       inset 0 -1px 0 rgba(0,0,0,0.3)`;
-
-  /* 
-   * Key insight: position at corner, rotate 45°, then use translateX 
-   * (perpendicular to the line) to offset each stripe.
-   * For top-right: anchor at top-right corner, rotate 45° clockwise
-   * For bottom-left: anchor at bottom-left corner, rotate 45° clockwise
-   */
-  const style: React.CSSProperties =
-    corner === "tr"
-      ? {
-          position: "absolute",
-          top: 0,
-          right: 0,
-          width: 3000,
-          height: line.width,
-          transformOrigin: "top right",
-          transform: `rotate(45deg) translateY(${line.dist}px)`,
-          background: gradient,
-          boxShadow: shadow,
-        }
-      : {
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          width: 3000,
-          height: line.width,
-          transformOrigin: "bottom left",
-          transform: `rotate(45deg) translateY(-${line.dist + line.width}px)`,
-          background: gradient,
-          boxShadow: shadow,
-        };
-
-  return (
-    <motion.div
-      style={style}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 1, delay: 0.3 + line.delay, ease: EASE }}
-    />
-  );
-}
-
 export function HeroSection({ site, banners }: Props) {
   return (
-    <section
-      className="relative h-screen min-h-[700px] overflow-hidden select-none"
-      style={{ background: "linear-gradient(145deg, #0c0c0e 0%, #111114 30%, #0e0e10 60%, #08080a 100%)" }}
-    >
-      {/* Vignette */}
-      <div className="absolute inset-0 z-[1]"
-        style={{ background: "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.5) 100%)" }}
-      />
+    <section className="relative h-screen min-h-[700px] overflow-hidden select-none bg-[#080808]">
 
-      {/* === TOP-RIGHT GOLD LINES === */}
-      <div className="absolute inset-0 pointer-events-none z-[5] overflow-hidden">
-        {LINES.map((line, i) => (
-          <GoldStripe key={`tr-${i}`} line={line} corner="tr" />
-        ))}
-      </div>
-
-      {/* === BOTTOM-LEFT GOLD LINES === */}
-      <div className="absolute inset-0 pointer-events-none z-[5] overflow-hidden">
-        {LINES.map((line, i) => (
-          <GoldStripe key={`bl-${i}`} line={line} corner="bl" />
-        ))}
-      </div>
-
-      {/* Shadow "crease" between thick bars — 3D depth */}
-      {["tr", "bl"].map((corner) => (
-        <motion.div
-          key={`shadow-${corner}`}
-          className="absolute pointer-events-none z-[6]"
-          style={{
-            ...(corner === "tr"
-              ? { top: 0, right: 0, width: 3000, height: 60, transformOrigin: "top right", transform: "rotate(45deg) translateY(330px)" }
-              : { bottom: 0, left: 0, width: 3000, height: 60, transformOrigin: "bottom left", transform: "rotate(45deg) translateY(-390px)" }),
-            background: "linear-gradient(90deg, transparent 5%, rgba(0,0,0,0.5) 20%, rgba(0,0,0,0.85) 50%, rgba(0,0,0,0.5) 80%, transparent 95%)",
-            filter: "blur(15px)",
-          }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.5, delay: 0.8 }}
+      {/* === BACKGROUND — exact magazine layout === */}
+      <motion.div
+        className="absolute inset-0 z-[1]"
+        initial={{ opacity: 0, scale: 1.05 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.5, ease: EASE }}
+      >
+        <img
+          src={heroBg}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ objectPosition: "center center" }}
         />
-      ))}
-
-      {/* Ambient gold glow near corners */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] pointer-events-none z-[4]"
-        style={{ background: "radial-gradient(circle at top right, rgba(197,165,114,0.06) 0%, transparent 60%)" }}
-      />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] pointer-events-none z-[4]"
-        style={{ background: "radial-gradient(circle at bottom left, rgba(197,165,114,0.06) 0%, transparent 60%)" }}
-      />
+      </motion.div>
 
       {/* === LEFT GOLD SIDEBAR === */}
       <motion.div
@@ -183,30 +64,6 @@ export function HeroSection({ site, banners }: Props) {
           ))}
         </div>
       </motion.div>
-
-      {/* === CENTER — Logo + Subtitle === */}
-      <div className="absolute inset-0 z-10 flex items-center justify-center lg:pl-[260px]">
-        <div className="flex flex-col items-center text-center">
-          <motion.img
-            src={brandoorsLogo}
-            alt="BRANDOORS"
-            className="h-16 md:h-20 lg:h-24 w-auto mb-6"
-            style={{ filter: "brightness(1.1) sepia(0.3) saturate(1.5) hue-rotate(-10deg)" }}
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.2, delay: 0.6, ease: EASE }}
-          />
-          <motion.p
-            className="text-base md:text-lg tracking-[0.25em] uppercase"
-            style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 300, color: "rgba(197,165,114,0.7)" }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 1, ease: EASE }}
-          >
-            Входные и межкомнатные двери
-          </motion.p>
-        </div>
-      </div>
 
       {/* === BOTTOM BAR === */}
       <motion.div className="absolute bottom-0 left-0 right-0 z-30 lg:pl-[260px]"
