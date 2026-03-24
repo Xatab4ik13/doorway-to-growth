@@ -61,6 +61,8 @@ const App = () => (
             />
             <Route path="/login" element={<LoginRoute />} />
             <Route path="/store/:slug" element={<Storefront />} />
+            <Route path="/store/:slug/catalog" element={<StorefrontCatalog />} />
+            <Route path="/store/:slug/product/:productSlug" element={<StorefrontProduct />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
