@@ -255,7 +255,7 @@ export function HeroSection({ site, banners }: Props) {
           <img
             src={brandoorsLogo}
             alt="Brandoors"
-            style={{ filter: "brightness(0)", opacity: 0.8, transform: "rotate(-90deg)", width: "auto", height: "55px" }}
+            style={{ filter: "brightness(0)", opacity: 0.8, transform: "rotate(-90deg)", width: "auto", height: "82px" }}
           />
         </div>
 
