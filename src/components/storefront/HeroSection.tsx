@@ -14,6 +14,33 @@ interface Props {
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 export function HeroSection({ site: _site, banners: _banners }: Props) {
+  // Top-right lines: from top edge going to right edge at 45°
+  // In the reference, lines start well into the page (around 55-60% from left)
+  // and extend to the right edge
+  const topLines = Array.from({ length: 10 }, (_, i) => {
+    const gap = 32;
+    // Start point on top edge, moving right
+    const startX = 680 + i * gap;
+    const startY = 0;
+    // End point on right edge, moving down
+    const endX = 1400;
+    const endY = 1400 - startX;
+    const sw = i === 0 ? 2.8 : i < 3 ? 1.8 : 1.2;
+    const op = 1 - i * 0.06;
+    return { startX, startY, endX, endY, sw, op, i };
+  });
+
+  const bottomLines = Array.from({ length: 10 }, (_, i) => {
+    const gap = 32;
+    const startX = 680 + i * gap;
+    const startY = 900;
+    const endX = 1400;
+    const endY = startX - 500;
+    const sw = i === 0 ? 2.8 : i < 3 ? 1.8 : 1.2;
+    const op = 1 - i * 0.06;
+    return { startX, startY, endX, endY, sw, op, i };
+  });
+
   return (
     <section className="relative h-screen min-h-[700px] overflow-hidden select-none">
       {/* Base background — dark navy gradient */}
@@ -37,22 +64,23 @@ export function HeroSection({ site: _site, banners: _banners }: Props) {
       >
         <defs>
           <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#8a7040" />
-            <stop offset="25%" stopColor="#c5a572" />
+            <stop offset="0%" stopColor="#7a6438" />
+            <stop offset="20%" stopColor="#b8954e" />
             <stop offset="50%" stopColor="#d4b88a" />
-            <stop offset="75%" stopColor="#c5a572" />
-            <stop offset="100%" stopColor="#8a7040" />
+            <stop offset="80%" stopColor="#b8954e" />
+            <stop offset="100%" stopColor="#7a6438" />
           </linearGradient>
-          <linearGradient id="goldBand" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#6a5530" />
-            <stop offset="20%" stopColor="#c5a572" />
-            <stop offset="45%" stopColor="#ddc99a" />
-            <stop offset="55%" stopColor="#d4b88a" />
-            <stop offset="80%" stopColor="#c5a572" />
-            <stop offset="100%" stopColor="#6a5530" />
+          <linearGradient id="goldBandV" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#5a4828" />
+            <stop offset="15%" stopColor="#b8954e" />
+            <stop offset="35%" stopColor="#ddc99a" />
+            <stop offset="50%" stopColor="#e8d5a8" />
+            <stop offset="65%" stopColor="#ddc99a" />
+            <stop offset="85%" stopColor="#b8954e" />
+            <stop offset="100%" stopColor="#5a4828" />
           </linearGradient>
           <filter id="glow">
-            <feGaussianBlur stdDeviation="2" result="blur" />
+            <feGaussianBlur stdDeviation="1.5" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
@@ -62,105 +90,87 @@ export function HeroSection({ site: _site, banners: _banners }: Props) {
 
         {/* ============ DARK PANELS — 3D fold effect ============ */}
 
-        {/* Top-right dark panel (outermost) */}
+        {/* Top-right dark folded panel */}
         <polygon
-          points="1400,0 1400,520 880,0"
-          fill="hsla(222, 20%, 9%, 0.97)"
+          points="660,0 1400,0 1400,740"
+          fill="hsla(222, 20%, 9%, 0.98)"
         />
-        {/* Top-right inner panel */}
         <polygon
-          points="1400,0 1400,480 920,0"
-          fill="hsla(222, 18%, 11%, 0.95)"
+          points="700,0 1400,0 1400,700"
+          fill="hsla(222, 18%, 11%, 0.96)"
+        />
+        <polygon
+          points="740,0 1400,0 1400,660"
+          fill="hsla(222, 16%, 13%, 0.94)"
         />
 
-        {/* Bottom-right dark panel (outermost) */}
+        {/* Bottom-right dark folded panel */}
         <polygon
-          points="1400,900 1400,380 880,900"
-          fill="hsla(222, 20%, 9%, 0.97)"
+          points="660,900 1400,900 1400,160"
+          fill="hsla(222, 20%, 9%, 0.98)"
         />
-        {/* Bottom-right inner panel */}
         <polygon
-          points="1400,900 1400,420 920,900"
-          fill="hsla(222, 18%, 11%, 0.95)"
+          points="700,900 1400,900 1400,200"
+          fill="hsla(222, 18%, 11%, 0.96)"
+        />
+        <polygon
+          points="740,900 1400,900 1400,240"
+          fill="hsla(222, 16%, 13%, 0.94)"
         />
 
-        {/* ============ THICK GOLD BANDS — main 3D accents ============ */}
+        {/* ============ THICK GOLD BANDS ============ */}
 
-        {/* Top-right thick gold band */}
-        <motion.polygon
-          points="1400,0 1400,14 868,0 880,0"
-          fill="url(#goldBand)"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        />
+        {/* Top-right thick gold diagonal band */}
         <motion.line
-          x1="880" y1="0" x2="1400" y2="520"
-          stroke="url(#goldBand)"
-          strokeWidth="12"
+          x1="650" y1="0" x2="1400" y2="750"
+          stroke="url(#goldBandV)"
+          strokeWidth="16"
+          filter="url(#glow)"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+          transition={{ duration: 0.9, delay: 0.35 }}
         />
 
-        {/* Bottom-right thick gold band */}
+        {/* Bottom-right thick gold diagonal band */}
         <motion.line
-          x1="880" y1="900" x2="1400" y2="380"
-          stroke="url(#goldBand)"
-          strokeWidth="12"
+          x1="650" y1="900" x2="1400" y2="150"
+          stroke="url(#goldBandV)"
+          strokeWidth="16"
+          filter="url(#glow)"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
+          transition={{ duration: 0.9, delay: 0.45 }}
         />
 
-        {/* ============ TOP-RIGHT GOLD LINES ============ */}
-        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => {
-          const spacing = 22;
-          // Lines go from right edge downward, angled 45° into the corner
-          const x1 = 920 + i * spacing;
-          const y1 = 0;
-          const x2 = 1400;
-          const y2 = 1400 - x1;
-          const sw = i === 0 ? 2.5 : i < 3 ? 1.5 : 1;
-          const op = 1 - i * 0.07;
-          return (
-            <motion.line
-              key={`top-${i}`}
-              x1={x1} y1={y1} x2={x2} y2={y2}
-              stroke="url(#gold)"
-              strokeWidth={sw}
-              opacity={op}
-              filter={i < 2 ? "url(#glow)" : undefined}
-              initial={{ opacity: 0, x1: x1 + 20, y2: y2 - 20 }}
-              animate={{ opacity: op, x1, y2 }}
-              transition={{ duration: 1, ease: EASE, delay: 0.25 + i * 0.04 }}
-            />
-          );
-        })}
+        {/* ============ TOP-RIGHT THIN GOLD LINES ============ */}
+        {topLines.map(({ startX, startY, endX, endY, sw, op, i }) => (
+          <motion.line
+            key={`top-${i}`}
+            x1={startX} y1={startY} x2={endX} y2={endY}
+            stroke="url(#gold)"
+            strokeWidth={sw}
+            opacity={op}
+            filter={i < 2 ? "url(#glow)" : undefined}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: op }}
+            transition={{ duration: 0.8, ease: EASE, delay: 0.2 + i * 0.04 }}
+          />
+        ))}
 
-        {/* ============ BOTTOM-RIGHT GOLD LINES ============ */}
-        {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => {
-          const spacing = 22;
-          const x1 = 920 + i * spacing;
-          const y1 = 900;
-          const x2 = 1400;
-          const y2 = x1 - 520;
-          const sw = i === 0 ? 2.5 : i < 3 ? 1.5 : 1;
-          const op = 1 - i * 0.07;
-          return (
-            <motion.line
-              key={`bot-${i}`}
-              x1={x1} y1={y1} x2={x2} y2={y2}
-              stroke="url(#gold)"
-              strokeWidth={sw}
-              opacity={op}
-              filter={i < 2 ? "url(#glow)" : undefined}
-              initial={{ opacity: 0, x1: x1 + 20, y2: y2 + 20 }}
-              animate={{ opacity: op, x1, y2 }}
-              transition={{ duration: 1, ease: EASE, delay: 0.3 + i * 0.04 }}
-            />
-          );
-        })}
+        {/* ============ BOTTOM-RIGHT THIN GOLD LINES ============ */}
+        {bottomLines.map(({ startX, startY, endX, endY, sw, op, i }) => (
+          <motion.line
+            key={`bot-${i}`}
+            x1={startX} y1={startY} x2={endX} y2={endY}
+            stroke="url(#gold)"
+            strokeWidth={sw}
+            opacity={op}
+            filter={i < 2 ? "url(#glow)" : undefined}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: op }}
+            transition={{ duration: 0.8, ease: EASE, delay: 0.25 + i * 0.04 }}
+          />
+        ))}
       </motion.svg>
 
       {/* Left-side dark vignette for depth */}
@@ -168,7 +178,7 @@ export function HeroSection({ site: _site, banners: _banners }: Props) {
         className="absolute inset-0 z-[3] pointer-events-none"
         style={{
           background:
-            "linear-gradient(90deg, hsla(0, 0%, 1%, 0.6) 0%, hsla(0, 0%, 1%, 0.2) 25%, transparent 45%)",
+            "linear-gradient(90deg, hsla(0, 0%, 1%, 0.65) 0%, hsla(0, 0%, 1%, 0.2) 22%, transparent 40%)",
         }}
       />
     </section>
