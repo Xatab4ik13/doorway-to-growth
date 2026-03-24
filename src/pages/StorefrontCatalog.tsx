@@ -177,7 +177,7 @@ export default function StorefrontCatalog() {
             {/* ===== LEFT SIDEBAR — Metallic L-Panel ===== */}
             <aside className="hidden md:block w-[300px] shrink-0">
               <div
-                className="relative overflow-hidden overflow-y-auto sticky top-6"
+                className="relative overflow-y-auto sticky top-6 scrollbar-hide"
                 style={{
                   maxHeight: "calc(100vh - 3rem)",
                   borderRadius: "24px",
