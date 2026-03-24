@@ -164,25 +164,16 @@ export function HeroSection({ site, banners }: Props) {
 
       {/* === LEFT SIDEBAR — gold metallic panel (matching brandbook cover) === */}
       <motion.div
-        className="absolute left-0 top-0 bottom-0 z-20 hidden lg:flex flex-col items-center justify-between py-10"
+        className="absolute left-0 top-0 bottom-0 z-20 hidden lg:flex flex-col items-center justify-between py-10 overflow-hidden"
         style={{
           width: "260px",
           background: "linear-gradient(180deg, #cfbb96 0%, #c2b08c 10%, #b2a07c 25%, #a59370 40%, #9a8a69 55%, #887555 70%, #78674b 85%, #6e5f40 100%)",
+          borderRadius: "0 24px 24px 0",
         }}
         initial={{ x: -260 }}
         animate={{ x: 0 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
       >
-        {/* Animated shimmer — light streak sliding top to bottom */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: "linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.18) 45%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.18) 55%, transparent 100%)",
-            backgroundSize: "100% 300%",
-          }}
-          animate={{ backgroundPosition: ["0% -100%", "0% 200%"] }}
-          transition={{ duration: 6, ease: "easeInOut", repeat: Infinity, repeatDelay: 4 }}
-        />
 
         <div className="flex flex-col items-center gap-1 mt-12 relative z-10">
           <AnimatePresence mode="wait">
