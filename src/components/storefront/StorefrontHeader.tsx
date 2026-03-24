@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { Phone, Menu, X } from "lucide-react";
 
@@ -7,10 +8,10 @@ interface Props {
 }
 
 const NAV_ITEMS = [
-  { label: "Каталог", href: "#catalog" },
-  { label: "Акции", href: "#promotions" },
-  { label: "О салоне", href: "#about" },
-  { label: "Контакты", href: "#contacts" },
+  { label: "Каталог", href: "catalog", isRoute: true },
+  { label: "Акции", href: "#promotions", isRoute: false },
+  { label: "О салоне", href: "#about", isRoute: false },
+  { label: "Контакты", href: "#contacts", isRoute: false },
 ];
 
 export function StorefrontHeader({ site }: Props) {
