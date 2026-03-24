@@ -14,6 +14,7 @@ interface Product {
 interface Props {
   products: Product[];
   categories: Array<{ id: string; name: string; slug: string }>;
+  siteSlug: string;
 }
 
 export function CatalogSection({ products, categories }: Props) {
