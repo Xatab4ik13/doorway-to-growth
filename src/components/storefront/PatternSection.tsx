@@ -25,7 +25,7 @@ export function PatternSection() {
               height="230"
               fill="none"
               stroke="#000000"
-              strokeWidth="2"
+              strokeWidth="3"
             />
             <circle
               cx="115"
