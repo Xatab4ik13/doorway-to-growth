@@ -13,195 +13,10 @@ interface Props {
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
-/*
- * Magazine page 2 composition breakdown:
- *
- * 1. Background: deep dark navy-charcoal gradient, slightly lighter center-right
- * 2. Top-right corner: ~8 thin parallel gold lines at 45°, radiating from corner
- * 3. Bottom-right corner: ~8 thin parallel gold lines at -45°, radiating from corner
- * 4. Between groups: one thick gold diagonal band creating 3D fold effect
- * 5. Dark triangular panels between lines have subtle depth shadows
- */
-
-function TopRightLines() {
-  const lines = [
-    { offset: 0, width: 3, opacity: 1 },
-    { offset: 28, width: 1.5, opacity: 0.95 },
-    { offset: 56, width: 1.5, opacity: 0.9 },
-    { offset: 84, width: 1.5, opacity: 0.85 },
-    { offset: 112, width: 1.5, opacity: 0.8 },
-    { offset: 140, width: 1.5, opacity: 0.75 },
-    { offset: 168, width: 1.5, opacity: 0.7 },
-    { offset: 196, width: 1.2, opacity: 0.65 },
-    { offset: 224, width: 1, opacity: 0.55 },
-    { offset: 252, width: 1, opacity: 0.45 },
-  ];
-
-  return (
-    <div className="absolute top-0 right-0 w-full h-full overflow-hidden pointer-events-none">
-      {lines.map((line, i) => (
-        <div
-          key={`tr-${i}`}
-          className="absolute"
-          style={{
-            top: 0,
-            right: -200 + line.offset,
-            width: "150%",
-            height: `${line.width}px`,
-            transformOrigin: "top right",
-            transform: "rotate(45deg)",
-            background:
-              "linear-gradient(90deg, transparent 0%, hsla(41, 42%, 72%, 0.3) 10%, hsla(41, 42%, 72%, 0.95) 30%, hsla(43, 48%, 78%, 1) 50%, hsla(41, 38%, 62%, 0.9) 70%, hsla(38, 32%, 48%, 0.6) 90%, transparent 100%)",
-            opacity: line.opacity,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-function BottomRightLines() {
-  const lines = [
-    { offset: 0, width: 3, opacity: 1 },
-    { offset: 28, width: 1.5, opacity: 0.95 },
-    { offset: 56, width: 1.5, opacity: 0.9 },
-    { offset: 84, width: 1.5, opacity: 0.85 },
-    { offset: 112, width: 1.5, opacity: 0.8 },
-    { offset: 140, width: 1.5, opacity: 0.75 },
-    { offset: 168, width: 1.5, opacity: 0.7 },
-    { offset: 196, width: 1.2, opacity: 0.6 },
-    { offset: 224, width: 1, opacity: 0.5 },
-  ];
-
-  return (
-    <div className="absolute top-0 right-0 w-full h-full overflow-hidden pointer-events-none">
-      {lines.map((line, i) => (
-        <div
-          key={`br-${i}`}
-          className="absolute"
-          style={{
-            bottom: 0,
-            right: -200 + line.offset,
-            width: "150%",
-            height: `${line.width}px`,
-            transformOrigin: "bottom right",
-            transform: "rotate(-45deg)",
-            background:
-              "linear-gradient(90deg, transparent 0%, hsla(41, 42%, 72%, 0.3) 10%, hsla(41, 42%, 72%, 0.95) 30%, hsla(43, 48%, 78%, 1) 50%, hsla(41, 38%, 62%, 0.9) 70%, hsla(38, 32%, 48%, 0.6) 90%, transparent 100%)",
-            opacity: line.opacity,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-function GoldBand() {
-  return (
-    <div className="absolute top-0 right-0 w-full h-full overflow-hidden pointer-events-none">
-      {/* Thick gold diagonal band — the main 3D fold accent */}
-      <div
-        className="absolute"
-        style={{
-          bottom: 0,
-          right: -200,
-          width: "150%",
-          height: "18px",
-          transformOrigin: "bottom right",
-          transform: "rotate(-45deg)",
-          background:
-            "linear-gradient(180deg, hsla(43, 34%, 32%, 0.9) 0%, hsla(43, 48%, 72%, 1) 20%, hsla(45, 55%, 82%, 1) 42%, hsla(43, 48%, 72%, 1) 65%, hsla(41, 38%, 42%, 0.9) 100%)",
-          boxShadow:
-            "0 -8px 24px hsla(0, 0%, 0%, 0.5), 0 8px 24px hsla(0, 0%, 0%, 0.5), 0 0 12px hsla(43, 48%, 68%, 0.15)",
-        }}
-      />
-      {/* Matching band on top-right side */}
-      <div
-        className="absolute"
-        style={{
-          top: 0,
-          right: -200,
-          width: "150%",
-          height: "18px",
-          transformOrigin: "top right",
-          transform: "rotate(45deg)",
-          background:
-            "linear-gradient(180deg, hsla(43, 34%, 32%, 0.9) 0%, hsla(43, 48%, 72%, 1) 20%, hsla(45, 55%, 82%, 1) 42%, hsla(43, 48%, 72%, 1) 65%, hsla(41, 38%, 42%, 0.9) 100%)",
-          boxShadow:
-            "0 -8px 24px hsla(0, 0%, 0%, 0.5), 0 8px 24px hsla(0, 0%, 0%, 0.5), 0 0 12px hsla(43, 48%, 68%, 0.15)",
-        }}
-      />
-    </div>
-  );
-}
-
-function DarkPanels() {
-  return (
-    <div className="absolute top-0 right-0 w-full h-full overflow-hidden pointer-events-none">
-      {/* Top-right dark triangular panel — between outer lines and gold band */}
-      <div
-        className="absolute"
-        style={{
-          top: 0,
-          right: 0,
-          width: 0,
-          height: 0,
-          borderStyle: "solid",
-          borderWidth: "0 45vw 45vw 0",
-          borderColor:
-            "transparent hsla(220, 16%, 10%, 0.97) transparent transparent",
-        }}
-      />
-      {/* Inner panel with slightly different shade for depth */}
-      <div
-        className="absolute"
-        style={{
-          top: 0,
-          right: 0,
-          width: 0,
-          height: 0,
-          borderStyle: "solid",
-          borderWidth: "0 42vw 42vw 0",
-          borderColor:
-            "transparent hsla(222, 18%, 12%, 0.95) transparent transparent",
-        }}
-      />
-
-      {/* Bottom-right dark triangular panel */}
-      <div
-        className="absolute"
-        style={{
-          bottom: 0,
-          right: 0,
-          width: 0,
-          height: 0,
-          borderStyle: "solid",
-          borderWidth: "0 0 45vw 45vw",
-          borderColor:
-            "transparent transparent hsla(220, 16%, 10%, 0.97) transparent",
-        }}
-      />
-      <div
-        className="absolute"
-        style={{
-          bottom: 0,
-          right: 0,
-          width: 0,
-          height: 0,
-          borderStyle: "solid",
-          borderWidth: "0 0 42vw 42vw",
-          borderColor:
-            "transparent transparent hsla(222, 18%, 12%, 0.95) transparent",
-        }}
-      />
-    </div>
-  );
-}
-
 export function HeroSection({ site: _site, banners: _banners }: Props) {
   return (
     <section className="relative h-screen min-h-[700px] overflow-hidden select-none">
-      {/* Base background */}
+      {/* Base background — dark navy gradient */}
       <div
         className="absolute inset-0"
         style={{
@@ -210,52 +25,150 @@ export function HeroSection({ site: _site, banners: _banners }: Props) {
         }}
       />
 
-      {/* Dark panels creating depth layers */}
-      <motion.div
-        className="absolute inset-0 z-[1]"
+      {/* Full SVG composition */}
+      <motion.svg
+        className="absolute inset-0 z-[2] w-full h-full"
+        viewBox="0 0 1400 900"
+        preserveAspectRatio="xMidYMid slice"
+        xmlns="http://www.w3.org/2000/svg"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, ease: EASE }}
+        transition={{ duration: 1, ease: EASE }}
       >
-        <DarkPanels />
-      </motion.div>
+        <defs>
+          <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#8a7040" />
+            <stop offset="25%" stopColor="#c5a572" />
+            <stop offset="50%" stopColor="#d4b88a" />
+            <stop offset="75%" stopColor="#c5a572" />
+            <stop offset="100%" stopColor="#8a7040" />
+          </linearGradient>
+          <linearGradient id="goldBand" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#6a5530" />
+            <stop offset="20%" stopColor="#c5a572" />
+            <stop offset="45%" stopColor="#ddc99a" />
+            <stop offset="55%" stopColor="#d4b88a" />
+            <stop offset="80%" stopColor="#c5a572" />
+            <stop offset="100%" stopColor="#6a5530" />
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
 
-      {/* Gold lines — top right */}
-      <motion.div
-        className="absolute inset-0 z-[2]"
-        initial={{ opacity: 0, x: 30, y: -30 }}
-        animate={{ opacity: 1, x: 0, y: 0 }}
-        transition={{ duration: 1.2, ease: EASE, delay: 0.2 }}
-      >
-        <TopRightLines />
-      </motion.div>
+        {/* ============ DARK PANELS — 3D fold effect ============ */}
 
-      {/* Gold lines — bottom right */}
-      <motion.div
-        className="absolute inset-0 z-[2]"
-        initial={{ opacity: 0, x: 30, y: 30 }}
-        animate={{ opacity: 1, x: 0, y: 0 }}
-        transition={{ duration: 1.2, ease: EASE, delay: 0.35 }}
-      >
-        <BottomRightLines />
-      </motion.div>
+        {/* Top-right dark panel (outermost) */}
+        <polygon
+          points="1400,0 1400,520 880,0"
+          fill="hsla(222, 20%, 9%, 0.97)"
+        />
+        {/* Top-right inner panel */}
+        <polygon
+          points="1400,0 1400,480 920,0"
+          fill="hsla(222, 18%, 11%, 0.95)"
+        />
 
-      {/* Thick gold bands */}
-      <motion.div
-        className="absolute inset-0 z-[3]"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, ease: EASE, delay: 0.5 }}
-      >
-        <GoldBand />
-      </motion.div>
+        {/* Bottom-right dark panel (outermost) */}
+        <polygon
+          points="1400,900 1400,380 880,900"
+          fill="hsla(222, 20%, 9%, 0.97)"
+        />
+        {/* Bottom-right inner panel */}
+        <polygon
+          points="1400,900 1400,420 920,900"
+          fill="hsla(222, 18%, 11%, 0.95)"
+        />
 
-      {/* Subtle ambient light in center-right */}
+        {/* ============ THICK GOLD BANDS — main 3D accents ============ */}
+
+        {/* Top-right thick gold band */}
+        <motion.polygon
+          points="1400,0 1400,14 868,0 880,0"
+          fill="url(#goldBand)"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        />
+        <motion.line
+          x1="880" y1="0" x2="1400" y2="520"
+          stroke="url(#goldBand)"
+          strokeWidth="12"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        />
+
+        {/* Bottom-right thick gold band */}
+        <motion.line
+          x1="880" y1="900" x2="1400" y2="380"
+          stroke="url(#goldBand)"
+          strokeWidth="12"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+        />
+
+        {/* ============ TOP-RIGHT GOLD LINES ============ */}
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => {
+          const spacing = 22;
+          // Lines go from right edge downward, angled 45° into the corner
+          const x1 = 920 + i * spacing;
+          const y1 = 0;
+          const x2 = 1400;
+          const y2 = 1400 - x1;
+          const sw = i === 0 ? 2.5 : i < 3 ? 1.5 : 1;
+          const op = 1 - i * 0.07;
+          return (
+            <motion.line
+              key={`top-${i}`}
+              x1={x1} y1={y1} x2={x2} y2={y2}
+              stroke="url(#gold)"
+              strokeWidth={sw}
+              opacity={op}
+              filter={i < 2 ? "url(#glow)" : undefined}
+              initial={{ opacity: 0, x1: x1 + 20, y2: y2 - 20 }}
+              animate={{ opacity: op, x1, y2 }}
+              transition={{ duration: 1, ease: EASE, delay: 0.25 + i * 0.04 }}
+            />
+          );
+        })}
+
+        {/* ============ BOTTOM-RIGHT GOLD LINES ============ */}
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => {
+          const spacing = 22;
+          const x1 = 920 + i * spacing;
+          const y1 = 900;
+          const x2 = 1400;
+          const y2 = x1 - 520;
+          const sw = i === 0 ? 2.5 : i < 3 ? 1.5 : 1;
+          const op = 1 - i * 0.07;
+          return (
+            <motion.line
+              key={`bot-${i}`}
+              x1={x1} y1={y1} x2={x2} y2={y2}
+              stroke="url(#gold)"
+              strokeWidth={sw}
+              opacity={op}
+              filter={i < 2 ? "url(#glow)" : undefined}
+              initial={{ opacity: 0, x1: x1 + 20, y2: y2 + 20 }}
+              animate={{ opacity: op, x1, y2 }}
+              transition={{ duration: 1, ease: EASE, delay: 0.3 + i * 0.04 }}
+            />
+          );
+        })}
+      </motion.svg>
+
+      {/* Left-side dark vignette for depth */}
       <div
-        className="absolute inset-0 z-[4] pointer-events-none"
+        className="absolute inset-0 z-[3] pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 40% 35% at 62% 48%, hsla(220, 14%, 18%, 0.15) 0%, transparent 100%)",
+            "linear-gradient(90deg, hsla(0, 0%, 1%, 0.6) 0%, hsla(0, 0%, 1%, 0.2) 25%, transparent 45%)",
         }}
       />
     </section>
