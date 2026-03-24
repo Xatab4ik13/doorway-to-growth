@@ -2,7 +2,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import heroDefault from "@/assets/hero-showroom.jpg";
+import heroSlide1 from "@/assets/hero-slide-1.jpg";
+import heroSlide2 from "@/assets/hero-slide-2.jpg";
+import heroSlide3 from "@/assets/hero-slide-3.jpg";
 import brandoorsLogo from "@/assets/logo.png";
 
 interface Props {
@@ -14,14 +16,17 @@ const SLIDES = [
   {
     title: "МЕЖКОМНАТНЫЕ\nДВЕРИ",
     subtitle: "Салон дверей нового поколения — пространство, в котором дизайн, качество и комфорт объединяются в каждой детали.",
+    image: heroSlide1,
   },
   {
     title: "ПРЕМИУМ\nКОЛЛЕКЦИЯ",
     subtitle: "Эксклюзивные модели из натуральных материалов. Итальянский дизайн, российское производство.",
+    image: heroSlide2,
   },
   {
     title: "ИНДИВИДУАЛЬНЫЙ\nПОДХОД",
     subtitle: "Персональная консультация, 3D-визуализация, профессиональный замер и установка под ключ.",
+    image: heroSlide3,
   },
 ];
 
