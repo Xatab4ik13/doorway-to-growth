@@ -33,6 +33,9 @@ const SLIDES = [
 ];
 
 /* Clip-path based reveal transition — dramatic diagonal wipe with parallax */
+const EASE_OUT: [number, number, number, number] = [0.76, 0, 0.24, 1];
+const EASE_SMOOTH: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
 const slideVariants = {
   enter: (direction: number) => ({
     clipPath: direction > 0
@@ -46,9 +49,9 @@ const slideVariants = {
     scale: 1,
     filter: "brightness(1)",
     transition: {
-      clipPath: { duration: 1.2, ease: [0.76, 0, 0.24, 1] },
-      scale: { duration: 1.8, ease: [0.22, 1, 0.36, 1] },
-      filter: { duration: 1.4, ease: "easeOut" },
+      clipPath: { duration: 1.2, ease: EASE_OUT },
+      scale: { duration: 1.8, ease: EASE_SMOOTH },
+      filter: { duration: 1.4, ease: "easeOut" as const },
     },
   },
   exit: (direction: number) => ({
@@ -58,9 +61,9 @@ const slideVariants = {
     scale: 1.08,
     filter: "brightness(0.2)",
     transition: {
-      clipPath: { duration: 1.2, ease: [0.76, 0, 0.24, 1] },
-      scale: { duration: 1.2, ease: [0.22, 1, 0.36, 1] },
-      filter: { duration: 0.8, ease: "easeIn" },
+      clipPath: { duration: 1.2, ease: EASE_OUT },
+      scale: { duration: 1.2, ease: EASE_SMOOTH },
+      filter: { duration: 0.8, ease: "easeIn" as const },
     },
   }),
 };
