@@ -72,11 +72,11 @@ const textVariants = {
   enter: { opacity: 0, y: 80, filter: "blur(20px)" },
   center: {
     opacity: 1, y: 0, filter: "blur(0px)",
-    transition: { duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.6 },
+    transition: { duration: 1, ease: EASE_SMOOTH, delay: 0.6 },
   },
   exit: {
     opacity: 0, y: -60, filter: "blur(15px)",
-    transition: { duration: 0.6, ease: [0.76, 0, 0.24, 1] },
+    transition: { duration: 0.6, ease: EASE_OUT },
   },
 };
 
@@ -84,7 +84,7 @@ const lineVariants = {
   enter: { scaleX: 0, opacity: 0 },
   center: {
     scaleX: 1, opacity: 1,
-    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.8 },
+    transition: { duration: 0.8, ease: EASE_SMOOTH, delay: 0.8 },
   },
   exit: { scaleX: 0, opacity: 0, transition: { duration: 0.4 } },
 };
