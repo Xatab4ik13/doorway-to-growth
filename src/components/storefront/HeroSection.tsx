@@ -47,7 +47,7 @@ export function HeroSection({ site, banners }: Props) {
     <section className="relative h-screen min-h-[750px] bg-[#0a0a0a] overflow-hidden select-none">
 
       {/* === HERO IMAGE — static === */}
-      <div className="absolute inset-0 lg:left-[260px]">
+      <div className="absolute inset-0">
         <img src={heroImage} alt="Салон дверей" className="w-full h-full object-cover" width={1920} height={1080} />
         <div className="absolute inset-0 bg-[#0a0a0a]/20" />
       </div>
