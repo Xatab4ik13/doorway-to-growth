@@ -12,6 +12,7 @@ import { CatalogSection } from "@/components/storefront/CatalogSection";
 import { AboutSection } from "@/components/storefront/AboutSection";
 import { ContactSection } from "@/components/storefront/ContactSection";
 import { PatternSection } from "@/components/storefront/PatternSection";
+import { CollectionSection } from "@/components/storefront/CollectionSection";
 
 export default function Storefront() {
   const { slug } = useParams<{ slug: string }>();
