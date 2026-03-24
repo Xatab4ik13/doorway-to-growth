@@ -5,6 +5,7 @@ import doorBauhaus from "@/assets/doors/bauhaus.webp";
 import doorCapsule from "@/assets/doors/capsule.webp";
 import doorHorizon from "@/assets/doors/horizon.webp";
 import doorLines from "@/assets/doors/lines.webp";
+import doorSmart from "@/assets/doors/smart.webp";
 
 type DoorItem = { src: string; name: string };
 
@@ -14,6 +15,7 @@ const ENTRANCE_DOORS: DoorItem[] = [
   { src: doorCapsule, name: "CAPSULE" },
   { src: doorHorizon, name: "HORIZON" },
   { src: doorLines, name: "LINES" },
+  { src: doorSmart, name: "SMART" },
 ];
 
 // Placeholder — will be replaced with real images
