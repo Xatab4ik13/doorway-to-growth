@@ -124,21 +124,21 @@ export function HeroSection({ site, banners }: Props) {
   return (
     <section className="relative h-screen min-h-[700px] overflow-hidden select-none bg-storefront-bg">
 
-      {/* === DESKTOP NAV — gold island extending from sidebar === */}
-      <motion.nav
-        className="absolute top-0 left-[260px] z-40 hidden lg:flex items-center justify-between"
+      {/* === DESKTOP NAV — gold tab extending from sidebar top === */}
+      <motion.div
+        className="absolute top-0 left-[260px] z-40 hidden lg:flex items-center"
         style={{
           height: "56px",
-          right: 0,
-          background: "linear-gradient(90deg, #cfbb96 0%, #c2b08c 20%, #b2a07c 50%, #a59370 80%, #9a8a69 100%)",
-          borderRadius: "0 0 0 0",
+          background: "linear-gradient(90deg, #c2b08c 0%, #b2a07c 40%, #a59370 70%, #9a8a69 100%)",
+          borderRadius: "0 0 48px 0",
+          paddingLeft: "32px",
+          paddingRight: "40px",
         }}
-        initial={{ x: 100, opacity: 0 }}
+        initial={{ x: -50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
       >
-        {/* Smooth connection to sidebar — matching gradient on left edge */}
-        <div className="flex items-center gap-8 xl:gap-10 pl-10 pr-6">
+        <div className="flex items-center gap-8 xl:gap-10">
           {[
             { label: "Каталог", href: "#catalog" },
             { label: "Акции", href: "#promotions" },
@@ -160,25 +160,23 @@ export function HeroSection({ site, banners }: Props) {
             </a>
           ))}
         </div>
-        {site.phone && (
+      </motion.div>
+
+      {/* Phone number — separate, on dark background, right side */}
+      {site.phone && (
+        <div className="absolute top-0 right-0 z-40 hidden lg:flex items-center h-[56px] pr-10 xl:pr-14">
           <a
             href={`tel:${site.phone}`}
-            className="flex items-center gap-2.5 pr-10 xl:pr-14 font-semibold transition-colors duration-300"
-            style={{
-              fontFamily: "'Raleway', sans-serif",
-              fontSize: "15px",
-              color: "rgba(26,20,8,0.7)",
-            }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.95)"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.7)"; }}
+            className="flex items-center gap-2.5 font-medium text-storefront-gold hover:text-storefront-gold-light transition-colors duration-300"
+            style={{ fontFamily: "'Raleway', sans-serif", fontSize: "15px", textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}
           >
             <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
               <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.25 1.02l-2.2 2.19z" />
             </svg>
             {site.phone}
           </a>
-        )}
-      </motion.nav>
+        </div>
+      )}
 
       {/* === FULLSCREEN SLIDES with clip-path transition === */}
       <AnimatePresence initial={false} custom={direction} mode="popLayout">
