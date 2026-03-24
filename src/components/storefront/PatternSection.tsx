@@ -33,7 +33,7 @@ export function PatternSection() {
               r="115"
               fill="none"
               stroke="#000000"
-              strokeWidth="2"
+              strokeWidth="3"
             />
           </pattern>
         </defs>
