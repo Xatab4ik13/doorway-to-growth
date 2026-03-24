@@ -12,42 +12,57 @@ export default function StorefrontCatalog() {
   const { data: products = [] } = useStorefrontProducts(site?.id);
   const { data: categories = [] } = useStorefrontCategories();
 
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 999999]);
+  const [selectedParentCategory, setSelectedParentCategory] = useState<string | null>(null);
   const [selectedCollection, setSelectedCollection] = useState<string | null>(null);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 999999]);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [sortBy, setSortBy] = useState<"name" | "price-asc" | "price-desc">("name");
 
-  // Extract unique collections from product names/specs
-  const collections = useMemo(() => {
-    const names = new Set<string>();
-    products.forEach((p: any) => {
-      const specs = p.specifications as Record<string, string> | null;
-      if (specs?.collection) names.add(specs.collection);
-    });
-    return Array.from(names).sort();
-  }, [products]);
+  // Separate parent categories and subcategories (collections)
+  const parentCategories = useMemo(
+    () => (categories as any[]).filter((c) => !c.parent_id).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)),
+    [categories]
+  );
+
+  const subcategories = useMemo(
+    () => (categories as any[]).filter((c) => c.parent_id).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)),
+    [categories]
+  );
+
+  // Collections for the selected parent category
+  const visibleCollections = useMemo(() => {
+    if (!selectedParentCategory) return subcategories;
+    return subcategories.filter((c) => c.parent_id === selectedParentCategory);
+  }, [subcategories, selectedParentCategory]);
 
   // Get price bounds
   const priceBounds = useMemo(() => {
-    const prices = products.filter((p: any) => p.rrp).map((p: any) => Number(p.rrp));
+    const prices = (products as any[]).filter((p) => p.rrp).map((p) => Number(p.rrp));
     if (prices.length === 0) return { min: 0, max: 100000 };
     return { min: Math.min(...prices), max: Math.max(...prices) };
   }, [products]);
 
+  // Get all subcategory IDs for the selected parent
+  const parentSubcategoryIds = useMemo(() => {
+    if (!selectedParentCategory) return null;
+    return subcategories.filter((c) => c.parent_id === selectedParentCategory).map((c) => c.id);
+  }, [subcategories, selectedParentCategory]);
+
   // Filter and sort
   const filtered = useMemo(() => {
-    let result = [...products] as any[];
+    let result = [...(products as any[])];
 
-    if (selectedCategory) {
-      result = result.filter((p) => p.category_id === selectedCategory);
+    // Filter by parent category (match any of its subcategories)
+    if (parentSubcategoryIds) {
+      result = result.filter((p) => parentSubcategoryIds.includes(p.category_id));
     }
+
+    // Filter by specific collection
     if (selectedCollection) {
-      result = result.filter((p) => {
-        const specs = p.specifications as Record<string, string> | null;
-        return specs?.collection === selectedCollection;
-      });
+      result = result.filter((p) => p.category_id === selectedCollection);
     }
+
+    // Price filter
     result = result.filter((p) => {
       if (!p.rrp) return true;
       return p.rrp >= priceRange[0] && p.rrp <= priceRange[1];
@@ -65,20 +80,26 @@ export default function StorefrontCatalog() {
     }
 
     return result;
-  }, [products, selectedCategory, selectedCollection, priceRange, sortBy]);
+  }, [products, parentSubcategoryIds, selectedCollection, priceRange, sortBy]);
 
   const getPrimaryImage = (p: any) => {
     const primary = p.product_images?.find((i: any) => i.is_primary);
     return primary?.url || p.product_images?.[0]?.url;
   };
 
-  const activeFiltersCount = [selectedCategory, selectedCollection].filter(Boolean).length +
+  const activeFiltersCount =
+    [selectedParentCategory, selectedCollection].filter(Boolean).length +
     (priceRange[0] > 0 || priceRange[1] < 999999 ? 1 : 0);
 
   const clearFilters = () => {
-    setSelectedCategory(null);
+    setSelectedParentCategory(null);
     setSelectedCollection(null);
     setPriceRange([0, 999999]);
+  };
+
+  const selectParent = (id: string | null) => {
+    setSelectedParentCategory(id);
+    setSelectedCollection(null); // reset collection when changing parent
   };
 
   if (isLoading) {
@@ -132,6 +153,62 @@ export default function StorefrontCatalog() {
         </div>
 
         <div className="max-w-[1400px] mx-auto px-6 py-10">
+          {/* Parent category tabs */}
+          <div className="flex flex-wrap gap-2 mb-8">
+            <button
+              onClick={() => selectParent(null)}
+              className={`px-5 py-2.5 text-xs uppercase tracking-wider font-semibold transition-all ${
+                !selectedParentCategory
+                  ? "bg-storefront-gold text-storefront-bg"
+                  : "border border-storefront-gold/20 text-storefront-muted hover:border-storefront-gold hover:text-storefront-gold"
+              }`}
+            >
+              Все
+            </button>
+            {parentCategories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => selectParent(cat.id)}
+                className={`px-5 py-2.5 text-xs uppercase tracking-wider font-semibold transition-all ${
+                  selectedParentCategory === cat.id
+                    ? "bg-storefront-gold text-storefront-bg"
+                    : "border border-storefront-gold/20 text-storefront-muted hover:border-storefront-gold hover:text-storefront-gold"
+                }`}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+
+          {/* Collection pills (subcategories) */}
+          {visibleCollections.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mb-8">
+              <button
+                onClick={() => setSelectedCollection(null)}
+                className={`px-3 py-1.5 text-[11px] uppercase tracking-wider transition-all ${
+                  !selectedCollection
+                    ? "text-storefront-gold border-b border-storefront-gold"
+                    : "text-storefront-muted hover:text-storefront-text"
+                }`}
+              >
+                Все коллекции
+              </button>
+              {visibleCollections.map((col) => (
+                <button
+                  key={col.id}
+                  onClick={() => setSelectedCollection(col.id)}
+                  className={`px-3 py-1.5 text-[11px] uppercase tracking-wider transition-all ${
+                    selectedCollection === col.id
+                      ? "text-storefront-gold border-b border-storefront-gold"
+                      : "text-storefront-muted hover:text-storefront-text"
+                  }`}
+                >
+                  {col.name}
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* Toolbar */}
           <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
             <div className="flex items-center gap-3">
@@ -176,7 +253,7 @@ export default function StorefrontCatalog() {
             </div>
           </div>
 
-          {/* Filters panel */}
+          {/* Price filter panel */}
           <AnimatePresence>
             {filtersOpen && (
               <motion.div
@@ -186,88 +263,31 @@ export default function StorefrontCatalog() {
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden mb-8"
               >
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 border border-storefront-gold/10 bg-storefront-card">
-                  {/* Category filter */}
-                  <div>
-                    <h3 className="text-xs uppercase tracking-[0.2em] text-storefront-gold mb-3">Категория</h3>
-                    <div className="space-y-2">
-                      <button
-                        onClick={() => setSelectedCategory(null)}
-                        className={`block text-sm transition-colors ${
-                          !selectedCategory ? "text-storefront-gold" : "text-storefront-muted hover:text-storefront-text"
-                        }`}
-                      >
-                        Все категории
-                      </button>
-                      {categories.map((cat: any) => (
-                        <button
-                          key={cat.id}
-                          onClick={() => setSelectedCategory(cat.id)}
-                          className={`block text-sm transition-colors ${
-                            selectedCategory === cat.id ? "text-storefront-gold" : "text-storefront-muted hover:text-storefront-text"
-                          }`}
-                        >
-                          {cat.name}
-                        </button>
-                      ))}
+                <div className="p-6 border border-storefront-gold/10 bg-storefront-card">
+                  <h3 className="text-xs uppercase tracking-[0.2em] text-storefront-gold mb-3">Цена, ₽</h3>
+                  <div className="flex items-center gap-3 max-w-md">
+                    <div className="flex-1">
+                      <label className="text-[10px] uppercase text-storefront-muted mb-1 block">От</label>
+                      <input
+                        type="number"
+                        value={priceRange[0] || ""}
+                        onChange={(e) => setPriceRange([Number(e.target.value) || 0, priceRange[1]])}
+                        placeholder={String(priceBounds.min)}
+                        className="w-full bg-transparent border border-storefront-gold/20 text-storefront-text text-sm px-3 py-2 focus:outline-none focus:border-storefront-gold"
+                      />
+                    </div>
+                    <span className="text-storefront-muted mt-4">—</span>
+                    <div className="flex-1">
+                      <label className="text-[10px] uppercase text-storefront-muted mb-1 block">До</label>
+                      <input
+                        type="number"
+                        value={priceRange[1] < 999999 ? priceRange[1] : ""}
+                        onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value) || 999999])}
+                        placeholder={String(priceBounds.max)}
+                        className="w-full bg-transparent border border-storefront-gold/20 text-storefront-text text-sm px-3 py-2 focus:outline-none focus:border-storefront-gold"
+                      />
                     </div>
                   </div>
-
-                  {/* Price filter */}
-                  <div>
-                    <h3 className="text-xs uppercase tracking-[0.2em] text-storefront-gold mb-3">Цена</h3>
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1">
-                        <label className="text-[10px] uppercase text-storefront-muted mb-1 block">От</label>
-                        <input
-                          type="number"
-                          value={priceRange[0] || ""}
-                          onChange={(e) => setPriceRange([Number(e.target.value) || 0, priceRange[1]])}
-                          placeholder={String(priceBounds.min)}
-                          className="w-full bg-transparent border border-storefront-gold/20 text-storefront-text text-sm px-3 py-2 focus:outline-none focus:border-storefront-gold"
-                        />
-                      </div>
-                      <span className="text-storefront-muted mt-4">—</span>
-                      <div className="flex-1">
-                        <label className="text-[10px] uppercase text-storefront-muted mb-1 block">До</label>
-                        <input
-                          type="number"
-                          value={priceRange[1] < 999999 ? priceRange[1] : ""}
-                          onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value) || 999999])}
-                          placeholder={String(priceBounds.max)}
-                          className="w-full bg-transparent border border-storefront-gold/20 text-storefront-text text-sm px-3 py-2 focus:outline-none focus:border-storefront-gold"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Collection filter */}
-                  {collections.length > 0 && (
-                    <div>
-                      <h3 className="text-xs uppercase tracking-[0.2em] text-storefront-gold mb-3">Коллекция</h3>
-                      <div className="space-y-2">
-                        <button
-                          onClick={() => setSelectedCollection(null)}
-                          className={`block text-sm transition-colors ${
-                            !selectedCollection ? "text-storefront-gold" : "text-storefront-muted hover:text-storefront-text"
-                          }`}
-                        >
-                          Все коллекции
-                        </button>
-                        {collections.map((col) => (
-                          <button
-                            key={col}
-                            onClick={() => setSelectedCollection(col)}
-                            className={`block text-sm transition-colors ${
-                              selectedCollection === col ? "text-storefront-gold" : "text-storefront-muted hover:text-storefront-text"
-                            }`}
-                          >
-                            {col}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
               </motion.div>
             )}
@@ -278,6 +298,8 @@ export default function StorefrontCatalog() {
             <AnimatePresence mode="popLayout">
               {filtered.map((product: any, i: number) => {
                 const img = getPrimaryImage(product);
+                // Find collection name
+                const collection = subcategories.find((c) => c.id === product.category_id);
                 return (
                   <motion.div
                     key={product.id}
@@ -285,7 +307,7 @@ export default function StorefrontCatalog() {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.3, delay: i * 0.03 }}
+                    transition={{ duration: 0.3, delay: Math.min(i * 0.03, 0.3) }}
                   >
                     <Link
                       to={`/store/${slug}/product/${product.slug}`}
@@ -307,9 +329,9 @@ export default function StorefrontCatalog() {
                       <div className="absolute inset-0 bg-gradient-to-t from-storefront-bg via-storefront-bg/20 to-transparent" />
 
                       <div className="absolute bottom-0 left-0 right-0 p-5">
-                        {product.categories && (
+                        {collection && (
                           <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-gold/70 mb-1 block">
-                            {(product.categories as any)?.name || ""}
+                            {collection.name}
                           </span>
                         )}
                         <h3 className="text-sm font-semibold text-storefront-text leading-snug uppercase tracking-wide">
