@@ -124,45 +124,7 @@ export function HeroSection({ site, banners }: Props) {
   return (
     <section className="relative h-screen min-h-[700px] overflow-hidden select-none bg-storefront-bg">
 
-      {/* === DESKTOP NAV — gold tab extending from sidebar top === */}
-      <motion.div
-        className="absolute top-0 left-[260px] z-40 hidden lg:flex items-center"
-        style={{
-          height: "56px",
-          background: "linear-gradient(90deg, #c2b08c 0%, #b2a07c 40%, #a59370 70%, #9a8a69 100%)",
-          borderRadius: "0 0 48px 0",
-          paddingLeft: "32px",
-          paddingRight: "40px",
-        }}
-        initial={{ x: -50, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
-      >
-        <div className="flex items-center gap-8 xl:gap-10">
-          {[
-            { label: "Каталог", href: "#catalog" },
-            { label: "Акции", href: "#promotions" },
-            { label: "О салоне", href: "#about" },
-            { label: "Контакты", href: "#contacts" },
-          ].map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="text-[14px] font-semibold uppercase tracking-[0.25em] transition-colors duration-300"
-              style={{
-                fontFamily: "'Raleway', sans-serif",
-                color: "rgba(26,20,8,0.6)",
-              }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.95)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.6)"; }}
-            >
-              {item.label}
-            </a>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Phone number — separate, on dark background, right side */}
+      {/* Phone number — right side, on dark background */}
       {site.phone && (
         <div className="absolute top-0 right-0 z-40 hidden lg:flex items-center h-[56px] pr-10 xl:pr-14">
           <a
@@ -196,26 +158,80 @@ export function HeroSection({ site, banners }: Props) {
             width={1920}
             height={1080}
           />
-          {/* Gradient overlays for text readability */}
           <div className="absolute inset-0 bg-gradient-to-r from-storefront-bg/90 via-storefront-bg/50 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-storefront-bg/70 via-transparent to-storefront-bg/30" />
         </motion.div>
       </AnimatePresence>
 
-      {/* === GOLD SIDEBAR === */}
+      {/* === UNIFIED GOLD SHAPE: sidebar + nav tab as ONE figure === */}
       <motion.div
-        className="absolute left-0 top-0 bottom-0 z-20 hidden lg:flex flex-col items-center justify-between py-10 overflow-hidden"
-        style={{
-          width: "260px",
-          background: "linear-gradient(180deg, #cfbb96 0%, #c2b08c 10%, #b2a07c 25%, #a59370 40%, #9a8a69 55%, #887555 70%, #78674b 85%, #6e5f40 100%)",
-          borderRadius: "0 48px 48px 0",
-        }}
+        className="absolute left-0 top-0 bottom-0 z-20 hidden lg:block"
+        style={{ width: "820px" }}
         initial={{ x: -260 }}
         animate={{ x: 0 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
       >
+        {/* Single SVG shape */}
+        <svg
+          className="absolute inset-0 w-full h-full"
+          viewBox="0 0 820 900"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <linearGradient id="sidebarGold" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#cfbb96" />
+              <stop offset="10%" stopColor="#c2b08c" />
+              <stop offset="25%" stopColor="#b2a07c" />
+              <stop offset="40%" stopColor="#a59370" />
+              <stop offset="55%" stopColor="#9a8a69" />
+              <stop offset="70%" stopColor="#887555" />
+              <stop offset="85%" stopColor="#78674b" />
+              <stop offset="100%" stopColor="#6e5f40" />
+            </linearGradient>
+          </defs>
+          {/* L-shaped path: top nav tab (full width 780) flows into sidebar (260 wide) 
+              with smooth inner curve at junction */}
+          <path
+            d={`
+              M 0 0
+              L 780 0
+              L 780 16
+              Q 780 56, 740 56
+              L 308 56
+              Q 260 56, 260 104
+              L 260 852
+              Q 260 900, 212 900
+              L 0 900
+              Z
+            `}
+            fill="url(#sidebarGold)"
+          />
+        </svg>
+
+        {/* Nav links in top tab */}
+        <div className="absolute top-0 left-[280px] h-[56px] flex items-center gap-8 xl:gap-10">
+          {[
+            { label: "Каталог", href: "#catalog" },
+            { label: "Акции", href: "#promotions" },
+            { label: "О салоне", href: "#about" },
+            { label: "Контакты", href: "#contacts" },
+          ].map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              className="text-[14px] font-semibold uppercase tracking-[0.25em] transition-colors duration-300"
+              style={{ fontFamily: "'Raleway', sans-serif", color: "rgba(26,20,8,0.6)" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.95)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.6)"; }}
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+
         {/* Room counter */}
-        <div className="flex flex-col items-center gap-1 mt-12 relative z-10">
+        <div className="absolute left-0 w-[260px] flex flex-col items-center gap-1 top-[80px]">
           <AnimatePresence mode="wait">
             <motion.span
               key={active}
@@ -235,15 +251,16 @@ export function HeroSection({ site, banners }: Props) {
         </div>
 
         {/* Logo rotated */}
-        <img
-          src={brandoorsLogo}
-          alt="Brandoors"
-          className="relative z-10"
-          style={{ filter: "brightness(0)", opacity: 0.8, transform: "rotate(-90deg)", width: "auto", height: "55px" }}
-        />
+        <div className="absolute left-0 w-[260px] top-1/2 -translate-y-1/2 flex items-center justify-center">
+          <img
+            src={brandoorsLogo}
+            alt="Brandoors"
+            style={{ filter: "brightness(0)", opacity: 0.8, transform: "rotate(-90deg)", width: "auto", height: "55px" }}
+          />
+        </div>
 
         {/* Social links */}
-        <div className="flex flex-col gap-3 mb-4 relative z-10">
+        <div className="absolute left-0 w-[260px] bottom-10 flex flex-col items-center gap-3">
           {[
             { href: "https://vk.com", icon: "M12.77 19.15h1.33s.4-.04.61-.27c.19-.2.18-.59.18-.59s-.03-1.8.81-2.07c.83-.26 1.89 1.73 3.02 2.5.85.58 1.5.45 1.5.45l3.01-.04s1.57-.1.83-1.33c-.06-.1-.44-.92-2.26-2.61-1.9-1.77-1.65-1.48.64-4.54 1.4-1.86 1.96-3 1.78-3.49-.16-.46-1.16-.34-1.16-.34l-3.39.02s-.25-.03-.44.08c-.18.11-.3.36-.3.36s-.53 1.42-1.24 2.63c-1.5 2.55-2.1 2.69-2.34 2.53-.57-.37-.43-1.52-.43-2.33 0-2.53.39-3.59-.75-3.86-.38-.09-.65-.15-1.62-.16-1.24-.01-2.29 0-2.88.29-.39.2-.7.63-.51.65.23.03.75.14 1.03.52.36.49.35 1.59.35 1.59s.2 2.98-.48 3.35c-.47.25-1.12-.26-2.5-2.6-.67-1.19-1.18-2.51-1.18-2.51s-.1-.24-.27-.37c-.22-.16-.52-.21-.52-.21l-3.22.02s-.48.01-.66.22c-.16.19-.01.58-.01.58s2.51 5.87 5.35 8.83c2.6 2.71 5.55 2.53 5.55 2.53z" },
             { href: "https://t.me", icon: "M11.94 24c6.6 0 12-5.4 12-12s-5.4-12-12-12-12 5.4-12 12 5.4 12 12 12zm-3.85-8.4l.42-3.97 7.47-6.76c.33-.3-.07-.44-.51-.18l-9.22 5.81-3.56-1.11c-.77-.24-.78-.77.16-1.14l13.9-5.36c.64-.29 1.24.15 1 1.14l-2.37 11.16c-.17.8-.65.99-1.31.62l-3.62-2.67-1.75 1.69c-.19.2-.36.36-.71.36z" },
