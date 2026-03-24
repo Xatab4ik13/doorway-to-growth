@@ -318,7 +318,9 @@ export default function StorefrontCatalog() {
                     />
                     <span className="text-[#1a1408]/25 text-base font-bold shrink-0">—</span>
                     <input
-                      type="number"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       placeholder="до"
                       value={priceTo}
                       onChange={(e) => { setPriceTo(e.target.value); setPage(1); }}
