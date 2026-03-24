@@ -12,14 +12,6 @@ export function PatternSection() {
         className="w-full h-auto block"
         draggable={false}
       />
-      <div className="absolute bottom-8 right-10 z-10">
-        <span
-          className="text-[16px] tracking-[0.04em] text-white"
-          style={{ fontFamily: "'Raleway', sans-serif" }}
-        >
-          2026
-        </span>
-      </div>
     </section>
   );
 }
