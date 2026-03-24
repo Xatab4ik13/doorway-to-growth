@@ -4,7 +4,7 @@ import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronRight, ChevronDown } from "lucide-react";
 import brandoorsLogo from "@/assets/logo.png";
 
 const ITEMS_PER_PAGE = 16;
@@ -20,13 +20,12 @@ export default function StorefrontCatalog() {
   const [priceFrom, setPriceFrom] = useState("");
   const [priceTo, setPriceTo] = useState("");
   const [priceOpen, setPriceOpen] = useState(true);
-  const [materialOpen, setMaterialOpen] = useState(true);
   const [colorOpen, setColorOpen] = useState(true);
-  const [selectedMaterials, setSelectedMaterials] = useState<Set<string>>(new Set());
+  const [glazingOpen, setGlazingOpen] = useState(true);
   const [selectedColors, setSelectedColors] = useState<Set<string>>(new Set());
+  const [selectedGlazings, setSelectedGlazings] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState("default");
   const [page, setPage] = useState(1);
-  const [activeTab, setActiveTab] = useState<"all" | "popular" | "new" | "sale">("all");
 
   // Category tree
   const parentCategories = useMemo(
@@ -49,19 +48,19 @@ export default function StorefrontCatalog() {
     setPage(1);
   };
 
-  const toggleMaterial = (mat: string) => {
-    setSelectedMaterials((prev) => {
+  const toggleColor = (color: string) => {
+    setSelectedColors((prev) => {
       const next = new Set(prev);
-      next.has(mat) ? next.delete(mat) : next.add(mat);
+      next.has(color) ? next.delete(color) : next.add(color);
       return next;
     });
     setPage(1);
   };
 
-  const toggleColor = (color: string) => {
-    setSelectedColors((prev) => {
+  const toggleGlazing = (g: string) => {
+    setSelectedGlazings((prev) => {
       const next = new Set(prev);
-      next.has(color) ? next.delete(color) : next.add(color);
+      next.has(g) ? next.delete(g) : next.add(g);
       return next;
     });
     setPage(1);
@@ -72,6 +71,25 @@ export default function StorefrontCatalog() {
     const children = getChildren(parentId);
     return children.map((c) => c.id);
   };
+
+  // Extract unique colors and glazings from product specifications
+  const availableColors = useMemo(() => {
+    const colors = new Set<string>();
+    (products as any[]).forEach((p) => {
+      const c = p.specifications?.color;
+      if (c) colors.add(c);
+    });
+    return Array.from(colors).sort();
+  }, [products]);
+
+  const availableGlazings = useMemo(() => {
+    const glazings = new Set<string>();
+    (products as any[]).forEach((p) => {
+      const g = p.specifications?.glazing;
+      if (g) glazings.add(g);
+    });
+    return Array.from(glazings).sort();
+  }, [products]);
 
   // Filter
   const filtered = useMemo(() => {
@@ -92,6 +110,22 @@ export default function StorefrontCatalog() {
     if (pf > 0) result = result.filter((p) => !p.rrp || p.rrp >= pf);
     if (pt > 0) result = result.filter((p) => !p.rrp || p.rrp <= pt);
 
+    // Color filter from specifications
+    if (selectedColors.size > 0) {
+      result = result.filter((p) => {
+        const c = p.specifications?.color;
+        return c && selectedColors.has(c);
+      });
+    }
+
+    // Glazing filter from specifications
+    if (selectedGlazings.size > 0) {
+      result = result.filter((p) => {
+        const g = p.specifications?.glazing;
+        return g && selectedGlazings.has(g);
+      });
+    }
+
     switch (sortBy) {
       case "price-asc":
         result.sort((a, b) => (a.rrp || 0) - (b.rrp || 0));
@@ -107,7 +141,7 @@ export default function StorefrontCatalog() {
     }
 
     return result;
-  }, [products, categories, selectedCategory, priceFrom, priceTo, sortBy]);
+  }, [products, categories, selectedCategory, priceFrom, priceTo, sortBy, selectedColors, selectedGlazings]);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -270,109 +304,37 @@ export default function StorefrontCatalog() {
                 <div className="mx-5 border-t border-black/10" />
 
                 {/* Price Filter */}
-                <div className="px-5 pt-5 pb-1">
-                  <button
-                    onClick={() => setPriceOpen(!priceOpen)}
-                    className="flex items-center justify-between w-full mb-3"
-                  >
-                    <span className="text-[13px] font-bold uppercase tracking-[0.15em] text-[#1a1408]/80">Цена, ₽</span>
-                    {priceOpen
-                      ? <ChevronUp className="w-4 h-4 text-[#1a1408]/40" />
-                      : <ChevronDown className="w-4 h-4 text-[#1a1408]/40" />
-                    }
-                  </button>
-                  <AnimatePresence>
-                    {priceOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="flex items-center gap-2 mb-2">
-                          <input
-                            type="number"
-                            placeholder="от"
-                            value={priceFrom}
-                            onChange={(e) => { setPriceFrom(e.target.value); setPage(1); }}
-                            className="w-full bg-black/10 border border-black/10 text-[#1a1408] text-[13px] font-medium px-3 py-2.5 rounded-lg placeholder:text-[#1a1408]/30 focus:outline-none focus:border-black/25 focus:bg-black/15 transition-all"
-                          />
-                          <span className="text-[#1a1408]/30 text-sm font-bold">—</span>
-                          <input
-                            type="number"
-                            placeholder="до"
-                            value={priceTo}
-                            onChange={(e) => { setPriceTo(e.target.value); setPage(1); }}
-                            className="w-full bg-black/10 border border-black/10 text-[#1a1408] text-[13px] font-medium px-3 py-2.5 rounded-lg placeholder:text-[#1a1408]/30 focus:outline-none focus:border-black/25 focus:bg-black/15 transition-all"
-                          />
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                <div className="px-5 pt-5 pb-3">
+                  <span className="block text-[15px] font-extrabold uppercase tracking-[0.12em] text-[#1a1408]/90 mb-4">Цена, ₽</span>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      placeholder="от"
+                      value={priceFrom}
+                      onChange={(e) => { setPriceFrom(e.target.value); setPage(1); }}
+                      className="w-full bg-black/10 border border-black/10 text-[#1a1408] text-[14px] font-bold px-3 py-3 rounded-xl placeholder:text-[#1a1408]/30 focus:outline-none focus:border-black/25 focus:bg-black/15 transition-all"
+                    />
+                    <span className="text-[#1a1408]/25 text-base font-bold shrink-0">—</span>
+                    <input
+                      type="number"
+                      placeholder="до"
+                      value={priceTo}
+                      onChange={(e) => { setPriceTo(e.target.value); setPage(1); }}
+                      className="w-full bg-black/10 border border-black/10 text-[#1a1408] text-[14px] font-bold px-3 py-3 rounded-xl placeholder:text-[#1a1408]/30 focus:outline-none focus:border-black/25 focus:bg-black/15 transition-all"
+                    />
+                  </div>
                 </div>
 
-                {/* Divider */}
                 <div className="mx-5 border-t border-black/10" />
 
-                {/* Material Filter */}
-                <div className="px-5 pt-4 pb-1">
-                  <button
-                    onClick={() => setMaterialOpen(!materialOpen)}
-                    className="flex items-center justify-between w-full mb-3"
-                  >
-                    <span className="text-[13px] font-bold uppercase tracking-[0.15em] text-[#1a1408]/80">Материал</span>
-                    {materialOpen
-                      ? <ChevronUp className="w-4 h-4 text-[#1a1408]/40" />
-                      : <ChevronDown className="w-4 h-4 text-[#1a1408]/40" />
-                    }
-                  </button>
-                  <AnimatePresence>
-                    {materialOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="space-y-1.5 mb-2">
-                          {["Металл", "Массив", "Экошпон", "Стекло", "ПВХ"].map((mat) => (
-                            <label key={mat} className="flex items-center gap-3 py-1.5 px-2 rounded-lg hover:bg-black/5 cursor-pointer transition-colors group">
-                              <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
-                                selectedMaterials.has(mat)
-                                  ? "bg-[#1a1408] border-[#1a1408]"
-                                  : "border-[#1a1408]/25 group-hover:border-[#1a1408]/40"
-                              }`}>
-                                {selectedMaterials.has(mat) && (
-                                  <svg className="w-3 h-3 text-[#cfbb96]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                  </svg>
-                                )}
-                              </div>
-                              <span className="text-[14px] font-semibold text-[#1a1408]/70">{mat}</span>
-                            </label>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                {/* Divider */}
-                <div className="mx-5 border-t border-black/10" />
-
-                {/* Color Filter */}
-                <div className="px-5 pt-4 pb-5">
+                {/* Color Filter — from DB specifications.color */}
+                <div className="px-5 pt-4 pb-3">
                   <button
                     onClick={() => setColorOpen(!colorOpen)}
                     className="flex items-center justify-between w-full mb-3"
                   >
-                    <span className="text-[13px] font-bold uppercase tracking-[0.15em] text-[#1a1408]/80">Цвет / Покрытие</span>
-                    {colorOpen
-                      ? <ChevronUp className="w-4 h-4 text-[#1a1408]/40" />
-                      : <ChevronDown className="w-4 h-4 text-[#1a1408]/40" />
-                    }
+                    <span className="text-[15px] font-extrabold uppercase tracking-[0.12em] text-[#1a1408]/90">Цвет</span>
+                    <ChevronRight className={`w-4 h-4 text-[#1a1408]/40 transition-transform duration-300 ${colorOpen ? "rotate-90" : ""}`} />
                   </button>
                   <AnimatePresence>
                     {colorOpen && (
@@ -383,33 +345,22 @@ export default function StorefrontCatalog() {
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden"
                       >
-                        <div className="flex flex-wrap gap-2 mb-2">
-                          {[
-                            { name: "Белый", color: "#f5f5f0" },
-                            { name: "Чёрный", color: "#1a1a1a" },
-                            { name: "Венге", color: "#3d2b1f" },
-                            { name: "Дуб", color: "#c4a882" },
-                            { name: "Орех", color: "#6b4226" },
-                            { name: "Серый", color: "#8a8a8a" },
-                            { name: "Антрацит", color: "#2d2d2d" },
-                            { name: "Бетон", color: "#a0a0a0" },
-                          ].map((c) => (
-                            <button
-                              key={c.name}
-                              onClick={() => toggleColor(c.name)}
-                              className="flex flex-col items-center gap-1 group"
-                              title={c.name}
-                            >
-                              <div
-                                className={`w-8 h-8 rounded-full border-2 transition-all ${
-                                  selectedColors.has(c.name)
-                                    ? "border-[#1a1408] scale-110 shadow-[0_0_0_2px_rgba(26,20,8,0.3)]"
-                                    : "border-black/15 group-hover:border-black/30"
-                                }`}
-                                style={{ backgroundColor: c.color }}
-                              />
-                              <span className="text-[9px] font-semibold text-[#1a1408]/50 leading-none">{c.name}</span>
-                            </button>
+                        <div className="space-y-0.5 mb-1">
+                          {availableColors.map((color) => (
+                            <label key={color} onClick={() => toggleColor(color)} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-black/5 cursor-pointer transition-colors group">
+                              <div className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center transition-all ${
+                                selectedColors.has(color)
+                                  ? "bg-[#1a1408] border-[#1a1408]"
+                                  : "border-[#1a1408]/20 group-hover:border-[#1a1408]/35"
+                              }`}>
+                                {selectedColors.has(color) && (
+                                  <svg className="w-3 h-3 text-[#cfbb96]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                )}
+                              </div>
+                              <span className="text-[13px] font-semibold text-[#1a1408]/65">{color}</span>
+                            </label>
                           ))}
                         </div>
                       </motion.div>
@@ -417,30 +368,49 @@ export default function StorefrontCatalog() {
                   </AnimatePresence>
                 </div>
 
-                {/* Tabs at bottom */}
-                <div className="px-4 pb-5 pt-1 border-t border-black/10">
-                  <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#1a1408]/40 px-1 pt-4 mb-3">Фильтр</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {[
-                      { key: "all" as const, label: "Все" },
-                      { key: "popular" as const, label: "Популярное" },
-                      { key: "new" as const, label: "Новинки" },
-                      { key: "sale" as const, label: "Скидки" },
-                    ].map((tab) => (
-                      <button
-                        key={tab.key}
-                        onClick={() => { setActiveTab(tab.key); setPage(1); }}
-                        className={`px-3.5 py-2 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-all duration-200 ${
-                          activeTab === tab.key
-                            ? "bg-black/20 text-white shadow-[inset_0_0_12px_rgba(0,0,0,0.1)]"
-                            : "text-[#1a1408]/50 hover:text-[#1a1408] hover:bg-black/5"
-                        }`}
+                <div className="mx-5 border-t border-black/10" />
+
+                {/* Glazing Filter — from DB specifications.glazing */}
+                <div className="px-5 pt-4 pb-5">
+                  <button
+                    onClick={() => setGlazingOpen(!glazingOpen)}
+                    className="flex items-center justify-between w-full mb-3"
+                  >
+                    <span className="text-[15px] font-extrabold uppercase tracking-[0.12em] text-[#1a1408]/90">Остекление</span>
+                    <ChevronRight className={`w-4 h-4 text-[#1a1408]/40 transition-transform duration-300 ${glazingOpen ? "rotate-90" : ""}`} />
+                  </button>
+                  <AnimatePresence>
+                    {glazingOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
                       >
-                        {tab.label}
-                      </button>
-                    ))}
-                  </div>
+                        <div className="space-y-0.5 mb-1">
+                          {availableGlazings.map((g) => (
+                            <label key={g} onClick={() => toggleGlazing(g)} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-black/5 cursor-pointer transition-colors group">
+                              <div className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center transition-all ${
+                                selectedGlazings.has(g)
+                                  ? "bg-[#1a1408] border-[#1a1408]"
+                                  : "border-[#1a1408]/20 group-hover:border-[#1a1408]/35"
+                              }`}>
+                                {selectedGlazings.has(g) && (
+                                  <svg className="w-3 h-3 text-[#cfbb96]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                )}
+                              </div>
+                              <span className="text-[13px] font-semibold text-[#1a1408]/65">{g}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
+
               </div>
             </aside>
 
@@ -510,7 +480,7 @@ export default function StorefrontCatalog() {
                 <div className="text-center py-20 text-storefront-muted">
                   <p className="text-lg mb-2">Товары не найдены</p>
                   <button
-                    onClick={() => { selectCategory(null); setPriceFrom(""); setPriceTo(""); }}
+                    onClick={() => { selectCategory(null); setPriceFrom(""); setPriceTo(""); setSelectedColors(new Set()); setSelectedGlazings(new Set()); }}
                     className="text-storefront-gold text-sm"
                   >
                     Сбросить фильтры
