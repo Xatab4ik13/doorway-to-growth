@@ -178,9 +178,9 @@ export function PatternSection() {
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       >
         <h2
-          className="text-3xl md:text-4xl lg:text-5xl font-light tracking-[0.2em] uppercase"
+          className="text-3xl md:text-4xl lg:text-5xl font-extralight tracking-[0.2em] uppercase"
           style={{
-            fontFamily: "'Cormorant Garamond', serif",
+            fontFamily: "'Raleway', sans-serif",
             color: "#F5F5F0",
           }}
         >
