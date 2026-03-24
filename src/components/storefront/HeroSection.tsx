@@ -356,6 +356,14 @@ export function HeroSection({ site, banners }: Props) {
           />
         </div>
       </motion.div>
+
+      {/* === BOTTOM FADE INTO PATTERN === */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-32 z-10 pointer-events-none"
+        style={{
+          background: "linear-gradient(to bottom, transparent 0%, #07090d 100%)",
+        }}
+      />
     </section>
   );
 }
