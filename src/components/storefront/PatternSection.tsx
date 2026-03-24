@@ -47,8 +47,32 @@ export function PatternSection() {
       className="relative w-full overflow-hidden py-16 lg:py-24"
       style={{ backgroundColor: "#07090D" }}
     >
+      {/* Section title */}
+      <motion.div
+        className="text-center mb-12 lg:mb-16 px-8"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <h2
+          className="text-3xl md:text-4xl lg:text-5xl font-light tracking-[0.15em] uppercase"
+          style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            color: "#F5F5F0",
+          }}
+        >
+          Коллекция входных дверей
+        </h2>
+        <div
+          className="mx-auto mt-5 w-16 h-px"
+          style={{ backgroundColor: "rgba(197,165,114,0.4)" }}
+        />
+      </motion.div>
+
+      {/* Carousel */}
       <div
-        className="relative mx-auto h-[500px] md:h-[620px] lg:h-[760px]"
+        className="relative mx-auto h-[500px] md:h-[620px] lg:h-[720px]"
         style={{ perspective: "1200px" }}
       >
         {positions.map((doorIdx, posIdx) => {
@@ -77,7 +101,7 @@ export function PatternSection() {
               <motion.img
                 src={DOORS[doorIdx].src}
                 alt={DOORS[doorIdx].name}
-                className="h-[440px] md:h-[540px] lg:h-[680px] w-auto object-contain select-none"
+                className="h-[440px] md:h-[540px] lg:h-[640px] w-auto object-contain select-none"
                 draggable={false}
                 animate={
                   isCenter && hovered === doorIdx
@@ -109,16 +133,20 @@ export function PatternSection() {
           );
         })}
 
-        {/* Invisible click zones */}
+        {/* Invisible click zones — cursor:none so custom cursor handles it */}
         <button
           onClick={prev}
-          className="absolute left-0 top-0 w-1/3 h-full z-20 cursor-w-resize focus:outline-none"
+          className="absolute left-0 top-0 w-1/3 h-full z-20 focus:outline-none"
+          style={{ cursor: "none" }}
           aria-label="Previous"
+          data-cursor="prev"
         />
         <button
           onClick={next}
-          className="absolute right-0 top-0 w-1/3 h-full z-20 cursor-e-resize focus:outline-none"
+          className="absolute right-0 top-0 w-1/3 h-full z-20 focus:outline-none"
+          style={{ cursor: "none" }}
           aria-label="Next"
+          data-cursor="next"
         />
       </div>
     </section>
