@@ -308,7 +308,9 @@ export default function StorefrontCatalog() {
                   <span className="block text-[15px] font-extrabold uppercase tracking-[0.12em] text-[#1a1408]/90 mb-4">Цена, ₽</span>
                   <div className="flex items-center gap-2">
                     <input
-                      type="number"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       placeholder="от"
                       value={priceFrom}
                       onChange={(e) => { setPriceFrom(e.target.value); setPage(1); }}
