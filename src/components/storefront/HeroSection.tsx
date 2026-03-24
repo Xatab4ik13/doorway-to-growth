@@ -124,6 +124,42 @@ export function HeroSection({ site, banners }: Props) {
   return (
     <section className="relative h-screen min-h-[700px] overflow-hidden select-none bg-storefront-bg">
 
+      {/* === DESKTOP NAV OVERLAY === */}
+      <nav className="absolute top-0 left-0 right-0 z-40 hidden md:block">
+        <div className="flex items-center justify-between px-8 lg:pl-[280px] lg:pr-12 xl:pr-16 py-5"
+          style={{ background: "linear-gradient(180deg, rgba(17,17,17,0.6) 0%, transparent 100%)" }}>
+          <div className="flex items-center gap-8 lg:gap-10">
+            {[
+              { label: "Каталог", href: "#catalog" },
+              { label: "Акции", href: "#promotions" },
+              { label: "О салоне", href: "#about" },
+              { label: "Контакты", href: "#contacts" },
+            ].map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="text-[15px] font-medium uppercase tracking-[0.25em] text-storefront-text/80 hover:text-storefront-gold transition-colors duration-300"
+                style={{ fontFamily: "'Raleway', sans-serif", textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+          {site.phone && (
+            <a
+              href={`tel:${site.phone}`}
+              className="flex items-center gap-2.5 text-base font-medium text-storefront-gold hover:text-storefront-gold-light transition-colors duration-300"
+              style={{ fontFamily: "'Raleway', sans-serif", textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}
+            >
+              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
+                <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.25 1.02l-2.2 2.19z" />
+              </svg>
+              {site.phone}
+            </a>
+          )}
+        </div>
+      </nav>
+
       {/* === FULLSCREEN SLIDES with clip-path transition === */}
       <AnimatePresence initial={false} custom={direction} mode="popLayout">
         <motion.div
