@@ -1,154 +1,190 @@
-import { useState, useRef, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import brandoorsLogo from "@/assets/logo.png";
-import heroSlide1 from "@/assets/hero-slide-1.jpg";
-import heroSlide2 from "@/assets/hero-slide-2.jpg";
-import heroSlide3 from "@/assets/hero-slide-3.jpg";
 
 interface Props {
   site: StorefrontSite;
   banners: Array<{ id: string; title: string | null; subtitle: string | null; image_url: string }>;
 }
 
-const SLIDES = [
-  {
-    image: heroSlide1,
-    title: "ESTETICA",
-    subtitle: "Современный минимализм",
-    description: "Гладкое однотонное покрытие, скрытый короб Invisible, итальянский замок AGB 2.0.",
-  },
-  {
-    image: heroSlide2,
-    title: "GHOST",
-    subtitle: "Невидимая интеграция",
-    description: "Двери под покраску с коробом INVISIBLE. Монтаж в одной плоскости со стеной.",
-  },
-  {
-    image: heroSlide3,
-    title: "PRIME",
-    subtitle: "Неоклассика без компромиссов",
-    description: "Царговые двери с эмалевым покрытием Renolit. Неоклассический стиль.",
-  },
+/* Each line: offset from corner, thickness, opacity, gold intensity */
+const TOP_RIGHT_LINES = [
+  { offset: 40, thickness: 1.5, opacity: 0.5, delay: 0.1 },
+  { offset: 70, thickness: 1.5, opacity: 0.55, delay: 0.15 },
+  { offset: 100, thickness: 1.5, opacity: 0.6, delay: 0.2 },
+  { offset: 130, thickness: 1.5, opacity: 0.6, delay: 0.25 },
+  { offset: 160, thickness: 1.5, opacity: 0.65, delay: 0.3 },
+  { offset: 200, thickness: 2, opacity: 0.7, delay: 0.35 },
+  { offset: 240, thickness: 3, opacity: 0.8, delay: 0.4 },
+  { offset: 290, thickness: 5, opacity: 0.9, delay: 0.45 },
+  { offset: 340, thickness: 7, opacity: 1, delay: 0.5 },
 ];
 
-/* Clip-path based reveal transition — dramatic diagonal wipe with parallax */
-const EASE_OUT: [number, number, number, number] = [0.76, 0, 0.24, 1];
-const EASE_SMOOTH: [number, number, number, number] = [0.22, 1, 0.36, 1];
+const BOTTOM_LEFT_LINES = [
+  { offset: 40, thickness: 1.5, opacity: 0.5, delay: 0.15 },
+  { offset: 70, thickness: 1.5, opacity: 0.55, delay: 0.2 },
+  { offset: 100, thickness: 1.5, opacity: 0.6, delay: 0.25 },
+  { offset: 130, thickness: 1.5, opacity: 0.6, delay: 0.3 },
+  { offset: 160, thickness: 1.5, opacity: 0.65, delay: 0.35 },
+  { offset: 200, thickness: 2, opacity: 0.7, delay: 0.4 },
+  { offset: 240, thickness: 3, opacity: 0.8, delay: 0.45 },
+  { offset: 290, thickness: 5, opacity: 0.9, delay: 0.5 },
+  { offset: 340, thickness: 7, opacity: 1, delay: 0.55 },
+];
 
-const slideVariants = {
-  enter: (direction: number) => ({
-    clipPath: direction > 0
-      ? "polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)"
-      : "polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)",
-    scale: 1.15,
-    filter: "brightness(0.3)",
-  }),
-  center: {
-    clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-    scale: 1,
-    filter: "brightness(1)",
-    transition: {
-      clipPath: { duration: 1.2, ease: EASE_OUT },
-      scale: { duration: 1.8, ease: EASE_SMOOTH },
-      filter: { duration: 1.4, ease: "easeOut" as const },
-    },
-  },
-  exit: (direction: number) => ({
-    clipPath: direction > 0
-      ? "polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)"
-      : "polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)",
-    scale: 1.08,
-    filter: "brightness(0.2)",
-    transition: {
-      clipPath: { duration: 1.2, ease: EASE_OUT },
-      scale: { duration: 1.2, ease: EASE_SMOOTH },
-      filter: { duration: 0.8, ease: "easeIn" as const },
-    },
-  }),
-};
+function GoldLine({
+  corner,
+  offset,
+  thickness,
+  opacity,
+  delay,
+}: {
+  corner: "top-right" | "bottom-left";
+  offset: number;
+  thickness: number;
+  opacity: number;
+  delay: number;
+}) {
+  const isTopRight = corner === "top-right";
 
-const textVariants = {
-  enter: { opacity: 0, y: 80, filter: "blur(20px)" },
-  center: {
-    opacity: 1, y: 0, filter: "blur(0px)",
-    transition: { duration: 1, ease: EASE_SMOOTH, delay: 0.6 },
-  },
-  exit: {
-    opacity: 0, y: -60, filter: "blur(15px)",
-    transition: { duration: 0.6, ease: EASE_OUT },
-  },
-};
+  /* The line goes diagonally at 45°. For top-right corner, it starts from
+     the top edge and goes to the right edge. We position using a rotated div. */
+  const lineLength = 800; // long enough to span the corner
 
-const lineVariants = {
-  enter: { scaleX: 0, opacity: 0 },
-  center: {
-    scaleX: 1, opacity: 1,
-    transition: { duration: 0.8, ease: EASE_SMOOTH, delay: 0.8 },
-  },
-  exit: { scaleX: 0, opacity: 0, transition: { duration: 0.4 } },
-};
-
-export function HeroSection({ site, banners }: Props) {
-  const [[active, direction], setActive] = useState([0, 0]);
-  const timerRef = useRef<ReturnType<typeof setInterval>>();
-  const slide = SLIDES[active];
-
-  const startTimer = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => {
-      setActive(([prev]) => [(prev + 1) % SLIDES.length, 1]);
-    }, 7000);
-  }, []);
-
-  useEffect(() => {
-    startTimer();
-    return () => clearInterval(timerRef.current);
-  }, [startTimer]);
-
-  const goTo = useCallback((i: number) => {
-    setActive(([prev]) => [i, i > prev ? 1 : -1]);
-    startTimer();
-  }, [startTimer]);
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") goTo((active + 1) % SLIDES.length);
-      if (e.key === "ArrowLeft") goTo((active - 1 + SLIDES.length) % SLIDES.length);
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [active, goTo]);
+  const style: React.CSSProperties = isTopRight
+    ? {
+        position: "absolute",
+        top: -lineLength / 2 + offset,
+        right: -lineLength / 2 + offset,
+        width: lineLength,
+        height: thickness,
+        transformOrigin: "center center",
+        transform: "rotate(45deg)",
+        background: `linear-gradient(90deg, 
+          transparent 0%, 
+          rgba(160,130,70,${opacity * 0.3}) 15%,
+          rgba(197,165,114,${opacity * 0.9}) 35%,
+          rgba(220,195,140,${opacity}) 50%,
+          rgba(197,165,114,${opacity * 0.9}) 65%,
+          rgba(160,130,70,${opacity * 0.3}) 85%,
+          transparent 100%)`,
+        boxShadow:
+          thickness > 3
+            ? `0 0 ${thickness * 3}px rgba(197,165,114,${opacity * 0.3}), 0 0 ${thickness}px rgba(197,165,114,${opacity * 0.15})`
+            : `0 0 ${thickness * 2}px rgba(197,165,114,${opacity * 0.15})`,
+      }
+    : {
+        position: "absolute",
+        bottom: -lineLength / 2 + offset,
+        left: -lineLength / 2 + offset,
+        width: lineLength,
+        height: thickness,
+        transformOrigin: "center center",
+        transform: "rotate(45deg)",
+        background: `linear-gradient(90deg, 
+          transparent 0%, 
+          rgba(160,130,70,${opacity * 0.3}) 15%,
+          rgba(197,165,114,${opacity * 0.9}) 35%,
+          rgba(220,195,140,${opacity}) 50%,
+          rgba(197,165,114,${opacity * 0.9}) 65%,
+          rgba(160,130,70,${opacity * 0.3}) 85%,
+          transparent 100%)`,
+        boxShadow:
+          thickness > 3
+            ? `0 0 ${thickness * 3}px rgba(197,165,114,${opacity * 0.3}), 0 0 ${thickness}px rgba(197,165,114,${opacity * 0.15})`
+            : `0 0 ${thickness * 2}px rgba(197,165,114,${opacity * 0.15})`,
+      };
 
   return (
-    <section className="relative h-screen min-h-[700px] overflow-hidden select-none bg-storefront-bg">
+    <motion.div
+      style={style}
+      initial={{ opacity: 0, scale: 0.7 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{
+        duration: 1.2,
+        delay: delay + 0.3,
+        ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+      }}
+    />
+  );
+}
 
-      {/* === FULLSCREEN SLIDES with clip-path transition === */}
-      <AnimatePresence initial={false} custom={direction}>
-        <motion.div
-          key={active}
-          custom={direction}
-          variants={slideVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          className="absolute inset-0 z-0"
-        >
-          <img
-            src={slide.image}
-            alt={slide.title}
-            className="absolute inset-0 w-full h-full object-cover"
-            width={1920}
-            height={1080}
-          />
-          {/* Gradient overlays for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-storefront-bg/90 via-storefront-bg/50 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-storefront-bg/70 via-transparent to-storefront-bg/30" />
-        </motion.div>
-      </AnimatePresence>
+/* Subtle ambient glow near the gold line clusters */
+function CornerGlow({ corner }: { corner: "top-right" | "bottom-left" }) {
+  const isTopRight = corner === "top-right";
+  return (
+    <motion.div
+      className="absolute pointer-events-none"
+      style={{
+        ...(isTopRight
+          ? { top: -100, right: -100, width: 500, height: 500 }
+          : { bottom: -100, left: -100, width: 500, height: 500 }),
+        background: `radial-gradient(circle, rgba(197,165,114,0.08) 0%, rgba(197,165,114,0.03) 40%, transparent 70%)`,
+      }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 2, delay: 0.8 }}
+    />
+  );
+}
 
-      {/* === GOLD SIDEBAR === */}
+export function HeroSection({ site, banners }: Props) {
+  /* Subtle shimmer animation on the thick lines */
+  const [shimmer, setShimmer] = useState(false);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShimmer((s) => !s);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <section className="relative h-screen min-h-[700px] overflow-hidden select-none"
+      style={{ background: "linear-gradient(135deg, #0a0a0a 0%, #111111 40%, #0d0d0d 70%, #080808 100%)" }}>
+
+      {/* Subtle noise texture overlay */}
+      <div className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+        }}
+      />
+
+      {/* === TOP-RIGHT DIAGONAL GOLD LINES === */}
+      <div className="absolute top-0 right-0 w-full h-full pointer-events-none z-[1]">
+        <CornerGlow corner="top-right" />
+        {TOP_RIGHT_LINES.map((line, i) => (
+          <GoldLine key={`tr-${i}`} corner="top-right" {...line} />
+        ))}
+      </div>
+
+      {/* === BOTTOM-LEFT DIAGONAL GOLD LINES === */}
+      <div className="absolute bottom-0 left-0 w-full h-full pointer-events-none z-[1]">
+        <CornerGlow corner="bottom-left" />
+        {BOTTOM_LEFT_LINES.map((line, i) => (
+          <GoldLine key={`bl-${i}`} corner="bottom-left" {...line} />
+        ))}
+      </div>
+
+      {/* === DEPTH SHADOW between line clusters — creates the "fold" effect === */}
+      <div className="absolute top-0 right-0 pointer-events-none z-[2]"
+        style={{
+          width: "600px",
+          height: "600px",
+          background: `linear-gradient(225deg, transparent 40%, rgba(0,0,0,0.6) 55%, transparent 70%)`,
+          transform: "translate(10%, -10%)",
+        }}
+      />
+      <div className="absolute bottom-0 left-0 pointer-events-none z-[2]"
+        style={{
+          width: "600px",
+          height: "600px",
+          background: `linear-gradient(45deg, transparent 40%, rgba(0,0,0,0.6) 55%, transparent 70%)`,
+          transform: "translate(-10%, 10%)",
+        }}
+      />
+
+      {/* === LEFT GOLD SIDEBAR (preserved) === */}
       <motion.div
         className="absolute left-0 top-0 bottom-0 z-20 hidden lg:flex flex-col items-center justify-between py-10 overflow-hidden"
         style={{
@@ -158,29 +194,13 @@ export function HeroSection({ site, banners }: Props) {
         }}
         initial={{ x: -260 }}
         animate={{ x: 0 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] as [number, number, number, number], delay: 0.1 }}
       >
-        {/* Room counter */}
         <div className="flex flex-col items-center gap-1 mt-12 relative z-10">
-          <AnimatePresence mode="wait">
-            <motion.span
-              key={active}
-              initial={{ y: 10, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -10, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="text-3xl font-bold"
-              style={{ color: "#1a1408" }}
-            >
-              {String(active + 1).padStart(2, "0")}
-            </motion.span>
-          </AnimatePresence>
-          <span className="text-xs" style={{ color: "rgba(26,20,8,0.35)" }}>
-            / {String(SLIDES.length).padStart(2, "0")}
-          </span>
+          <span className="text-3xl font-bold" style={{ color: "#1a1408" }}>01</span>
+          <span className="text-xs" style={{ color: "rgba(26,20,8,0.35)" }}>/ 01</span>
         </div>
 
-        {/* Logo rotated */}
         <img
           src={brandoorsLogo}
           alt="Brandoors"
@@ -188,7 +208,6 @@ export function HeroSection({ site, banners }: Props) {
           style={{ filter: "brightness(0)", opacity: 0.8, transform: "rotate(-90deg)", width: "auto", height: "55px" }}
         />
 
-        {/* Social links */}
         <div className="flex flex-col gap-3 mb-4 relative z-10">
           {[
             { href: "https://vk.com", icon: "M12.77 19.15h1.33s.4-.04.61-.27c.19-.2.18-.59.18-.59s-.03-1.8.81-2.07c.83-.26 1.89 1.73 3.02 2.5.85.58 1.5.45 1.5.45l3.01-.04s1.57-.1.83-1.33c-.06-.1-.44-.92-2.26-2.61-1.9-1.77-1.65-1.48.64-4.54 1.4-1.86 1.96-3 1.78-3.49-.16-.46-1.16-.34-1.16-.34l-3.39.02s-.25-.03-.44.08c-.18.11-.3.36-.3.36s-.53 1.42-1.24 2.63c-1.5 2.55-2.1 2.69-2.34 2.53-.57-.37-.43-1.52-.43-2.33 0-2.53.39-3.59-.75-3.86-.38-.09-.65-.15-1.62-.16-1.24-.01-2.29 0-2.88.29-.39.2-.7.63-.51.65.23.03.75.14 1.03.52.36.49.35 1.59.35 1.59s.2 2.98-.48 3.35c-.47.25-1.12-.26-2.5-2.6-.67-1.19-1.18-2.51-1.18-2.51s-.1-.24-.27-.37c-.22-.16-.52-.21-.52-.21l-3.22.02s-.48.01-.66.22c-.16.19-.01.58-.01.58s2.51 5.87 5.35 8.83c2.6 2.71 5.55 2.53 5.55 2.53z" },
@@ -208,144 +227,44 @@ export function HeroSection({ site, banners }: Props) {
         </div>
       </motion.div>
 
-      {/* === MAIN TEXT CONTENT === */}
-      <div className="absolute inset-0 z-10 lg:pl-[260px] flex items-center">
-        <div className="w-full h-full flex items-center px-8 lg:px-16 xl:px-24">
-          <div className="max-w-xl">
-            {/* Label */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`label-${active}`}
-                variants={lineVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                className="mb-6 origin-left"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="h-px w-[60px] bg-storefront-gold" />
-                  <span className="text-xs tracking-[0.4em] uppercase text-storefront-gold"
-                    style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 500 }}>
-                    Коллекция
-                  </span>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+      {/* === CENTER CONTENT — Logo + Subtitle === */}
+      <div className="absolute inset-0 z-10 flex items-center justify-center lg:pl-[260px]">
+        <div className="flex flex-col items-center text-center">
+          {/* Logo */}
+          <motion.img
+            src={brandoorsLogo}
+            alt="BRANDOORS"
+            className="h-16 md:h-20 lg:h-24 w-auto mb-6"
+            style={{ filter: "brightness(1.1) sepia(0.3) saturate(1.5) hue-rotate(-10deg)" }}
+            initial={{ opacity: 0, scale: 0.8, filter: "blur(20px) brightness(1.1) sepia(0.3) saturate(1.5) hue-rotate(-10deg)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px) brightness(1.1) sepia(0.3) saturate(1.5) hue-rotate(-10deg)" }}
+            transition={{ duration: 1.2, delay: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
+          />
 
-            {/* Title */}
-            <AnimatePresence mode="wait">
-              <motion.h1
-                key={`title-${active}`}
-                variants={textVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-light leading-[0.9] mb-4 text-storefront-text"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
-              >
-                {slide.title}
-              </motion.h1>
-            </AnimatePresence>
-
-            {/* Subtitle */}
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={`sub-${active}`}
-                initial={{ opacity: 0, y: 40, filter: "blur(12px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.9, delay: 0.75, ease: EASE_SMOOTH } }}
-                exit={{ opacity: 0, y: -30, filter: "blur(10px)", transition: { duration: 0.5 } }}
-                className="text-xl md:text-2xl font-light leading-tight mb-4 text-storefront-gold-light"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
-              >
-                {slide.subtitle}
-              </motion.p>
-            </AnimatePresence>
-
-            {/* Description */}
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={`desc-${active}`}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0, transition: { duration: 0.8, delay: 0.9, ease: EASE_SMOOTH } }}
-                exit={{ opacity: 0, y: -20, transition: { duration: 0.4 } }}
-                className="text-sm md:text-base leading-relaxed max-w-md mb-10 text-storefront-muted"
-                style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 300 }}
-              >
-                {slide.description}
-              </motion.p>
-            </AnimatePresence>
-
-            {/* CTA */}
-            <motion.button
-              className="group relative overflow-hidden px-8 py-3 border border-storefront-gold/40 text-sm tracking-[0.2em] uppercase text-storefront-gold transition-all duration-500"
-              style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 400 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <span className="relative z-10 group-hover:text-storefront-bg transition-colors duration-500">
-                Смотреть каталог
-              </span>
-              <motion.div
-                className="absolute inset-0 bg-storefront-gold"
-                initial={{ x: "-100%" }}
-                whileHover={{ x: 0 }}
-                transition={{ duration: 0.4 }}
-              />
-            </motion.button>
-          </div>
-        </div>
-      </div>
-
-      {/* === NAVIGATION DOTS — right side === */}
-      <div className="absolute right-8 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-4">
-        {SLIDES.map((s, i) => (
-          <button
-            key={i}
-            onClick={() => goTo(i)}
-            className="group relative flex items-center justify-end gap-3"
+          {/* Subtitle */}
+          <motion.p
+            className="text-base md:text-lg tracking-[0.25em] uppercase"
+            style={{
+              fontFamily: "'Raleway', sans-serif",
+              fontWeight: 300,
+              color: "rgba(197,165,114,0.7)",
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 1, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
           >
-            <span
-              className="text-[10px] tracking-[0.3em] uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap"
-              style={{
-                color: i === active ? "#c5a572" : "rgba(255,255,255,0.3)",
-                fontFamily: "'Raleway', sans-serif",
-              }}
-            >
-              {s.title}
-            </span>
-            <motion.div
-              animate={{
-                width: i === active ? 24 : 8,
-                height: 2,
-                backgroundColor: i === active ? "#c5a572" : "rgba(255,255,255,0.15)",
-              }}
-              transition={{ duration: 0.4 }}
-              style={{ borderRadius: 1 }}
-            />
-          </button>
-        ))}
+            Входные и межкомнатные двери
+          </motion.p>
+        </div>
       </div>
 
-      {/* === PROGRESS BAR — bottom === */}
-      <div className="absolute bottom-0 left-0 right-0 z-30 lg:pl-[260px]">
-        <div className="flex gap-1 px-8 lg:px-16 pb-6">
-          {SLIDES.map((_, i) => (
-            <div key={i} className="flex-1 h-[2px] bg-white/10 overflow-hidden cursor-pointer" onClick={() => goTo(i)}>
-              {i === active && (
-                <motion.div
-                  className="h-full bg-storefront-gold"
-                  initial={{ width: "0%" }}
-                  animate={{ width: "100%" }}
-                  transition={{ duration: 7, ease: "linear" }}
-                  key={`progress-${active}`}
-                />
-              )}
-              {i < active && <div className="h-full w-full bg-storefront-gold/40" />}
-            </div>
-          ))}
-        </div>
-
-        {/* Bottom info bar */}
+      {/* === BOTTOM INFO BAR === */}
+      <motion.div
+        className="absolute bottom-0 left-0 right-0 z-30 lg:pl-[260px]"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 1.2 }}
+      >
         <div className="flex items-center justify-between px-8 lg:px-16 py-4 border-t border-white/5">
           <span className="text-xs tracking-[0.3em] uppercase text-white/25"
             style={{ fontFamily: "'Raleway', sans-serif" }}>
@@ -353,16 +272,17 @@ export function HeroSection({ site, banners }: Props) {
           </span>
           <span className="text-xs tracking-[0.2em] text-white/15"
             style={{ fontFamily: "'Raleway', sans-serif" }}>
-            {site?.phone || "+7 (495) 000-00-00"}
+            {site?.phone || "+7 (495) 137 77 87"}
           </span>
         </div>
-      </div>
+      </motion.div>
 
       {/* === SCROLL HINT === */}
       <motion.div
-        className="absolute bottom-24 left-1/2 lg:left-[calc(260px+(100%-260px)/2)] -translate-x-1/2 z-20 flex flex-col items-center gap-2"
-        animate={{ y: [0, 8, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
+        className="absolute bottom-16 left-1/2 lg:left-[calc(260px+(100%-260px)/2)] -translate-x-1/2 z-20 flex flex-col items-center gap-2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, y: [0, 8, 0] }}
+        transition={{ opacity: { delay: 1.5 }, y: { duration: 2, repeat: Infinity } }}
       >
         <div className="w-5 h-8 border border-white/10 rounded-full flex items-start justify-center p-1">
           <motion.div
