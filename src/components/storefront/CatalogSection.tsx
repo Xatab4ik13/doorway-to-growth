@@ -1,4 +1,5 @@
-import { ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ChevronRight, ArrowRight } from "lucide-react";
 
 interface Product {
   id: string;
