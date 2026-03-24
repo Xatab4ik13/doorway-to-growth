@@ -198,7 +198,7 @@ export default function StorefrontProduct() {
             >
               {/* Category badge */}
               {product.categories && (
-                <span className="inline-block text-[10px] uppercase tracking-[0.25em] text-storefront-gold/80 bg-storefront-gold/5 border border-storefront-gold/15 px-3 py-1.5 mb-4 w-fit">
+                <span className="inline-block text-[10px] uppercase tracking-[0.25em] text-storefront-gold/80 bg-storefront-gold/5 border border-storefront-gold/15 px-4 py-1.5 rounded-full mb-4 w-fit">
                   {(product.categories as any)?.name}
                 </span>
               )}
