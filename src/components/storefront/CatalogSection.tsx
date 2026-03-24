@@ -1,4 +1,5 @@
-import { ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ChevronRight, ArrowRight } from "lucide-react";
 
 interface Product {
   id: string;
@@ -13,9 +14,10 @@ interface Product {
 interface Props {
   products: Product[];
   categories: Array<{ id: string; name: string; slug: string }>;
+  siteSlug: string;
 }
 
-export function CatalogSection({ products, categories }: Props) {
+export function CatalogSection({ products, categories, siteSlug }: Props) {
   const getPrimaryImage = (p: Product) => {
     const primary = p.product_images?.find((i) => i.is_primary);
     return primary?.url || p.product_images?.[0]?.url;
@@ -35,6 +37,12 @@ export function CatalogSection({ products, categories }: Props) {
               Наши <span className="text-storefront-gold">двери</span>
             </h2>
           </div>
+          <Link
+            to={`/store/${siteSlug}/catalog`}
+            className="text-xs uppercase tracking-wider text-storefront-gold border border-storefront-gold/30 px-5 py-2.5 hover:bg-storefront-gold hover:text-storefront-bg transition-all"
+          >
+            Смотреть все
+          </Link>
         </div>
 
         {/* Category pills */}
@@ -59,9 +67,10 @@ export function CatalogSection({ products, categories }: Props) {
           {products.slice(0, 8).map((product) => {
             const img = getPrimaryImage(product);
             return (
-              <div
+              <Link
                 key={product.id}
-                className="group relative aspect-[3/4] bg-storefront-card overflow-hidden cursor-pointer"
+                to={`/store/${siteSlug}/product/${product.slug}`}
+                className="group relative aspect-[3/4] bg-storefront-card overflow-hidden cursor-pointer block"
               >
                 {img ? (
                   <img
@@ -99,7 +108,7 @@ export function CatalogSection({ products, categories }: Props) {
                 <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                   <ChevronRight className="w-5 h-5 text-storefront-gold" />
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>
