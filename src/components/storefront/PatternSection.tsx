@@ -136,17 +136,13 @@ export function PatternSection() {
         {/* Invisible click zones — cursor:none so custom cursor handles it */}
         <button
           onClick={prev}
-          className="absolute left-0 top-0 w-1/3 h-full z-20 focus:outline-none"
-          style={{ cursor: "none" }}
+          className="absolute left-0 top-0 w-1/3 h-full z-20 cursor-pointer focus:outline-none"
           aria-label="Previous"
-          data-cursor="prev"
         />
         <button
           onClick={next}
-          className="absolute right-0 top-0 w-1/3 h-full z-20 focus:outline-none"
-          style={{ cursor: "none" }}
+          className="absolute right-0 top-0 w-1/3 h-full z-20 cursor-pointer focus:outline-none"
           aria-label="Next"
-          data-cursor="next"
         />
       </div>
     </section>
