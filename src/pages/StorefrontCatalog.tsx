@@ -158,16 +158,19 @@ export default function StorefrontCatalog() {
               Каталог
             </h1>
             {/* Sort */}
-            <select
-              value={sortBy}
-              onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
-              className="appearance-none bg-[#0f1218] border border-white/10 text-storefront-text text-xs px-4 py-2.5 pr-8 cursor-pointer hover:border-storefront-gold/40 transition-colors focus:outline-none focus:border-storefront-gold/60"
-            >
-              <option value="default">По умолчанию</option>
-              <option value="price-asc">Цена ↑</option>
-              <option value="price-desc">Цена ↓</option>
-              <option value="name">По названию</option>
-            </select>
+            <div className="relative shrink-0">
+              <select
+                value={sortBy}
+                onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
+                className="appearance-none bg-[#0f1218] border border-white/10 text-storefront-text text-xs px-4 py-2.5 pr-8 cursor-pointer hover:border-storefront-gold/40 transition-colors focus:outline-none focus:border-storefront-gold/60 rounded-sm"
+              >
+                <option value="default">По умолчанию</option>
+                <option value="price-asc">Цена ↑</option>
+                <option value="price-desc">Цена ↓</option>
+                <option value="name">По названию</option>
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-storefront-muted pointer-events-none" />
+            </div>
           </div>
 
           <div className="flex gap-6 lg:gap-10">
