@@ -12,7 +12,6 @@ import { CatalogSection } from "@/components/storefront/CatalogSection";
 import { AboutSection } from "@/components/storefront/AboutSection";
 import { ContactSection } from "@/components/storefront/ContactSection";
 import { PatternSection } from "@/components/storefront/PatternSection";
-import { CollectionSection } from "@/components/storefront/CollectionSection";
 
 export default function Storefront() {
   const { slug } = useParams<{ slug: string }>();
@@ -46,7 +45,6 @@ export default function Storefront() {
     <StorefrontLayout site={site}>
       <HeroSection site={site} banners={banners} />
       <PatternSection />
-      <CollectionSection />
       <CatalogSection products={products as any} categories={categories} />
       <AboutSection site={site} staff={staff} />
       <ContactSection site={site} />
