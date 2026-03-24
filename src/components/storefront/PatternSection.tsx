@@ -6,6 +6,10 @@ import doorCapsule from "@/assets/doors/capsule.webp";
 import doorHorizon from "@/assets/doors/horizon.webp";
 import doorLines from "@/assets/doors/lines.webp";
 import doorSmart from "@/assets/doors/smart.webp";
+import doorInteriorPrime from "@/assets/doors/interior-prime.webp";
+import doorInteriorEstetica from "@/assets/doors/interior-estetica.webp";
+import doorInteriorGhost from "@/assets/doors/interior-ghost.webp";
+import doorInteriorReflect from "@/assets/doors/interior-reflect.webp";
 
 type DoorItem = { src: string; name: string };
 
@@ -18,9 +22,11 @@ const ENTRANCE_DOORS: DoorItem[] = [
   { src: doorSmart, name: "SMART" },
 ];
 
-// Placeholder — will be replaced with real images
 const INTERIOR_DOORS: DoorItem[] = [
-  { src: doorArtdeco, name: "COMING SOON" },
+  { src: doorInteriorPrime, name: "PRIME" },
+  { src: doorInteriorEstetica, name: "ESTETICA" },
+  { src: doorInteriorGhost, name: "GHOST" },
+  { src: doorInteriorReflect, name: "REFLECT" },
 ];
 
 const TABS = [
