@@ -304,15 +304,21 @@ export function HeroSection({ site, banners }: Props) {
 
       {/* === Top nav === */}
       <motion.div
-        className="absolute top-0 right-0 z-40 hidden md:flex items-center justify-between px-6 lg:px-12 h-16" style={{ left: "260px" }}
+        className="absolute top-0 right-0 z-40 hidden md:flex items-center justify-between px-8 lg:px-14 h-20" style={{ left: "260px" }}
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.6, duration: 0.8 }}
       >
-        {site.phone && <span className="text-[11px] text-white/30 tracking-wider font-light">{site.phone}</span>}
-        <nav className="flex items-center gap-8">
+        <div className="flex items-center gap-6">
+          {site.phone && (
+            <a href={`tel:${site.phone}`} className="text-sm text-white/70 tracking-wider font-medium hover:text-storefront-gold transition-colors duration-300">
+              {site.phone}
+            </a>
+          )}
+        </div>
+        <nav className="flex items-center gap-10">
           {[{ l: "Каталог", h: "#catalog" }, { l: "О салоне", h: "#about" }, { l: "Контакты", h: "#contacts" }].map(({ l, h }) => (
-            <a key={l} href={h} className="text-[10px] uppercase tracking-[0.25em] text-white/40 hover:text-storefront-gold transition-colors duration-300">{l}</a>
+            <a key={l} href={h} className="text-[13px] uppercase tracking-[0.2em] text-white/60 hover:text-storefront-gold transition-colors duration-300 font-medium">{l}</a>
           ))}
         </nav>
       </motion.div>
