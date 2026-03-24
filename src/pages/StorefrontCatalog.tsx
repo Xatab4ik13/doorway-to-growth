@@ -149,9 +149,9 @@ export default function StorefrontCatalog() {
 
           <div className="flex gap-8">
             {/* ===== LEFT SIDEBAR ===== */}
-            <aside className="hidden md:block w-[240px] shrink-0">
+            <aside className="hidden md:block w-[260px] shrink-0">
               {/* Categories tree */}
-              <div className="mb-6">
+              <div className="mb-8">
                 <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-storefront-text mb-3">Категории</h3>
 
                 {/* "Все товары" */}
