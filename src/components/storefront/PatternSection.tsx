@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import doorArtdeco from "@/assets/doors/artdeco.png";
-import doorBauhaus from "@/assets/doors/bauhaus.png";
-import doorCapsule from "@/assets/doors/capsule.png";
-import doorHorizon from "@/assets/doors/horizon.png";
-import doorLines from "@/assets/doors/lines.png";
+import doorArtdeco from "@/assets/doors/artdeco.webp";
+import doorBauhaus from "@/assets/doors/bauhaus.webp";
+import doorCapsule from "@/assets/doors/capsule.webp";
+import doorHorizon from "@/assets/doors/horizon.webp";
+import doorLines from "@/assets/doors/lines.webp";
 
 type DoorItem = { src: string; name: string };
 
