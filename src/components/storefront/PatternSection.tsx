@@ -14,26 +14,26 @@ export function PatternSection() {
             id="brandoors-circles-grid"
             x="0"
             y="0"
-            width="210"
-            height="210"
+            width="230"
+            height="230"
             patternUnits="userSpaceOnUse"
           >
             <rect
               x="0"
               y="0"
-              width="210"
-              height="210"
+              width="230"
+              height="230"
               fill="none"
               stroke="#000000"
-              strokeWidth="1.5"
+              strokeWidth="2"
             />
             <circle
-              cx="105"
-              cy="105"
-              r="95"
+              cx="115"
+              cy="115"
+              r="115"
               fill="none"
               stroke="#000000"
-              strokeWidth="1.5"
+              strokeWidth="2"
             />
           </pattern>
         </defs>
