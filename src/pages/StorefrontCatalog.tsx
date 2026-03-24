@@ -391,7 +391,7 @@ export default function StorefrontCatalog() {
                       >
                         <div className="space-y-0.5 mb-1">
                           {availableGlazings.map((g) => (
-                            <label key={g} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-black/5 cursor-pointer transition-colors group">
+                            <label key={g} onClick={() => toggleGlazing(g)} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-black/5 cursor-pointer transition-colors group">
                               <div className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center transition-all ${
                                 selectedGlazings.has(g)
                                   ? "bg-[#1a1408] border-[#1a1408]"
