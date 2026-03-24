@@ -311,8 +311,8 @@ export default function StorefrontCatalog() {
                         to={`/store/${slug}/product/${product.slug}`}
                         className="group block"
                       >
-                        {/* Image — tall, full-height door */}
-                        <div className="relative aspect-[2/5] overflow-hidden bg-[#0c0e14]">
+                        {/* Image — fits the door, no extra space */}
+                        <div className="relative overflow-hidden bg-[#0c0e14] flex items-center justify-center" style={{ minHeight: "280px" }}>
                           {img ? (
                             <img
                               src={img}
