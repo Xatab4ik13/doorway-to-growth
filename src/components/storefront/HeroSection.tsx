@@ -168,20 +168,21 @@ export function HeroSection({ site, banners }: Props) {
         style={{
           width: "260px",
           background: "linear-gradient(180deg, #cfbb96 0%, #c2b08c 10%, #b2a07c 25%, #a59370 40%, #9a8a69 55%, #887555 70%, #78674b 85%, #6e5f40 100%)",
-          borderRight: "2px solid rgba(40,30,15,0.5)",
         }}
         initial={{ x: -260 }}
         animate={{ x: 0 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
       >
-        {/* Metallic sheen overlay */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: "linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 35%, rgba(255,255,255,0.04) 55%, transparent 100%)",
-        }} />
-        {/* Right edge dark line accent */}
-        <div className="absolute top-0 right-[2px] bottom-0 w-[3px]" style={{
-          background: "linear-gradient(180deg, rgba(50,40,20,0.3) 0%, rgba(30,20,10,0.6) 50%, rgba(50,40,20,0.3) 100%)",
-        }} />
+        {/* Animated shimmer — light streak sliding top to bottom */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.18) 45%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.18) 55%, transparent 100%)",
+            backgroundSize: "100% 300%",
+          }}
+          animate={{ backgroundPosition: ["0% -100%", "0% 200%"] }}
+          transition={{ duration: 6, ease: "easeInOut", repeat: Infinity, repeatDelay: 4 }}
+        />
 
         <div className="flex flex-col items-center gap-1 mt-12 relative z-10">
           <AnimatePresence mode="wait">
@@ -209,15 +210,42 @@ export function HeroSection({ site, banners }: Props) {
         />
 
         <div className="flex flex-col gap-3 mb-4 relative z-10">
-          {["Ig", "Vk", "Tg"].map((s) => (
-            <span key={s} className="w-8 h-8 flex items-center justify-center text-[9px] font-medium border transition-all duration-300 cursor-pointer"
-              style={{ color: "rgba(26,20,8,0.5)", borderColor: "rgba(26,20,8,0.15)" }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = "#1a1408"; e.currentTarget.style.borderColor = "rgba(26,20,8,0.4)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(26,20,8,0.5)"; e.currentTarget.style.borderColor = "rgba(26,20,8,0.15)"; }}
+          {/* VK */}
+          <a href="https://vk.com" target="_blank" rel="noopener noreferrer"
+            className="w-8 h-8 flex items-center justify-center border transition-all duration-300 cursor-pointer group"
+            style={{ borderColor: "rgba(26,20,8,0.15)" }}
+          >
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 transition-colors duration-300" style={{ fill: "rgba(26,20,8,0.5)" }}
+              onMouseEnter={(e) => { e.currentTarget.style.fill = "#1a1408"; (e.currentTarget.closest('a') as HTMLElement).style.borderColor = "rgba(26,20,8,0.4)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.fill = "rgba(26,20,8,0.5)"; (e.currentTarget.closest('a') as HTMLElement).style.borderColor = "rgba(26,20,8,0.15)"; }}
             >
-              {s}
-            </span>
-          ))}
+              <path d="M12.77 19.15h1.33s.4-.04.61-.27c.19-.2.18-.59.18-.59s-.03-1.8.81-2.07c.83-.26 1.89 1.73 3.02 2.5.85.58 1.5.45 1.5.45l3.01-.04s1.57-.1.83-1.33c-.06-.1-.44-.92-2.26-2.61-1.9-1.77-1.65-1.48.64-4.54 1.4-1.86 1.96-3 1.78-3.49-.16-.46-1.16-.34-1.16-.34l-3.39.02s-.25-.03-.44.08c-.18.11-.3.36-.3.36s-.53 1.42-1.24 2.63c-1.5 2.55-2.1 2.69-2.34 2.53-.57-.37-.43-1.52-.43-2.33 0-2.53.39-3.59-.75-3.86-.38-.09-.65-.15-1.62-.16-1.24-.01-2.29 0-2.88.29-.39.2-.7.63-.51.65.23.03.75.14 1.03.52.36.49.35 1.59.35 1.59s.2 2.98-.48 3.35c-.47.25-1.12-.26-2.5-2.6-.67-1.19-1.18-2.51-1.18-2.51s-.1-.24-.27-.37c-.22-.16-.52-.21-.52-.21l-3.22.02s-.48.01-.66.22c-.16.19-.01.58-.01.58s2.51 5.87 5.35 8.83c2.6 2.71 5.55 2.53 5.55 2.53z"/>
+            </svg>
+          </a>
+          {/* Telegram */}
+          <a href="https://t.me" target="_blank" rel="noopener noreferrer"
+            className="w-8 h-8 flex items-center justify-center border transition-all duration-300 cursor-pointer group"
+            style={{ borderColor: "rgba(26,20,8,0.15)" }}
+          >
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 transition-colors duration-300" style={{ fill: "rgba(26,20,8,0.5)" }}
+              onMouseEnter={(e) => { e.currentTarget.style.fill = "#1a1408"; (e.currentTarget.closest('a') as HTMLElement).style.borderColor = "rgba(26,20,8,0.4)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.fill = "rgba(26,20,8,0.5)"; (e.currentTarget.closest('a') as HTMLElement).style.borderColor = "rgba(26,20,8,0.15)"; }}
+            >
+              <path d="M11.94 24c6.6 0 12-5.4 12-12s-5.4-12-12-12-12 5.4-12 12 5.4 12 12 12zm-3.85-8.4l.42-3.97 7.47-6.76c.33-.3-.07-.44-.51-.18l-9.22 5.81-3.56-1.11c-.77-.24-.78-.77.16-1.14l13.9-5.36c.64-.29 1.24.15 1 1.14l-2.37 11.16c-.17.8-.65.99-1.31.62l-3.62-2.67-1.75 1.69c-.19.2-.36.36-.71.36z"/>
+            </svg>
+          </a>
+          {/* Max Messenger */}
+          <a href="https://max.ru" target="_blank" rel="noopener noreferrer"
+            className="w-8 h-8 flex items-center justify-center border transition-all duration-300 cursor-pointer group"
+            style={{ borderColor: "rgba(26,20,8,0.15)" }}
+          >
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 transition-colors duration-300" style={{ fill: "rgba(26,20,8,0.5)" }}
+              onMouseEnter={(e) => { e.currentTarget.style.fill = "#1a1408"; (e.currentTarget.closest('a') as HTMLElement).style.borderColor = "rgba(26,20,8,0.4)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.fill = "rgba(26,20,8,0.5)"; (e.currentTarget.closest('a') as HTMLElement).style.borderColor = "rgba(26,20,8,0.15)"; }}
+            >
+              <path d="M2 4l4.5 8L2 20h2.5l3.25-5.75L11 20h2.5L9.25 12 13.5 4H11L7.75 9.75 4.5 4H2zm10 0l4.5 8L12 20h2.5l3.25-5.75L21 20h2.5l-4.25-8L23.5 4H21l-3.25 5.75L14.5 4H12z"/>
+            </svg>
+          </a>
         </div>
       </motion.div>
 
