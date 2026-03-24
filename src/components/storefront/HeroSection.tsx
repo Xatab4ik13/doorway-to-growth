@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import heroBg from "@/assets/hero-bg-clean.jpg";
+import ribbonsOverlay from "@/assets/hero-ribbons-overlay.png";
 
 interface Props {
   site: StorefrontSite;
