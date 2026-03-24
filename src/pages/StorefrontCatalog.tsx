@@ -412,30 +412,6 @@ export default function StorefrontCatalog() {
                   </AnimatePresence>
                 </div>
 
-                {/* Tabs at bottom */}
-                <div className="px-4 pb-5 pt-1 border-t border-black/10">
-                  <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#1a1408]/40 px-1 pt-4 mb-3">Фильтр</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {[
-                      { key: "all" as const, label: "Все" },
-                      { key: "popular" as const, label: "Популярное" },
-                      { key: "new" as const, label: "Новинки" },
-                      { key: "sale" as const, label: "Скидки" },
-                    ].map((tab) => (
-                      <button
-                        key={tab.key}
-                        onClick={() => { setActiveTab(tab.key); setPage(1); }}
-                        className={`px-3.5 py-2 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-all duration-200 ${
-                          activeTab === tab.key
-                            ? "bg-black/20 text-white shadow-[inset_0_0_12px_rgba(0,0,0,0.1)]"
-                            : "text-[#1a1408]/50 hover:text-[#1a1408] hover:bg-black/5"
-                        }`}
-                      >
-                        {tab.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
               </div>
             </aside>
 
