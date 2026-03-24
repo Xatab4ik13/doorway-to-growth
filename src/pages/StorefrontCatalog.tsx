@@ -177,9 +177,9 @@ export default function StorefrontCatalog() {
                       <div className="flex items-center">
                         <button
                           onClick={() => selectCategory(parent.id)}
-                          className={`flex-1 text-left text-sm py-2 px-3 transition-colors ${
+                          className={`flex-1 text-left text-[15px] font-semibold py-2.5 px-4 transition-colors ${
                             isActive
-                              ? "text-storefront-gold font-semibold"
+                              ? "text-[#cfbb96]"
                               : "text-storefront-muted hover:text-storefront-text"
                           }`}
                         >
