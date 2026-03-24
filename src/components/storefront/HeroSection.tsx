@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import heroBg from "@/assets/hero-bg-clean.jpg";
+import ribbonsOverlay from "@/assets/hero-ribbons-overlay.png";
 
 interface Props {
   site: StorefrontSite;
@@ -59,6 +60,15 @@ export function HeroSection({ site, banners }: Props) {
         />
       )}
 
+      {/* Gold ribbons overlay (transparent PNG) */}
+      <motion.img
+        src={ribbonsOverlay}
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none z-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.5, delay: 0.3, ease: EASE }}
+      />
 
       {/* Banner text overlay */}
       {slides && slides[current].title && (
