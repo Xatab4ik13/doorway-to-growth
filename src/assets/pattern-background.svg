@@ -1,0 +1,168 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 960" width="1920" height="960">
+<rect x="0" y="0" width="1920" height="960" fill="#07090D"/>
+<defs>
+<clipPath id="clip-0-0"><rect x="0" y="0" width="240" height="240"/></clipPath>
+<clipPath id="clip-240-0"><rect x="240" y="0" width="240" height="240"/></clipPath>
+<clipPath id="clip-480-0"><rect x="480" y="0" width="240" height="240"/></clipPath>
+<clipPath id="clip-720-0"><rect x="720" y="0" width="240" height="240"/></clipPath>
+<clipPath id="clip-960-0"><rect x="960" y="0" width="240" height="240"/></clipPath>
+<clipPath id="clip-1200-0"><rect x="1200" y="0" width="240" height="240"/></clipPath>
+<clipPath id="clip-1440-0"><rect x="1440" y="0" width="240" height="240"/></clipPath>
+<clipPath id="clip-1680-0"><rect x="1680" y="0" width="240" height="240"/></clipPath>
+<clipPath id="clip-0-240"><rect x="0" y="240" width="240" height="240"/></clipPath>
+<clipPath id="clip-240-240"><rect x="240" y="240" width="240" height="240"/></clipPath>
+<clipPath id="clip-480-240"><rect x="480" y="240" width="240" height="240"/></clipPath>
+<clipPath id="clip-720-240"><rect x="720" y="240" width="240" height="240"/></clipPath>
+<clipPath id="clip-960-240"><rect x="960" y="240" width="240" height="240"/></clipPath>
+<clipPath id="clip-1200-240"><rect x="1200" y="240" width="240" height="240"/></clipPath>
+<clipPath id="clip-1440-240"><rect x="1440" y="240" width="240" height="240"/></clipPath>
+<clipPath id="clip-1680-240"><rect x="1680" y="240" width="240" height="240"/></clipPath>
+<clipPath id="clip-0-480"><rect x="0" y="480" width="240" height="240"/></clipPath>
+<clipPath id="clip-240-480"><rect x="240" y="480" width="240" height="240"/></clipPath>
+<clipPath id="clip-480-480"><rect x="480" y="480" width="240" height="240"/></clipPath>
+<clipPath id="clip-720-480"><rect x="720" y="480" width="240" height="240"/></clipPath>
+<clipPath id="clip-960-480"><rect x="960" y="480" width="240" height="240"/></clipPath>
+<clipPath id="clip-1200-480"><rect x="1200" y="480" width="240" height="240"/></clipPath>
+<clipPath id="clip-1440-480"><rect x="1440" y="480" width="240" height="240"/></clipPath>
+<clipPath id="clip-1680-480"><rect x="1680" y="480" width="240" height="240"/></clipPath>
+<clipPath id="clip-0-720"><rect x="0" y="720" width="240" height="240"/></clipPath>
+<clipPath id="clip-240-720"><rect x="240" y="720" width="240" height="240"/></clipPath>
+<clipPath id="clip-480-720"><rect x="480" y="720" width="240" height="240"/></clipPath>
+<clipPath id="clip-720-720"><rect x="720" y="720" width="240" height="240"/></clipPath>
+<clipPath id="clip-960-720"><rect x="960" y="720" width="240" height="240"/></clipPath>
+<clipPath id="clip-1200-720"><rect x="1200" y="720" width="240" height="240"/></clipPath>
+<clipPath id="clip-1440-720"><rect x="1440" y="720" width="240" height="240"/></clipPath>
+<clipPath id="clip-1680-720"><rect x="1680" y="720" width="240" height="240"/></clipPath>
+</defs>
+<g clip-path="url(#clip-0-0)">
+<circle cx="120.0" cy="120.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-240-0)">
+<circle cx="360.0" cy="0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="360.0" cy="240" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-480-0)">
+<circle cx="480" cy="120.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="720" cy="120.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-720-0)">
+<circle cx="720" cy="120.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="960" cy="120.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-960-0)">
+<circle cx="1080.0" cy="120.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-1200-0)">
+<circle cx="1200" cy="120.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="1440" cy="120.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-1440-0)">
+<circle cx="1560.0" cy="0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="1560.0" cy="240" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-1680-0)">
+<circle cx="1800.0" cy="120.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-0-240)">
+<circle cx="120.0" cy="240" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="120.0" cy="480" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-240-240)">
+<circle cx="240" cy="360.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="480" cy="360.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-480-240)">
+<circle cx="600.0" cy="240" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="600.0" cy="480" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-720-240)">
+<circle cx="840.0" cy="240" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="840.0" cy="480" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-960-240)">
+<circle cx="960" cy="360.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="1200" cy="360.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-1200-240)">
+<circle cx="1320.0" cy="360.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-1440-240)">
+<circle cx="1560.0" cy="240" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="1560.0" cy="480" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-1680-240)">
+<circle cx="1680" cy="360.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="1920" cy="360.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-0-480)">
+<circle cx="120.0" cy="600.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-240-480)">
+<circle cx="360.0" cy="600.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-480-480)">
+<circle cx="600.0" cy="480" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="600.0" cy="720" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-720-480)">
+<circle cx="720" cy="600.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="960" cy="600.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-960-480)">
+<circle cx="1080.0" cy="600.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-1200-480)">
+<circle cx="1320.0" cy="480" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="1320.0" cy="720" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-1440-480)">
+<circle cx="1440" cy="600.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="1680" cy="600.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-1680-480)">
+<circle cx="1800.0" cy="600.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-0-720)">
+<circle cx="120.0" cy="840.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-240-720)">
+<circle cx="360.0" cy="720" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="360.0" cy="960" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-480-720)">
+<circle cx="480" cy="840.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="720" cy="840.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-720-720)">
+<circle cx="840.0" cy="840.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-960-720)">
+<circle cx="960" cy="840.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="1200" cy="840.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-1200-720)">
+<circle cx="1320.0" cy="720" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="1320.0" cy="960" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-1440-720)">
+<circle cx="1560.0" cy="840.0" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<g clip-path="url(#clip-1680-720)">
+<circle cx="1800.0" cy="720" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+<circle cx="1800.0" cy="960" r="120.0" fill="none" stroke="#000000" stroke-width="5.2"/>
+</g>
+<line x1="0" y1="0" x2="0" y2="960" stroke="#000000" stroke-width="5.2"/>
+<line x1="240" y1="0" x2="240" y2="960" stroke="#000000" stroke-width="5.2"/>
+<line x1="480" y1="0" x2="480" y2="960" stroke="#000000" stroke-width="5.2"/>
+<line x1="720" y1="0" x2="720" y2="960" stroke="#000000" stroke-width="5.2"/>
+<line x1="960" y1="0" x2="960" y2="960" stroke="#000000" stroke-width="5.2"/>
+<line x1="1200" y1="0" x2="1200" y2="960" stroke="#000000" stroke-width="5.2"/>
+<line x1="1440" y1="0" x2="1440" y2="960" stroke="#000000" stroke-width="5.2"/>
+<line x1="1680" y1="0" x2="1680" y2="960" stroke="#000000" stroke-width="5.2"/>
+<line x1="1920" y1="0" x2="1920" y2="960" stroke="#000000" stroke-width="5.2"/>
+<line x1="0" y1="0" x2="1920" y2="0" stroke="#000000" stroke-width="5.2"/>
+<line x1="0" y1="240" x2="1920" y2="240" stroke="#000000" stroke-width="5.2"/>
+<line x1="0" y1="480" x2="1920" y2="480" stroke="#000000" stroke-width="5.2"/>
+<line x1="0" y1="720" x2="1920" y2="720" stroke="#000000" stroke-width="5.2"/>
+<line x1="0" y1="960" x2="1920" y2="960" stroke="#000000" stroke-width="5.2"/>
+</svg>
