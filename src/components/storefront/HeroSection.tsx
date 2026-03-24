@@ -19,79 +19,71 @@ const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 function DiagonalLines({ corner }: { corner: "top-right" | "bottom-left" }) {
   const isTR = corner === "top-right";
 
-  /* Lines are defined from outermost (corner edge) to innermost.
-     type: "thin" = decorative fine line, "thick" = bold metallic sheet with 3D shadow */
   const lines: Array<{
-    offset: number;
+    dist: number; // distance from corner along the diagonal (perpendicular)
     width: number;
     type: "thin" | "thick";
     delay: number;
   }> = [
-    // Outermost thin cluster
-    { offset: 0, width: 1.5, type: "thin", delay: 0 },
-    { offset: 22, width: 1.5, type: "thin", delay: 0.03 },
-    { offset: 44, width: 1.5, type: "thin", delay: 0.06 },
-    { offset: 66, width: 1.5, type: "thin", delay: 0.09 },
-    { offset: 88, width: 1.5, type: "thin", delay: 0.12 },
-    { offset: 110, width: 1.5, type: "thin", delay: 0.15 },
-    { offset: 132, width: 1.5, type: "thin", delay: 0.18 },
-    // Gap then thick metallic bars
-    { offset: 175, width: 12, type: "thick", delay: 0.25 },
-    { offset: 220, width: 18, type: "thick", delay: 0.35 },
-    { offset: 280, width: 28, type: "thick", delay: 0.45 },
+    // Thin cluster near the edge
+    { dist: 30, width: 2, type: "thin", delay: 0 },
+    { dist: 55, width: 2, type: "thin", delay: 0.03 },
+    { dist: 80, width: 2, type: "thin", delay: 0.06 },
+    { dist: 105, width: 2, type: "thin", delay: 0.09 },
+    { dist: 130, width: 2, type: "thin", delay: 0.12 },
+    { dist: 155, width: 2, type: "thin", delay: 0.15 },
+    { dist: 180, width: 2, type: "thin", delay: 0.18 },
+    // Thick metallic bars with 3D shadows
+    { dist: 240, width: 14, type: "thick", delay: 0.25 },
+    { dist: 300, width: 22, type: "thick", delay: 0.35 },
+    { dist: 380, width: 35, type: "thick", delay: 0.45 },
   ];
 
   return (
-    <div
-      className="absolute pointer-events-none z-[5]"
-      style={{
-        ...(isTR ? { top: 0, right: 0 } : { bottom: 0, left: 0 }),
-        width: "100%",
-        height: "100%",
-        overflow: "hidden",
-      }}
-    >
+    <div className="absolute inset-0 pointer-events-none z-[5] overflow-hidden">
       {lines.map((line, i) => {
-        const len = 1400;
         const isThin = line.type === "thin";
 
-        /* Gold metallic gradient — thicker bars get richer gradient */
         const gradient = isThin
-          ? `linear-gradient(90deg, transparent 5%, rgba(180,155,90,0.6) 25%, rgba(210,185,120,0.8) 50%, rgba(180,155,90,0.6) 75%, transparent 95%)`
+          ? `linear-gradient(90deg, transparent 0%, #a08c50 20%, #c5a572 40%, #d4bc8a 50%, #c5a572 60%, #a08c50 80%, transparent 100%)`
           : `linear-gradient(90deg, 
-              transparent 2%,
-              rgba(120,100,50,0.7) 10%,
-              rgba(185,160,95,1) 25%,
-              rgba(225,200,140,1) 40%,
-              rgba(240,220,160,1) 50%,
-              rgba(225,200,140,1) 60%,
-              rgba(185,160,95,1) 75%,
-              rgba(120,100,50,0.7) 90%,
-              transparent 98%)`;
+              transparent 0%,
+              #8a7540 8%,
+              #b9a060 18%,
+              #d4bc8a 30%,
+              #e8d8a8 42%,
+              #f0e4b8 50%,
+              #e8d8a8 58%,
+              #d4bc8a 70%,
+              #b9a060 82%,
+              #8a7540 92%,
+              transparent 100%)`;
 
-        /* 3D shadow — only on thick bars, creates the depth/fold illusion */
         const shadow = isThin
-          ? "none"
-          : `0 ${line.width * 0.4}px ${line.width * 1.2}px rgba(0,0,0,0.7), 
-             0 ${line.width * 0.15}px ${line.width * 0.4}px rgba(0,0,0,0.5),
-             0 0 ${line.width * 2}px rgba(197,165,114,0.15)`;
+          ? `0 1px 3px rgba(0,0,0,0.4)`
+          : `0 ${line.width * 0.5}px ${line.width * 1.5}px rgba(0,0,0,0.8), 
+             0 ${line.width * 0.2}px ${line.width * 0.5}px rgba(0,0,0,0.6),
+             inset 0 1px 0 rgba(255,240,200,0.2),
+             0 0 ${line.width}px rgba(197,165,114,0.2)`;
 
-        const posStyle: React.CSSProperties = isTR
+        /* Position: we use a very long bar rotated 45°, offset from the corner */
+        const size = 2000;
+        const pos: React.CSSProperties = isTR
           ? {
-              position: "absolute",
-              top: -len / 2 + line.offset * 1.3,
-              right: -len / 2 + line.offset * 1.3,
-              width: len,
+              position: "absolute" as const,
+              width: size,
               height: line.width,
+              top: `calc(-${size / 2}px + ${line.dist}px)`,
+              right: `calc(-${size / 2}px + ${line.dist}px)`,
               transform: "rotate(45deg)",
               transformOrigin: "center center",
             }
           : {
-              position: "absolute",
-              bottom: -len / 2 + line.offset * 1.3,
-              left: -len / 2 + line.offset * 1.3,
-              width: len,
+              position: "absolute" as const,
+              width: size,
               height: line.width,
+              bottom: `calc(-${size / 2}px + ${line.dist}px)`,
+              left: `calc(-${size / 2}px + ${line.dist}px)`,
               transform: "rotate(45deg)",
               transformOrigin: "center center",
             };
@@ -100,47 +92,41 @@ function DiagonalLines({ corner }: { corner: "top-right" | "bottom-left" }) {
           <motion.div
             key={i}
             style={{
-              ...posStyle,
+              ...pos,
               background: gradient,
               boxShadow: shadow,
-              borderRadius: isThin ? 0 : 1,
+              borderRadius: isThin ? 0 : 2,
             }}
-            initial={{ opacity: 0, scale: 0.6 }}
+            initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.3 + line.delay, ease: EASE }}
+            transition={{ duration: 1.2, delay: 0.2 + line.delay, ease: EASE }}
           />
         );
       })}
 
-      {/* Deep shadow "fold" between thick bars — the 3D crease */}
+      {/* Deep shadow crease between the 2nd and 3rd thick bars */}
       <motion.div
         style={{
           position: "absolute",
+          width: 2000,
+          height: 50,
           ...(isTR
             ? {
-                top: -700 + 220 * 1.3,
-                right: -700 + 220 * 1.3,
-                width: 1400,
-                height: 40,
-                transform: "rotate(45deg)",
-                transformOrigin: "center center",
-                background: "linear-gradient(90deg, transparent 10%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.5) 70%, transparent 90%)",
-                filter: "blur(8px)",
+                top: `calc(-${1000}px + 340px)`,
+                right: `calc(-${1000}px + 340px)`,
               }
             : {
-                bottom: -700 + 220 * 1.3,
-                left: -700 + 220 * 1.3,
-                width: 1400,
-                height: 40,
-                transform: "rotate(45deg)",
-                transformOrigin: "center center",
-                background: "linear-gradient(90deg, transparent 10%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.5) 70%, transparent 90%)",
-                filter: "blur(8px)",
+                bottom: `calc(-${1000}px + 340px)`,
+                left: `calc(-${1000}px + 340px)`,
               }),
+          transform: "rotate(45deg)",
+          transformOrigin: "center center",
+          background: "linear-gradient(90deg, transparent 5%, rgba(0,0,0,0.6) 25%, rgba(0,0,0,0.9) 50%, rgba(0,0,0,0.6) 75%, transparent 95%)",
+          filter: "blur(12px)",
         }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1.5, delay: 0.8 }}
+        transition={{ duration: 1.5, delay: 0.7 }}
       />
     </div>
   );
