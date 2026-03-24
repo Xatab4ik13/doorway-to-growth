@@ -177,8 +177,9 @@ export default function StorefrontCatalog() {
             {/* ===== LEFT SIDEBAR — Metallic L-Panel ===== */}
             <aside className="hidden md:block w-[300px] shrink-0">
               <div
-                className="relative overflow-hidden sticky top-6"
+                className="relative overflow-hidden overflow-y-auto sticky top-6"
                 style={{
+                  maxHeight: "calc(100vh - 3rem)",
                   borderRadius: "24px",
                   background: "linear-gradient(175deg, #cfbb96 0%, #bda67a 15%, #a8956e 35%, #8d7c5a 55%, #7a6b4d 70%, #6e5f40 85%, #5c5035 100%)",
                   boxShadow: "0 8px 40px rgba(207, 187, 150, 0.15), 0 0 80px rgba(207, 187, 150, 0.05)",
