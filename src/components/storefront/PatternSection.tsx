@@ -18,11 +18,11 @@ export function PatternSection() {
         draggable={false}
       />
       <div className="relative z-10 mx-auto max-w-[1400px] px-8 py-20 lg:py-28">
-        <div className="grid grid-cols-5 gap-4 lg:gap-6 items-end">
+        <div className="grid grid-cols-5 gap-4 lg:gap-6">
           {DOORS.map((src, i) => (
             <motion.div
               key={i}
-              className="flex items-end justify-center cursor-pointer"
+              className="flex items-center justify-center cursor-pointer h-[360px] md:h-[460px] lg:h-[560px]"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
@@ -40,7 +40,7 @@ export function PatternSection() {
               <img
                 src={src}
                 alt=""
-                className="w-full h-auto object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.6)]"
+                className="h-full w-auto object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.6)]"
                 draggable={false}
               />
             </motion.div>
