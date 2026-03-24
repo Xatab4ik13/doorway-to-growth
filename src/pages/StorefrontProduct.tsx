@@ -223,44 +223,49 @@ export default function StorefrontProduct() {
                 </p>
               )}
 
-              {/* ===== SPECS — PREMIUM VISUAL CARDS ===== */}
+              {/* ===== SPECS — GLASSMORPHISM CARDS WITH GLOW ===== */}
               {specs && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
                   {specs.color && (
                     <motion.div
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.25 }}
-                      className="relative overflow-hidden rounded-xl p-5"
+                      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ delay: 0.25, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                      whileHover={{ scale: 1.03, y: -2 }}
+                      className="group relative overflow-hidden rounded-2xl p-5 cursor-default backdrop-blur-md transition-shadow duration-500 hover:shadow-[0_0_40px_rgba(207,187,150,0.15)]"
                       style={{
-                        background: "linear-gradient(135deg, rgba(207,187,150,0.08) 0%, rgba(207,187,150,0.02) 100%)",
+                        background: "linear-gradient(135deg, rgba(207,187,150,0.10) 0%, rgba(255,255,255,0.02) 100%)",
                         border: "1px solid rgba(207,187,150,0.12)",
                       }}
                     >
-                      <div className="absolute top-0 right-0 w-20 h-20 opacity-[0.04]">
-                        <Palette className="w-full h-full" />
+                      {/* Glow orb on hover */}
+                      <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-storefront-gold/0 group-hover:bg-storefront-gold/10 blur-2xl transition-all duration-700" />
+                      <div className="absolute top-3 right-3 w-10 h-10 rounded-xl bg-storefront-gold/[0.06] flex items-center justify-center group-hover:bg-storefront-gold/[0.12] transition-colors duration-500">
+                        <Palette className="w-5 h-5 text-storefront-gold/40 group-hover:text-storefront-gold/70 transition-colors duration-500" />
                       </div>
-                      <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-gold/60 block mb-2">Цвет покрытия</span>
-                      <span className="text-lg font-semibold text-storefront-text">{specs.color}</span>
+                      <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-gold/50 block mb-2">Цвет покрытия</span>
+                      <span className="text-lg font-semibold text-storefront-text group-hover:text-white transition-colors duration-300">{specs.color}</span>
                     </motion.div>
                   )}
 
                   {specs.glazing && (
                     <motion.div
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 }}
-                      className="relative overflow-hidden rounded-xl p-5"
+                      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ delay: 0.35, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                      whileHover={{ scale: 1.03, y: -2 }}
+                      className="group relative overflow-hidden rounded-2xl p-5 cursor-default backdrop-blur-md transition-shadow duration-500 hover:shadow-[0_0_40px_rgba(207,187,150,0.15)]"
                       style={{
-                        background: "linear-gradient(135deg, rgba(207,187,150,0.08) 0%, rgba(207,187,150,0.02) 100%)",
+                        background: "linear-gradient(135deg, rgba(207,187,150,0.10) 0%, rgba(255,255,255,0.02) 100%)",
                         border: "1px solid rgba(207,187,150,0.12)",
                       }}
                     >
-                      <div className="absolute top-0 right-0 w-20 h-20 opacity-[0.04]">
-                        <Eye className="w-full h-full" />
+                      <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-storefront-gold/0 group-hover:bg-storefront-gold/10 blur-2xl transition-all duration-700" />
+                      <div className="absolute top-3 right-3 w-10 h-10 rounded-xl bg-storefront-gold/[0.06] flex items-center justify-center group-hover:bg-storefront-gold/[0.12] transition-colors duration-500">
+                        <Eye className="w-5 h-5 text-storefront-gold/40 group-hover:text-storefront-gold/70 transition-colors duration-500" />
                       </div>
-                      <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-gold/60 block mb-2">Остекление</span>
-                      <span className="text-lg font-semibold text-storefront-text">{specs.glazing}</span>
+                      <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-gold/50 block mb-2">Остекление</span>
+                      <span className="text-lg font-semibold text-storefront-text group-hover:text-white transition-colors duration-300">{specs.glazing}</span>
                     </motion.div>
                   )}
                 </div>
