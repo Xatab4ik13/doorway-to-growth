@@ -4,7 +4,7 @@ import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronRight, ChevronDown } from "lucide-react";
 import brandoorsLogo from "@/assets/logo.png";
 
 const ITEMS_PER_PAGE = 16;
