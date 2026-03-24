@@ -152,16 +152,17 @@ export default function StorefrontCatalog() {
             <aside className="hidden md:block w-[260px] shrink-0">
               {/* Categories tree */}
               <div className="mb-8">
-                <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-storefront-text mb-3">Категории</h3>
+                <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-storefront-text mb-4">Категории</h3>
 
                 {/* "Все товары" */}
                 <button
                   onClick={() => selectCategory(null)}
-                  className={`w-full text-left text-sm py-2 px-3 mb-0.5 transition-colors ${
+                  className={`w-full text-left text-[15px] font-semibold py-2.5 px-4 mb-0.5 transition-colors ${
                     !selectedCategory
-                      ? "bg-storefront-gold text-[#07090d] font-semibold"
+                      ? "text-[#07090d]"
                       : "text-storefront-muted hover:text-storefront-text hover:bg-white/5"
                   }`}
+                  style={!selectedCategory ? { background: "linear-gradient(180deg, #cfbb96 0%, #a8956e 50%, #6e5f40 100%)" } : undefined}
                 >
                   Все товары
                 </button>
