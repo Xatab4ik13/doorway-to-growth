@@ -266,7 +266,7 @@ export function HeroSection({ site, banners }: Props) {
               <motion.p
                 key={`desc-${active}`}
                 initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0, transition: { duration: 0.8, delay: 0.9, ease: [0.22, 1, 0.36, 1] } }}
+                animate={{ opacity: 1, y: 0, transition: { duration: 0.8, delay: 0.9, ease: EASE_SMOOTH } }}
                 exit={{ opacity: 0, y: -20, transition: { duration: 0.4 } }}
                 className="text-sm md:text-base leading-relaxed max-w-md mb-10 text-storefront-muted"
                 style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 300 }}
