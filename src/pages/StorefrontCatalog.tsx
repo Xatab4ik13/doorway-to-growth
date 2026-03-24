@@ -188,9 +188,9 @@ export default function StorefrontCatalog() {
                         {children.length > 0 && (
                           <button
                             onClick={() => toggleParent(parent.id)}
-                            className="p-1 text-storefront-muted hover:text-storefront-text transition-colors"
+                            className="p-1.5 text-storefront-muted hover:text-storefront-text transition-colors"
                           >
-                            <ChevronRight className={`w-3.5 h-3.5 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
+                            <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
                           </button>
                         )}
                       </div>
