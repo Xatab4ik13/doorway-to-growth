@@ -194,20 +194,13 @@ export function PatternSection() {
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className="relative pb-2 text-[13px] md:text-[14px] tracking-[0.3em] uppercase transition-colors duration-300 focus:outline-none"
+            className="text-[13px] md:text-[14px] font-semibold tracking-[0.3em] uppercase transition-colors duration-300 focus:outline-none"
             style={{
               fontFamily: "'Raleway', sans-serif",
               color: activeTab === tab.key ? "#F5F5F0" : "rgba(245,245,240,0.35)",
             }}
           >
             {tab.label}
-            <motion.span
-              className="absolute bottom-0 left-0 right-0 h-[1px]"
-              style={{ backgroundColor: "#c5a572" }}
-              initial={false}
-              animate={{ scaleX: activeTab === tab.key ? 1 : 0, opacity: activeTab === tab.key ? 1 : 0 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            />
           </button>
         ))}
       </div>
