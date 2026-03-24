@@ -58,7 +58,7 @@ export function PatternSection() {
         <h2
           className="text-3xl md:text-4xl lg:text-5xl font-light tracking-[0.15em] uppercase"
           style={{
-            fontFamily: "'Cormorant Garamond', serif",
+            fontFamily: "'Raleway', sans-serif",
             color: "#F5F5F0",
           }}
         >
