@@ -152,6 +152,7 @@ export default function StorefrontBrand() {
                 Смотреть каталог
               <ArrowRight className="w-4 h-4" />
             </Link>
+            </div>
           </motion.div>
         </div>
       </section>
