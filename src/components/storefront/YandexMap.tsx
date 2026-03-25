@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 
+/* Coordinates for Щербинка, Квартал 120, д. 6 */
 const MAP_LAT = 55.495558;
 const MAP_LNG = 37.576089;
 

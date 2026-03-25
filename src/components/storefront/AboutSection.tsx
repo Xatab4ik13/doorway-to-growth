@@ -44,7 +44,6 @@ function ShowroomGallery() {
 
   return (
     <div className="relative w-full overflow-hidden rounded-2xl" style={{ aspectRatio: "16/10" }}>
-      {/* Main image */}
       <AnimatePresence initial={false} custom={direction} mode="popLayout">
         <motion.img
           key={current}
@@ -60,24 +59,15 @@ function ShowroomGallery() {
         />
       </AnimatePresence>
 
-      {/* Overlay gradient */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none" />
 
-      {/* Navigation arrows */}
-      <button
-        onClick={() => go(-1)}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-black/60 transition-all duration-300"
-      >
+      <button onClick={() => go(-1)} className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-black/60 transition-all duration-300">
         <ChevronLeft className="w-5 h-5" />
       </button>
-      <button
-        onClick={() => go(1)}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-black/60 transition-all duration-300"
-      >
+      <button onClick={() => go(1)} className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-black/60 transition-all duration-300">
         <ChevronRight className="w-5 h-5" />
       </button>
 
-      {/* Dots */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-2">
         {GALLERY.map((_, i) => (
           <button
@@ -88,15 +78,12 @@ function ShowroomGallery() {
               width: i === current ? 28 : 8,
               height: 8,
               borderRadius: 4,
-              background: i === current
-                ? "linear-gradient(90deg, #cfbb96, #a89060)"
-                : "rgba(255,255,255,0.25)",
+              background: i === current ? "linear-gradient(90deg, #cfbb96, #a89060)" : "rgba(255,255,255,0.25)",
             }}
           />
         ))}
       </div>
 
-      {/* Counter */}
       <div className="absolute top-4 right-4 z-10 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/10">
         <span className="text-xs tracking-[0.15em] text-white/70" style={{ fontFamily: "'Raleway', sans-serif" }}>
           {String(current + 1).padStart(2, "0")} / {String(GALLERY.length).padStart(2, "0")}
@@ -112,15 +99,8 @@ function VideoBlock() {
   return (
     <div className="relative w-full overflow-hidden rounded-2xl" style={{ aspectRatio: "9/16", maxHeight: "480px" }}>
       {!playing ? (
-        <button
-          onClick={() => setPlaying(true)}
-          className="group w-full h-full relative"
-        >
-          <img
-            src={showroom3}
-            alt="Видеотур по салону"
-            className="w-full h-full object-cover"
-          />
+        <button onClick={() => setPlaying(true)} className="group w-full h-full relative">
+          <img src={showroom3} alt="Видеотур по салону" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors duration-300" />
           <div className="absolute inset-0 flex items-center justify-center">
             <motion.div
@@ -140,13 +120,7 @@ function VideoBlock() {
           </span>
         </button>
       ) : (
-        <video
-          src="/showroom-video.mp4"
-          autoPlay
-          controls
-          playsInline
-          className="w-full h-full object-cover"
-        />
+        <video src="/showroom-video.mp4" autoPlay controls playsInline className="w-full h-full object-cover" />
       )}
     </div>
   );
@@ -174,12 +148,12 @@ export function AboutSection({ site, staff }: Props) {
             className="max-w-2xl text-sm md:text-base leading-relaxed"
             style={{ color: "rgba(245,245,240,0.5)", fontFamily: "'Raleway', sans-serif" }}
           >
-            Официальный салон BRANDOORS в Москве — более 50 моделей входных и межкомнатных дверей
+            Официальный салон BRANDOORS в {site.district || site.city} — более 50 моделей входных и межкомнатных дверей
             в живой экспозиции. Приходите, чтобы увидеть и потрогать двери вживую.
           </p>
         </motion.div>
 
-        {/* Gallery + Video row */}
+        {/* Gallery + Video */}
         <motion.div
           className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 mb-16"
           initial={{ opacity: 0, y: 40 }}
@@ -193,7 +167,7 @@ export function AboutSection({ site, staff }: Props) {
           </div>
         </motion.div>
 
-        {/* Info cards */}
+        {/* Info cards — dynamic from site data */}
         <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-16"
           initial={{ opacity: 0, y: 40 }}
@@ -205,74 +179,54 @@ export function AboutSection({ site, staff }: Props) {
             {
               icon: MapPin,
               label: "Адрес",
-              value: "г. Москва, г. Щербинка,\nКвартал 120, д. 6",
-              sub: "Павильон, 3 этаж",
+              value: site.address ? `${site.city}, ${site.address}` : site.city,
             },
             {
               icon: Phone,
               label: "Телефон",
-              value: "+7 (964) 514-14-44",
-              href: "tel:+79645141444",
+              value: site.phone || "",
+              href: site.phone ? `tel:${site.phone}` : undefined,
             },
             {
               icon: Mail,
               label: "Почта",
-              value: "svetlana.kis@brandoors.ru",
-              href: "mailto:svetlana.kis@brandoors.ru",
+              value: site.email || "",
+              href: site.email ? `mailto:${site.email}` : undefined,
             },
             {
               icon: Clock,
               label: "Часы работы",
               value: "Ежедневно\n10:00 — 20:00",
             },
-          ].map(({ icon: Icon, label, value, sub, href }, i) => (
+          ].filter(c => c.value).map(({ icon: Icon, label, value, href }, i) => (
             <motion.div
               key={label}
               className="group relative overflow-hidden rounded-2xl p-6 backdrop-blur-md border border-white/[0.06] cursor-default"
-              style={{
-                background: "linear-gradient(135deg, rgba(207,187,150,0.06) 0%, rgba(30,30,30,0.4) 100%)",
-              }}
+              style={{ background: "linear-gradient(135deg, rgba(207,187,150,0.06) 0%, rgba(30,30,30,0.4) 100%)" }}
               whileHover={{ scale: 1.03, y: -3 }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             >
-              {/* Glow */}
               <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-[#cfbb96]/0 group-hover:bg-[#cfbb96]/10 blur-2xl transition-all duration-500" />
-
               <div className="relative z-10">
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-                  style={{ background: "rgba(207,187,150,0.10)" }}
-                >
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{ background: "rgba(207,187,150,0.10)" }}>
                   <Icon className="w-4.5 h-4.5" style={{ color: "#cfbb96" }} />
                 </div>
-                <span
-                  className="text-[11px] uppercase tracking-[0.25em] mb-2 block"
-                  style={{ color: "rgba(207,187,150,0.6)", fontFamily: "'Raleway', sans-serif" }}
-                >
+                <span className="text-[11px] uppercase tracking-[0.25em] mb-2 block" style={{ color: "rgba(207,187,150,0.6)", fontFamily: "'Raleway', sans-serif" }}>
                   {label}
                 </span>
                 {href ? (
-                  <a
-                    href={href}
-                    className="text-sm font-medium whitespace-pre-line hover:opacity-80 transition-opacity"
-                    style={{ color: "#F5F5F0" }}
-                  >
+                  <a href={href} className="text-sm font-medium whitespace-pre-line hover:opacity-80 transition-opacity" style={{ color: "#F5F5F0" }}>
                     {value}
                   </a>
                 ) : (
-                  <p className="text-sm font-medium whitespace-pre-line" style={{ color: "#F5F5F0" }}>
-                    {value}
-                  </p>
-                )}
-                {sub && (
-                  <p className="text-xs mt-1" style={{ color: "rgba(245,245,240,0.4)" }}>{sub}</p>
+                  <p className="text-sm font-medium whitespace-pre-line" style={{ color: "#F5F5F0" }}>{value}</p>
                 )}
               </div>
             </motion.div>
           ))}
         </motion.div>
 
-        {/* Reviews + Map row */}
+        {/* Reviews + Map */}
         <motion.div
           className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-16"
           initial={{ opacity: 0, y: 40 }}
@@ -304,11 +258,7 @@ export function AboutSection({ site, staff }: Props) {
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.4 }}
             >
-              <img
-                src={staffPhoto}
-                alt="Менеджер салона"
-                className="w-full aspect-[3/4] object-cover"
-              />
+              <img src={staffPhoto} alt="Менеджер салона" className="w-full aspect-[3/4] object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
               <div className="absolute bottom-4 left-4 right-4">
                 <p className="text-sm font-medium" style={{ color: "#F5F5F0" }}>Светлана</p>
@@ -321,14 +271,16 @@ export function AboutSection({ site, staff }: Props) {
                 Проведёт экскурсию по салону, поможет подобрать дверь по стилю и бюджету,
                 рассчитает стоимость с установкой и оформит заказ.
               </p>
-              <a
-                href="tel:+79645141444"
-                className="inline-flex items-center gap-2 text-sm font-medium mt-2 hover:opacity-80 transition-opacity"
-                style={{ color: "#cfbb96" }}
-              >
-                <Phone className="w-4 h-4" />
-                +7 (964) 514-14-44
-              </a>
+              {site.phone && (
+                <a
+                  href={`tel:${site.phone}`}
+                  className="inline-flex items-center gap-2 text-sm font-medium mt-2 hover:opacity-80 transition-opacity"
+                  style={{ color: "#cfbb96" }}
+                >
+                  <Phone className="w-4 h-4" />
+                  {site.phone}
+                </a>
+              )}
             </div>
           </div>
         </motion.div>
