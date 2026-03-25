@@ -307,7 +307,7 @@ export function AboutSection({ site, staff }: Props) {
               <img
                 src={staffPhoto}
                 alt="Менеджер салона"
-                className="w-full aspect-[3/4] object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                className="w-full aspect-[3/4] object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
               <div className="absolute bottom-4 left-4 right-4">
