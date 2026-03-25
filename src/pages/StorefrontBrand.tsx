@@ -111,7 +111,7 @@ export default function StorefrontBrand() {
   return (
     <StorefrontLayout site={site}>
       {/* ═══════════ HERO ═══════════ */}
-      <section className="relative pt-20 md:pt-0 min-h-[60vh] md:min-h-[80vh] flex items-center overflow-hidden" style={{ backgroundColor: "#07090D" }}>
+      <section className="relative pt-14 min-h-[60vh] md:min-h-[80vh] flex items-center overflow-hidden" style={{ backgroundColor: "#07090D" }}>
         <div className="absolute inset-0 z-0">
           <img src={doorsPanels} alt="" className="w-full h-full object-cover opacity-25" />
           <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(7,9,13,0.92) 0%, rgba(7,9,13,0.7) 50%, rgba(7,9,13,0.85) 100%)" }} />
