@@ -2,6 +2,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { MapPin, Phone, Mail, Clock, ChevronLeft, ChevronRight, Play } from "lucide-react";
+import { ReviewsCarousel } from "./ReviewsCarousel";
+import { YandexMap } from "./YandexMap";
 
 import showroom1 from "@/assets/showroom/showroom-1.jpg";
 import showroom2 from "@/assets/showroom/showroom-2.jpg";
@@ -270,12 +272,24 @@ export function AboutSection({ site, staff }: Props) {
           ))}
         </motion.div>
 
+        {/* Reviews + Map row */}
+        <motion.div
+          className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-16"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <ReviewsCarousel />
+          <YandexMap />
+        </motion.div>
+
         {/* Staff — manager card */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
         >
           <h3
             className="text-xl font-light tracking-[0.15em] uppercase mb-6"
