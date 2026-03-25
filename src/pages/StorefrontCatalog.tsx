@@ -38,6 +38,7 @@ export default function StorefrontCatalog() {
   const [selectedGlazings, setSelectedGlazings] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState("default");
   const [page, setPage] = useState(1);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Category tree
   const parentCategories = useMemo(
