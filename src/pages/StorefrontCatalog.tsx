@@ -12,6 +12,8 @@ const ITEMS_PER_PAGE = 16;
 
 export default function StorefrontCatalog() {
   const { slug } = useParams<{ slug: string }>();
+  const [searchParams] = useSearchParams();
+  const collectionParam = searchParams.get("collection");
   const { data: site, isLoading } = useSiteBySlug(slug);
   const { data: products = [] } = useStorefrontProducts(site?.id);
   const { data: categories = [] } = useStorefrontCategories();
