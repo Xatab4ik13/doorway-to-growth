@@ -311,72 +311,20 @@ export default function StorefrontProduct() {
                 </motion.div>
               )}
 
-              {/* ===== LEAD FORM ===== */}
+              {/* ===== ADD TO CART ===== */}
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.45 }}
                 className="mt-auto pt-6"
               >
-                <div
-                  className="rounded-xl p-6"
-                  style={{
-                    background: "linear-gradient(175deg, rgba(207,187,150,0.10) 0%, rgba(207,187,150,0.03) 100%)",
-                    border: "1px solid rgba(207,187,150,0.12)",
-                  }}
+                <button
+                  onClick={handleAddToCart}
+                  className="w-full bg-storefront-gold text-[#07090d] font-bold text-[13px] uppercase tracking-wider py-4 rounded-lg hover:brightness-110 transition-all flex items-center justify-center gap-3"
                 >
-                  <div className="flex items-center gap-3 mb-5">
-                    <div className="w-8 h-8 rounded-lg bg-storefront-gold/15 flex items-center justify-center">
-                      <Send className="w-4 h-4 text-storefront-gold" />
-                    </div>
-                    <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
-                      Узнать цену и наличие
-                    </span>
-                  </div>
-
-                  <form onSubmit={handleSubmit} className="space-y-3">
-                    <input
-                      type="text"
-                      placeholder="Ваше имя"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      required
-                      className="w-full bg-white/[0.04] border border-white/[0.08] text-storefront-text text-[14px] px-4 py-3.5 rounded-lg placeholder:text-storefront-muted/40 focus:outline-none focus:border-storefront-gold/40 transition-colors"
-                    />
-                    <input
-                      type="tel"
-                      placeholder="Телефон"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      required
-                      className="w-full bg-white/[0.04] border border-white/[0.08] text-storefront-text text-[14px] px-4 py-3.5 rounded-lg placeholder:text-storefront-muted/40 focus:outline-none focus:border-storefront-gold/40 transition-colors"
-                    />
-                    <textarea
-                      placeholder="Сообщение (необязательно)"
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      rows={2}
-                      className="w-full bg-white/[0.04] border border-white/[0.08] text-storefront-text text-[14px] px-4 py-3.5 rounded-lg placeholder:text-storefront-muted/40 focus:outline-none focus:border-storefront-gold/40 transition-colors resize-none"
-                    />
-                    <button
-                      type="submit"
-                      disabled={submitting}
-                      className="w-full bg-storefront-gold text-[#07090d] font-bold text-[13px] uppercase tracking-wider py-4 rounded-lg hover:brightness-110 transition-all disabled:opacity-50"
-                    >
-                      {submitting ? "Отправка..." : "Оставить заявку"}
-                    </button>
-                  </form>
-
-                  {site.phone && (
-                    <a
-                      href={`tel:${site.phone}`}
-                      className="mt-4 flex items-center justify-center gap-2 text-[13px] text-storefront-muted hover:text-storefront-gold transition-colors"
-                    >
-                      <Phone className="w-4 h-4" />
-                      или позвоните: {site.phone}
-                    </a>
-                  )}
-                </div>
+                  <ShoppingCart className="w-5 h-5" />
+                  Добавить в корзину
+                </button>
               </motion.div>
             </motion.div>
           </div>
