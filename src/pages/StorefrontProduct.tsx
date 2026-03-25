@@ -24,7 +24,7 @@ export default function StorefrontProduct() {
     title: product ? `${product.name} — Brandoors ${site?.city ?? ""}` : "Товар — Brandoors",
     description: product?.description || `Дверь ${product?.name ?? ""} от Brandoors. Характеристики, фото, цены.`,
     ogImage: primaryImg,
-    ogUrl: site ? `https://${site.slug}.brandoors.ru/product/${productSlug}` : undefined,
+    ogUrl: site ? `https://${site.slug}.brandoors.su/product/${productSlug}` : undefined,
   });
 
 

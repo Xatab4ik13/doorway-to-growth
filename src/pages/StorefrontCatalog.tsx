@@ -24,7 +24,7 @@ export default function StorefrontCatalog() {
   useDocumentMeta({
     title: site ? `Каталог дверей — ${site.name}` : "Каталог — Brandoors",
     description: site ? `Каталог межкомнатных и входных дверей в салоне ${site.name}, ${site.city}` : "Каталог дверей Brandoors",
-    ogUrl: site ? `https://${site.slug}.brandoors.ru/catalog` : undefined,
+    ogUrl: site ? `https://${site.slug}.brandoors.su/catalog` : undefined,
   });
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);

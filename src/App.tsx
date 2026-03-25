@@ -65,13 +65,13 @@ function useHostMode(): "crm" | "storefront" | "dev" {
     }
 
     // CRM subdomain
-    if (hostname === "crm.brandoors.ru") return "crm";
+    if (hostname === "crm.brandoors.su") return "crm";
 
     // Main domain (landing, future)
-    if (hostname === "brandoors.ru" || hostname === "www.brandoors.ru") return "dev";
+    if (hostname === "brandoors.su" || hostname === "www.brandoors.su") return "dev";
 
-    // Any other subdomain of brandoors.ru → storefront
-    if (hostname.endsWith(".brandoors.ru")) return "storefront";
+    // Any other subdomain of brandoors.su → storefront
+    if (hostname.endsWith(".brandoors.su")) return "storefront";
 
     // Custom domain → storefront
     return "storefront";

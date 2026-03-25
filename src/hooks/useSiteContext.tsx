@@ -21,16 +21,16 @@ const SiteContext = createContext<SiteContextType>({
 });
 
 // Known non-storefront hostnames
-const CRM_HOSTS = ["crm.brandoors.ru", "localhost", "127.0.0.1"];
-const MAIN_HOSTS = ["brandoors.ru", "www.brandoors.ru"];
+const CRM_HOSTS = ["crm.brandoors.su", "localhost", "127.0.0.1"];
+const MAIN_HOSTS = ["brandoors.su", "www.brandoors.su"];
 
 function isPreviewHost(hostname: string) {
   return hostname.includes("lovable.app") || hostname.includes("lovableproject.com");
 }
 
 function extractSlugFromSubdomain(hostname: string): string | null {
-  // Handle {slug}.brandoors.ru
-  const match = hostname.match(/^([a-z0-9-]+)\.brandoors\.ru$/i);
+  // Handle {slug}.brandoors.su
+  const match = hostname.match(/^([a-z0-9-]+)\.brandoors\.su$/i);
   if (match && !CRM_HOSTS.includes(hostname) && !MAIN_HOSTS.includes(hostname)) {
     return match[1];
   }
@@ -40,13 +40,13 @@ function extractSlugFromSubdomain(hostname: string): string | null {
 export function useSiteFromHostname() {
   const hostname = typeof window !== "undefined" ? window.location.hostname : "";
 
-  // Check if it's a subdomain of brandoors.ru
+  // Check if it's a subdomain of brandoors.su
   const subdomainSlug = extractSlugFromSubdomain(hostname);
 
-  // Check if it's a custom domain (not brandoors.ru, not preview, not localhost)
+  // Check if it's a custom domain (not brandoors.su, not preview, not localhost)
   const isCustomDomain =
     !isPreviewHost(hostname) &&
-    !hostname.endsWith("brandoors.ru") &&
+    !hostname.endsWith("brandoors.su") &&
     !CRM_HOSTS.includes(hostname) &&
     hostname !== "";
 

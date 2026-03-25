@@ -25,7 +25,7 @@ export default function Storefront() {
     description: site
       ? `Салон дверей Brandoors в ${site.district || site.city}. ${site.address ? `Адрес: ${site.city}, ${site.address}.` : ""} ${site.phone ? `Тел: ${site.phone}` : ""}`
       : "Межкомнатные и входные двери премиум-класса от Brandoors",
-    ogUrl: site ? `https://${site.slug}.brandoors.ru` : undefined,
+    ogUrl: site ? `https://${site.slug}.brandoors.su` : undefined,
   });
 
   if (isLoading) {

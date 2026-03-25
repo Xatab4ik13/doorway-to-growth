@@ -316,7 +316,7 @@ export function PartnersPage() {
           </div>
           <div>
             <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Email</label>
-            <input value={formEmail} onChange={(e) => setFormEmail(e.target.value)} placeholder="partner@brandoors.ru" className={inputCls} />
+            <input value={formEmail} onChange={(e) => setFormEmail(e.target.value)} placeholder="partner@brandoors.su" className={inputCls} />
           </div>
 
           {/* Account toggle */}

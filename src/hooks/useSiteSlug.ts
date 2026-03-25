@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Resolves site slug from URL param OR hostname.
- * In subdomain mode ({slug}.brandoors.ru) or custom domain mode,
+ * In subdomain mode ({slug}.brandoors.su) or custom domain mode,
  * queries the DB to find the matching slug.
  */
 export function useSiteSlug(urlSlug?: string): string | undefined {
@@ -24,14 +24,14 @@ export function useSiteSlug(urlSlug?: string): string | undefined {
       return null;
     }
 
-    // {slug}.brandoors.ru → extract slug from subdomain
-    const match = hostname.match(/^([a-z0-9-]+)\.brandoors\.ru$/i);
+    // {slug}.brandoors.su → extract slug from subdomain
+    const match = hostname.match(/^([a-z0-9-]+)\.brandoors\.su$/i);
     if (match && match[1] !== "crm" && match[1] !== "www") {
       return match[1];
     }
 
     // Custom domain → we need to query DB
-    if (!hostname.endsWith("brandoors.ru")) {
+    if (!hostname.endsWith("brandoors.su")) {
       return `__domain:${hostname}`;
     }
 
