@@ -215,29 +215,149 @@ export default function StorefrontCatalog() {
           </div>
 
           {/* Title row */}
-          <div className="flex items-end justify-between mb-8">
+          <div className="flex items-end justify-between mb-8 gap-3">
             <h1 className="text-3xl sm:text-4xl font-bold text-storefront-text uppercase tracking-wide">
               Каталог
             </h1>
-            {/* Sort */}
-            <div className="relative shrink-0">
-              <select
-                value={sortBy}
-                onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
-                className="appearance-none bg-[#0f1218] border border-white/10 text-storefront-text text-xs px-4 py-2.5 pr-8 cursor-pointer hover:border-storefront-gold/40 transition-colors focus:outline-none focus:border-storefront-gold/60 rounded-sm"
+            <div className="flex items-center gap-2 shrink-0">
+              {/* Mobile filter button */}
+              <button
+                onClick={() => setMobileFiltersOpen(true)}
+                className="md:hidden flex items-center gap-2 bg-[#0f1218] border border-white/10 text-storefront-text text-xs px-4 py-2.5 hover:border-storefront-gold/40 transition-colors rounded-sm"
               >
-                <option value="default">По умолчанию</option>
-                <option value="price-asc">Цена ↑</option>
-                <option value="price-desc">Цена ↓</option>
-                <option value="name">По названию</option>
-              </select>
-              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-storefront-muted pointer-events-none" />
+                <SlidersHorizontal className="w-3.5 h-3.5" />
+                Фильтры
+                {(selectedCategory || priceFrom || priceTo || selectedColors.size > 0 || selectedGlazings.size > 0) && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-storefront-gold" />
+                )}
+              </button>
+              {/* Sort */}
+              <div className="relative">
+                <select
+                  value={sortBy}
+                  onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
+                  className="appearance-none bg-[#0f1218] border border-white/10 text-storefront-text text-xs px-4 py-2.5 pr-8 cursor-pointer hover:border-storefront-gold/40 transition-colors focus:outline-none focus:border-storefront-gold/60 rounded-sm"
+                >
+                  <option value="default">По умолчанию</option>
+                  <option value="price-asc">Цена ↑</option>
+                  <option value="price-desc">Цена ↓</option>
+                  <option value="name">По названию</option>
+                </select>
+                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-storefront-muted pointer-events-none" />
+              </div>
             </div>
           </div>
 
+          {/* ===== MOBILE FILTER SLIDE-OUT ===== */}
+          <AnimatePresence>
+            {mobileFiltersOpen && (
+              <>
+                <motion.div
+                  className="fixed inset-0 z-[60] bg-black/60 md:hidden"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setMobileFiltersOpen(false)}
+                />
+                <motion.div
+                  className="fixed top-0 left-0 bottom-0 z-[70] md:hidden overflow-y-auto"
+                  style={{ width: "300px" }}
+                  initial={{ x: -300 }}
+                  animate={{ x: 0 }}
+                  exit={{ x: -300 }}
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <div
+                    className="min-h-full"
+                    style={{
+                      background: "linear-gradient(175deg, #cfbb96 0%, #bda67a 15%, #a8956e 35%, #8d7c5a 55%, #7a6b4d 70%, #6e5f40 85%, #5c5035 100%)",
+                    }}
+                  >
+                    {/* Close button */}
+                    <button
+                      onClick={() => setMobileFiltersOpen(false)}
+                      className="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center"
+                      aria-label="Закрыть фильтры"
+                    >
+                      <X className="w-6 h-6" style={{ color: "rgba(26,20,8,0.6)" }} />
+                    </button>
+
+                    <SidebarContent
+                      brandoorsLogo={brandoorsLogo}
+                      parentCategories={parentCategories}
+                      getChildren={getChildren}
+                      expandedParents={expandedParents}
+                      toggleParent={toggleParent}
+                      selectedCategory={selectedCategory}
+                      selectCategory={(id) => { selectCategory(id); }}
+                      priceFrom={priceFrom}
+                      setPriceFrom={(v) => { setPriceFrom(v); setPage(1); }}
+                      priceTo={priceTo}
+                      setPriceTo={(v) => { setPriceTo(v); setPage(1); }}
+                      colorOpen={colorOpen}
+                      setColorOpen={setColorOpen}
+                      availableColors={availableColors}
+                      selectedColors={selectedColors}
+                      toggleColor={toggleColor}
+                      glazingOpen={glazingOpen}
+                      setGlazingOpen={setGlazingOpen}
+                      availableGlazings={availableGlazings}
+                      selectedGlazings={selectedGlazings}
+                      toggleGlazing={toggleGlazing}
+                    />
+
+                    {/* Apply button */}
+                    <div className="px-5 pb-8 pt-2">
+                      <button
+                        onClick={() => setMobileFiltersOpen(false)}
+                        className="w-full py-3.5 rounded-xl bg-[#1a1408] text-white text-[13px] font-bold uppercase tracking-[0.15em] hover:bg-[#1a1408]/90 active:scale-[0.97] transition-all"
+                      >
+                        Показать {filtered.length} товаров
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+
           <div className="flex gap-6 lg:gap-10">
-            {/* ===== LEFT SIDEBAR — Metallic L-Panel ===== */}
+            {/* ===== LEFT SIDEBAR — Desktop only ===== */}
             <aside className="hidden md:block w-[300px] shrink-0">
+              <div
+                className="relative overflow-y-auto sticky top-6 scrollbar-hide"
+                style={{
+                  maxHeight: "calc(100vh - 3rem)",
+                  borderRadius: "24px",
+                  background: "linear-gradient(175deg, #cfbb96 0%, #bda67a 15%, #a8956e 35%, #8d7c5a 55%, #7a6b4d 70%, #6e5f40 85%, #5c5035 100%)",
+                  boxShadow: "0 8px 40px rgba(207, 187, 150, 0.15), 0 0 80px rgba(207, 187, 150, 0.05)",
+                }}
+              >
+                <SidebarContent
+                  brandoorsLogo={brandoorsLogo}
+                  parentCategories={parentCategories}
+                  getChildren={getChildren}
+                  expandedParents={expandedParents}
+                  toggleParent={toggleParent}
+                  selectedCategory={selectedCategory}
+                  selectCategory={selectCategory}
+                  priceFrom={priceFrom}
+                  setPriceFrom={(v) => { setPriceFrom(v); setPage(1); }}
+                  priceTo={priceTo}
+                  setPriceTo={(v) => { setPriceTo(v); setPage(1); }}
+                  colorOpen={colorOpen}
+                  setColorOpen={setColorOpen}
+                  availableColors={availableColors}
+                  selectedColors={selectedColors}
+                  toggleColor={toggleColor}
+                  glazingOpen={glazingOpen}
+                  setGlazingOpen={setGlazingOpen}
+                  availableGlazings={availableGlazings}
+                  selectedGlazings={selectedGlazings}
+                  toggleGlazing={toggleGlazing}
+                />
+              </div>
+            </aside>
               <div
                 className="relative overflow-y-auto sticky top-6 scrollbar-hide"
                 style={{
