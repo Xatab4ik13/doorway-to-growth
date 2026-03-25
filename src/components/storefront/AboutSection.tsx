@@ -5,13 +5,13 @@ import { MapPin, Phone, Mail, Clock, ChevronLeft, ChevronRight, Play } from "luc
 import { ReviewsCarousel } from "./ReviewsCarousel";
 import { YandexMap } from "./YandexMap";
 
-import showroom1 from "@/assets/showroom/showroom-1.jpg";
-import showroom2 from "@/assets/showroom/showroom-2.jpg";
-import showroom3 from "@/assets/showroom/showroom-3.jpg";
-import showroom4 from "@/assets/showroom/showroom-4.jpg";
-import showroom5 from "@/assets/showroom/showroom-5.jpg";
-import showroom6 from "@/assets/showroom/showroom-6.jpg";
-import staffPhoto from "@/assets/showroom/staff.jpg";
+import showroom1 from "@/assets/showroom/showroom-1.webp";
+import showroom2 from "@/assets/showroom/showroom-2.webp";
+import showroom3 from "@/assets/showroom/showroom-3.webp";
+import showroom4 from "@/assets/showroom/showroom-4.webp";
+import showroom5 from "@/assets/showroom/showroom-5.webp";
+import showroom6 from "@/assets/showroom/showroom-6.webp";
+import staffPhoto from "@/assets/showroom/staff.webp";
 
 const GALLERY = [
   { src: showroom1, alt: "Шоурум BRANDOORS — входные двери" },
