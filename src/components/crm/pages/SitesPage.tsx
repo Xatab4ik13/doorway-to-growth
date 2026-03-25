@@ -4,67 +4,31 @@ import { Pagination } from "@/components/crm/Pagination";
 import { EmptyState } from "@/components/crm/EmptyState";
 import { Modal } from "@/components/crm/Modal";
 import { ConfirmDialog } from "@/components/crm/ConfirmDialog";
-import { Search, Plus, Globe, MoreHorizontal, Trash2, Link2, UserPlus, ExternalLink } from "lucide-react";
+import { Search, Globe, MoreHorizontal, Trash2, Link2, UserPlus, ExternalLink } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { useSites, useCreateSite, useDeleteSite, useUpdateSite, type Site } from "@/hooks/useSites";
-import { usePartners, type Partner } from "@/hooks/usePartners";
+import { useSites, useDeleteSite, useUpdateSite, type Site } from "@/hooks/useSites";
+import { usePartners } from "@/hooks/usePartners";
 
 const PAGE_SIZE = 10;
-
-function slugify(text: string) {
-  return text.toLowerCase().replace(/[^a-zа-яё0-9]+/gi, "-").replace(/^-|-$/g, "");
-}
 
 export function SitesPage() {
   const { data: sites = [], isLoading } = useSites();
   const { data: partners = [] } = usePartners();
-  const createSite = useCreateSite();
   const deleteSiteMut = useDeleteSite();
   const updateSite = useUpdateSite();
 
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "active" | "inactive">("all");
   const [page, setPage] = useState(1);
-  const [addOpen, setAddOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Site | null>(null);
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
   const [assignOpen, setAssignOpen] = useState<Site | null>(null);
   const [assignPartnerId, setAssignPartnerId] = useState("");
 
-  // Form
-  const [formName, setFormName] = useState("");
-  const [formCity, setFormCity] = useState("Москва");
-  const [formDistrict, setFormDistrict] = useState("");
-  const [formAddress, setFormAddress] = useState("");
-  const [formPhone, setFormPhone] = useState("");
-  const [formEmail, setFormEmail] = useState("");
-  const [formDomain, setFormDomain] = useState("");
-
   const inputCls = "h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow";
-
-  const resetForm = () => {
-    setFormName(""); setFormCity("Москва"); setFormDistrict(""); setFormAddress(""); setFormPhone(""); setFormEmail(""); setFormDomain("");
-  };
-
-  const handleAdd = () => {
-    if (!formName.trim()) return;
-    createSite.mutate({
-      name: formName.trim(),
-      slug: slugify(formName),
-      city: formCity.trim(),
-      district: formDistrict.trim() || undefined,
-      address: formAddress.trim() || undefined,
-      phone: formPhone.trim() || undefined,
-      email: formEmail.trim() || undefined,
-      domain: formDomain.trim() || undefined,
-    });
-    setAddOpen(false);
-    resetForm();
-  };
 
   const handleAssignPartner = async () => {
     if (!assignOpen || !assignPartnerId) return;
-    // Update partner's site_id
     const { error } = await (await import("@/integrations/supabase/client")).supabase
       .from("partners")
       .update({ site_id: assignOpen.id })
@@ -73,7 +37,6 @@ export function SitesPage() {
       toast({ title: "Ошибка", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Партнёр привязан к сайту" });
-      // Refetch
       window.location.reload();
     }
     setAssignOpen(null);
@@ -88,9 +51,6 @@ export function SitesPage() {
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-
-  // Partners without a site
-  const unassignedPartners = partners.filter((p) => !p.site_id);
 
   if (isLoading) {
     return (
@@ -127,20 +87,16 @@ export function SitesPage() {
             ))}
           </div>
         </div>
-        <button onClick={() => setAddOpen(true)} className="flex h-9 items-center gap-2 rounded-xl bg-foreground px-4 text-xs font-medium text-primary-foreground transition-colors hover:bg-foreground/90 active:scale-95 shrink-0">
-          <Plus className="h-3.5 w-3.5" />
-          <span className="hidden sm:inline">Создать сайт</span>
-        </button>
       </div>
 
       {filtered.length === 0 ? (
         <EmptyState
           icon={Globe}
           title={sites.length === 0 ? "Нет сайтов" : "Сайты не найдены"}
-          description={sites.length === 0 ? "Создайте первый сайт-витрину для партнёра" : "Измените параметры поиска"}
-          action={sites.length === 0
-            ? { label: "Создать сайт", onClick: () => setAddOpen(true) }
-            : { label: "Сбросить", onClick: () => { setSearch(""); setFilter("all"); } }
+          description={sites.length === 0 ? "Сайты создаются через систему управления" : "Измените параметры поиска"}
+          action={sites.length > 0
+            ? { label: "Сбросить", onClick: () => { setSearch(""); setFilter("all"); } }
+            : undefined
           }
         />
       ) : (
@@ -257,47 +213,6 @@ export function SitesPage() {
         </div>
       )}
 
-      {/* Create site modal */}
-      <Modal open={addOpen} onClose={() => { setAddOpen(false); resetForm(); }} title="Новый сайт"
-        footer={
-          <>
-            <button onClick={() => { setAddOpen(false); resetForm(); }} className="h-9 px-4 rounded-xl border border-border text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors">Отмена</button>
-            <button onClick={handleAdd} disabled={!formName.trim()} className="h-9 px-4 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-40">Создать</button>
-          </>
-        }
-      >
-        <div className="grid grid-cols-2 gap-4">
-          <div className="col-span-2">
-            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Название сайта *</label>
-            <input value={formName} onChange={(e) => setFormName(e.target.value)} placeholder="Brandoors ЮВАО" className={inputCls} />
-          </div>
-          <div>
-            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Город</label>
-            <input value={formCity} onChange={(e) => setFormCity(e.target.value)} className={inputCls} />
-          </div>
-          <div>
-            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Район</label>
-            <input value={formDistrict} onChange={(e) => setFormDistrict(e.target.value)} placeholder="ЮВАО" className={inputCls} />
-          </div>
-          <div className="col-span-2">
-            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Адрес</label>
-            <input value={formAddress} onChange={(e) => setFormAddress(e.target.value)} placeholder="ул. Примерная, 1" className={inputCls} />
-          </div>
-          <div>
-            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Телефон</label>
-            <input value={formPhone} onChange={(e) => setFormPhone(e.target.value)} placeholder="+7 (999) 123-45-67" className={inputCls} />
-          </div>
-          <div>
-            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Email</label>
-            <input value={formEmail} onChange={(e) => setFormEmail(e.target.value)} placeholder="site@brandoors.ru" className={inputCls} />
-          </div>
-          <div className="col-span-2">
-            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Домен (необязательно)</label>
-            <input value={formDomain} onChange={(e) => setFormDomain(e.target.value)} placeholder="brandoors-yuvao.ru" className={inputCls} />
-          </div>
-        </div>
-      </Modal>
-
       {/* Assign partner modal */}
       <Modal open={!!assignOpen} onClose={() => { setAssignOpen(null); setAssignPartnerId(""); }} title={`Назначить партнёра — ${assignOpen?.name}`}
         footer={
@@ -315,13 +230,24 @@ export function SitesPage() {
               <option key={p.id} value={p.id}>{p.name} ({p.city})</option>
             ))}
           </select>
-          {unassignedPartners.length === 0 && partners.length > 0 && (
-            <p className="text-xs text-muted-foreground mt-2">Все партнёры уже привязаны к сайтам</p>
-          )}
         </div>
       </Modal>
 
-      <ConfirmDialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={() => { if (deleteTarget) { deleteSiteMut.mutate(deleteTarget.id); setDeleteTarget(null); } }} title="Удалить сайт" description={`Удалить сайт ${deleteTarget?.name}? Весь контент сайта будет потерян.`} confirmLabel="Удалить" destructive />
+      {/* Delete confirmation */}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          if (deleteTarget) {
+            deleteSiteMut.mutate(deleteTarget.id);
+            setDeleteTarget(null);
+          }
+        }}
+        title="Удалить сайт"
+        description={`Вы уверены, что хотите удалить сайт «${deleteTarget?.name}»? Это действие нельзя отменить.`}
+        confirmLabel="Удалить"
+        destructive
+      />
     </div>
   );
 }
