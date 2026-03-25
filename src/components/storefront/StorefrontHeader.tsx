@@ -11,6 +11,7 @@ interface Props {
 }
 
 const NAV_ITEMS = [
+  { label: "Главная", href: "", isRoute: true },
   { label: "Каталог", href: "catalog", isRoute: true },
   { label: "Отзывы", href: "#about", isRoute: false },
   { label: "О бренде", href: "brand", isRoute: true },
@@ -67,13 +68,15 @@ export function StorefrontHeader({ site }: Props) {
             <span className="block w-5 h-[1.5px] bg-storefront-gold" />
           </button>
 
-          {/* Logo center */}
-          <img
-            src={brandoorsLogo}
-            alt="Brandoors"
-            className="h-6"
-            style={{ filter: "brightness(0) invert(1)", opacity: 0.9 }}
-          />
+          {/* Logo center — links to home */}
+          <Link to={`/store/${site.slug}`}>
+            <img
+              src={brandoorsLogo}
+              alt="Brandoors"
+              className="h-6"
+              style={{ filter: "brightness(0) invert(1)", opacity: 0.9 }}
+            />
+          </Link>
 
           {/* Cart right */}
           <CartButton />
