@@ -24,13 +24,11 @@ export function HeroSection({ site, banners }: Props) {
   return (
     <section className="relative h-screen min-h-[700px] overflow-hidden select-none bg-storefront-bg">
 
-      {/* Dark gradient background (placeholder until banners are added) */}
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          background: "radial-gradient(ellipse at 70% 40%, rgba(207,187,150,0.06) 0%, transparent 60%), linear-gradient(135deg, #0a0c10 0%, #07090d 50%, #0d0f14 100%)",
-        }}
-      />
+      {/* Hero banner image */}
+      <div className="absolute inset-0 z-0">
+        <img src={heroBanner} alt="Brandoors — скрытые двери в интерьере" className="w-full h-full object-cover" />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(7,9,13,0.6) 0%, rgba(7,9,13,0.3) 50%, rgba(7,9,13,0.5) 100%)" }} />
+      </div>
 
       {/* Phone + Cart — right side, desktop */}
       <div className="absolute top-0 right-0 z-40 hidden lg:flex items-center gap-4 h-[56px] pr-10 xl:pr-14">
