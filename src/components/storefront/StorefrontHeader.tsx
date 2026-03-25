@@ -11,6 +11,7 @@ interface Props {
 }
 
 const NAV_ITEMS = [
+  { label: "Главная", href: "", isRoute: true },
   { label: "Каталог", href: "catalog", isRoute: true },
   { label: "Отзывы", href: "#about", isRoute: false },
   { label: "О бренде", href: "brand", isRoute: true },
