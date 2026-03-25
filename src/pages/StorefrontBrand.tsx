@@ -128,16 +128,28 @@ export default function StorefrontBrand() {
             <p className="max-w-2xl text-base md:text-lg leading-relaxed mb-10" style={{ color: "rgba(245,245,240,0.6)", fontFamily: "'Raleway', sans-serif" }}>
               Революция в мире дверей — инновационные технологии, безупречный дизайн и премиальное качество по доступной цене
             </p>
-            <Link
-              to={`/store/${site.slug}/catalog`}
-              className="inline-flex items-center gap-3 px-8 py-4 rounded-xl font-semibold uppercase tracking-[0.2em] text-[13px] transition-all duration-300 hover:scale-105"
-              style={{
-                background: "linear-gradient(135deg, #cfbb96 0%, #b5a07a 50%, #a08a60 100%)",
-                color: "#0a0a0a",
-                fontFamily: "'Raleway', sans-serif",
-              }}
-            >
-              Смотреть каталог
+            <div className="flex flex-wrap items-center gap-4">
+              <Link
+                to={`/store/${site.slug}`}
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold uppercase tracking-[0.2em] text-[13px] transition-all duration-300 hover:scale-105 border"
+                style={{
+                  borderColor: "rgba(207,187,150,0.4)",
+                  color: "#cfbb96",
+                  fontFamily: "'Raleway', sans-serif",
+                }}
+              >
+                ← На главную
+              </Link>
+              <Link
+                to={`/store/${site.slug}/catalog`}
+                className="inline-flex items-center gap-3 px-8 py-4 rounded-xl font-semibold uppercase tracking-[0.2em] text-[13px] transition-all duration-300 hover:scale-105"
+                style={{
+                  background: "linear-gradient(135deg, #cfbb96 0%, #b5a07a 50%, #a08a60 100%)",
+                  color: "#0a0a0a",
+                  fontFamily: "'Raleway', sans-serif",
+                }}
+              >
+                Смотреть каталог
               <ArrowRight className="w-4 h-4" />
             </Link>
           </motion.div>
