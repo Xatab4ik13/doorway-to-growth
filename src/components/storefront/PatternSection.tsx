@@ -132,12 +132,9 @@ function DoorCarousel({ doors }: { doors: DoorItem[] }) {
                   fontFamily: "'Raleway', sans-serif",
                   color: "rgba(245,245,240,0.6)",
                 }}
-                initial={false}
-                animate={{
-                  opacity: hovered === doorIdx ? 1 : 0,
-                  y: hovered === doorIdx ? 0 : 8,
-                }}
-                transition={{ duration: 0.35 }}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.15 }}
               >
                 {doors[doorIdx].name}
               </motion.span>
