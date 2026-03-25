@@ -41,7 +41,7 @@ function getIndex(i: number, len: number) {
   return ((i % len) + len) % len;
 }
 
-function DoorCarousel({ doors }: { doors: DoorItem[] }) {
+function DoorCarousel({ doors, onSelect }: { doors: DoorItem[]; onSelect: (name: string) => void }) {
   const [current, setCurrent] = useState(0);
   const [hovered, setHovered] = useState<number | null>(null);
   const len = doors.length;
