@@ -3,6 +3,9 @@ import { CrmHeader } from "@/components/crm/CrmHeader";
 import { ConfirmDialog } from "@/components/crm/ConfirmDialog";
 import { User, Shield, Bell, Palette, Globe, Lock, ChevronRight, LogOut, Moon, Sun } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const tabs = [
   { id: "profile", label: "Профиль", icon: User },
@@ -11,14 +14,6 @@ const tabs = [
   { id: "users", label: "Пользователи", icon: Shield },
   { id: "appearance", label: "Внешний вид", icon: Palette },
   { id: "system", label: "Система", icon: Globe },
-];
-
-const users = [
-  { name: "Александр Дорохов", email: "admin@brandoors.ru", role: "Администратор", active: true },
-  { name: "Иван Смирнов", email: "marjino@brandoors.ru", role: "Партнёр", active: true },
-  { name: "Мария Козлова", email: "teply-stan@brandoors.ru", role: "Партнёр", active: true },
-  { name: "Алексей Волков", email: "mitino@brandoors.ru", role: "Партнёр", active: true },
-  { name: "Дмитрий Фёдоров", email: "sokolniki@brandoors.ru", role: "Партнёр", active: false },
 ];
 
 function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
@@ -39,6 +34,8 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 }
 
 export function SettingsPage() {
+  const { user, signOut } = useAuth();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("profile");
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains("dark"));
@@ -49,11 +46,87 @@ export function SettingsPage() {
     emailReports: true,
   });
 
+  // Real profile data
+  const { data: profile } = useQuery({
+    queryKey: ["my-profile", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  // Real users list
+  const { data: users = [] } = useQuery({
+    queryKey: ["all-users"],
+    queryFn: async () => {
+      const { data: roles, error: rolesErr } = await supabase
+        .from("user_roles")
+        .select("user_id, role");
+      if (rolesErr) throw rolesErr;
+
+      const { data: profiles, error: profErr } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, phone");
+      if (profErr) throw profErr;
+
+      return (roles ?? []).map((r) => {
+        const p = profiles?.find((pr) => pr.user_id === r.user_id);
+        return {
+          name: p?.full_name ?? "Без имени",
+          email: "",
+          role: r.role === "admin" ? "Администратор" : "Партнёр",
+          active: true,
+          user_id: r.user_id,
+        };
+      });
+    },
+  });
+
+  // System stats
+  const { data: systemStats } = useQuery({
+    queryKey: ["system-stats"],
+    queryFn: async () => {
+      const [{ count: partnerCount }, { count: productCount }] = await Promise.all([
+        supabase.from("partners").select("*", { count: "exact", head: true }),
+        supabase.from("products").select("*", { count: "exact", head: true }),
+      ]);
+      return { partners: partnerCount ?? 0, products: productCount ?? 0 };
+    },
+  });
+
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const handleChangePassword = async () => {
+    if (!newPassword) return;
+    if (newPassword !== confirmPassword) {
+      toast({ title: "Ошибка", description: "Пароли не совпадают", variant: "destructive" });
+      return;
+    }
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) {
+      toast({ title: "Ошибка", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Пароль обновлён" });
+      setNewPassword("");
+      setConfirmPassword("");
+    }
+  };
+
   const toggleDarkMode = (on: boolean) => {
     setDarkMode(on);
     document.documentElement.classList.toggle("dark", on);
     localStorage.setItem("theme", on ? "dark" : "light");
   };
+
+  const fullName = profile?.full_name ?? user?.email ?? "";
+  const initials = fullName.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase() || "?";
 
   return (
     <div className="px-4 sm:px-8 py-6">
@@ -94,64 +167,35 @@ export function SettingsPage() {
               <h3 className="text-sm font-semibold text-foreground mb-6">Профиль</h3>
               <div className="flex items-center gap-5 mb-8">
                 <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted text-lg font-semibold text-foreground">
-                  АД
+                  {initials}
                 </div>
                 <div>
-                  <p className="text-base font-semibold text-foreground">Александр Дорохов</p>
-                  <p className="text-sm text-muted-foreground">admin@brandoors.ru</p>
+                  <p className="text-base font-semibold text-foreground">{fullName}</p>
+                  <p className="text-sm text-muted-foreground">{user?.email}</p>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Имя</label>
-                  <input defaultValue="Александр" className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Фамилия</label>
-                  <input defaultValue="Дорохов" className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Email</label>
-                  <input defaultValue="admin@brandoors.ru" className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Телефон</label>
-                  <input defaultValue="+7 (926) 000-00-00" className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
-                </div>
-              </div>
-              <div className="mt-6 flex justify-end">
-                <button
-                  onClick={() => toast({ title: "Профиль сохранён" })}
-                  className="h-9 px-5 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors"
-                >
-                  Сохранить
-                </button>
-              </div>
+              <p className="text-sm text-muted-foreground">Для редактирования профиля перейдите в раздел «Профиль» в меню.</p>
             </div>
           )}
 
           {activeTab === "security" && (
             <div className="rounded-2xl border border-border bg-card p-6 opacity-0 animate-fade-up">
               <h3 className="text-sm font-semibold text-foreground mb-6">Безопасность</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Текущий пароль</label>
-                  <input type="password" className="h-10 w-full max-w-sm rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
-                </div>
+              <div className="space-y-4 max-w-sm">
                 <div>
                   <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Новый пароль</label>
-                  <input type="password" className="h-10 w-full max-w-sm rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
+                  <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
+                    className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
                 </div>
                 <div>
                   <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Подтверждение</label>
-                  <input type="password" className="h-10 w-full max-w-sm rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
+                  <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow" />
                 </div>
               </div>
               <div className="mt-6">
-                <button
-                  onClick={() => toast({ title: "Пароль обновлён" })}
-                  className="h-9 px-5 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors"
-                >
+                <button onClick={handleChangePassword} disabled={!newPassword}
+                  className="h-9 px-5 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-40">
                   Обновить пароль
                 </button>
               </div>
@@ -187,34 +231,27 @@ export function SettingsPage() {
             <div className="rounded-2xl border border-border bg-card overflow-hidden opacity-0 animate-fade-up">
               <div className="flex items-center justify-between px-6 py-4 border-b border-border">
                 <h3 className="text-sm font-semibold text-foreground">Пользователи</h3>
-                <button
-                  onClick={() => toast({ title: "Добавление пользователя", description: "Будет доступно после подключения бекенда" })}
-                  className="h-8 px-3.5 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors"
-                >
-                  Добавить
-                </button>
               </div>
               <div className="divide-y divide-border">
-                {users.map((u) => (
-                  <div key={u.email} className="flex items-center gap-4 px-6 py-3.5 hover:bg-muted/40 transition-colors">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold text-foreground">
-                      {u.name.split(" ").map(n => n[0]).join("")}
+                {users.length === 0 ? (
+                  <div className="px-6 py-8 text-center text-sm text-muted-foreground">Загрузка...</div>
+                ) : (
+                  users.map((u) => (
+                    <div key={u.user_id} className="flex items-center gap-4 px-6 py-3.5 hover:bg-muted/40 transition-colors">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold text-foreground">
+                        {u.name.split(" ").map(n => n[0]).join("").slice(0, 2)}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-foreground">{u.name}</p>
+                      </div>
+                      <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-medium ${
+                        u.role === "Администратор" ? "bg-foreground text-primary-foreground" : "bg-muted text-muted-foreground"
+                      }`}>
+                        {u.role}
+                      </span>
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-foreground">{u.name}</p>
-                      <p className="text-[11px] text-muted-foreground">{u.email}</p>
-                    </div>
-                    <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-medium ${
-                      u.role === "Администратор" ? "bg-foreground text-primary-foreground" : "bg-muted text-muted-foreground"
-                    }`}>
-                      {u.role}
-                    </span>
-                    <span className={`h-2.5 w-2.5 rounded-full ${u.active ? "bg-success" : "bg-muted-foreground/30"}`} />
-                    <button className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors">
-                      <ChevronRight className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           )}
@@ -243,9 +280,8 @@ export function SettingsPage() {
               <div className="space-y-3 text-sm">
                 {[
                   { label: "Версия", value: "1.0.0" },
-                  { label: "Партнёров", value: "5" },
-                  { label: "Товаров в каталоге", value: "247" },
-                  { label: "Последнее обновление", value: "21.03.2026" },
+                  { label: "Партнёров", value: String(systemStats?.partners ?? "—") },
+                  { label: "Товаров в каталоге", value: String(systemStats?.products ?? "—") },
                 ].map((item, i, arr) => (
                   <div key={item.label} className={`flex items-center justify-between py-2 ${i < arr.length - 1 ? "border-b border-border" : ""}`}>
                     <span className="text-muted-foreground">{item.label}</span>
@@ -262,7 +298,7 @@ export function SettingsPage() {
       <ConfirmDialog
         open={logoutOpen}
         onClose={() => setLogoutOpen(false)}
-        onConfirm={() => toast({ title: "Выход выполнен" })}
+        onConfirm={() => signOut()}
         title="Выход из системы"
         description="Вы уверены, что хотите выйти из CRM?"
         confirmLabel="Выйти"
