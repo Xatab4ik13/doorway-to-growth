@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useCallback } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { Phone, X } from "lucide-react";
 import { CartButton } from "./CartButton";
@@ -13,7 +13,7 @@ interface Props {
 const NAV_ITEMS = [
   { label: "Каталог", href: "catalog", isRoute: true },
   { label: "Отзывы", href: "#about", isRoute: false },
-  { label: "О салоне", href: "#about", isRoute: false },
+  { label: "О бренде", href: "brand", isRoute: true },
   { label: "Контакты", href: "#contacts", isRoute: false },
 ];
 
@@ -26,6 +26,31 @@ const EASE_SMOOTH: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 export function StorefrontHeader({ site }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleNavClick = useCallback((item: typeof NAV_ITEMS[0]) => {
+    setMobileOpen(false);
+    if (item.isRoute) {
+      navigate(`/store/${site.slug}/${item.href}`);
+    } else {
+      // For hash links, check if we're on the main storefront page
+      const isStorefrontMain = window.location.pathname === `/store/${site.slug}` || window.location.pathname === `/store/${site.slug}/`;
+      if (isStorefrontMain) {
+        const el = document.querySelector(item.href);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+        }
+      } else {
+        navigate(`/store/${site.slug}`);
+        setTimeout(() => {
+          const el = document.querySelector(item.href);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth" });
+          }
+        }, 500);
+      }
+    }
+  }, [site.slug, navigate]);
 
   return (
     <>
@@ -79,7 +104,7 @@ export function StorefrontHeader({ site }: Props) {
             >
               {/* Gold background SVG — L-shape */}
               <svg
-                className="absolute inset-0 w-full h-full"
+                className="absolute inset-0 w-full h-full pointer-events-none"
                 viewBox="0 0 300 900"
                 preserveAspectRatio="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -99,41 +124,29 @@ export function StorefrontHeader({ site }: Props) {
                 <rect width="300" height="900" fill="url(#mobileGold)" />
               </svg>
 
-              {/* Close button */}
+              {/* Close button — high z-index, above SVG */}
               <button
                 onClick={() => setMobileOpen(false)}
-                className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center"
+                className="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center"
+                aria-label="Закрыть меню"
               >
-                <X className="w-5 h-5" style={{ color: "rgba(26,20,8,0.5)" }} />
+                <X className="w-6 h-6" style={{ color: "rgba(26,20,8,0.6)" }} />
               </button>
 
               {/* Content */}
               <div className="relative z-10 flex flex-col h-full px-8 pt-16">
                 {/* Navigation */}
                 <nav className="flex flex-col gap-1 mb-10">
-                  {NAV_ITEMS.map((item) =>
-                    item.isRoute ? (
-                      <Link
-                        key={item.label}
-                        to={`/store/${site.slug}/${item.href}`}
-                        onClick={() => setMobileOpen(false)}
-                        className="text-[13px] font-semibold uppercase tracking-[0.25em] py-3 transition-colors duration-300"
-                        style={{ fontFamily: "'Raleway', sans-serif", color: "rgba(26,20,8,0.55)" }}
-                      >
-                        {item.label}
-                      </Link>
-                    ) : (
-                      <a
-                        key={item.label}
-                        href={item.href}
-                        onClick={() => setMobileOpen(false)}
-                        className="text-[13px] font-semibold uppercase tracking-[0.25em] py-3 transition-colors duration-300"
-                        style={{ fontFamily: "'Raleway', sans-serif", color: "rgba(26,20,8,0.55)" }}
-                      >
-                        {item.label}
-                      </a>
-                    )
-                  )}
+                  {NAV_ITEMS.map((item) => (
+                    <button
+                      key={item.label}
+                      onClick={() => handleNavClick(item)}
+                      className="text-left text-[13px] font-semibold uppercase tracking-[0.25em] py-3 transition-colors duration-300"
+                      style={{ fontFamily: "'Raleway', sans-serif", color: "rgba(26,20,8,0.55)" }}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
                 </nav>
 
                 {/* Divider */}

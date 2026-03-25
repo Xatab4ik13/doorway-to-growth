@@ -66,6 +66,7 @@ const App = () => (
             <Route path="/store/:slug/catalog" element={<StorefrontCatalog />} />
             <Route path="/store/:slug/product/:productSlug" element={<StorefrontProduct />} />
             <Route path="/store/:slug/cart" element={<StorefrontCart />} />
+            <Route path="/store/:slug/brand" element={<StorefrontBrand />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
