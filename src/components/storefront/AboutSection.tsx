@@ -2,6 +2,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { MapPin, Phone, Mail, Clock, ChevronLeft, ChevronRight, Play } from "lucide-react";
+import { ReviewsCarousel } from "./ReviewsCarousel";
+import { YandexMap } from "./YandexMap";
 
 import showroom1 from "@/assets/showroom/showroom-1.jpg";
 import showroom2 from "@/assets/showroom/showroom-2.jpg";
