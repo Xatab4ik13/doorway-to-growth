@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { StorefrontHeader } from "./StorefrontHeader";
 import { StorefrontFooter } from "./StorefrontFooter";
+import { CartDrawer } from "./CartDrawer";
 
 interface Props {
   site: StorefrontSite;
@@ -14,6 +15,7 @@ export function StorefrontLayout({ site, children }: Props) {
       <StorefrontHeader site={site} />
       <main>{children}</main>
       <StorefrontFooter site={site} />
+      <CartDrawer />
     </div>
   );
 }
