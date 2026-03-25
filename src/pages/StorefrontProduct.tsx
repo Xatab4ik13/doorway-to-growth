@@ -3,13 +3,15 @@ import { useParams, Link } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts } from "@/hooks/useStorefrontData";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
+import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight, Ruler, Palette, Eye, ShoppingCart, Check } from "lucide-react";
 import { useCartStore } from "@/stores/useCartStore";
 
 export default function StorefrontProduct() {
-  const { slug, productSlug } = useParams<{ slug: string; productSlug: string }>();
+  const { slug: urlSlug, productSlug } = useParams<{ slug: string; productSlug: string }>();
+  const slug = useSiteSlug(urlSlug);
   const { data: site, isLoading: siteLoading } = useSiteBySlug(slug);
   const { data: products = [], isLoading: productsLoading } = useStorefrontProducts(site?.id);
 

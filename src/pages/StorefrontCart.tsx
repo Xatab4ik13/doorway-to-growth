@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
+import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { useCartStore } from "@/stores/useCartStore";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,7 +20,8 @@ import {
 } from "lucide-react";
 
 export default function StorefrontCart() {
-  const { slug } = useParams<{ slug: string }>();
+  const { slug: urlSlug } = useParams<{ slug: string }>();
+  const slug = useSiteSlug(urlSlug);
   const { data: site, isLoading } = useSiteBySlug(slug);
 
   const { items, removeItem, updateQuantity, clearCart, totalItems, totalPrice } =
