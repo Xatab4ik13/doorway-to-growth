@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
