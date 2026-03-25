@@ -3,7 +3,6 @@ import { useParams, Link } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts } from "@/hooks/useStorefrontData";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
-import { toast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight, Ruler, Palette, Eye, ShoppingCart } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
