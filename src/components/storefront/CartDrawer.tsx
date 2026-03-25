@@ -59,7 +59,7 @@ export function CartDrawer() {
             animate="visible"
             exit="exit"
             onClick={closeCart}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/70"
           />
 
           {/* Drawer */}
