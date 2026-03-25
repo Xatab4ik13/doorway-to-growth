@@ -31,7 +31,7 @@ const ITEM_VARIANTS = {
     opacity: 1,
     x: 0,
     scale: 1,
-    transition: { delay: 0.15 + i * 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+    transition: { delay: 0.15 + i * 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
   }),
   exit: { opacity: 0, x: -20, scale: 0.95, transition: { duration: 0.25 } },
 };
