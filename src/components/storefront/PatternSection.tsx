@@ -167,10 +167,16 @@ function DoorCarousel({ doors, onSelect }: { doors: DoorItem[]; onSelect: (name:
 
 export function PatternSection() {
   const [activeTab, setActiveTab] = useState<TabKey>("entrance");
+  const navigate = useNavigate();
+  const { slug } = useParams<{ slug: string }>();
 
   const doorsMap: Record<TabKey, DoorItem[]> = {
     entrance: ENTRANCE_DOORS,
     interior: INTERIOR_DOORS,
+  };
+
+  const handleSelect = (name: string) => {
+    navigate(`/store/${slug}/catalog?collection=${encodeURIComponent(name)}`);
   };
 
   return (
