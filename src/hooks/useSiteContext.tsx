@@ -21,8 +21,8 @@ const SiteContext = createContext<SiteContextType>({
 });
 
 // Known non-storefront hostnames
-const CRM_HOSTS = ["crm.brandoors.ru", "localhost", "127.0.0.1"];
-const MAIN_HOSTS = ["brandoors.ru", "www.brandoors.ru"];
+const CRM_HOSTS = ["crm.brandoors.su", "localhost", "127.0.0.1"];
+const MAIN_HOSTS = ["brandoors.su", "www.brandoors.su"];
 
 function isPreviewHost(hostname: string) {
   return hostname.includes("lovable.app") || hostname.includes("lovableproject.com");
