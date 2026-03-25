@@ -126,9 +126,9 @@ export function HeroSection({ site, banners }: Props) {
   return (
     <section className="relative h-screen min-h-[700px] overflow-hidden select-none bg-storefront-bg">
 
-      {/* Phone number — right side, on dark background */}
-      {site.phone && (
-        <div className="absolute top-0 right-0 z-40 hidden lg:flex items-center h-[56px] pr-10 xl:pr-14">
+      {/* Phone + Cart — right side, desktop */}
+      <div className="absolute top-0 right-0 z-40 hidden lg:flex items-center gap-4 h-[56px] pr-10 xl:pr-14">
+        {site.phone && (
           <a
             href={`tel:${site.phone}`}
             className="flex items-center gap-2.5 font-medium text-storefront-gold hover:text-storefront-gold-light transition-colors duration-300"
@@ -139,8 +139,9 @@ export function HeroSection({ site, banners }: Props) {
             </svg>
             {site.phone}
           </a>
-        </div>
-      )}
+        )}
+        <CartButton />
+      </div>
 
       {/* === FULLSCREEN SLIDES with clip-path transition === */}
       <AnimatePresence initial={false} custom={direction} mode="popLayout">
