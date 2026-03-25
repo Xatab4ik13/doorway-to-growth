@@ -23,7 +23,7 @@ const variants = {
     filter: "blur(4px)",
     transition: {
       duration: 0.25,
-      ease: [0.4, 0, 1, 1],
+      ease: [0.4, 0, 1, 1] as [number, number, number, number],
     },
   },
 };
