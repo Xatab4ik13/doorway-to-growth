@@ -10,10 +10,12 @@ import { HeroSection } from "@/components/storefront/HeroSection";
 import { AboutSection } from "@/components/storefront/AboutSection";
 import { ContactSection } from "@/components/storefront/ContactSection";
 import { PatternSection } from "@/components/storefront/PatternSection";
+import { useSiteSlug } from "@/hooks/useSiteSlug";
 
 export default function Storefront() {
-  const { slug } = useParams<{ slug: string }>();
-  const { data: site, isLoading, error } = useSiteBySlug(slug);
+  const { slug: urlSlug } = useParams<{ slug: string }>();
+  const resolvedSlug = useSiteSlug(urlSlug);
+  const { data: site, isLoading, error } = useSiteBySlug(resolvedSlug);
 
   const { data: banners = [] } = useStorefrontBanners(site?.id);
   const { data: staff = [] } = useStorefrontStaff(site?.id);
