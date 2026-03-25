@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
+import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import {
   useStorefrontBanners,
   useStorefrontStaff,
@@ -16,6 +17,14 @@ export default function Storefront() {
 
   const { data: banners = [] } = useStorefrontBanners(site?.id);
   const { data: staff = [] } = useStorefrontStaff(site?.id);
+
+  useDocumentMeta({
+    title: site ? `${site.name} — Двери Brandoors в ${site.city}` : "Brandoors — Двери премиум-класса",
+    description: site
+      ? `Салон дверей Brandoors в ${site.district || site.city}. ${site.address ? `Адрес: ${site.city}, ${site.address}.` : ""} ${site.phone ? `Тел: ${site.phone}` : ""}`
+      : "Межкомнатные и входные двери премиум-класса от Brandoors",
+    ogUrl: site ? `https://${site.slug}.brandoors.ru` : undefined,
+  });
 
   if (isLoading) {
     return (
