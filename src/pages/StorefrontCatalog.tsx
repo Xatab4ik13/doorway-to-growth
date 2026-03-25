@@ -542,3 +542,35 @@ export default function StorefrontCatalog() {
     </StorefrontLayout>
   );
 }
+
+function CatalogCartButton({ product, img, siteId }: { product: any; img: string | undefined; siteId: string | undefined }) {
+  const addItem = useCartStore((s) => s.addItem);
+  const isInCart = useCartStore((s) => s.items.some((i) => i.id === product.id));
+
+  return (
+    <motion.button
+      whileTap={{ scale: 0.92 }}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!siteId) return;
+        addItem({
+          id: product.id,
+          name: product.name,
+          slug: product.slug,
+          rrp: product.rrp ? Number(product.rrp) : null,
+          imageUrl: img || null,
+          siteId,
+        });
+      }}
+      className={`mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-[11px] uppercase tracking-wider font-semibold transition-all duration-300 ${
+        isInCart
+          ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
+          : "bg-white/[0.04] text-storefront-muted border border-white/[0.06] hover:border-storefront-gold/30 hover:text-storefront-gold"
+      }`}
+    >
+      {isInCart ? <Check className="w-3.5 h-3.5" /> : <ShoppingCart className="w-3.5 h-3.5" />}
+      {isInCart ? "В корзине" : "В корзину"}
+    </motion.button>
+  );
+}
