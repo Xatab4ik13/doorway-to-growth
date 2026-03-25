@@ -218,7 +218,7 @@ export default function StorefrontBrand() {
                 transition={{ duration: 0.5, delay: i * 0.08, ease: EASE }}
                 whileHover={{ y: -6 }}
               >
-                <img src={col.image} alt={col.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <img src={col.image} alt={col.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                 {/* Permanent gradient overlay */}
                 <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(7,9,13,0.85) 0%, rgba(7,9,13,0.2) 40%, transparent 70%)" }} />
                 {/* Hover highlight */}
@@ -260,7 +260,7 @@ export default function StorefrontBrand() {
               >
                 {/* Image */}
                 <div className="relative rounded-2xl overflow-hidden aspect-[4/3] lg:[direction:ltr]">
-                  <img src={tech.image} alt={tech.title} className="w-full h-full object-cover" />
+                  <img src={tech.image} alt={tech.title} loading="lazy" className="w-full h-full object-cover" />
                   {tech.imageDetail && (
                     <div className="absolute bottom-4 right-4 w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-2" style={{ borderColor: "rgba(207,187,150,0.3)" }}>
                       <img src={tech.imageDetail} alt="Детали конструкции" className="w-full h-full object-cover" />
