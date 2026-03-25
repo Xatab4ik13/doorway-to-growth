@@ -332,13 +332,25 @@ export default function StorefrontProduct() {
                 transition={{ delay: 0.45 }}
                 className="mt-auto pt-6"
               >
-                <button
+                <motion.button
                   onClick={handleAddToCart}
-                  className="w-full bg-storefront-gold text-[#07090d] font-bold text-[13px] uppercase tracking-wider py-4 rounded-lg hover:brightness-110 transition-all flex items-center justify-center gap-3"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.96 }}
+                  className={`w-full font-bold text-[13px] uppercase tracking-wider py-4 rounded-xl transition-all flex items-center justify-center gap-3 relative overflow-hidden group ${
+                    isInCart
+                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                      : "bg-storefront-gold text-[#07090d] hover:brightness-110"
+                  }`}
                 >
-                  <ShoppingCart className="w-5 h-5" />
-                  Добавить в корзину
-                </button>
+                  {/* Shimmer */}
+                  {!isInCart && (
+                    <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                  )}
+                  <span className="relative z-10 flex items-center gap-3">
+                    {isInCart ? <Check className="w-5 h-5" /> : <ShoppingCart className="w-5 h-5" />}
+                    {isInCart ? "В корзине" : "Добавить в корзину"}
+                  </span>
+                </motion.button>
               </motion.div>
             </motion.div>
           </div>
