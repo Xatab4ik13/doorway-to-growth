@@ -90,7 +90,8 @@ const ADVANTAGES = [
 ];
 
 export default function StorefrontBrand() {
-  const { slug } = useParams<{ slug: string }>();
+  const { slug: urlSlug } = useParams<{ slug: string }>();
+  const slug = useSiteSlug(urlSlug);
   const { data: site, isLoading, error } = useSiteBySlug(slug);
 
   if (isLoading) {
