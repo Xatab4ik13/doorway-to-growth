@@ -24,8 +24,8 @@ export function useSiteSlug(urlSlug?: string): string | undefined {
       return null;
     }
 
-    // {slug}.brandoors.ru → extract slug from subdomain
-    const match = hostname.match(/^([a-z0-9-]+)\.brandoors\.ru$/i);
+    // {slug}.brandoors.su → extract slug from subdomain
+    const match = hostname.match(/^([a-z0-9-]+)\.brandoors\.su$/i);
     if (match && match[1] !== "crm" && match[1] !== "www") {
       return match[1];
     }
