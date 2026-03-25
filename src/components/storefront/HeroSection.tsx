@@ -349,10 +349,12 @@ export function HeroSection({ site, banners }: Props) {
             style={{ fontFamily: "'Raleway', sans-serif" }}>
             {site?.name || "BRANDOORS"}
           </span>
-          <span className="text-xs tracking-[0.2em] text-white/15"
-            style={{ fontFamily: "'Raleway', sans-serif" }}>
-            {site?.phone || "+7 (495) 000-00-00"}
-          </span>
+          {site?.phone && (
+            <span className="text-xs tracking-[0.2em] text-white/15"
+              style={{ fontFamily: "'Raleway', sans-serif" }}>
+              {site.phone}
+            </span>
+          )}
         </div>
       </div>
 

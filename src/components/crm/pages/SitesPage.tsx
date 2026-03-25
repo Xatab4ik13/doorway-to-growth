@@ -202,7 +202,17 @@ export function SitesPage() {
                       <span className={`inline-block h-2.5 w-2.5 rounded-full ${s.is_active ? "bg-success" : "bg-muted-foreground/30"}`} />
                     </td>
                     <td className="px-5 py-3.5">
-                      <div className="relative">
+                      <div className="relative flex items-center gap-1">
+                        <a
+                          href={s.domain ? `https://${s.domain}` : `/store/${s.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted active:scale-95 transition-colors"
+                          title="Открыть сайт"
+                        >
+                          <ExternalLink className="h-3.5 w-3.5" />
+                        </a>
                         <button
                           onClick={(e) => { e.stopPropagation(); setMenuOpen(menuOpen === s.id ? null : s.id); }}
                           className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors"
