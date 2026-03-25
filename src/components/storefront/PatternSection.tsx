@@ -112,8 +112,11 @@ function DoorCarousel({ doors, onSelect }: { doors: DoorItem[]; onSelect: (name:
               translateX: "-50%",
               zIndex: isCenter ? 10 : posIdx === centerIdx - 1 || posIdx === centerIdx + 1 ? 5 : 1,
             }}
+            onClick={() => isCenter && onSelect(doors[doorIdx].name)}
             onHoverStart={() => isCenter && setHovered(doorIdx)}
             onHoverEnd={() => setHovered(null)}
+            role={isCenter ? "button" : undefined}
+            tabIndex={isCenter ? 0 : undefined}
           >
             <motion.img
               src={doors[doorIdx].src}
