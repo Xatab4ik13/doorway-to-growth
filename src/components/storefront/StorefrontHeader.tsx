@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { Phone, X } from "lucide-react";
 import { CartButton } from "./CartButton";
@@ -28,13 +28,22 @@ const EASE_SMOOTH: [number, number, number, number] = [0.22, 1, 0.36, 1];
 export function StorefrontHeader({ site }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isActive = useCallback((item: typeof NAV_ITEMS[0]) => {
+    const basePath = `/store/${site.slug}`;
+    if (item.isRoute) {
+      const fullPath = item.href ? `${basePath}/${item.href}` : basePath;
+      return location.pathname === fullPath || location.pathname === `${fullPath}/`;
+    }
+    return false;
+  }, [site.slug, location.pathname]);
 
   const handleNavClick = useCallback((item: typeof NAV_ITEMS[0]) => {
     setMobileOpen(false);
     if (item.isRoute) {
       navigate(`/store/${site.slug}/${item.href}`);
     } else {
-      // For hash links, check if we're on the main storefront page
       const isStorefrontMain = window.location.pathname === `/store/${site.slug}` || window.location.pathname === `/store/${site.slug}/`;
       if (isStorefrontMain) {
         const el = document.querySelector(item.href);
@@ -55,10 +64,63 @@ export function StorefrontHeader({ site }: Props) {
 
   return (
     <>
-      {/* Mobile top bar — transparent, always visible */}
+      {/* ═══ DESKTOP TOP BAR ═══ */}
+      <header className="hidden md:block fixed top-0 left-0 right-0 z-50">
+        <div
+          className="h-14 flex items-center justify-between px-8 backdrop-blur-md border-b border-white/[0.06]"
+          style={{ background: "rgba(7,9,13,0.85)" }}
+        >
+          {/* Logo — home link */}
+          <Link to={`/store/${site.slug}`} className="flex items-center gap-3 shrink-0">
+            <img
+              src={brandoorsLogo}
+              alt="Brandoors"
+              className="h-6"
+              style={{ filter: "brightness(0) invert(1)", opacity: 0.85 }}
+            />
+          </Link>
+
+          {/* Nav links */}
+          <nav className="flex items-center gap-1">
+            {NAV_ITEMS.map((item) => (
+              <button
+                key={item.label}
+                onClick={() => handleNavClick(item)}
+                className="px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] transition-colors duration-300"
+                style={{
+                  fontFamily: "'Raleway', sans-serif",
+                  color: isActive(item) ? "#cfbb96" : "rgba(245,245,240,0.5)",
+                }}
+                onMouseEnter={(e) => { if (!isActive(item)) e.currentTarget.style.color = "rgba(245,245,240,0.85)"; }}
+                onMouseLeave={(e) => { if (!isActive(item)) e.currentTarget.style.color = "rgba(245,245,240,0.5)"; }}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+
+          {/* Right side: phone + cart */}
+          <div className="flex items-center gap-5 shrink-0">
+            {site.phone && (
+              <a
+                href={`tel:${site.phone}`}
+                className="flex items-center gap-2 text-[11px] font-medium tracking-wider transition-colors duration-300"
+                style={{ color: "rgba(245,245,240,0.5)", fontFamily: "'Raleway', sans-serif" }}
+                onMouseEnter={(e) => e.currentTarget.style.color = "#cfbb96"}
+                onMouseLeave={(e) => e.currentTarget.style.color = "rgba(245,245,240,0.5)"}
+              >
+                <Phone className="w-3.5 h-3.5" />
+                {site.phone}
+              </a>
+            )}
+            <CartButton />
+          </div>
+        </div>
+      </header>
+
+      {/* ═══ MOBILE TOP BAR ═══ */}
       <header className="fixed top-0 left-0 right-0 z-50 md:hidden">
         <div className="px-5 h-14 flex items-center justify-between bg-storefront-bg/80 backdrop-blur-md border-b border-white/5">
-          {/* Burger left */}
           <button
             onClick={() => setMobileOpen(true)}
             className="w-8 h-8 flex flex-col items-center justify-center gap-[5px]"
@@ -68,7 +130,6 @@ export function StorefrontHeader({ site }: Props) {
             <span className="block w-5 h-[1.5px] bg-storefront-gold" />
           </button>
 
-          {/* Logo center — links to home */}
           <Link to={`/store/${site.slug}`}>
             <img
               src={brandoorsLogo}
@@ -78,16 +139,14 @@ export function StorefrontHeader({ site }: Props) {
             />
           </Link>
 
-          {/* Cart right */}
           <CartButton />
         </div>
       </header>
 
-      {/* Mobile slide-out panel — gold L-shape like desktop */}
+      {/* ═══ MOBILE SLIDE-OUT ═══ */}
       <AnimatePresence>
         {mobileOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
               className="fixed inset-0 z-[60] bg-black/60 md:hidden"
               initial={{ opacity: 0 }}
@@ -96,7 +155,6 @@ export function StorefrontHeader({ site }: Props) {
               onClick={() => setMobileOpen(false)}
             />
 
-            {/* Gold panel */}
             <motion.div
               className="fixed top-0 left-0 bottom-0 z-[70] md:hidden"
               style={{ width: "300px" }}
@@ -105,7 +163,6 @@ export function StorefrontHeader({ site }: Props) {
               exit={{ x: -300 }}
               transition={{ duration: 0.5, ease: EASE_SMOOTH }}
             >
-              {/* Gold background SVG — L-shape */}
               <svg
                 className="absolute inset-0 w-full h-full pointer-events-none"
                 viewBox="0 0 300 900"
@@ -127,7 +184,6 @@ export function StorefrontHeader({ site }: Props) {
                 <rect width="300" height="900" fill="url(#mobileGold)" />
               </svg>
 
-              {/* Close button — high z-index, above SVG */}
               <button
                 onClick={() => setMobileOpen(false)}
                 className="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center"
@@ -136,54 +192,37 @@ export function StorefrontHeader({ site }: Props) {
                 <X className="w-6 h-6" style={{ color: "rgba(26,20,8,0.6)" }} />
               </button>
 
-              {/* Content */}
               <div className="relative z-10 flex flex-col h-full px-8 pt-16">
-                {/* Navigation */}
                 <nav className="flex flex-col gap-1 mb-10">
                   {NAV_ITEMS.map((item) => (
                     <button
                       key={item.label}
                       onClick={() => handleNavClick(item)}
                       className="text-left text-[13px] font-semibold uppercase tracking-[0.25em] py-3 transition-colors duration-300"
-                      style={{ fontFamily: "'Raleway', sans-serif", color: "rgba(26,20,8,0.55)" }}
+                      style={{ fontFamily: "'Raleway', sans-serif", color: isActive(item) ? "rgba(26,20,8,0.85)" : "rgba(26,20,8,0.55)" }}
                     >
                       {item.label}
                     </button>
                   ))}
                 </nav>
 
-                {/* Divider */}
                 <div className="w-12 h-px mb-8" style={{ background: "rgba(26,20,8,0.15)" }} />
 
-                {/* Phone */}
                 {site.phone && (
-                  <a
-                    href={`tel:${site.phone}`}
-                    className="flex items-center gap-3 mb-8"
-                  >
+                  <a href={`tel:${site.phone}`} className="flex items-center gap-3 mb-8">
                     <Phone className="w-4 h-4" style={{ color: "rgba(26,20,8,0.4)" }} />
-                    <span
-                      className="text-sm font-medium"
-                      style={{ fontFamily: "'Raleway', sans-serif", color: "rgba(26,20,8,0.7)" }}
-                    >
+                    <span className="text-sm font-medium" style={{ fontFamily: "'Raleway', sans-serif", color: "rgba(26,20,8,0.7)" }}>
                       {site.phone}
                     </span>
                   </a>
                 )}
 
-                {/* Spacer */}
                 <div className="flex-1" />
 
-                {/* Logo */}
                 <div className="flex justify-center mb-10">
-                  <img
-                    src={brandoorsLogo}
-                    alt="Brandoors"
-                    style={{ filter: "brightness(0)", opacity: 0.7, width: "auto", height: "60px" }}
-                  />
+                  <img src={brandoorsLogo} alt="Brandoors" style={{ filter: "brightness(0)", opacity: 0.7, width: "auto", height: "60px" }} />
                 </div>
 
-                {/* Social links */}
                 <div className="flex items-center justify-center gap-3 mb-10">
                   {SOCIAL_LINKS.map((s, i) => (
                     <a

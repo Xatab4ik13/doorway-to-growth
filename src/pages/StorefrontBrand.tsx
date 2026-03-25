@@ -111,7 +111,7 @@ export default function StorefrontBrand() {
   return (
     <StorefrontLayout site={site}>
       {/* ═══════════ HERO ═══════════ */}
-      <section className="relative pt-20 md:pt-0 min-h-[60vh] md:min-h-[80vh] flex items-center overflow-hidden" style={{ backgroundColor: "#07090D" }}>
+      <section className="relative pt-14 min-h-[60vh] md:min-h-[80vh] flex items-center overflow-hidden" style={{ backgroundColor: "#07090D" }}>
         <div className="absolute inset-0 z-0">
           <img src={doorsPanels} alt="" className="w-full h-full object-cover opacity-25" />
           <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(7,9,13,0.92) 0%, rgba(7,9,13,0.7) 50%, rgba(7,9,13,0.85) 100%)" }} />
@@ -284,13 +284,12 @@ export default function StorefrontBrand() {
             {ADVANTAGES.map((adv, i) => (
               <motion.div
                 key={adv.title}
-                className="group relative rounded-2xl p-5 md:p-6 border border-white/[0.06] overflow-hidden"
+                className="group relative rounded-2xl p-5 md:p-6 border border-white/[0.06] overflow-hidden hover:-translate-y-1 transition-transform duration-300"
                 style={{ background: "linear-gradient(135deg, rgba(207,187,150,0.06) 0%, rgba(30,30,30,0.4) 100%)" }}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.05, ease: EASE }}
-                whileHover={{ scale: 1.04, y: -4 }}
               >
                 <div className="absolute -top-8 -right-8 w-20 h-20 rounded-full bg-[#cfbb96]/0 group-hover:bg-[#cfbb96]/10 blur-2xl transition-all duration-500" />
                 <span className="text-[32px] font-extralight leading-none mb-3 block" style={{ color: "rgba(207,187,150,0.15)", fontFamily: "'Raleway', sans-serif" }}>
@@ -349,12 +348,11 @@ export default function StorefrontBrand() {
 function CollectionCard({ col, index, aspect }: { col: { name: string; desc: string; image: string }; index: number; aspect: string }) {
   return (
     <motion.div
-      className={`group relative rounded-2xl overflow-hidden ${aspect} cursor-pointer`}
+      className={`group relative rounded-2xl overflow-hidden ${aspect} cursor-pointer hover:-translate-y-1 transition-transform duration-300`}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.08, ease: EASE }}
-      whileHover={{ y: -6 }}
     >
       <img src={col.image} alt={col.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
       <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(7,9,13,0.85) 0%, rgba(7,9,13,0.2) 40%, transparent 70%)" }} />
