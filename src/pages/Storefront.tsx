@@ -40,7 +40,7 @@ export default function Storefront() {
     <StorefrontLayout site={site}>
       <HeroSection site={site} banners={banners} />
       <PatternSection />
-      <AboutSection site={site} staff={staff} />
+      <AboutSection site={site} staff={[]} />
       <ContactSection site={site} />
     </StorefrontLayout>
   );
