@@ -36,28 +36,8 @@ export default function StorefrontProduct() {
     return primary?.url || p.product_images?.[0]?.url;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name || !formData.phone) return;
-
-    setSubmitting(true);
-    try {
-      const { error } = await supabase.from("leads").insert({
-        name: formData.name,
-        phone: formData.phone,
-        message: formData.message || `Интересует: ${product?.name}`,
-        product_id: product?.id,
-        site_id: site?.id,
-        source: "catalog",
-      });
-      if (error) throw error;
-      toast({ title: "Заявка отправлена!", description: "Мы свяжемся с вами в ближайшее время" });
-      setFormData({ name: "", phone: "", message: "" });
-    } catch {
-      toast({ title: "Ошибка", description: "Попробуйте позже", variant: "destructive" });
-    } finally {
-      setSubmitting(false);
-    }
+  const handleAddToCart = () => {
+    toast({ title: "Добавлено в корзину", description: product?.name });
   };
 
   const nextImage = () => setCurrentImage((prev) => (prev + 1) % images.length);
