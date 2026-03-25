@@ -40,7 +40,7 @@ function extractSlugFromSubdomain(hostname: string): string | null {
 export function useSiteFromHostname() {
   const hostname = typeof window !== "undefined" ? window.location.hostname : "";
 
-  // Check if it's a subdomain of brandoors.ru
+  // Check if it's a subdomain of brandoors.su
   const subdomainSlug = extractSlugFromSubdomain(hostname);
 
   // Check if it's a custom domain (not brandoors.ru, not preview, not localhost)
