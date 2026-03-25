@@ -260,7 +260,7 @@ export default function StorefrontCatalog() {
                   onClick={() => setMobileFiltersOpen(false)}
                 />
                 <motion.div
-                  className="fixed top-0 left-0 bottom-0 z-[70] md:hidden overflow-y-auto"
+                  className="fixed top-0 left-0 bottom-0 z-[70] md:hidden overflow-y-auto scrollbar-hide"
                   style={{ width: "300px" }}
                   initial={{ x: -300 }}
                   animate={{ x: 0 }}
