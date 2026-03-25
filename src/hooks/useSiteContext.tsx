@@ -29,8 +29,8 @@ function isPreviewHost(hostname: string) {
 }
 
 function extractSlugFromSubdomain(hostname: string): string | null {
-  // Handle {slug}.brandoors.ru
-  const match = hostname.match(/^([a-z0-9-]+)\.brandoors\.ru$/i);
+  // Handle {slug}.brandoors.su
+  const match = hostname.match(/^([a-z0-9-]+)\.brandoors\.su$/i);
   if (match && !CRM_HOSTS.includes(hostname) && !MAIN_HOSTS.includes(hostname)) {
     return match[1];
   }
