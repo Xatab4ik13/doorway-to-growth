@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { Phone, Menu, X } from "lucide-react";
+import { CartButton } from "./CartButton";
 
 interface Props {
   site: StorefrontSite;
@@ -17,8 +18,6 @@ const NAV_ITEMS = [
 export function StorefrontHeader({ site }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Header is transparent — nav is inside Hero on desktop.
-  // This component handles mobile only.
   return (
     <>
       {/* Mobile top bar */}
@@ -27,9 +26,12 @@ export function StorefrontHeader({ site }: Props) {
           <span className="text-sm font-bold tracking-wider text-storefront-text">
             BRANDOORS
           </span>
-          <button onClick={() => setMobileOpen(!mobileOpen)} className="text-storefront-text">
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+          <div className="flex items-center gap-2">
+            <CartButton />
+            <button onClick={() => setMobileOpen(!mobileOpen)} className="text-storefront-text">
+              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
         {mobileOpen && (
           <div className="bg-storefront-bg border-t border-white/5 px-5 py-4 space-y-1">

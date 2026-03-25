@@ -4,8 +4,9 @@ import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronRight, ChevronDown, ShoppingCart, Check } from "lucide-react";
 import brandoorsLogo from "@/assets/logo.png";
+import { useCartStore } from "@/stores/useCartStore";
 
 const ITEMS_PER_PAGE = 16;
 
@@ -437,12 +438,13 @@ export default function StorefrontCatalog() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.25, delay: Math.min(i * 0.03, 0.3) }}
+                      className="group"
                     >
                       <Link
                         to={`/store/${slug}/product/${product.slug}`}
-                        className="group block"
+                        className="block"
                       >
-                        {/* Image — fits the door, no extra space */}
+                        {/* Image */}
                         <div className="relative overflow-hidden bg-[#0c0e14] flex items-center justify-center" style={{ minHeight: "280px" }}>
                           {img ? (
                             <img
@@ -475,6 +477,9 @@ export default function StorefrontCatalog() {
                           )}
                         </div>
                       </Link>
+
+                      {/* Add to cart button */}
+                      <CatalogCartButton product={product} img={img} siteId={site?.id} />
                     </motion.div>
                   );
                 })}
@@ -535,5 +540,37 @@ export default function StorefrontCatalog() {
         </div>
       </div>
     </StorefrontLayout>
+  );
+}
+
+function CatalogCartButton({ product, img, siteId }: { product: any; img: string | undefined; siteId: string | undefined }) {
+  const addItem = useCartStore((s) => s.addItem);
+  const isInCart = useCartStore((s) => s.items.some((i) => i.id === product.id));
+
+  return (
+    <motion.button
+      whileTap={{ scale: 0.92 }}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!siteId) return;
+        addItem({
+          id: product.id,
+          name: product.name,
+          slug: product.slug,
+          rrp: product.rrp ? Number(product.rrp) : null,
+          imageUrl: img || null,
+          siteId,
+        });
+      }}
+      className={`mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-[11px] uppercase tracking-wider font-semibold transition-all duration-300 ${
+        isInCart
+          ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
+          : "bg-white/[0.04] text-storefront-muted border border-white/[0.06] hover:border-storefront-gold/30 hover:text-storefront-gold"
+      }`}
+    >
+      {isInCart ? <Check className="w-3.5 h-3.5" /> : <ShoppingCart className="w-3.5 h-3.5" />}
+      {isInCart ? "В корзине" : "В корзину"}
+    </motion.button>
   );
 }

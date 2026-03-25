@@ -4,8 +4,8 @@ import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts } from "@/hooks/useStorefrontData";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ChevronLeft, ChevronRight, Ruler, Palette, Eye, ShoppingCart } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { ArrowLeft, ChevronLeft, ChevronRight, Ruler, Palette, Eye, ShoppingCart, Check } from "lucide-react";
+import { useCartStore } from "@/stores/useCartStore";
 
 export default function StorefrontProduct() {
   const { slug, productSlug } = useParams<{ slug: string; productSlug: string }>();
@@ -36,8 +36,22 @@ export default function StorefrontProduct() {
     return primary?.url || p.product_images?.[0]?.url;
   };
 
+  const addItem = useCartStore((s) => s.addItem);
+  const cartItems = useCartStore((s) => s.items);
+  const isInCart = cartItems.some((i) => i.id === product?.id);
+
   const handleAddToCart = () => {
-    toast({ title: "Добавлено в корзину", description: product?.name });
+    if (!product || !site) return;
+    const primary = product.product_images?.find((i: any) => i.is_primary);
+    const imgUrl = primary?.url || product.product_images?.[0]?.url || null;
+    addItem({
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      rrp: product.rrp ? Number(product.rrp) : null,
+      imageUrl: imgUrl,
+      siteId: site.id,
+    });
   };
 
   const nextImage = () => setCurrentImage((prev) => (prev + 1) % images.length);
@@ -318,13 +332,25 @@ export default function StorefrontProduct() {
                 transition={{ delay: 0.45 }}
                 className="mt-auto pt-6"
               >
-                <button
+                <motion.button
                   onClick={handleAddToCart}
-                  className="w-full bg-storefront-gold text-[#07090d] font-bold text-[13px] uppercase tracking-wider py-4 rounded-lg hover:brightness-110 transition-all flex items-center justify-center gap-3"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.96 }}
+                  className={`w-full font-bold text-[13px] uppercase tracking-wider py-4 rounded-xl transition-all flex items-center justify-center gap-3 relative overflow-hidden group ${
+                    isInCart
+                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                      : "bg-storefront-gold text-[#07090d] hover:brightness-110"
+                  }`}
                 >
-                  <ShoppingCart className="w-5 h-5" />
-                  Добавить в корзину
-                </button>
+                  {/* Shimmer */}
+                  {!isInCart && (
+                    <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                  )}
+                  <span className="relative z-10 flex items-center gap-3">
+                    {isInCart ? <Check className="w-5 h-5" /> : <ShoppingCart className="w-5 h-5" />}
+                    {isInCart ? "В корзине" : "Добавить в корзину"}
+                  </span>
+                </motion.button>
               </motion.div>
             </motion.div>
           </div>
