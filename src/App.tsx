@@ -13,6 +13,7 @@ import Storefront from "./pages/Storefront.tsx";
 import StorefrontCatalog from "./pages/StorefrontCatalog.tsx";
 import StorefrontProduct from "./pages/StorefrontProduct.tsx";
 import StorefrontCart from "./pages/StorefrontCart.tsx";
+import StorefrontBrand from "./pages/StorefrontBrand.tsx";
 
 const queryClient = new QueryClient();
 
