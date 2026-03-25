@@ -284,13 +284,12 @@ export default function StorefrontBrand() {
             {ADVANTAGES.map((adv, i) => (
               <motion.div
                 key={adv.title}
-                className="group relative rounded-2xl p-5 md:p-6 border border-white/[0.06] overflow-hidden"
+                className="group relative rounded-2xl p-5 md:p-6 border border-white/[0.06] overflow-hidden hover:-translate-y-1 transition-transform duration-300"
                 style={{ background: "linear-gradient(135deg, rgba(207,187,150,0.06) 0%, rgba(30,30,30,0.4) 100%)" }}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.05, ease: EASE }}
-                whileHover={{ scale: 1.04, y: -4 }}
               >
                 <div className="absolute -top-8 -right-8 w-20 h-20 rounded-full bg-[#cfbb96]/0 group-hover:bg-[#cfbb96]/10 blur-2xl transition-all duration-500" />
                 <span className="text-[32px] font-extralight leading-none mb-3 block" style={{ color: "rgba(207,187,150,0.15)", fontFamily: "'Raleway', sans-serif" }}>
