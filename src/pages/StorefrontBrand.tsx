@@ -3,18 +3,18 @@ import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { motion } from "framer-motion";
 import brandoorsLogo from "@/assets/logo.png";
-import ghostDoors from "@/assets/brand/ghost-doors.jpg";
-import invisibleDoor from "@/assets/brand/invisible-door.jpg";
-import esteticaEmale from "@/assets/brand/estetica-emale.jpg";
-import esteticaReflect from "@/assets/brand/estetica-reflect.jpg";
-import ghostStucco from "@/assets/brand/ghost-stucco.jpg";
-import ghostPanels from "@/assets/brand/ghost-panels.jpg";
-import ghostWallpaper from "@/assets/brand/ghost-wallpaper.jpg";
-import ghostGlass from "@/assets/brand/ghost-glass.jpg";
-import lvlFrame from "@/assets/brand/lvl-frame.jpg";
-import lvlDetail from "@/assets/brand/lvl-detail.jpg";
-import magneticLock from "@/assets/brand/magnetic-lock.jpg";
 import { ArrowRight, Phone } from "lucide-react";
+
+/* ─── Images from presentation ─── */
+import doorsEmale from "@/assets/brand/doors-1.jpg";       // Estetica Emale — гладкая эмаль
+import doorsStucco from "@/assets/brand/doors-2.jpg";      // Ghost — штукатурка
+import doorsWallpaper from "@/assets/brand/doors-3.jpg";   // Ghost Wallpaper — обои
+import doorsReflect from "@/assets/brand/doors-4.jpg";     // Estetica Reflect — зеркало
+import doorsPanels from "@/assets/brand/ghost-doors.jpg";   // Ghost Panels — стеновые панели
+import frameDetail from "@/assets/brand/doors-5.jpg";      // Короб INVISIBLE
+import doorsCrossSection from "@/assets/brand/doors-6.jpg"; // Разрез двери — LVL-брус
+import lvlDetail from "@/assets/brand/lvl-detail.jpg";     // LVL деталь крупно
+import magneticLock from "@/assets/brand/magnetic-lock.jpg"; // Угол конструкции
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -22,40 +22,35 @@ const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const COLLECTIONS = [
   {
     name: "ESTETICA EMALE",
-    desc: "Декорирование эмалью по RAL & NCS",
-    image: esteticaEmale,
+    desc: "Декорирование эмалью по RAL & NCS — безупречная гладкая поверхность",
+    image: doorsEmale,
   },
   {
     name: "ESTETICA REFLECT",
-    desc: "С зеркалом — визуальное расширение пространства",
-    image: esteticaReflect,
+    desc: "С зеркалом — визуальное расширение пространства и стиль",
+    image: doorsReflect,
   },
   {
     name: "GHOST",
-    desc: "Декорирование штукатуркой — дверь сливается со стеной",
-    image: ghostStucco,
-  },
-  {
-    name: "GHOST PANELS",
-    desc: "Со стеновыми панелями для единого интерьера",
-    image: ghostPanels,
+    desc: "Декорирование штукатуркой — дверь полностью сливается со стеной",
+    image: doorsStucco,
   },
   {
     name: "GHOST WALLPAPER",
-    desc: "Декорирование обоями — бесшовная интеграция",
-    image: ghostWallpaper,
+    desc: "Декорирование обоями — бесшовная интеграция в интерьер",
+    image: doorsWallpaper,
   },
   {
-    name: "ESTETICA GLASS",
-    desc: "С окрашенным стеклом в RAL & NCS",
-    image: ghostGlass,
+    name: "GHOST PANELS",
+    desc: "Со стеновыми панелями — единое пространство без видимых дверей",
+    image: doorsPanels,
   },
 ];
 
 /* ─── Технологии ─── */
 const TECHNOLOGIES = [
   {
-    title: "Прочный каркас LVL-брус",
+    title: "Каркас из LVL-бруса",
     desc: "Прочность на растяжение и изгиб вдоль волокон в два раза превышает показатели других пиломатериалов. Не боится влажности, биоустойчив, не даёт усадки и не деформируется.",
     points: [
       "Прочность в 2× выше стандартных материалов",
@@ -64,20 +59,20 @@ const TECHNOLOGIES = [
       "Точные геометрические размеры",
       "Отличная теплоизоляция",
     ],
-    image: lvlFrame,
+    image: doorsCrossSection,
     imageDetail: lvlDetail,
   },
   {
-    title: "Итальянский магнитный замок",
-    desc: "Магнитные замки итальянского производства обеспечивают 500 000 циклов открывания и закрывания — это 150 лет работы.",
+    title: "Короб INVISIBLE",
+    desc: "Скрытый алюминиевый короб — дверь становится невидимой. Безупречное мастерство в каждой детали конструкции и великолепное комплексное решение для помещения.",
     points: [
-      "500 000 циклов надёжной работы",
-      "Мягкое и бесшумное закрывание",
-      "Простая форма для лёгкого монтажа",
-      "Плавная и тихая работа механизма",
+      "Алюминиевый короб скрытого монтажа",
+      "Дверь идеально сливается со стеной",
+      "Под покраску, штукатурку или обои",
+      "Итальянский магнитный замок — 500 000 циклов",
     ],
-    image: magneticLock,
-    imageDetail: null,
+    image: frameDetail,
+    imageDetail: magneticLock,
   },
 ];
 
@@ -117,9 +112,8 @@ export default function StorefrontBrand() {
     <StorefrontLayout site={site}>
       {/* ═══════════ HERO ═══════════ */}
       <section className="relative pt-20 md:pt-0 min-h-[60vh] md:min-h-[80vh] flex items-center overflow-hidden" style={{ backgroundColor: "#07090D" }}>
-        {/* Background image with overlay */}
         <div className="absolute inset-0 z-0">
-          <img src={ghostDoors} alt="" className="w-full h-full object-cover opacity-30" />
+          <img src={doorsPanels} alt="" className="w-full h-full object-cover opacity-25" />
           <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(7,9,13,0.92) 0%, rgba(7,9,13,0.7) 50%, rgba(7,9,13,0.85) 100%)" }} />
         </div>
 
@@ -159,7 +153,7 @@ export default function StorefrontBrand() {
               <SectionTitle>О <span style={{ color: "#cfbb96" }}>компании</span></SectionTitle>
               <div className="space-y-5" style={{ color: "rgba(245,245,240,0.6)", fontFamily: "'Raleway', sans-serif", fontSize: "15px", lineHeight: "1.8" }}>
                 <p>
-                  <strong style={{ color: "#cfbb96" }}>BRANDOORS</strong> — это ультрадинамичная команда творческих людей, объединившихся, чтобы бросить вызов стереотипам.
+                  <Gold>BRANDOORS</Gold> — это ультрадинамичная команда творческих людей, объединившихся, чтобы бросить вызов стереотипам.
                 </p>
                 <p>
                   Это не просто молодой бренд дверей — это революция в подходе к ценообразованию. Наши технологии работают на вашу выгоду, а производственные возможности и характеристики продукта не имеют границ.
@@ -175,7 +169,7 @@ export default function StorefrontBrand() {
 
             <motion.div className="relative" initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.8, delay: 0.2, ease: EASE }}>
               <div className="relative rounded-2xl overflow-hidden aspect-[4/5]">
-                <img src={invisibleDoor} alt="Скрытые двери с коробом INVISIBLE" className="w-full h-full object-cover" />
+                <img src={doorsReflect} alt="Скрытые двери ESTETICA REFLECT с зеркалом" loading="lazy" className="w-full h-full object-cover" />
                 <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(7,9,13,0.7) 0%, transparent 50%)" }} />
                 <div className="absolute bottom-6 left-6 right-6">
                   <p className="text-[11px] uppercase tracking-[0.3em] mb-1" style={{ color: "rgba(207,187,150,0.7)", fontFamily: "'Raleway', sans-serif" }}>
@@ -207,32 +201,17 @@ export default function StorefrontBrand() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-14">
-            {COLLECTIONS.map((col, i) => (
-              <motion.div
-                key={col.name}
-                className="group relative rounded-2xl overflow-hidden aspect-[3/4] cursor-pointer"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.08, ease: EASE }}
-                whileHover={{ y: -6 }}
-              >
-                <img src={col.image} alt={col.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                {/* Permanent gradient overlay */}
-                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(7,9,13,0.85) 0%, rgba(7,9,13,0.2) 40%, transparent 70%)" }} />
-                {/* Hover highlight */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: "linear-gradient(to top, rgba(207,187,150,0.08) 0%, transparent 40%)" }} />
+          {/* Top row: 2 large cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-14">
+            {COLLECTIONS.slice(0, 2).map((col, i) => (
+              <CollectionCard key={col.name} col={col} index={i} aspect="aspect-[4/3]" />
+            ))}
+          </div>
 
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: "rgba(207,187,150,0.8)", fontFamily: "'Raleway', sans-serif" }}>
-                    {col.name}
-                  </p>
-                  <p className="text-sm font-light leading-relaxed" style={{ color: "rgba(245,245,240,0.7)", fontFamily: "'Raleway', sans-serif" }}>
-                    {col.desc}
-                  </p>
-                </div>
-              </motion.div>
+          {/* Bottom row: 3 cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-5">
+            {COLLECTIONS.slice(2).map((col, i) => (
+              <CollectionCard key={col.name} col={col} index={i + 2} aspect="aspect-[3/4]" />
             ))}
           </div>
         </div>
@@ -258,17 +237,15 @@ export default function StorefrontBrand() {
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.8, ease: EASE }}
               >
-                {/* Image */}
                 <div className="relative rounded-2xl overflow-hidden aspect-[4/3] lg:[direction:ltr]">
                   <img src={tech.image} alt={tech.title} loading="lazy" className="w-full h-full object-cover" />
                   {tech.imageDetail && (
                     <div className="absolute bottom-4 right-4 w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-2" style={{ borderColor: "rgba(207,187,150,0.3)" }}>
-                      <img src={tech.imageDetail} alt="Детали конструкции" className="w-full h-full object-cover" />
+                      <img src={tech.imageDetail} alt="Детали конструкции" loading="lazy" className="w-full h-full object-cover" />
                     </div>
                   )}
                 </div>
 
-                {/* Text */}
                 <div className="lg:[direction:ltr]">
                   <h3 className="text-2xl md:text-3xl font-extralight tracking-[0.1em] uppercase mb-6" style={{ fontFamily: "'Raleway', sans-serif", color: "#F5F5F0" }}>
                     {tech.title}
@@ -316,7 +293,6 @@ export default function StorefrontBrand() {
                 whileHover={{ scale: 1.04, y: -4 }}
               >
                 <div className="absolute -top-8 -right-8 w-20 h-20 rounded-full bg-[#cfbb96]/0 group-hover:bg-[#cfbb96]/10 blur-2xl transition-all duration-500" />
-                {/* Gold number */}
                 <span className="text-[32px] font-extralight leading-none mb-3 block" style={{ color: "rgba(207,187,150,0.15)", fontFamily: "'Raleway', sans-serif" }}>
                   {String(i + 1).padStart(2, "0")}
                 </span>
@@ -368,7 +344,32 @@ export default function StorefrontBrand() {
   );
 }
 
-/* ─── Утилиты ─── */
+/* ─── Компоненты ─── */
+
+function CollectionCard({ col, index, aspect }: { col: { name: string; desc: string; image: string }; index: number; aspect: string }) {
+  return (
+    <motion.div
+      className={`group relative rounded-2xl overflow-hidden ${aspect} cursor-pointer`}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.08, ease: EASE }}
+      whileHover={{ y: -6 }}
+    >
+      <img src={col.image} alt={col.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+      <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(7,9,13,0.85) 0%, rgba(7,9,13,0.2) 40%, transparent 70%)" }} />
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: "linear-gradient(to top, rgba(207,187,150,0.08) 0%, transparent 40%)" }} />
+      <div className="absolute bottom-0 left-0 right-0 p-6">
+        <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: "rgba(207,187,150,0.8)", fontFamily: "'Raleway', sans-serif" }}>
+          {col.name}
+        </p>
+        <p className="text-sm font-light leading-relaxed" style={{ color: "rgba(245,245,240,0.7)", fontFamily: "'Raleway', sans-serif" }}>
+          {col.desc}
+        </p>
+      </div>
+    </motion.div>
+  );
+}
 
 function SectionDivider() {
   return (
