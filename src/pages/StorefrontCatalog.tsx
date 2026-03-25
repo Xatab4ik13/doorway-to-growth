@@ -484,6 +484,214 @@ export default function StorefrontCatalog() {
   );
 }
 
+interface SidebarContentProps {
+  brandoorsLogo: string;
+  parentCategories: any[];
+  getChildren: (id: string) => any[];
+  expandedParents: Set<string>;
+  toggleParent: (id: string) => void;
+  selectedCategory: string | null;
+  selectCategory: (id: string | null) => void;
+  priceFrom: string;
+  setPriceFrom: (v: string) => void;
+  priceTo: string;
+  setPriceTo: (v: string) => void;
+  colorOpen: boolean;
+  setColorOpen: (v: boolean) => void;
+  availableColors: string[];
+  selectedColors: Set<string>;
+  toggleColor: (c: string) => void;
+  glazingOpen: boolean;
+  setGlazingOpen: (v: boolean) => void;
+  availableGlazings: string[];
+  selectedGlazings: Set<string>;
+  toggleGlazing: (g: string) => void;
+}
+
+function SidebarContent({
+  brandoorsLogo, parentCategories, getChildren, expandedParents, toggleParent,
+  selectedCategory, selectCategory, priceFrom, setPriceFrom, priceTo, setPriceTo,
+  colorOpen, setColorOpen, availableColors, selectedColors, toggleColor,
+  glazingOpen, setGlazingOpen, availableGlazings, selectedGlazings, toggleGlazing,
+}: SidebarContentProps) {
+  return (
+    <>
+      {/* Logo */}
+      <div className="flex items-center justify-center py-7 px-5 border-b border-black/10">
+        <img src={brandoorsLogo} alt="Brandoors" className="h-9 opacity-90" />
+      </div>
+
+      {/* Categories */}
+      <div className="px-3 py-5">
+        <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#1a1408]/40 px-4 mb-3">Категории</span>
+
+        <button
+          onClick={() => selectCategory(null)}
+          className={`w-full text-left text-[16px] font-bold py-3.5 px-4 mb-1 rounded-xl transition-all duration-300 ${
+            !selectedCategory
+              ? "bg-black/20 text-white shadow-[inset_0_0_20px_rgba(0,0,0,0.15)]"
+              : "text-[#1a1408]/70 hover:text-[#1a1408] hover:bg-black/5"
+          }`}
+        >
+          Все товары
+        </button>
+
+        {parentCategories.map((parent) => {
+          const children = getChildren(parent.id);
+          const isExpanded = expandedParents.has(parent.id);
+          const isActive = selectedCategory === parent.id;
+          const hasActiveChild = children.some((c: any) => c.id === selectedCategory);
+
+          return (
+            <div key={parent.id}>
+              <div className="flex items-center">
+                <button
+                  onClick={() => { selectCategory(parent.id); if (children.length > 0 && !isExpanded) toggleParent(parent.id); }}
+                  className={`flex-1 text-left text-[16px] font-bold py-3.5 px-4 rounded-xl transition-all duration-300 ${
+                    isActive || hasActiveChild
+                      ? "bg-black/20 text-white shadow-[inset_0_0_20px_rgba(0,0,0,0.15)]"
+                      : "text-[#1a1408]/70 hover:text-[#1a1408] hover:bg-black/5"
+                  }`}
+                >
+                  {parent.name}
+                </button>
+                {children.length > 0 && (
+                  <button
+                    onClick={() => toggleParent(parent.id)}
+                    className="p-2.5 text-[#1a1408]/50 hover:text-[#1a1408] transition-colors"
+                  >
+                    <ChevronRight className={`w-5 h-5 transition-transform duration-300 ${isExpanded ? "rotate-90" : ""}`} />
+                  </button>
+                )}
+              </div>
+
+              <AnimatePresence>
+                {isExpanded && children.length > 0 && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    className="overflow-hidden"
+                  >
+                    <div className="ml-5 pl-3 mb-1 border-l-2 border-black/10">
+                      {children.map((child: any) => (
+                        <button
+                          key={child.id}
+                          onClick={() => selectCategory(child.id)}
+                          className={`w-full text-left text-[14px] font-semibold py-2.5 px-3 rounded-lg transition-all duration-200 ${
+                            selectedCategory === child.id
+                              ? "bg-black/15 text-white"
+                              : "text-[#1a1408]/55 hover:text-[#1a1408] hover:bg-black/5"
+                          }`}
+                        >
+                          {child.name}
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="mx-5 border-t border-black/10" />
+
+      {/* Price */}
+      <div className="px-5 pt-5 pb-3">
+        <span className="block text-[15px] font-extrabold uppercase tracking-[0.12em] text-[#1a1408]/90 mb-4">Цена, ₽</span>
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            placeholder="от"
+            value={priceFrom}
+            onChange={(e) => setPriceFrom(e.target.value)}
+            className="w-full bg-black/10 border border-black/10 text-[#1a1408] text-[14px] font-bold px-3 py-3 rounded-xl placeholder:text-[#1a1408]/30 focus:outline-none focus:border-black/25 focus:bg-black/15 transition-all"
+          />
+          <span className="text-[#1a1408]/25 text-base font-bold shrink-0">—</span>
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            placeholder="до"
+            value={priceTo}
+            onChange={(e) => setPriceTo(e.target.value)}
+            className="w-full bg-black/10 border border-black/10 text-[#1a1408] text-[14px] font-bold px-3 py-3 rounded-xl placeholder:text-[#1a1408]/30 focus:outline-none focus:border-black/25 focus:bg-black/15 transition-all"
+          />
+        </div>
+      </div>
+
+      <div className="mx-5 border-t border-black/10" />
+
+      {/* Color */}
+      <div className="px-5 pt-4 pb-3">
+        <button onClick={() => setColorOpen(!colorOpen)} className="flex items-center justify-between w-full mb-3">
+          <span className="text-[15px] font-extrabold uppercase tracking-[0.12em] text-[#1a1408]/90">Цвет</span>
+          <ChevronRight className={`w-4 h-4 text-[#1a1408]/40 transition-transform duration-300 ${colorOpen ? "rotate-90" : ""}`} />
+        </button>
+        <AnimatePresence>
+          {colorOpen && (
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
+              <div className="space-y-0.5 mb-1">
+                {availableColors.map((color) => (
+                  <label key={color} onClick={() => toggleColor(color)} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-black/5 cursor-pointer transition-colors group">
+                    <div className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center transition-all ${
+                      selectedColors.has(color) ? "bg-[#1a1408] border-[#1a1408]" : "border-[#1a1408]/20 group-hover:border-[#1a1408]/35"
+                    }`}>
+                      {selectedColors.has(color) && (
+                        <svg className="w-3 h-3 text-[#cfbb96]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                    <span className="text-[13px] font-semibold text-[#1a1408]/65">{color}</span>
+                  </label>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <div className="mx-5 border-t border-black/10" />
+
+      {/* Glazing */}
+      <div className="px-5 pt-4 pb-5">
+        <button onClick={() => setGlazingOpen(!glazingOpen)} className="flex items-center justify-between w-full mb-3">
+          <span className="text-[15px] font-extrabold uppercase tracking-[0.12em] text-[#1a1408]/90">Остекление</span>
+          <ChevronRight className={`w-4 h-4 text-[#1a1408]/40 transition-transform duration-300 ${glazingOpen ? "rotate-90" : ""}`} />
+        </button>
+        <AnimatePresence>
+          {glazingOpen && (
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
+              <div className="space-y-0.5 mb-1">
+                {availableGlazings.map((g) => (
+                  <label key={g} onClick={() => toggleGlazing(g)} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-black/5 cursor-pointer transition-colors group">
+                    <div className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center transition-all ${
+                      selectedGlazings.has(g) ? "bg-[#1a1408] border-[#1a1408]" : "border-[#1a1408]/20 group-hover:border-[#1a1408]/35"
+                    }`}>
+                      {selectedGlazings.has(g) && (
+                        <svg className="w-3 h-3 text-[#cfbb96]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                    <span className="text-[13px] font-semibold text-[#1a1408]/65">{g}</span>
+                  </label>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </>
+  );
+}
+
 function CatalogCartButton({ product, img, siteId }: { product: any; img: string | undefined; siteId: string | undefined }) {
   const addItem = useCartStore((s) => s.addItem);
   const isInCart = useCartStore((s) => s.items.some((i) => i.id === product.id));
