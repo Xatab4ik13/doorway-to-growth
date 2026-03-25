@@ -43,10 +43,10 @@ export function useSiteFromHostname() {
   // Check if it's a subdomain of brandoors.su
   const subdomainSlug = extractSlugFromSubdomain(hostname);
 
-  // Check if it's a custom domain (not brandoors.ru, not preview, not localhost)
+  // Check if it's a custom domain (not brandoors.su, not preview, not localhost)
   const isCustomDomain =
     !isPreviewHost(hostname) &&
-    !hostname.endsWith("brandoors.ru") &&
+    !hostname.endsWith("brandoors.su") &&
     !CRM_HOSTS.includes(hostname) &&
     hostname !== "";
 

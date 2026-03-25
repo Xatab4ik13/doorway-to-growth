@@ -31,7 +31,7 @@ export function useSiteSlug(urlSlug?: string): string | undefined {
     }
 
     // Custom domain → we need to query DB
-    if (!hostname.endsWith("brandoors.ru")) {
+    if (!hostname.endsWith("brandoors.su")) {
       return `__domain:${hostname}`;
     }
 

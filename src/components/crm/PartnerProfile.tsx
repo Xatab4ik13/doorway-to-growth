@@ -17,7 +17,7 @@ const partner = {
   address: "ул. Люблинская, 169",
   contact: "Иван Смирнов",
   phone: "+7 (926) 100-20-30",
-  email: "marjino@brandoors.ru",
+  email: "marjino@brandoors.su",
   active: true,
   joinDate: "15.01.2026",
   leads: { total: 124, new: 8, conversion: 14.2 },
