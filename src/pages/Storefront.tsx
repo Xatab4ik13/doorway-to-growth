@@ -1,14 +1,11 @@
 import { useParams } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import {
-  useStorefrontProducts,
   useStorefrontBanners,
   useStorefrontStaff,
-  useStorefrontCategories,
 } from "@/hooks/useStorefrontData";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { HeroSection } from "@/components/storefront/HeroSection";
-import { CatalogSection } from "@/components/storefront/CatalogSection";
 import { AboutSection } from "@/components/storefront/AboutSection";
 import { ContactSection } from "@/components/storefront/ContactSection";
 import { PatternSection } from "@/components/storefront/PatternSection";
@@ -17,10 +14,8 @@ export default function Storefront() {
   const { slug } = useParams<{ slug: string }>();
   const { data: site, isLoading, error } = useSiteBySlug(slug);
 
-  const { data: products = [] } = useStorefrontProducts(site?.id);
   const { data: banners = [] } = useStorefrontBanners(site?.id);
   const { data: staff = [] } = useStorefrontStaff(site?.id);
-  const { data: categories = [] } = useStorefrontCategories();
 
   if (isLoading) {
     return (
@@ -45,7 +40,6 @@ export default function Storefront() {
     <StorefrontLayout site={site}>
       <HeroSection site={site} banners={banners} />
       <PatternSection />
-      <CatalogSection products={products as any} categories={categories} siteSlug={slug || ""} />
       <AboutSection site={site} staff={staff} />
       <ContactSection site={site} />
     </StorefrontLayout>
