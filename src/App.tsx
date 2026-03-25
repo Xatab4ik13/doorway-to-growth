@@ -12,6 +12,7 @@ import Login from "./pages/Login.tsx";
 import Storefront from "./pages/Storefront.tsx";
 import StorefrontCatalog from "./pages/StorefrontCatalog.tsx";
 import StorefrontProduct from "./pages/StorefrontProduct.tsx";
+import StorefrontCart from "./pages/StorefrontCart.tsx";
 
 const queryClient = new QueryClient();
 
