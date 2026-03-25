@@ -16,12 +16,12 @@ const DRAWER_VARIANTS = {
   visible: {
     x: 0,
     opacity: 1,
-    transition: { type: "spring", damping: 30, stiffness: 300, mass: 0.8 },
+    transition: { type: "spring" as const, damping: 30, stiffness: 300, mass: 0.8 },
   },
   exit: {
     x: "100%",
     opacity: 0,
-    transition: { duration: 0.35, ease: [0.76, 0, 0.24, 1] },
+    transition: { duration: 0.35, ease: [0.76, 0, 0.24, 1] as [number, number, number, number] },
   },
 };
 
