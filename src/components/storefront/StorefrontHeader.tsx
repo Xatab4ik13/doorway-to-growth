@@ -64,59 +64,7 @@ export function StorefrontHeader({ site }: Props) {
 
   return (
     <>
-      {/* ═══ DESKTOP TOP BAR ═══ */}
-      <header className="hidden md:block fixed top-0 left-0 right-0 z-50">
-        <div
-          className="h-14 flex items-center justify-between px-8 backdrop-blur-md border-b border-white/[0.06]"
-          style={{ background: "rgba(7,9,13,0.85)" }}
-        >
-          {/* Logo — home link */}
-          <Link to={`/store/${site.slug}`} className="flex items-center gap-3 shrink-0">
-            <img
-              src={brandoorsLogo}
-              alt="Brandoors"
-              className="h-6"
-              style={{ filter: "brightness(0) invert(1)", opacity: 0.85 }}
-            />
-          </Link>
-
-          {/* Nav links */}
-          <nav className="flex items-center gap-1">
-            {NAV_ITEMS.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => handleNavClick(item)}
-                className="px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] transition-colors duration-300"
-                style={{
-                  fontFamily: "'Raleway', sans-serif",
-                  color: isActive(item) ? "#cfbb96" : "rgba(245,245,240,0.5)",
-                }}
-                onMouseEnter={(e) => { if (!isActive(item)) e.currentTarget.style.color = "rgba(245,245,240,0.85)"; }}
-                onMouseLeave={(e) => { if (!isActive(item)) e.currentTarget.style.color = "rgba(245,245,240,0.5)"; }}
-              >
-                {item.label}
-              </button>
-            ))}
-          </nav>
-
-          {/* Right side: phone + cart */}
-          <div className="flex items-center gap-5 shrink-0">
-            {site.phone && (
-              <a
-                href={`tel:${site.phone}`}
-                className="flex items-center gap-2 text-[11px] font-medium tracking-wider transition-colors duration-300"
-                style={{ color: "rgba(245,245,240,0.5)", fontFamily: "'Raleway', sans-serif" }}
-                onMouseEnter={(e) => e.currentTarget.style.color = "#cfbb96"}
-                onMouseLeave={(e) => e.currentTarget.style.color = "rgba(245,245,240,0.5)"}
-              >
-                <Phone className="w-3.5 h-3.5" />
-                {site.phone}
-              </a>
-            )}
-            <CartButton />
-          </div>
-        </div>
-      </header>
+      {/* ═══ MOBILE TOP BAR ONLY ═══ */}
 
       {/* ═══ MOBILE TOP BAR ═══ */}
       <header className="fixed top-0 left-0 right-0 z-50 md:hidden">
