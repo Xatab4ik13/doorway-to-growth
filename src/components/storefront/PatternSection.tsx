@@ -229,7 +229,7 @@ export function PatternSection() {
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         >
-          <DoorCarousel doors={doorsMap[activeTab]} />
+          <DoorCarousel doors={doorsMap[activeTab]} onSelect={handleSelect} />
         </motion.div>
       </AnimatePresence>
     </section>
