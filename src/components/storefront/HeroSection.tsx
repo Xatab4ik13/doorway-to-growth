@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { CartButton } from "./CartButton";
 import brandoorsLogo from "@/assets/logo.png";
+import heroBanner from "@/assets/hero-banner.jpg";
 
 interface Props {
   site: StorefrontSite;
