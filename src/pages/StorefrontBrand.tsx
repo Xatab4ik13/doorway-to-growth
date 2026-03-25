@@ -348,12 +348,11 @@ export default function StorefrontBrand() {
 function CollectionCard({ col, index, aspect }: { col: { name: string; desc: string; image: string }; index: number; aspect: string }) {
   return (
     <motion.div
-      className={`group relative rounded-2xl overflow-hidden ${aspect} cursor-pointer`}
+      className={`group relative rounded-2xl overflow-hidden ${aspect} cursor-pointer hover:-translate-y-1 transition-transform duration-300`}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.08, ease: EASE }}
-      whileHover={{ y: -6 }}
     >
       <img src={col.image} alt={col.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
       <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(7,9,13,0.85) 0%, rgba(7,9,13,0.2) 40%, transparent 70%)" }} />
