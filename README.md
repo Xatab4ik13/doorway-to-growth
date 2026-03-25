@@ -1,3 +1,3 @@
-# Welcome to your Lovable project
+# Brandoors Platform
 
-TODO: Document your project here
+CRM и сеть витрин для производителя дверей премиум-класса.
