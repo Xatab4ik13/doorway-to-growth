@@ -4,8 +4,8 @@ import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts } from "@/hooks/useStorefrontData";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ChevronLeft, ChevronRight, Ruler, Palette, Eye, ShoppingCart } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { ArrowLeft, ChevronLeft, ChevronRight, Ruler, Palette, Eye, ShoppingCart, Check } from "lucide-react";
+import { useCartStore } from "@/stores/useCartStore";
 
 export default function StorefrontProduct() {
   const { slug, productSlug } = useParams<{ slug: string; productSlug: string }>();
