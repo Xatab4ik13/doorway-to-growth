@@ -5,7 +5,7 @@ import { useStorefrontProducts } from "@/hooks/useStorefrontData";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ChevronLeft, ChevronRight, Phone, Ruler, Palette, Eye, Send } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Ruler, Palette, Eye, ShoppingCart } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 export default function StorefrontProduct() {
