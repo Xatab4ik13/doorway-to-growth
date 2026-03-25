@@ -438,12 +438,13 @@ export default function StorefrontCatalog() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.25, delay: Math.min(i * 0.03, 0.3) }}
+                      className="group"
                     >
                       <Link
                         to={`/store/${slug}/product/${product.slug}`}
-                        className="group block"
+                        className="block"
                       >
-                        {/* Image — fits the door, no extra space */}
+                        {/* Image */}
                         <div className="relative overflow-hidden bg-[#0c0e14] flex items-center justify-center" style={{ minHeight: "280px" }}>
                           {img ? (
                             <img
@@ -476,6 +477,9 @@ export default function StorefrontCatalog() {
                           )}
                         </div>
                       </Link>
+
+                      {/* Add to cart button */}
+                      <CatalogCartButton product={product} img={img} siteId={site?.id} />
                     </motion.div>
                   );
                 })}
