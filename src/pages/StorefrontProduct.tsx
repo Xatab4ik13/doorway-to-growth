@@ -17,6 +17,13 @@ export default function StorefrontProduct() {
 
   const [currentImage, setCurrentImage] = useState(0);
 
+  const primaryImg = product?.product_images?.find((i: any) => i.is_primary)?.url || product?.product_images?.[0]?.url;
+  useDocumentMeta({
+    title: product ? `${product.name} — Brandoors ${site?.city ?? ""}` : "Товар — Brandoors",
+    description: product?.description || `Дверь ${product?.name ?? ""} от Brandoors. Характеристики, фото, цены.`,
+    ogImage: primaryImg,
+    ogUrl: site ? `https://${site.slug}.brandoors.ru/product/${productSlug}` : undefined,
+  });
 
 
   const images = product?.product_images

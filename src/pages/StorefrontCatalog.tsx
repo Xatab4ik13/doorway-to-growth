@@ -19,6 +19,12 @@ export default function StorefrontCatalog() {
   const { data: products = [] } = useStorefrontProducts(site?.id);
   const { data: categories = [] } = useStorefrontCategories();
 
+  useDocumentMeta({
+    title: site ? `Каталог дверей — ${site.name}` : "Каталог — Brandoors",
+    description: site ? `Каталог межкомнатных и входных дверей в салоне ${site.name}, ${site.city}` : "Каталог дверей Brandoors",
+    ogUrl: site ? `https://${site.slug}.brandoors.ru/catalog` : undefined,
+  });
+
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [expandedParents, setExpandedParents] = useState<Set<string>>(new Set());
   const [priceFrom, setPriceFrom] = useState("");
