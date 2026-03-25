@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import doorArtdeco from "@/assets/doors/artdeco.webp";
 import doorBauhaus from "@/assets/doors/bauhaus.webp";
