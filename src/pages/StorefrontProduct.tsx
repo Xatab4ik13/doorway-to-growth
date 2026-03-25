@@ -16,8 +16,8 @@ export default function StorefrontProduct() {
   const product = (products as any[]).find((p) => p.slug === productSlug);
 
   const [currentImage, setCurrentImage] = useState(0);
-  const [formData, setFormData] = useState({ name: "", phone: "", message: "" });
-  const [submitting, setSubmitting] = useState(false);
+
+
 
   const images = product?.product_images
     ?.sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0)) || [];
