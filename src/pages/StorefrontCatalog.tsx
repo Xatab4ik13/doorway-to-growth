@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect } from "react";
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
+import { useDocumentMeta } from "@/hooks/useDocumentMeta";
+import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ChevronDown, ShoppingCart, Check } from "lucide-react";
@@ -11,12 +13,19 @@ import { useCartStore } from "@/stores/useCartStore";
 const ITEMS_PER_PAGE = 16;
 
 export default function StorefrontCatalog() {
-  const { slug } = useParams<{ slug: string }>();
+  const { slug: urlSlug } = useParams<{ slug: string }>();
+  const slug = useSiteSlug(urlSlug);
   const [searchParams] = useSearchParams();
   const collectionParam = searchParams.get("collection");
   const { data: site, isLoading } = useSiteBySlug(slug);
   const { data: products = [] } = useStorefrontProducts(site?.id);
   const { data: categories = [] } = useStorefrontCategories();
+
+  useDocumentMeta({
+    title: site ? `Каталог дверей — ${site.name}` : "Каталог — Brandoors",
+    description: site ? `Каталог межкомнатных и входных дверей в салоне ${site.name}, ${site.city}` : "Каталог дверей Brandoors",
+    ogUrl: site ? `https://${site.slug}.brandoors.ru/catalog` : undefined,
+  });
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [expandedParents, setExpandedParents] = useState<Set<string>>(new Set());

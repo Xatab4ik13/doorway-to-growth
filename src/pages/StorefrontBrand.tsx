@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
+import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { motion } from "framer-motion";
 import brandoorsLogo from "@/assets/logo.png";
@@ -89,7 +90,8 @@ const ADVANTAGES = [
 ];
 
 export default function StorefrontBrand() {
-  const { slug } = useParams<{ slug: string }>();
+  const { slug: urlSlug } = useParams<{ slug: string }>();
+  const slug = useSiteSlug(urlSlug);
   const { data: site, isLoading, error } = useSiteBySlug(slug);
 
   if (isLoading) {

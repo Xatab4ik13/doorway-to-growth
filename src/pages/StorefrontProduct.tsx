@@ -2,13 +2,16 @@ import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts } from "@/hooks/useStorefrontData";
+import { useDocumentMeta } from "@/hooks/useDocumentMeta";
+import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight, Ruler, Palette, Eye, ShoppingCart, Check } from "lucide-react";
 import { useCartStore } from "@/stores/useCartStore";
 
 export default function StorefrontProduct() {
-  const { slug, productSlug } = useParams<{ slug: string; productSlug: string }>();
+  const { slug: urlSlug, productSlug } = useParams<{ slug: string; productSlug: string }>();
+  const slug = useSiteSlug(urlSlug);
   const { data: site, isLoading: siteLoading } = useSiteBySlug(slug);
   const { data: products = [], isLoading: productsLoading } = useStorefrontProducts(site?.id);
 
@@ -16,6 +19,13 @@ export default function StorefrontProduct() {
 
   const [currentImage, setCurrentImage] = useState(0);
 
+  const primaryImg = product?.product_images?.find((i: any) => i.is_primary)?.url || product?.product_images?.[0]?.url;
+  useDocumentMeta({
+    title: product ? `${product.name} — Brandoors ${site?.city ?? ""}` : "Товар — Brandoors",
+    description: product?.description || `Дверь ${product?.name ?? ""} от Brandoors. Характеристики, фото, цены.`,
+    ogImage: primaryImg,
+    ogUrl: site ? `https://${site.slug}.brandoors.ru/product/${productSlug}` : undefined,
+  });
 
 
   const images = product?.product_images
