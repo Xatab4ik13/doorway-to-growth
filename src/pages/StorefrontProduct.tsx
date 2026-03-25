@@ -36,8 +36,22 @@ export default function StorefrontProduct() {
     return primary?.url || p.product_images?.[0]?.url;
   };
 
+  const addItem = useCartStore((s) => s.addItem);
+  const cartItems = useCartStore((s) => s.items);
+  const isInCart = cartItems.some((i) => i.id === product?.id);
+
   const handleAddToCart = () => {
-    toast({ title: "Добавлено в корзину", description: product?.name });
+    if (!product || !site) return;
+    const primary = product.product_images?.find((i: any) => i.is_primary);
+    const imgUrl = primary?.url || product.product_images?.[0]?.url || null;
+    addItem({
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      rrp: product.rrp ? Number(product.rrp) : null,
+      imageUrl: imgUrl,
+      siteId: site.id,
+    });
   };
 
   const nextImage = () => setCurrentImage((prev) => (prev + 1) % images.length);
