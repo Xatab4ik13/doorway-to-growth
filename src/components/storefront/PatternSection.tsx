@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import doorArtdeco from "@/assets/doors/artdeco.webp";
 import doorBauhaus from "@/assets/doors/bauhaus.webp";
@@ -40,7 +41,7 @@ function getIndex(i: number, len: number) {
   return ((i % len) + len) % len;
 }
 
-function DoorCarousel({ doors }: { doors: DoorItem[] }) {
+function DoorCarousel({ doors, onSelect }: { doors: DoorItem[]; onSelect: (name: string) => void }) {
   const [current, setCurrent] = useState(0);
   const [hovered, setHovered] = useState<number | null>(null);
   const len = doors.length;
@@ -111,8 +112,11 @@ function DoorCarousel({ doors }: { doors: DoorItem[] }) {
               translateX: "-50%",
               zIndex: isCenter ? 10 : posIdx === centerIdx - 1 || posIdx === centerIdx + 1 ? 5 : 1,
             }}
+            onClick={() => isCenter && onSelect(doors[doorIdx].name)}
             onHoverStart={() => isCenter && setHovered(doorIdx)}
             onHoverEnd={() => setHovered(null)}
+            role={isCenter ? "button" : undefined}
+            tabIndex={isCenter ? 0 : undefined}
           >
             <motion.img
               src={doors[doorIdx].src}
@@ -163,10 +167,16 @@ function DoorCarousel({ doors }: { doors: DoorItem[] }) {
 
 export function PatternSection() {
   const [activeTab, setActiveTab] = useState<TabKey>("entrance");
+  const navigate = useNavigate();
+  const { slug } = useParams<{ slug: string }>();
 
   const doorsMap: Record<TabKey, DoorItem[]> = {
     entrance: ENTRANCE_DOORS,
     interior: INTERIOR_DOORS,
+  };
+
+  const handleSelect = (name: string) => {
+    navigate(`/store/${slug}/catalog?collection=${encodeURIComponent(name)}`);
   };
 
   return (
@@ -219,7 +229,7 @@ export function PatternSection() {
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         >
-          <DoorCarousel doors={doorsMap[activeTab]} />
+          <DoorCarousel doors={doorsMap[activeTab]} onSelect={handleSelect} />
         </motion.div>
       </AnimatePresence>
     </section>

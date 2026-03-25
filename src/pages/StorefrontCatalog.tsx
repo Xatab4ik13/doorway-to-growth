@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
@@ -12,6 +12,8 @@ const ITEMS_PER_PAGE = 16;
 
 export default function StorefrontCatalog() {
   const { slug } = useParams<{ slug: string }>();
+  const [searchParams] = useSearchParams();
+  const collectionParam = searchParams.get("collection");
   const { data: site, isLoading } = useSiteBySlug(slug);
   const { data: products = [] } = useStorefrontProducts(site?.id);
   const { data: categories = [] } = useStorefrontCategories();
@@ -66,6 +68,21 @@ export default function StorefrontCatalog() {
     });
     setPage(1);
   };
+
+  // Auto-select category from URL ?collection= param
+  useEffect(() => {
+    if (!collectionParam || categories.length === 0) return;
+    const match = (categories as any[]).find(
+      (c) => c.name.toUpperCase() === collectionParam.toUpperCase()
+    );
+    if (match) {
+      selectCategory(match.id);
+      // Expand parent if it's a child category
+      if (match.parent_id) {
+        setExpandedParents((prev) => new Set(prev).add(match.parent_id));
+      }
+    }
+  }, [collectionParam, categories]);
 
   // Get all descendant IDs for a parent
   const getDescendantIds = (parentId: string): string[] => {
