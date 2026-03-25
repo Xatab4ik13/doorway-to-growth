@@ -3,6 +3,7 @@ import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { StorefrontHeader } from "./StorefrontHeader";
 import { StorefrontFooter } from "./StorefrontFooter";
 import { CartDrawer } from "./CartDrawer";
+import { PageTransition } from "./PageTransition";
 
 interface Props {
   site: StorefrontSite;
@@ -13,7 +14,9 @@ export function StorefrontLayout({ site, children }: Props) {
   return (
     <div className="min-h-screen bg-storefront-bg text-storefront-text" style={{ fontFamily: "'Raleway', system-ui, sans-serif" }}>
       <StorefrontHeader site={site} />
-      <main>{children}</main>
+      <main>
+        <PageTransition>{children}</PageTransition>
+      </main>
       <StorefrontFooter site={site} />
       <CartDrawer />
     </div>
