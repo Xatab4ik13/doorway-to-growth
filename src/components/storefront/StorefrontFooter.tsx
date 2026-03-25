@@ -1,5 +1,7 @@
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { Phone, Mail, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
+import brandoorsLogo from "@/assets/logo.png";
 
 interface Props {
   site: StorefrontSite;
@@ -7,58 +9,118 @@ interface Props {
 
 export function StorefrontFooter({ site }: Props) {
   return (
-    <footer className="bg-storefront-bg border-t border-storefront-gold/10 py-12">
-      <div className="max-w-[1400px] mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <footer className="relative overflow-hidden" style={{ backgroundColor: "#07090D" }}>
+      {/* Top gold line */}
+      <div
+        className="h-px"
+        style={{
+          background: "linear-gradient(90deg, transparent 5%, rgba(207,187,150,0.2) 30%, rgba(207,187,150,0.35) 50%, rgba(207,187,150,0.2) 70%, transparent 95%)",
+        }}
+      />
+
+      <div className="max-w-[1400px] mx-auto px-6 py-14 lg:py-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
           {/* Brand */}
           <div>
-            <span className="text-lg font-bold tracking-wider text-storefront-text">
-              BR<span className="inline-flex items-center justify-center w-6 h-6 border border-storefront-gold text-storefront-gold text-xs font-bold mx-[1px]">A-</span>NDOORS
-            </span>
-            <p className="mt-3 text-sm text-storefront-muted leading-relaxed">
-              Межкомнатные двери премиум-класса
+            <img
+              src={brandoorsLogo}
+              alt="Brandoors"
+              className="h-8 mb-5"
+              style={{ filter: "brightness(0) invert(1)", opacity: 0.85 }}
+            />
+            <p
+              className="text-sm leading-relaxed max-w-xs"
+              style={{ color: "rgba(245,245,240,0.4)", fontFamily: "'Raleway', sans-serif" }}
+            >
+              Межкомнатные и входные двери премиум-класса. Официальный салон в {site.district || site.city}.
             </p>
           </div>
 
           {/* Contacts */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-storefront-gold">Контакты</h4>
+          <div className="space-y-4">
+            <h4
+              className="text-[11px] font-semibold uppercase tracking-[0.25em] mb-5"
+              style={{ color: "rgba(207,187,150,0.6)", fontFamily: "'Raleway', sans-serif" }}
+            >
+              Контакты
+            </h4>
             {site.phone && (
-              <a href={`tel:${site.phone}`} className="flex items-center gap-2 text-sm text-storefront-muted hover:text-storefront-text transition-colors">
-                <Phone className="w-4 h-4 text-storefront-gold/60" />
+              <a
+                href={`tel:${site.phone}`}
+                className="flex items-center gap-3 text-sm hover:opacity-80 transition-opacity"
+                style={{ color: "rgba(245,245,240,0.6)", fontFamily: "'Raleway', sans-serif" }}
+              >
+                <Phone className="w-4 h-4 shrink-0" style={{ color: "rgba(207,187,150,0.5)" }} />
                 {site.phone}
               </a>
             )}
             {site.email && (
-              <a href={`mailto:${site.email}`} className="flex items-center gap-2 text-sm text-storefront-muted hover:text-storefront-text transition-colors">
-                <Mail className="w-4 h-4 text-storefront-gold/60" />
+              <a
+                href={`mailto:${site.email}`}
+                className="flex items-center gap-3 text-sm hover:opacity-80 transition-opacity"
+                style={{ color: "rgba(245,245,240,0.6)", fontFamily: "'Raleway', sans-serif" }}
+              >
+                <Mail className="w-4 h-4 shrink-0" style={{ color: "rgba(207,187,150,0.5)" }} />
                 {site.email}
               </a>
             )}
             {site.address && (
-              <div className="flex items-start gap-2 text-sm text-storefront-muted">
-                <MapPin className="w-4 h-4 text-storefront-gold/60 mt-0.5 shrink-0" />
+              <div
+                className="flex items-start gap-3 text-sm"
+                style={{ color: "rgba(245,245,240,0.6)", fontFamily: "'Raleway', sans-serif" }}
+              >
+                <MapPin className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "rgba(207,187,150,0.5)" }} />
                 <span>{site.city}, {site.address}</span>
               </div>
             )}
           </div>
 
-          {/* Nav */}
+          {/* Navigation */}
           <div className="space-y-3">
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-storefront-gold">Навигация</h4>
-            {["Каталог", "Акции", "О салоне", "Контакты"].map((label) => (
-              <a
-                key={label}
-                href={`#${label.toLowerCase()}`}
-                className="block text-sm text-storefront-muted hover:text-storefront-text transition-colors"
-              >
-                {label}
-              </a>
-            ))}
+            <h4
+              className="text-[11px] font-semibold uppercase tracking-[0.25em] mb-5"
+              style={{ color: "rgba(207,187,150,0.6)", fontFamily: "'Raleway', sans-serif" }}
+            >
+              Навигация
+            </h4>
+            {[
+              { label: "Каталог", href: `/store/${site.slug}/catalog`, isRoute: true },
+              { label: "Отзывы", href: "#about", isRoute: false },
+              { label: "О салоне", href: "#about", isRoute: false },
+              { label: "Контакты", href: "#contacts", isRoute: false },
+            ].map((item) =>
+              item.isRoute ? (
+                <Link
+                  key={item.label}
+                  to={item.href}
+                  className="block text-sm hover:opacity-80 transition-opacity"
+                  style={{ color: "rgba(245,245,240,0.5)", fontFamily: "'Raleway', sans-serif" }}
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className="block text-sm hover:opacity-80 transition-opacity"
+                  style={{ color: "rgba(245,245,240,0.5)", fontFamily: "'Raleway', sans-serif" }}
+                >
+                  {item.label}
+                </a>
+              )
+            )}
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-storefront-gold/10 text-center text-xs text-storefront-muted/50">
+        {/* Bottom */}
+        <div
+          className="mt-14 pt-6 text-center text-xs"
+          style={{
+            borderTop: "1px solid rgba(207,187,150,0.08)",
+            color: "rgba(245,245,240,0.2)",
+            fontFamily: "'Raleway', sans-serif",
+          }}
+        >
           © {new Date().getFullYear()} BRANDOORS. Все права защищены.
         </div>
       </div>
