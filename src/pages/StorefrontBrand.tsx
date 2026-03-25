@@ -218,7 +218,7 @@ export default function StorefrontBrand() {
                 transition={{ duration: 0.5, delay: i * 0.08, ease: EASE }}
                 whileHover={{ y: -6 }}
               >
-                <img src={col.image} alt={col.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <img src={col.image} alt={col.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                 {/* Permanent gradient overlay */}
                 <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(7,9,13,0.85) 0%, rgba(7,9,13,0.2) 40%, transparent 70%)" }} />
                 {/* Hover highlight */}
