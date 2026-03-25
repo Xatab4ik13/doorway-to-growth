@@ -13,6 +13,7 @@ import Storefront from "./pages/Storefront.tsx";
 import StorefrontCatalog from "./pages/StorefrontCatalog.tsx";
 import StorefrontProduct from "./pages/StorefrontProduct.tsx";
 import StorefrontCart from "./pages/StorefrontCart.tsx";
+import StorefrontBrand from "./pages/StorefrontBrand.tsx";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +66,7 @@ const App = () => (
             <Route path="/store/:slug/catalog" element={<StorefrontCatalog />} />
             <Route path="/store/:slug/product/:productSlug" element={<StorefrontProduct />} />
             <Route path="/store/:slug/cart" element={<StorefrontCart />} />
+            <Route path="/store/:slug/brand" element={<StorefrontBrand />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

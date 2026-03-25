@@ -15,7 +15,7 @@ const EASE_SMOOTH: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const NAV_ITEMS = [
   { label: "Каталог", href: "catalog", isRoute: true },
   { label: "Отзывы", href: "#about", isRoute: false },
-  { label: "О салоне", href: "#about", isRoute: false },
+  { label: "О бренде", href: "brand", isRoute: true },
   { label: "Контакты", href: "#contacts", isRoute: false },
 ];
 
