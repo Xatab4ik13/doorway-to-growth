@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Resolves site slug from URL param OR hostname.
- * In subdomain mode ({slug}.brandoors.ru) or custom domain mode,
+ * In subdomain mode ({slug}.brandoors.su) or custom domain mode,
  * queries the DB to find the matching slug.
  */
 export function useSiteSlug(urlSlug?: string): string | undefined {
