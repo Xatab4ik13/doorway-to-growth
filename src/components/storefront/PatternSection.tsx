@@ -64,12 +64,17 @@ function CollectionCarousel({ items, onSelect }: { items: CollectionItem[]; onSe
   } else if (len >= 3) {
     for (let o = -1; o <= 1; o++) visible.push({ idx: getIndex(current + o, len), offset: o });
   } else if (len === 2) {
-    visible.push({ idx: current, offset: -0.5 }, { idx: getIndex(current + 1, len), offset: 0.5 });
+    // Show both side by side, both fully visible
+    visible.push({ idx: 0, offset: -0.7 }, { idx: 1, offset: 0.7 });
   } else {
     visible.push({ idx: current, offset: 0 });
   }
 
   const getStyle = (offset: number) => {
+    if (len === 2) {
+      // Both items equally visible, no blur, full opacity
+      return { xPercent: offset * 38, scale: 0.9, blur: 0, opacity: 1, z: 5 };
+    }
     const absOff = Math.abs(offset);
     const xPercent = offset * 38;
     const scale = absOff === 0 ? 1 : absOff <= 1 ? 0.78 : 0.55;
