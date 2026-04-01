@@ -623,18 +623,39 @@ export default function StorefrontProduct() {
                 transition={{ delay: 0.45 }}
                 className="mt-auto pt-4"
               >
-                {product.rrp && (
-                  <div className="flex items-baseline gap-2 mb-5">
-                    <span className="text-[11px] uppercase tracking-widest text-storefront-muted">от</span>
-                    <span className="text-3xl font-bold text-storefront-text" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                      {Number(product.rrp).toLocaleString("ru-RU")}
-                    </span>
-                    <span className="text-xl text-storefront-gold">₽</span>
-                  </div>
-                )}
+                {(() => {
+                  const doorPrice = product.rrp ? Number(product.rrp) : 0;
+                  const trimTotal = MOCK_TRIM.filter((t) => selectedTrim.has(t.id)).reduce((s, t) => s + t.rrp, 0);
+                  const hwTotal = MOCK_HARDWARE.filter((h) => selectedHardware.has(h.id)).reduce((s, h) => s + h.rrp, 0);
+                  const totalPrice = doorPrice + trimTotal + hwTotal;
+                  const hasExtras = selectedTrim.size > 0 || selectedHardware.size > 0;
+
+                  return (
+                    <>
+                      {totalPrice > 0 && (
+                        <div className="mb-5">
+                          {hasExtras && doorPrice > 0 && (
+                            <div className="text-[11px] text-storefront-muted mb-1">
+                              Дверь {doorPrice.toLocaleString("ru-RU")} ₽
+                              {trimTotal > 0 && ` + погонаж ${trimTotal.toLocaleString("ru-RU")} ₽`}
+                              {hwTotal > 0 && ` + фурнитура ${hwTotal.toLocaleString("ru-RU")} ₽`}
+                            </div>
+                          )}
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-[11px] uppercase tracking-widest text-storefront-muted">{hasExtras ? "итого" : "от"}</span>
+                            <span className="text-3xl font-bold text-storefront-text" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                              {totalPrice.toLocaleString("ru-RU")}
+                            </span>
+                            <span className="text-xl text-storefront-gold">₽</span>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
 
                 <motion.button
-                  onClick={handleAddToCart}
+                  onClick={handleAddAllToCart}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.96 }}
                   className={`w-full font-bold text-[13px] uppercase tracking-wider py-4 rounded-xl transition-all flex items-center justify-center gap-3 relative overflow-hidden group ${
@@ -648,7 +669,7 @@ export default function StorefrontProduct() {
                   )}
                   <span className="relative z-10 flex items-center gap-3">
                     {isInCart ? <Check className="w-5 h-5" /> : <ShoppingCart className="w-5 h-5" />}
-                    {isInCart ? "В корзине" : "Добавить в корзину"}
+                    {isInCart ? "В корзине" : (selectedTrim.size > 0 || selectedHardware.size > 0) ? "Добавить комплект" : "Добавить в корзину"}
                   </span>
                 </motion.button>
               </motion.div>
