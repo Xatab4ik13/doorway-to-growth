@@ -6,7 +6,7 @@ import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ChevronLeft, ChevronRight, Ruler, ShoppingCart, Check } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Ruler, ShoppingCart, Check, Plus, DoorOpen, Lock, CircleDot } from "lucide-react";
 import { useCartStore } from "@/stores/useCartStore";
 
 // ── Mock data for swatches (will be replaced with DB data later) ──
