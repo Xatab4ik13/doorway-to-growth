@@ -103,10 +103,10 @@ export function HeroSection({ site, banners }: Props) {
               <Link
                 key={item.label}
                 to={`/store/${site.slug}/${item.href}`}
-                className="text-[14px] font-semibold uppercase tracking-[0.25em] transition-colors duration-300"
-                style={{ fontFamily: "'Raleway', sans-serif", color: "rgba(26,20,8,0.6)" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.95)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.6)"; }}
+                className="text-[15px] font-bold uppercase tracking-[0.25em] transition-colors duration-300"
+                style={{ fontFamily: "'Raleway', sans-serif", color: "rgba(26,20,8,0.85)" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,1)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.85)"; }}
               >
                 {item.label}
               </Link>
@@ -114,10 +114,10 @@ export function HeroSection({ site, banners }: Props) {
               <a
                 key={item.label}
                 href={item.href}
-                className="text-[14px] font-semibold uppercase tracking-[0.25em] transition-colors duration-300"
-                style={{ fontFamily: "'Raleway', sans-serif", color: "rgba(26,20,8,0.6)" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.95)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.6)"; }}
+                className="text-[15px] font-bold uppercase tracking-[0.25em] transition-colors duration-300"
+                style={{ fontFamily: "'Raleway', sans-serif", color: "rgba(26,20,8,0.85)" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,1)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.85)"; }}
               >
                 {item.label}
               </a>
