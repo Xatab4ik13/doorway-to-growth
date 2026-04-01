@@ -2,29 +2,32 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import doorArtdeco from "@/assets/doors/artdeco.webp";
-import doorBauhaus from "@/assets/doors/bauhaus.webp";
-import doorInteriorPrime from "@/assets/doors/interior-prime.webp";
-import doorInteriorEstetica from "@/assets/doors/interior-estetica.webp";
-import doorInteriorGhost from "@/assets/doors/interior-ghost.webp";
-import doorInteriorReflect from "@/assets/doors/interior-reflect.webp";
+
+import colPrime from "@/assets/collections/prime.webp";
+import colEstetica from "@/assets/collections/estetica.webp";
+import colGhost from "@/assets/collections/ghost.webp";
+import colHeavy from "@/assets/collections/heavy.webp";
+import colEsteticaEmale from "@/assets/collections/estetica-emale.webp";
+import colMaze from "@/assets/collections/maze.webp";
+import colKvartirnye from "@/assets/collections/kvartirnye.webp";
+import colUlichnye from "@/assets/collections/ulichnye.webp";
 
 type CollectionItem = { src: string; name: string };
 
 // Входные: 2 коллекции
 const ENTRANCE_COLLECTIONS: CollectionItem[] = [
-  { src: doorArtdeco, name: "Квартирные двери" },
-  { src: doorBauhaus, name: "Двери с терморазрывом" },
+  { src: colKvartirnye, name: "Квартирные двери" },
+  { src: colUlichnye, name: "Двери с терморазрывом" },
 ];
 
 // Межкомнатные: 6 коллекций
 const INTERIOR_COLLECTIONS: CollectionItem[] = [
-  { src: doorInteriorPrime, name: "PRIME" },
-  { src: doorInteriorEstetica, name: "ESTETICA" },
-  { src: doorInteriorGhost, name: "GHOST" },
-  { src: doorInteriorReflect, name: "HEAVY" },
-  { src: doorInteriorPrime, name: "ESTETICA EMALE" },
-  { src: doorInteriorEstetica, name: "MAZE" },
+  { src: colPrime, name: "PRIME" },
+  { src: colEstetica, name: "ESTETICA" },
+  { src: colGhost, name: "GHOST" },
+  { src: colHeavy, name: "HEAVY" },
+  { src: colEsteticaEmale, name: "ESTETICA EMALE" },
+  { src: colMaze, name: "MAZE" },
 ];
 
 const TABS = [
