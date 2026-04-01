@@ -14,7 +14,6 @@ import showroom6 from "@/assets/showroom/showroom-6.webp";
 import staffPhoto from "@/assets/showroom/staff.webp";
 
 const GALLERY = [
-  { src: showroom1, alt: "Шоурум BRANDOORS — входные двери" },
   { src: showroom2, alt: "Зона консультации" },
   { src: showroom3, alt: "Экспозиция дверей BRANDOORS" },
   { src: showroom4, alt: "Коридор входных дверей" },
