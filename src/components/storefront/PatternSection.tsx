@@ -43,112 +43,84 @@ function getIndex(i: number, len: number) {
 
 function CollectionCarousel({ items, onSelect }: { items: CollectionItem[]; onSelect: (name: string) => void }) {
   const [current, setCurrent] = useState(0);
-  const [hovered, setHovered] = useState<number | null>(null);
+  const [direction, setDirection] = useState(0);
   const len = items.length;
 
   if (len === 0) return null;
 
-  const prev = () => setCurrent((c) => getIndex(c - 1, len));
-  const next = () => setCurrent((c) => getIndex(c + 1, len));
+  const prev = () => {
+    setDirection(-1);
+    setCurrent((c) => getIndex(c - 1, len));
+  };
+  const next = () => {
+    setDirection(1);
+    setCurrent((c) => getIndex(c + 1, len));
+  };
 
-  const positions =
-    len >= 5
-      ? [
-          getIndex(current - 2, len),
-          getIndex(current - 1, len),
-          current,
-          getIndex(current + 1, len),
-          getIndex(current + 2, len),
-        ]
-      : len >= 3
-        ? [
-            getIndex(current - 1, len),
-            current,
-            getIndex(current + 1, len),
-          ]
-        : len === 2
-          ? [current, getIndex(current + 1, len)]
-          : [current];
+  // Build visible positions array
+  const visible: { idx: number; offset: number }[] = [];
+  if (len >= 5) {
+    for (let o = -2; o <= 2; o++) visible.push({ idx: getIndex(current + o, len), offset: o });
+  } else if (len >= 3) {
+    for (let o = -1; o <= 1; o++) visible.push({ idx: getIndex(current + o, len), offset: o });
+  } else if (len === 2) {
+    visible.push({ idx: current, offset: -0.5 }, { idx: getIndex(current + 1, len), offset: 0.5 });
+  } else {
+    visible.push({ idx: current, offset: 0 });
+  }
 
-  const configs5 = [
-    { x: "-72%", scale: 0.55, blur: 8, opacity: 0.25 },
-    { x: "-36%", scale: 0.78, blur: 4, opacity: 0.55 },
-    { x: "0%", scale: 1, blur: 0, opacity: 1 },
-    { x: "36%", scale: 0.78, blur: 4, opacity: 0.55 },
-    { x: "72%", scale: 0.55, blur: 8, opacity: 0.25 },
-  ];
-
-  const configs3 = [
-    { x: "-40%", scale: 0.75, blur: 4, opacity: 0.5 },
-    { x: "0%", scale: 1, blur: 0, opacity: 1 },
-    { x: "40%", scale: 0.75, blur: 4, opacity: 0.5 },
-  ];
-
-  const configs2 = [
-    { x: "-25%", scale: 0.85, blur: 3, opacity: 0.6 },
-    { x: "25%", scale: 0.85, blur: 3, opacity: 0.6 },
-  ];
-
-  const configs1 = [{ x: "0%", scale: 1, blur: 0, opacity: 1 }];
-
-  const configs = len >= 5 ? configs5 : len >= 3 ? configs3 : len === 2 ? configs2 : configs1;
-  const centerIdx = len >= 5 ? 2 : len >= 3 ? 1 : 0;
+  const getStyle = (offset: number) => {
+    const absOff = Math.abs(offset);
+    const xPercent = offset * 38;
+    const scale = absOff === 0 ? 1 : absOff <= 1 ? 0.78 : 0.55;
+    const blur = absOff === 0 ? 0 : absOff <= 1 ? 4 : 8;
+    const opacity = absOff === 0 ? 1 : absOff <= 1 ? 0.6 : 0.3;
+    const z = absOff === 0 ? 10 : absOff <= 1 ? 5 : 1;
+    return { xPercent, scale, blur, opacity, z };
+  };
 
   return (
-    <div className="relative mx-auto h-[500px] md:h-[620px] lg:h-[720px]" style={{ perspective: "1200px" }}>
-      {positions.map((doorIdx, posIdx) => {
-        const cfg = configs[posIdx];
-        const isCenter = len === 2 ? false : posIdx === centerIdx;
+    <div className="relative mx-auto h-[500px] md:h-[620px] lg:h-[720px] overflow-hidden">
+      {visible.map(({ idx, offset }) => {
+        const s = getStyle(offset);
+        const isCenter = offset === 0 && len > 2;
 
         return (
           <motion.div
-            key={`${doorIdx}-${posIdx}`}
-            className="absolute top-0 left-1/2 h-full flex flex-col items-center justify-center"
-            initial={false}
+            key={idx}
+            className="absolute top-0 left-1/2 h-full flex flex-col items-center justify-center cursor-pointer"
             animate={{
-              x: cfg.x,
-              scale: cfg.scale,
-              opacity: cfg.opacity,
-              filter: `blur(${cfg.blur}px)`,
+              x: `calc(-50% + ${s.xPercent}%)`,
+              scale: s.scale,
+              opacity: s.opacity,
+              filter: `blur(${s.blur}px)`,
             }}
-            transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
-            style={{
-              translateX: "-50%",
-              zIndex: isCenter ? 10 : posIdx === centerIdx - 1 || posIdx === centerIdx + 1 ? 5 : 1,
-            }}
-            onClick={() => onSelect(items[doorIdx].name)}
-            onHoverStart={() => setHovered(doorIdx)}
-            onHoverEnd={() => setHovered(null)}
-            role="button"
-            tabIndex={0}
+            transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
+            style={{ zIndex: s.z }}
+            onClick={() => onSelect(items[idx].name)}
           >
             <motion.img
-              src={items[doorIdx].src}
-              alt={items[doorIdx].name}
-              className="h-[400px] md:h-[480px] lg:h-[560px] w-auto object-contain select-none"
+              src={items[idx].src}
+              alt={items[idx].name}
+              className="h-[400px] md:h-[480px] lg:h-[560px] w-auto object-contain select-none rounded-3xl"
               draggable={false}
-              animate={hovered === doorIdx ? { y: -12 } : { y: 0 }}
+              whileHover={{ y: -12 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             />
 
-            {/* Collection name below each image */}
-            <motion.span
+            <span
               className="mt-6 text-[13px] md:text-[14px] tracking-[0.3em] uppercase text-center"
               style={{
                 fontFamily: "'Raleway', sans-serif",
                 color: (isCenter || len <= 2) ? "rgba(245,245,240,0.8)" : "rgba(245,245,240,0.4)",
               }}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.15 }}
             >
-              {items[doorIdx].name}
-            </motion.span>
+              {items[idx].name}
+            </span>
           </motion.div>
         );
       })}
 
-      {/* Visible navigation arrows */}
       {len > 1 && (
         <>
           <button
