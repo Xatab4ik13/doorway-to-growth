@@ -231,7 +231,7 @@ export default function StorefrontProduct() {
           </motion.div>
 
           {/* ===== MAIN: GALLERY + INFO ===== */}
-          <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-8 lg:gap-14">
+          <div className="grid grid-cols-1 lg:grid-cols-[430px_1fr] gap-8 lg:gap-14">
 
             {/* Gallery — compact, fits in viewport */}
             <motion.div
@@ -240,7 +240,7 @@ export default function StorefrontProduct() {
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="lg:sticky lg:top-24 lg:self-start"
             >
-              <div className="relative aspect-[3/4] max-h-[55vh] bg-[#0c0e14] overflow-hidden group rounded-2xl mx-auto">
+              <div className="relative aspect-[3/4] max-h-[66vh] bg-[#0c0e14] overflow-hidden group rounded-2xl mx-auto">
                 <AnimatePresence mode="wait">
                   {images.length > 0 ? (
                     <motion.img
