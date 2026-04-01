@@ -195,7 +195,7 @@ export function AboutSection({ site, staff }: Props) {
             {
               icon: Clock,
               label: "Часы работы",
-              value: "Ежедневно\n10:00 — 20:00",
+              value: "Пн-Пт 9:00 — 18:00\nСб 9:00 — 13:00\nВс — выходной",
             },
           ].filter(c => c.value).map(({ icon: Icon, label, value, href }, i) => (
             <motion.div

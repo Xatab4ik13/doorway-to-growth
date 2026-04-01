@@ -137,7 +137,7 @@ export function ContactSection({ site }: Props) {
                       <a
                         href={href}
                         className="text-[15px] font-medium hover:opacity-80 transition-opacity"
-                        style={{ color: "#F5F5F0" }}
+                        style={{ color: "#F5F5F0", fontFamily: "'Raleway', sans-serif" }}
                       >
                         {value}
                       </a>
