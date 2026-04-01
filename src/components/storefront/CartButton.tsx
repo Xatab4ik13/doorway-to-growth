@@ -21,7 +21,7 @@ export function CartButton() {
           : "1px solid rgba(255,255,255,0.06)",
       }}
     >
-      <ShoppingBag className="w-[18px] h-[18px] text-storefront-gold/70" />
+      <ShoppingBag className="w-[22px] h-[22px] text-storefront-gold" />
 
       {/* Badge */}
       <AnimatePresence>
