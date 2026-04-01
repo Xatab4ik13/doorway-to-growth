@@ -74,8 +74,9 @@ export default function StorefrontProduct() {
   const [selectedGlazing, setSelectedGlazing] = useState<string | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<string | null>(null);
   const [selectedMolding, setSelectedMolding] = useState<string | null>(null);
+  const [selectedTrim, setSelectedTrim] = useState<Set<string>>(new Set());
+  const [selectedHardware, setSelectedHardware] = useState<Set<string>>(new Set());
 
-  const primaryImg = product?.product_images?.find((i: any) => i.is_primary)?.url || product?.product_images?.[0]?.url;
   useDocumentMeta({
     title: product ? `${product.name} — Brandoors ${site?.city ?? ""}` : "Товар — Brandoors",
     description: product?.description || `Дверь ${product?.name ?? ""} от Brandoors. Характеристики, фото, цены.`,
