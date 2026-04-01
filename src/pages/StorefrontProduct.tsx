@@ -180,6 +180,7 @@ export default function StorefrontProduct() {
     });
   };
 
+  const nextImage = () => setCurrentImage((prev) => (prev + 1) % images.length);
   const prevImage = () => setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
 
   if (siteLoading || productsLoading) {
