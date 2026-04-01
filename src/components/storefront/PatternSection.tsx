@@ -88,7 +88,7 @@ function CollectionCarousel({ items, onSelect }: { items: CollectionItem[]; onSe
     <div className="relative mx-auto h-[500px] md:h-[620px] lg:h-[720px] overflow-hidden">
       {visible.map(({ idx, offset }) => {
         const s = getStyle(offset);
-        const isCenter = offset === 0 && len > 2;
+        const isCenter = len > 2 && offset === 0;
 
         return (
           <motion.div
