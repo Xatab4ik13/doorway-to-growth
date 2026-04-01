@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+export type CartItemType = "door" | "trim" | "hardware";
+
 export type CartItem = {
   id: string;
   name: string;
@@ -9,6 +11,8 @@ export type CartItem = {
   imageUrl: string | null;
   quantity: number;
   siteId: string;
+  type: CartItemType;
+  parentProductId?: string; // links trim/hardware to the door
 };
 
 type CartStore = {
