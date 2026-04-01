@@ -31,16 +31,17 @@ export function HeroSection({ site, banners }: Props) {
       </div>
 
       {/* Phone + Cart — right side, desktop */}
-      <div className="absolute top-0 right-0 z-40 hidden lg:flex items-center gap-4 h-[56px] pr-10 xl:pr-14">
+      <div className="absolute top-0 right-0 z-40 hidden lg:flex items-center gap-5 h-[56px] pr-10 xl:pr-14">
         {site.phone && (
           <a
             href={`tel:${site.phone}`}
-            className="flex items-center gap-2.5 font-medium transition-colors duration-300"
+            className="flex items-center gap-2.5 font-semibold transition-colors duration-300"
             style={{
               fontFamily: "'Raleway', sans-serif",
-              fontSize: "15px",
-              color: "#cfbb96",
-              textShadow: "0 1px 4px rgba(0,0,0,0.5)",
+              fontSize: "14px",
+              letterSpacing: "0.15em",
+              color: "rgba(26,20,8,0.85)",
+              textShadow: "none",
             }}
           >
             <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
