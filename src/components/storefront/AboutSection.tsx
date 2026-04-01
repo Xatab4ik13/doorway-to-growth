@@ -14,7 +14,6 @@ import showroom6 from "@/assets/showroom/showroom-6.webp";
 import staffPhoto from "@/assets/showroom/staff.webp";
 
 const GALLERY = [
-  { src: showroom1, alt: "Шоурум BRANDOORS — входные двери" },
   { src: showroom2, alt: "Зона консультации" },
   { src: showroom3, alt: "Экспозиция дверей BRANDOORS" },
   { src: showroom4, alt: "Коридор входных дверей" },
@@ -196,7 +195,7 @@ export function AboutSection({ site, staff }: Props) {
             {
               icon: Clock,
               label: "Часы работы",
-              value: "Ежедневно\n10:00 — 20:00",
+              value: "Пн-Пт 9:00 — 18:00\nСб 9:00 — 13:00\nВс — выходной",
             },
           ].filter(c => c.value).map(({ icon: Icon, label, value, href }, i) => (
             <motion.div

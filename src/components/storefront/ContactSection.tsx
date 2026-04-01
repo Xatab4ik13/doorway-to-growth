@@ -137,7 +137,7 @@ export function ContactSection({ site }: Props) {
                       <a
                         href={href}
                         className="text-[15px] font-medium hover:opacity-80 transition-opacity"
-                        style={{ color: "#F5F5F0" }}
+                        style={{ color: "#F5F5F0", fontFamily: "'Raleway', sans-serif" }}
                       >
                         {value}
                       </a>
@@ -170,8 +170,8 @@ export function ContactSection({ site }: Props) {
                   Сейчас открыто
                 </span>
               </div>
-              <p className="text-sm font-medium" style={{ color: "#F5F5F0" }}>
-                Ежедневно 10:00 — 20:00
+              <p className="text-sm font-medium whitespace-pre-line" style={{ color: "#F5F5F0" }}>
+                Пн-Пт 9:00 — 18:00{"\n"}Сб 9:00 — 13:00{"\n"}Вс — выходной
               </p>
             </motion.div>
           </motion.div>

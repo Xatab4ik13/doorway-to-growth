@@ -1,38 +1,35 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import doorArtdeco from "@/assets/doors/artdeco.webp";
 import doorBauhaus from "@/assets/doors/bauhaus.webp";
-import doorCapsule from "@/assets/doors/capsule.webp";
-import doorHorizon from "@/assets/doors/horizon.webp";
-import doorLines from "@/assets/doors/lines.webp";
-import doorSmart from "@/assets/doors/smart.webp";
 import doorInteriorPrime from "@/assets/doors/interior-prime.webp";
 import doorInteriorEstetica from "@/assets/doors/interior-estetica.webp";
 import doorInteriorGhost from "@/assets/doors/interior-ghost.webp";
 import doorInteriorReflect from "@/assets/doors/interior-reflect.webp";
 
-type DoorItem = { src: string; name: string };
+type CollectionItem = { src: string; name: string };
 
-const ENTRANCE_DOORS: DoorItem[] = [
-  { src: doorArtdeco, name: "ART DECO" },
-  { src: doorBauhaus, name: "BAUHAUS" },
-  { src: doorCapsule, name: "CAPSULE" },
-  { src: doorHorizon, name: "HORIZON" },
-  { src: doorLines, name: "LINES" },
-  { src: doorSmart, name: "SMART" },
+// Входные: 2 коллекции
+const ENTRANCE_COLLECTIONS: CollectionItem[] = [
+  { src: doorArtdeco, name: "Квартирные двери" },
+  { src: doorBauhaus, name: "Двери с терморазрывом" },
 ];
 
-const INTERIOR_DOORS: DoorItem[] = [
+// Межкомнатные: 6 коллекций
+const INTERIOR_COLLECTIONS: CollectionItem[] = [
   { src: doorInteriorPrime, name: "PRIME" },
   { src: doorInteriorEstetica, name: "ESTETICA" },
   { src: doorInteriorGhost, name: "GHOST" },
-  { src: doorInteriorReflect, name: "REFLECT" },
+  { src: doorInteriorReflect, name: "HEAVY" },
+  { src: doorInteriorPrime, name: "ESTETICA EMALE" },
+  { src: doorInteriorEstetica, name: "MAZE" },
 ];
 
 const TABS = [
-  { key: "entrance", label: "ВХОДНЫЕ" },
   { key: "interior", label: "МЕЖКОМНАТНЫЕ" },
+  { key: "entrance", label: "ВХОДНЫЕ" },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];
@@ -41,10 +38,10 @@ function getIndex(i: number, len: number) {
   return ((i % len) + len) % len;
 }
 
-function DoorCarousel({ doors, onSelect }: { doors: DoorItem[]; onSelect: (name: string) => void }) {
+function CollectionCarousel({ items, onSelect }: { items: CollectionItem[]; onSelect: (name: string) => void }) {
   const [current, setCurrent] = useState(0);
   const [hovered, setHovered] = useState<number | null>(null);
-  const len = doors.length;
+  const len = items.length;
 
   if (len === 0) return null;
 
@@ -66,7 +63,9 @@ function DoorCarousel({ doors, onSelect }: { doors: DoorItem[]; onSelect: (name:
             current,
             getIndex(current + 1, len),
           ]
-        : [current];
+        : len === 2
+          ? [current, getIndex(current + 1, len)]
+          : [current];
 
   const configs5 = [
     { x: "-72%", scale: 0.55, blur: 8, opacity: 0.25 },
@@ -82,23 +81,25 @@ function DoorCarousel({ doors, onSelect }: { doors: DoorItem[]; onSelect: (name:
     { x: "40%", scale: 0.75, blur: 4, opacity: 0.5 },
   ];
 
+  const configs2 = [
+    { x: "-25%", scale: 0.85, blur: 3, opacity: 0.6 },
+    { x: "25%", scale: 0.85, blur: 3, opacity: 0.6 },
+  ];
+
   const configs1 = [{ x: "0%", scale: 1, blur: 0, opacity: 1 }];
 
-  const configs = len >= 5 ? configs5 : len >= 3 ? configs3 : configs1;
+  const configs = len >= 5 ? configs5 : len >= 3 ? configs3 : len === 2 ? configs2 : configs1;
   const centerIdx = len >= 5 ? 2 : len >= 3 ? 1 : 0;
 
   return (
-    <div
-      className="relative mx-auto h-[500px] md:h-[620px] lg:h-[720px]"
-      style={{ perspective: "1200px" }}
-    >
+    <div className="relative mx-auto h-[500px] md:h-[620px] lg:h-[720px]" style={{ perspective: "1200px" }}>
       {positions.map((doorIdx, posIdx) => {
         const cfg = configs[posIdx];
-        const isCenter = posIdx === centerIdx;
+        const isCenter = len === 2 ? false : posIdx === centerIdx;
 
         return (
           <motion.div
-            key={doorIdx}
+            key={`${doorIdx}-${posIdx}`}
             className="absolute top-0 left-1/2 h-full flex flex-col items-center justify-center"
             initial={false}
             animate={{
@@ -112,53 +113,57 @@ function DoorCarousel({ doors, onSelect }: { doors: DoorItem[]; onSelect: (name:
               translateX: "-50%",
               zIndex: isCenter ? 10 : posIdx === centerIdx - 1 || posIdx === centerIdx + 1 ? 5 : 1,
             }}
-            onClick={() => isCenter && onSelect(doors[doorIdx].name)}
-            onHoverStart={() => isCenter && setHovered(doorIdx)}
+            onClick={() => onSelect(items[doorIdx].name)}
+            onHoverStart={() => setHovered(doorIdx)}
             onHoverEnd={() => setHovered(null)}
-            role={isCenter ? "button" : undefined}
-            tabIndex={isCenter ? 0 : undefined}
+            role="button"
+            tabIndex={0}
           >
             <motion.img
-              src={doors[doorIdx].src}
-              alt={doors[doorIdx].name}
-              className="h-[440px] md:h-[540px] lg:h-[640px] w-auto object-contain select-none"
+              src={items[doorIdx].src}
+              alt={items[doorIdx].name}
+              className="h-[400px] md:h-[480px] lg:h-[560px] w-auto object-contain select-none"
               draggable={false}
-              animate={
-                isCenter && hovered === doorIdx ? { y: -12 } : { y: 0 }
-              }
+              animate={hovered === doorIdx ? { y: -12 } : { y: 0 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             />
 
-            {isCenter && (
-              <motion.span
-                className="mt-4 text-[13px] tracking-[0.35em] uppercase"
-                style={{
-                  fontFamily: "'Raleway', sans-serif",
-                  color: "rgba(245,245,240,0.6)",
-                }}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.15 }}
-              >
-                {doors[doorIdx].name}
-              </motion.span>
-            )}
+            {/* Collection name below each image */}
+            <motion.span
+              className="mt-6 text-[13px] md:text-[14px] tracking-[0.3em] uppercase text-center"
+              style={{
+                fontFamily: "'Raleway', sans-serif",
+                color: (isCenter || len <= 2) ? "rgba(245,245,240,0.8)" : "rgba(245,245,240,0.4)",
+              }}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.15 }}
+            >
+              {items[doorIdx].name}
+            </motion.span>
           </motion.div>
         );
       })}
 
+      {/* Visible navigation arrows */}
       {len > 1 && (
         <>
           <button
             onClick={prev}
-            className="absolute left-0 top-0 w-1/3 h-full z-20 cursor-pointer focus:outline-none"
-            aria-label="Previous"
-          />
+            className="absolute left-6 md:left-12 top-1/2 -translate-y-1/2 z-30 w-14 h-14 rounded-full border flex items-center justify-center transition-all duration-300 hover:bg-white/5"
+            style={{ borderColor: "rgba(245,245,240,0.15)" }}
+            aria-label="Предыдущая"
+          >
+            <ChevronLeft className="w-6 h-6" style={{ color: "rgba(245,245,240,0.5)" }} />
+          </button>
           <button
             onClick={next}
-            className="absolute right-0 top-0 w-1/3 h-full z-20 cursor-pointer focus:outline-none"
-            aria-label="Next"
-          />
+            className="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 z-30 w-14 h-14 rounded-full border flex items-center justify-center transition-all duration-300 hover:bg-white/5"
+            style={{ borderColor: "rgba(245,245,240,0.15)" }}
+            aria-label="Следующая"
+          >
+            <ChevronRight className="w-6 h-6" style={{ color: "rgba(245,245,240,0.5)" }} />
+          </button>
         </>
       )}
     </div>
@@ -166,13 +171,13 @@ function DoorCarousel({ doors, onSelect }: { doors: DoorItem[]; onSelect: (name:
 }
 
 export function PatternSection() {
-  const [activeTab, setActiveTab] = useState<TabKey>("entrance");
+  const [activeTab, setActiveTab] = useState<TabKey>("interior");
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
 
-  const doorsMap: Record<TabKey, DoorItem[]> = {
-    entrance: ENTRANCE_DOORS,
-    interior: INTERIOR_DOORS,
+  const collectionsMap: Record<TabKey, CollectionItem[]> = {
+    entrance: ENTRANCE_COLLECTIONS,
+    interior: INTERIOR_COLLECTIONS,
   };
 
   const handleSelect = (name: string) => {
@@ -203,8 +208,8 @@ export function PatternSection() {
         </h2>
       </motion.div>
 
-      {/* Tabs */}
-      <div className="flex justify-center gap-8 mb-10 lg:mb-14">
+      {/* Tabs — МЕЖКОМНАТНЫЕ first */}
+      <div className="flex justify-center gap-8 mb-6 lg:mb-8">
         {TABS.map((tab) => (
           <button
             key={tab.key}
@@ -229,7 +234,7 @@ export function PatternSection() {
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         >
-          <DoorCarousel doors={doorsMap[activeTab]} onSelect={handleSelect} />
+          <CollectionCarousel items={collectionsMap[activeTab]} onSelect={handleSelect} />
         </motion.div>
       </AnimatePresence>
     </section>
