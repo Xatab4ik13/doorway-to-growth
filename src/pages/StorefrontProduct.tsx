@@ -231,7 +231,7 @@ export default function StorefrontProduct() {
           </motion.div>
 
           {/* ===== MAIN: GALLERY + INFO ===== */}
-          <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-8 lg:gap-14">
+          <div className="grid grid-cols-1 lg:grid-cols-[430px_1fr] gap-8 lg:gap-14">
 
             {/* Gallery — compact, fits in viewport */}
             <motion.div
