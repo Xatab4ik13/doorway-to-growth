@@ -103,6 +103,7 @@ export default function StorefrontProduct() {
       rrp: product.rrp ? Number(product.rrp) : null,
       imageUrl: imgUrl,
       siteId: site.id,
+      type: "door",
     });
   };
 
