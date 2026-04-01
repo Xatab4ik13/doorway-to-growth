@@ -43,6 +43,24 @@ const MOCK_MOLDING_COLORS: { name: string; hex: string }[] = [
   { name: "Черный", hex: "#1A1A1A" },
 ];
 
+type TrimItem = { id: string; name: string; rrp: number; icon: "frame" | "architrave" | "platband" };
+type HardwareItem = { id: string; name: string; rrp: number; icon: "handle" | "lock" | "hinge" };
+
+const MOCK_TRIM: TrimItem[] = [
+  { id: "trim-1", name: "Наличник телескопический", rrp: 850, icon: "frame" },
+  { id: "trim-2", name: "Добор телескопический", rrp: 1200, icon: "architrave" },
+  { id: "trim-3", name: "Наличник прямой", rrp: 600, icon: "platband" },
+  { id: "trim-4", name: "Добор прямой", rrp: 950, icon: "frame" },
+];
+
+const MOCK_HARDWARE: HardwareItem[] = [
+  { id: "hw-1", name: "Ручка MORELLI", rrp: 2400, icon: "handle" },
+  { id: "hw-2", name: "Замок магнитный", rrp: 1800, icon: "lock" },
+  { id: "hw-3", name: "Петли скрытые (2 шт)", rrp: 3200, icon: "hinge" },
+  { id: "hw-4", name: "Ручка RENZ", rrp: 1600, icon: "handle" },
+  { id: "hw-5", name: "Замок сантехнический", rrp: 1200, icon: "lock" },
+];
+
 export default function StorefrontProduct() {
   const { slug: urlSlug, productSlug } = useParams<{ slug: string; productSlug: string }>();
   const slug = useSiteSlug(urlSlug);
