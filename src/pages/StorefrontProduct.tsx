@@ -127,7 +127,59 @@ export default function StorefrontProduct() {
     });
   };
 
-  const nextImage = () => setCurrentImage((prev) => (prev + 1) % images.length);
+  const toggleTrim = (id: string) => {
+    setSelectedTrim((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const toggleHardware = (id: string) => {
+    setSelectedHardware((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const handleAddAllToCart = () => {
+    if (!product || !site) return;
+    handleAddToCart();
+    // Add selected trim items
+    selectedTrim.forEach((id) => {
+      const item = MOCK_TRIM.find((t) => t.id === id);
+      if (item) {
+        addItem({
+          id: `${product.id}-${item.id}`,
+          name: item.name,
+          slug: item.id,
+          rrp: item.rrp,
+          imageUrl: null,
+          siteId: site.id,
+          type: "trim",
+          parentProductId: product.id,
+        });
+      }
+    });
+    // Add selected hardware items
+    selectedHardware.forEach((id) => {
+      const item = MOCK_HARDWARE.find((h) => h.id === id);
+      if (item) {
+        addItem({
+          id: `${product.id}-${item.id}`,
+          name: item.name,
+          slug: item.id,
+          rrp: item.rrp,
+          imageUrl: null,
+          siteId: site.id,
+          type: "hardware",
+          parentProductId: product.id,
+        });
+      }
+    });
+  };
+
   const prevImage = () => setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
 
   if (siteLoading || productsLoading) {
