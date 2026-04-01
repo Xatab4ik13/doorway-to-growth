@@ -710,6 +710,7 @@ function CatalogCartButton({ product, img, siteId }: { product: any; img: string
           rrp: product.rrp ? Number(product.rrp) : null,
           imageUrl: img || null,
           siteId,
+          type: "door",
         });
       }}
       className={`mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-[11px] uppercase tracking-wider font-semibold transition-all duration-300 ${

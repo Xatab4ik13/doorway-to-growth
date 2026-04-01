@@ -6,7 +6,7 @@ import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ChevronLeft, ChevronRight, Ruler, ShoppingCart, Check } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Ruler, ShoppingCart, Check, Plus, DoorOpen, Lock, CircleDot } from "lucide-react";
 import { useCartStore } from "@/stores/useCartStore";
 
 // ── Mock data for swatches (will be replaced with DB data later) ──
@@ -43,6 +43,24 @@ const MOCK_MOLDING_COLORS: { name: string; hex: string }[] = [
   { name: "Черный", hex: "#1A1A1A" },
 ];
 
+type TrimItem = { id: string; name: string; rrp: number; icon: "frame" | "architrave" | "platband" };
+type HardwareItem = { id: string; name: string; rrp: number; icon: "handle" | "lock" | "hinge" };
+
+const MOCK_TRIM: TrimItem[] = [
+  { id: "trim-1", name: "Наличник телескопический", rrp: 850, icon: "frame" },
+  { id: "trim-2", name: "Добор телескопический", rrp: 1200, icon: "architrave" },
+  { id: "trim-3", name: "Наличник прямой", rrp: 600, icon: "platband" },
+  { id: "trim-4", name: "Добор прямой", rrp: 950, icon: "frame" },
+];
+
+const MOCK_HARDWARE: HardwareItem[] = [
+  { id: "hw-1", name: "Ручка MORELLI", rrp: 2400, icon: "handle" },
+  { id: "hw-2", name: "Замок магнитный", rrp: 1800, icon: "lock" },
+  { id: "hw-3", name: "Петли скрытые (2 шт)", rrp: 3200, icon: "hinge" },
+  { id: "hw-4", name: "Ручка RENZ", rrp: 1600, icon: "handle" },
+  { id: "hw-5", name: "Замок сантехнический", rrp: 1200, icon: "lock" },
+];
+
 export default function StorefrontProduct() {
   const { slug: urlSlug, productSlug } = useParams<{ slug: string; productSlug: string }>();
   const slug = useSiteSlug(urlSlug);
@@ -56,6 +74,8 @@ export default function StorefrontProduct() {
   const [selectedGlazing, setSelectedGlazing] = useState<string | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<string | null>(null);
   const [selectedMolding, setSelectedMolding] = useState<string | null>(null);
+  const [selectedTrim, setSelectedTrim] = useState<Set<string>>(new Set());
+  const [selectedHardware, setSelectedHardware] = useState<Set<string>>(new Set());
 
   const primaryImg = product?.product_images?.find((i: any) => i.is_primary)?.url || product?.product_images?.[0]?.url;
   useDocumentMeta({
@@ -103,6 +123,60 @@ export default function StorefrontProduct() {
       rrp: product.rrp ? Number(product.rrp) : null,
       imageUrl: imgUrl,
       siteId: site.id,
+      type: "door",
+    });
+  };
+
+  const toggleTrim = (id: string) => {
+    setSelectedTrim((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const toggleHardware = (id: string) => {
+    setSelectedHardware((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const handleAddAllToCart = () => {
+    if (!product || !site) return;
+    handleAddToCart();
+    // Add selected trim items
+    selectedTrim.forEach((id) => {
+      const item = MOCK_TRIM.find((t) => t.id === id);
+      if (item) {
+        addItem({
+          id: `${product.id}-${item.id}`,
+          name: item.name,
+          slug: item.id,
+          rrp: item.rrp,
+          imageUrl: null,
+          siteId: site.id,
+          type: "trim",
+          parentProductId: product.id,
+        });
+      }
+    });
+    // Add selected hardware items
+    selectedHardware.forEach((id) => {
+      const item = MOCK_HARDWARE.find((h) => h.id === id);
+      if (item) {
+        addItem({
+          id: `${product.id}-${item.id}`,
+          name: item.name,
+          slug: item.id,
+          rrp: item.rrp,
+          imageUrl: null,
+          siteId: site.id,
+          type: "hardware",
+          parentProductId: product.id,
+        });
+      }
     });
   };
 
@@ -372,7 +446,131 @@ export default function StorefrontProduct() {
                 </div>
               </div>
 
-              {/* ===== SIZE GRID ===== */}
+              {/* ===== TRIM (ПОГОНАЖ) ===== */}
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
+                    <DoorOpen className="w-4 h-4 text-storefront-gold" />
+                  </div>
+                  <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
+                    Погонаж коллекции
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {MOCK_TRIM.map((item) => {
+                    const active = selectedTrim.has(item.id);
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => toggleTrim(item.id)}
+                        className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 text-left ${
+                          active
+                            ? "border-storefront-gold/50 bg-storefront-gold/10"
+                            : "border-white/8 bg-white/[0.02] hover:border-white/15"
+                        }`}
+                      >
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                          active ? "bg-storefront-gold/20" : "bg-white/5"
+                        }`}>
+                          {item.icon === "frame" && (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={active ? "text-storefront-gold" : "text-storefront-muted"}>
+                              <rect x="3" y="3" width="18" height="18" rx="1" />
+                              <rect x="6" y="6" width="12" height="12" rx="1" />
+                            </svg>
+                          )}
+                          {item.icon === "architrave" && (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={active ? "text-storefront-gold" : "text-storefront-muted"}>
+                              <path d="M4 4v16M8 4v16M4 4h4M4 20h4" />
+                              <path d="M12 8h8M12 12h8M12 16h6" />
+                            </svg>
+                          )}
+                          {item.icon === "platband" && (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={active ? "text-storefront-gold" : "text-storefront-muted"}>
+                              <path d="M6 2v20M10 2v20M6 2h4M6 22h4" />
+                            </svg>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className={`text-[12px] font-medium truncate ${active ? "text-storefront-text" : "text-storefront-muted"}`}>
+                            {item.name}
+                          </div>
+                          <div className="text-[11px] text-storefront-gold/70">
+                            {item.rrp.toLocaleString("ru-RU")} ₽
+                          </div>
+                        </div>
+                        <div className={`w-6 h-6 rounded-md border flex items-center justify-center shrink-0 transition-all ${
+                          active
+                            ? "bg-storefront-gold border-storefront-gold"
+                            : "border-white/15"
+                        }`}>
+                          {active ? <Check className="w-3.5 h-3.5 text-[#07090d]" /> : <Plus className="w-3.5 h-3.5 text-storefront-muted/40" />}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* ===== HARDWARE (ФУРНИТУРА) ===== */}
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
+                    <Lock className="w-4 h-4 text-storefront-gold" />
+                  </div>
+                  <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
+                    Фурнитура
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {MOCK_HARDWARE.map((item) => {
+                    const active = selectedHardware.has(item.id);
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => toggleHardware(item.id)}
+                        className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 text-left ${
+                          active
+                            ? "border-storefront-gold/50 bg-storefront-gold/10"
+                            : "border-white/8 bg-white/[0.02] hover:border-white/15"
+                        }`}
+                      >
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                          active ? "bg-storefront-gold/20" : "bg-white/5"
+                        }`}>
+                          {item.icon === "handle" && (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={active ? "text-storefront-gold" : "text-storefront-muted"}>
+                              <path d="M12 4v6M8 10h8c1.1 0 2 .9 2 2v0c0 1.1-.9 2-2 2H8c-1.1 0-2-.9-2-2v0c0-1.1.9-2 2-2z" />
+                              <path d="M12 14v6" />
+                            </svg>
+                          )}
+                          {item.icon === "lock" && (
+                            <Lock className={`w-5 h-5 ${active ? "text-storefront-gold" : "text-storefront-muted"}`} />
+                          )}
+                          {item.icon === "hinge" && (
+                            <CircleDot className={`w-5 h-5 ${active ? "text-storefront-gold" : "text-storefront-muted"}`} />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className={`text-[12px] font-medium truncate ${active ? "text-storefront-text" : "text-storefront-muted"}`}>
+                            {item.name}
+                          </div>
+                          <div className="text-[11px] text-storefront-gold/70">
+                            {item.rrp.toLocaleString("ru-RU")} ₽
+                          </div>
+                        </div>
+                        <div className={`w-6 h-6 rounded-md border flex items-center justify-center shrink-0 transition-all ${
+                          active
+                            ? "bg-storefront-gold border-storefront-gold"
+                            : "border-white/15"
+                        }`}>
+                          {active ? <Check className="w-3.5 h-3.5 text-[#07090d]" /> : <Plus className="w-3.5 h-3.5 text-storefront-muted/40" />}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               {sizes && sizes.length > 0 && (
                 <motion.div
                   initial={{ opacity: 0, y: 15 }}
@@ -425,18 +623,39 @@ export default function StorefrontProduct() {
                 transition={{ delay: 0.45 }}
                 className="mt-auto pt-4"
               >
-                {product.rrp && (
-                  <div className="flex items-baseline gap-2 mb-5">
-                    <span className="text-[11px] uppercase tracking-widest text-storefront-muted">от</span>
-                    <span className="text-3xl font-bold text-storefront-text" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                      {Number(product.rrp).toLocaleString("ru-RU")}
-                    </span>
-                    <span className="text-xl text-storefront-gold">₽</span>
-                  </div>
-                )}
+                {(() => {
+                  const doorPrice = product.rrp ? Number(product.rrp) : 0;
+                  const trimTotal = MOCK_TRIM.filter((t) => selectedTrim.has(t.id)).reduce((s, t) => s + t.rrp, 0);
+                  const hwTotal = MOCK_HARDWARE.filter((h) => selectedHardware.has(h.id)).reduce((s, h) => s + h.rrp, 0);
+                  const totalPrice = doorPrice + trimTotal + hwTotal;
+                  const hasExtras = selectedTrim.size > 0 || selectedHardware.size > 0;
+
+                  return (
+                    <>
+                      {totalPrice > 0 && (
+                        <div className="mb-5">
+                          {hasExtras && doorPrice > 0 && (
+                            <div className="text-[11px] text-storefront-muted mb-1">
+                              Дверь {doorPrice.toLocaleString("ru-RU")} ₽
+                              {trimTotal > 0 && ` + погонаж ${trimTotal.toLocaleString("ru-RU")} ₽`}
+                              {hwTotal > 0 && ` + фурнитура ${hwTotal.toLocaleString("ru-RU")} ₽`}
+                            </div>
+                          )}
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-[11px] uppercase tracking-widest text-storefront-muted">{hasExtras ? "итого" : "от"}</span>
+                            <span className="text-3xl font-bold text-storefront-text" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                              {totalPrice.toLocaleString("ru-RU")}
+                            </span>
+                            <span className="text-xl text-storefront-gold">₽</span>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
 
                 <motion.button
-                  onClick={handleAddToCart}
+                  onClick={handleAddAllToCart}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.96 }}
                   className={`w-full font-bold text-[13px] uppercase tracking-wider py-4 rounded-xl transition-all flex items-center justify-center gap-3 relative overflow-hidden group ${
@@ -450,7 +669,7 @@ export default function StorefrontProduct() {
                   )}
                   <span className="relative z-10 flex items-center gap-3">
                     {isInCart ? <Check className="w-5 h-5" /> : <ShoppingCart className="w-5 h-5" />}
-                    {isInCart ? "В корзине" : "Добавить в корзину"}
+                    {isInCart ? "В корзине" : (selectedTrim.size > 0 || selectedHardware.size > 0) ? "Добавить комплект" : "Добавить в корзину"}
                   </span>
                 </motion.button>
               </motion.div>

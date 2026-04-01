@@ -159,6 +159,13 @@ export function CartDrawer() {
                           {/* Info */}
                           <div className="flex-1 min-w-0 flex flex-col justify-between">
                             <div>
+                              {item.type && item.type !== "door" && (
+                                <span className={`text-[9px] uppercase tracking-widest font-semibold px-2 py-0.5 rounded-full mb-1 inline-block ${
+                                  item.type === "trim" ? "bg-blue-500/15 text-blue-400" : "bg-purple-500/15 text-purple-400"
+                                }`}>
+                                  {item.type === "trim" ? "Погонаж" : "Фурнитура"}
+                                </span>
+                              )}
                               <h3 className="text-[12px] font-semibold text-storefront-text uppercase tracking-wider leading-tight line-clamp-2 mb-1">
                                 {item.name}
                               </h3>
