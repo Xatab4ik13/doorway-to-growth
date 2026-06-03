@@ -448,7 +448,7 @@ export default function StorefrontProduct() {
                       transition={{ duration: 0.4 }}
                       src={images[currentImage]?.url}
                       alt={images[currentImage]?.alt || product.name}
-                      className="w-full h-full object-contain p-8 transform transition-transform duration-[1000ms] group-hover:scale-[1.03]"
+                      className="w-full h-full object-contain p-8"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
