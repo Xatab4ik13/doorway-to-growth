@@ -1,16 +1,16 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, memo } from "react";
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
-import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ChevronDown, ShoppingCart, Check, SlidersHorizontal, X } from "lucide-react";
 import brandoorsLogo from "@/assets/logo.png";
 import { useCartStore } from "@/stores/useCartStore";
 
 const ITEMS_PER_PAGE = 16;
+
 
 export default function StorefrontCatalog() {
   const { slug: urlSlug } = useParams<{ slug: string }>();
@@ -249,77 +249,70 @@ export default function StorefrontCatalog() {
           </div>
 
           {/* ===== MOBILE FILTER SLIDE-OUT ===== */}
-          <AnimatePresence>
-            {mobileFiltersOpen && (
-              <>
-                <motion.div
-                  className="fixed inset-0 z-[60] bg-black/60 md:hidden"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onClick={() => setMobileFiltersOpen(false)}
-                />
-                <motion.div
-                  className="fixed top-0 left-0 bottom-0 z-[70] md:hidden overflow-y-auto scrollbar-hide"
-                  style={{ width: "300px" }}
-                  initial={{ x: -300 }}
-                  animate={{ x: 0 }}
-                  exit={{ x: -300 }}
-                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          {mobileFiltersOpen && (
+            <>
+              <div
+                className="fixed inset-0 z-[60] bg-black/60 md:hidden animate-fade-in"
+                onClick={() => setMobileFiltersOpen(false)}
+              />
+              <div
+                className="fixed top-0 left-0 bottom-0 z-[70] md:hidden overflow-y-auto scrollbar-hide"
+                style={{
+                  width: "300px",
+                  animation: "slide-in-left 0.4s cubic-bezier(0.22, 1, 0.36, 1)",
+                }}
+              >
+                <div
+                  className="min-h-full relative"
+                  style={{
+                    background: "linear-gradient(175deg, #cfbb96 0%, #bda67a 15%, #a8956e 35%, #8d7c5a 55%, #7a6b4d 70%, #6e5f40 85%, #5c5035 100%)",
+                  }}
                 >
-                  <div
-                    className="min-h-full"
-                    style={{
-                      background: "linear-gradient(175deg, #cfbb96 0%, #bda67a 15%, #a8956e 35%, #8d7c5a 55%, #7a6b4d 70%, #6e5f40 85%, #5c5035 100%)",
-                    }}
+                  <button
+                    onClick={() => setMobileFiltersOpen(false)}
+                    className="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center"
+                    aria-label="Закрыть фильтры"
                   >
-                    {/* Close button */}
+                    <X className="w-6 h-6" style={{ color: "rgba(26,20,8,0.6)" }} />
+                  </button>
+
+                  <SidebarContent
+                    brandoorsLogo={brandoorsLogo}
+                    parentCategories={parentCategories}
+                    getChildren={getChildren}
+                    expandedParents={expandedParents}
+                    toggleParent={toggleParent}
+                    selectedCategory={selectedCategory}
+                    selectCategory={(id) => { selectCategory(id); }}
+                    priceFrom={priceFrom}
+                    setPriceFrom={(v) => { setPriceFrom(v); setPage(1); }}
+                    priceTo={priceTo}
+                    setPriceTo={(v) => { setPriceTo(v); setPage(1); }}
+                    colorOpen={colorOpen}
+                    setColorOpen={setColorOpen}
+                    availableColors={availableColors}
+                    selectedColors={selectedColors}
+                    toggleColor={toggleColor}
+                    glazingOpen={glazingOpen}
+                    setGlazingOpen={setGlazingOpen}
+                    availableGlazings={availableGlazings}
+                    selectedGlazings={selectedGlazings}
+                    toggleGlazing={toggleGlazing}
+                  />
+
+                  <div className="px-5 pb-8 pt-2">
                     <button
                       onClick={() => setMobileFiltersOpen(false)}
-                      className="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center"
-                      aria-label="Закрыть фильтры"
+                      className="w-full py-3.5 rounded-xl bg-[#1a1408] text-white text-[13px] font-bold uppercase tracking-[0.15em] hover:bg-[#1a1408]/90 active:scale-[0.97] transition-all"
                     >
-                      <X className="w-6 h-6" style={{ color: "rgba(26,20,8,0.6)" }} />
+                      Показать {filtered.length} товаров
                     </button>
-
-                    <SidebarContent
-                      brandoorsLogo={brandoorsLogo}
-                      parentCategories={parentCategories}
-                      getChildren={getChildren}
-                      expandedParents={expandedParents}
-                      toggleParent={toggleParent}
-                      selectedCategory={selectedCategory}
-                      selectCategory={(id) => { selectCategory(id); }}
-                      priceFrom={priceFrom}
-                      setPriceFrom={(v) => { setPriceFrom(v); setPage(1); }}
-                      priceTo={priceTo}
-                      setPriceTo={(v) => { setPriceTo(v); setPage(1); }}
-                      colorOpen={colorOpen}
-                      setColorOpen={setColorOpen}
-                      availableColors={availableColors}
-                      selectedColors={selectedColors}
-                      toggleColor={toggleColor}
-                      glazingOpen={glazingOpen}
-                      setGlazingOpen={setGlazingOpen}
-                      availableGlazings={availableGlazings}
-                      selectedGlazings={selectedGlazings}
-                      toggleGlazing={toggleGlazing}
-                    />
-
-                    {/* Apply button */}
-                    <div className="px-5 pb-8 pt-2">
-                      <button
-                        onClick={() => setMobileFiltersOpen(false)}
-                        className="w-full py-3.5 rounded-xl bg-[#1a1408] text-white text-[13px] font-bold uppercase tracking-[0.15em] hover:bg-[#1a1408]/90 active:scale-[0.97] transition-all"
-                      >
-                        Показать {filtered.length} товаров
-                      </button>
-                    </div>
                   </div>
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>
+                </div>
+              </div>
+            </>
+          )}
+
 
           <div className="flex gap-6 lg:gap-10">
             {/* ===== LEFT SIDEBAR — Desktop only ===== */}
@@ -374,55 +367,16 @@ export default function StorefrontCatalog() {
                   const catName = getCategoryName(product.category_id);
 
                   return (
-                    <motion.div
+                    <ProductCard
                       key={product.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.25, delay: Math.min(i * 0.03, 0.3) }}
-                      className="group"
-                    >
-                      <Link
-                        to={`/store/${slug}/product/${product.slug}`}
-                        className="block"
-                      >
-                        {/* Image */}
-                        <div className="relative overflow-hidden bg-[#0c0e14] flex items-center justify-center" style={{ minHeight: "280px" }}>
-                          {img ? (
-                            <img
-                              src={img}
-                              alt={product.name}
-                              loading="lazy"
-                              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-[#0f1218]">
-                              <span className="text-storefront-muted/20 text-5xl font-bold">B</span>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Info */}
-                        <div className="pt-3">
-                          {catName && (
-                            <span className="text-[10px] uppercase tracking-[0.15em] text-storefront-muted/60 block mb-1">
-                              {catName}
-                            </span>
-                          )}
-                          <h3 className="text-xs font-semibold text-storefront-text uppercase tracking-wider leading-snug mb-1 line-clamp-2">
-                            {product.name}
-                          </h3>
-                          {product.rrp && (
-                            <p className="text-sm font-medium text-storefront-text">
-                              {Number(product.rrp).toLocaleString("ru-RU")} ₽
-                            </p>
-                          )}
-                        </div>
-                      </Link>
-
-                      {/* Add to cart button */}
-                      <CatalogCartButton product={product} img={img} siteId={site?.id} />
-                    </motion.div>
+                      product={product}
+                      img={img}
+                      catName={catName}
+                      slug={slug}
+                      siteId={site?.id}
+                    />
                   );
+
                 })}
               </div>
 
@@ -565,33 +519,26 @@ function SidebarContent({
                 )}
               </div>
 
-              <AnimatePresence>
-                {isExpanded && children.length > 0 && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                    className="overflow-hidden"
-                  >
-                    <div className="ml-5 pl-3 mb-1 border-l-2 border-black/10">
-                      {children.map((child: any) => (
-                        <button
-                          key={child.id}
-                          onClick={() => selectCategory(child.id)}
-                          className={`w-full text-left text-[14px] font-semibold py-2.5 px-3 rounded-lg transition-all duration-200 ${
-                            selectedCategory === child.id
-                              ? "bg-black/15 text-white"
-                              : "text-[#1a1408]/55 hover:text-[#1a1408] hover:bg-black/5"
-                          }`}
-                        >
-                          {child.name}
-                        </button>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {isExpanded && children.length > 0 && (
+                <div className="overflow-hidden animate-accordion-down">
+                  <div className="ml-5 pl-3 mb-1 border-l-2 border-black/10">
+                    {children.map((child: any) => (
+                      <button
+                        key={child.id}
+                        onClick={() => selectCategory(child.id)}
+                        className={`w-full text-left text-[14px] font-semibold py-2.5 px-3 rounded-lg transition-all duration-200 ${
+                          selectedCategory === child.id
+                            ? "bg-black/15 text-white"
+                            : "text-[#1a1408]/55 hover:text-[#1a1408] hover:bg-black/5"
+                        }`}
+                      >
+                        {child.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
             </div>
           );
         })}
@@ -633,28 +580,27 @@ function SidebarContent({
           <span className="text-[15px] font-extrabold uppercase tracking-[0.12em] text-[#1a1408]/90">Цвет</span>
           <ChevronRight className={`w-4 h-4 text-[#1a1408]/40 transition-transform duration-300 ${colorOpen ? "rotate-90" : ""}`} />
         </button>
-        <AnimatePresence>
-          {colorOpen && (
-            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-              <div className="space-y-0.5 mb-1">
-                {availableColors.map((color) => (
-                  <label key={color} onClick={() => toggleColor(color)} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-black/5 cursor-pointer transition-colors group">
-                    <div className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center transition-all ${
-                      selectedColors.has(color) ? "bg-[#1a1408] border-[#1a1408]" : "border-[#1a1408]/20 group-hover:border-[#1a1408]/35"
-                    }`}>
-                      {selectedColors.has(color) && (
-                        <svg className="w-3 h-3 text-[#cfbb96]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </div>
-                    <span className="text-[13px] font-semibold text-[#1a1408]/65">{color}</span>
-                  </label>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {colorOpen && (
+          <div className="overflow-hidden animate-accordion-down">
+            <div className="space-y-0.5 mb-1">
+              {availableColors.map((color) => (
+                <label key={color} onClick={() => toggleColor(color)} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-black/5 cursor-pointer transition-colors group">
+                  <div className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center transition-all ${
+                    selectedColors.has(color) ? "bg-[#1a1408] border-[#1a1408]" : "border-[#1a1408]/20 group-hover:border-[#1a1408]/35"
+                  }`}>
+                    {selectedColors.has(color) && (
+                      <svg className="w-3 h-3 text-[#cfbb96]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                  <span className="text-[13px] font-semibold text-[#1a1408]/65">{color}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
 
       <div className="mx-5 border-t border-black/10" />
@@ -665,40 +611,102 @@ function SidebarContent({
           <span className="text-[15px] font-extrabold uppercase tracking-[0.12em] text-[#1a1408]/90">Остекление</span>
           <ChevronRight className={`w-4 h-4 text-[#1a1408]/40 transition-transform duration-300 ${glazingOpen ? "rotate-90" : ""}`} />
         </button>
-        <AnimatePresence>
-          {glazingOpen && (
-            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-              <div className="space-y-0.5 mb-1">
-                {availableGlazings.map((g) => (
-                  <label key={g} onClick={() => toggleGlazing(g)} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-black/5 cursor-pointer transition-colors group">
-                    <div className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center transition-all ${
-                      selectedGlazings.has(g) ? "bg-[#1a1408] border-[#1a1408]" : "border-[#1a1408]/20 group-hover:border-[#1a1408]/35"
-                    }`}>
-                      {selectedGlazings.has(g) && (
-                        <svg className="w-3 h-3 text-[#cfbb96]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </div>
-                    <span className="text-[13px] font-semibold text-[#1a1408]/65">{g}</span>
-                  </label>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {glazingOpen && (
+          <div className="overflow-hidden animate-accordion-down">
+            <div className="space-y-0.5 mb-1">
+              {availableGlazings.map((g) => (
+                <label key={g} onClick={() => toggleGlazing(g)} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-black/5 cursor-pointer transition-colors group">
+                  <div className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center transition-all ${
+                    selectedGlazings.has(g) ? "bg-[#1a1408] border-[#1a1408]" : "border-[#1a1408]/20 group-hover:border-[#1a1408]/35"
+                  }`}>
+                    {selectedGlazings.has(g) && (
+                      <svg className="w-3 h-3 text-[#cfbb96]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                  <span className="text-[13px] font-semibold text-[#1a1408]/65">{g}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
 }
 
-function CatalogCartButton({ product, img, siteId }: { product: any; img: string | undefined; siteId: string | undefined }) {
+const ProductCard = memo(function ProductCard({
+  product,
+  img,
+  catName,
+  slug,
+  siteId,
+}: {
+  product: any;
+  img: string | undefined;
+  catName: string;
+  slug: string | undefined;
+  siteId: string | undefined;
+}) {
+  return (
+    <div className="group">
+      <Link to={`/store/${slug}/product/${product.slug}`} className="block">
+        <div className="relative overflow-hidden bg-[#0c0e14] flex items-center justify-center aspect-[4/5]">
+          {img ? (
+            <img
+              src={img}
+              alt={product.name}
+              loading="lazy"
+              decoding="async"
+              width="400"
+              height="500"
+              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-[#0f1218]">
+              <span className="text-storefront-muted/20 text-5xl font-bold">B</span>
+            </div>
+          )}
+        </div>
+        <div className="pt-3">
+          {catName && (
+            <span className="text-[10px] uppercase tracking-[0.15em] text-storefront-muted/60 block mb-1">
+              {catName}
+            </span>
+          )}
+          <h3 className="text-xs font-semibold text-storefront-text uppercase tracking-wider leading-snug mb-1 line-clamp-2">
+            {product.name}
+          </h3>
+          {product.rrp && (
+            <p className="text-sm font-medium text-storefront-text tabular-nums">
+              {Number(product.rrp).toLocaleString("ru-RU")} ₽
+            </p>
+          )}
+        </div>
+      </Link>
+      <CatalogCartButton productId={product.id} product={product} img={img} siteId={siteId} />
+    </div>
+  );
+});
+
+function CatalogCartButton({
+  productId,
+  product,
+  img,
+  siteId,
+}: {
+  productId: string;
+  product: any;
+  img: string | undefined;
+  siteId: string | undefined;
+}) {
   const addItem = useCartStore((s) => s.addItem);
-  const isInCart = useCartStore((s) => s.items.some((i) => i.id === product.id));
+  // Subscribe to a boolean derived per-id — prevents re-render on unrelated cart changes
+  const isInCart = useCartStore((s) => s.items.some((i) => i.id === productId));
 
   return (
-    <motion.button
-      whileTap={{ scale: 0.92 }}
+    <button
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -713,7 +721,7 @@ function CatalogCartButton({ product, img, siteId }: { product: any; img: string
           type: "door",
         });
       }}
-      className={`mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-[11px] uppercase tracking-wider font-semibold transition-all duration-300 ${
+      className={`mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-[11px] uppercase tracking-wider font-semibold transition-all duration-300 active:scale-[0.96] ${
         isInCart
           ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
           : "bg-white/[0.04] text-storefront-muted border border-white/[0.06] hover:border-storefront-gold/30 hover:text-storefront-gold"
@@ -721,6 +729,7 @@ function CatalogCartButton({ product, img, siteId }: { product: any; img: string
     >
       {isInCart ? <Check className="w-3.5 h-3.5" /> : <ShoppingCart className="w-3.5 h-3.5" />}
       {isInCart ? "В корзине" : "В корзину"}
-    </motion.button>
+    </button>
   );
 }
+

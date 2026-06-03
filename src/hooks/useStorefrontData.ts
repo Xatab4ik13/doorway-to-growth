@@ -5,18 +5,22 @@ export function useStorefrontProducts(siteId: string | undefined) {
   return useQuery({
     queryKey: ["storefront-products", siteId],
     queryFn: async () => {
+      // Fetch products with only primary image to keep payload tiny
       const { data, error } = await supabase
         .from("products")
-        .select("*, categories(name, slug), product_images(url, alt, is_primary, sort_order, variant_key)")
+        .select("id, slug, name, rrp, sort_order, category_id, specifications, categories(name, slug), product_images(url, is_primary, sort_order, variant_key)")
         .eq("is_active", true)
         .order("sort_order", { ascending: true })
-        .limit(50);
+        .limit(500);
       if (error) throw error;
       return data ?? [];
     },
     enabled: !!siteId,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 }
+
 
 export function useStorefrontBanners(siteId: string | undefined) {
   return useQuery({
@@ -96,5 +100,7 @@ export function useStorefrontCategories() {
       if (error) throw error;
       return data ?? [];
     },
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 }
