@@ -632,58 +632,17 @@ export default function StorefrontProduct() {
                     Погонаж коллекции
                   </span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {MOCK_TRIM.map((item) => {
-                    const active = selectedTrim.has(item.id);
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => toggleTrim(item.id)}
-                        className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 text-left ${
-                          active
-                            ? "border-storefront-gold/50 bg-storefront-gold/10"
-                            : "border-white/8 bg-white/[0.02] hover:border-white/15"
-                        }`}
-                      >
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-                          active ? "bg-storefront-gold/20" : "bg-white/5"
-                        }`}>
-                          {item.icon === "frame" && (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={active ? "text-storefront-gold" : "text-storefront-muted"}>
-                              <rect x="3" y="3" width="18" height="18" rx="1" />
-                              <rect x="6" y="6" width="12" height="12" rx="1" />
-                            </svg>
-                          )}
-                          {item.icon === "architrave" && (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={active ? "text-storefront-gold" : "text-storefront-muted"}>
-                              <path d="M4 4v16M8 4v16M4 4h4M4 20h4" />
-                              <path d="M12 8h8M12 12h8M12 16h6" />
-                            </svg>
-                          )}
-                          {item.icon === "platband" && (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={active ? "text-storefront-gold" : "text-storefront-muted"}>
-                              <path d="M6 2v20M10 2v20M6 2h4M6 22h4" />
-                            </svg>
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className={`text-[12px] font-medium truncate ${active ? "text-storefront-text" : "text-storefront-muted"}`}>
-                            {item.name}
-                          </div>
-                          <div className="text-[11px] text-storefront-gold/70">
-                            {item.rrp.toLocaleString("ru-RU")} ₽
-                          </div>
-                        </div>
-                        <div className={`w-6 h-6 rounded-md border flex items-center justify-center shrink-0 transition-all ${
-                          active
-                            ? "bg-storefront-gold border-storefront-gold"
-                            : "border-white/15"
-                        }`}>
-                          {active ? <Check className="w-3.5 h-3.5 text-[#07090d]" /> : <Plus className="w-3.5 h-3.5 text-storefront-muted/40" />}
-                        </div>
-                      </button>
-                    );
-                  })}
+                <div className="grid grid-cols-2 gap-3">
+                  {MOCK_TRIM.map((item) => (
+                    <AccessoryCard
+                      key={item.id}
+                      name={item.name}
+                      rrp={item.rrp}
+                      image={item.image}
+                      active={selectedTrim.has(item.id)}
+                      onClick={() => toggleTrim(item.id)}
+                    />
+                  ))}
                 </div>
               </div>
 
