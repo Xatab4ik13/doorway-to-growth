@@ -580,28 +580,27 @@ function SidebarContent({
           <span className="text-[15px] font-extrabold uppercase tracking-[0.12em] text-[#1a1408]/90">Цвет</span>
           <ChevronRight className={`w-4 h-4 text-[#1a1408]/40 transition-transform duration-300 ${colorOpen ? "rotate-90" : ""}`} />
         </button>
-        <AnimatePresence>
-          {colorOpen && (
-            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-              <div className="space-y-0.5 mb-1">
-                {availableColors.map((color) => (
-                  <label key={color} onClick={() => toggleColor(color)} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-black/5 cursor-pointer transition-colors group">
-                    <div className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center transition-all ${
-                      selectedColors.has(color) ? "bg-[#1a1408] border-[#1a1408]" : "border-[#1a1408]/20 group-hover:border-[#1a1408]/35"
-                    }`}>
-                      {selectedColors.has(color) && (
-                        <svg className="w-3 h-3 text-[#cfbb96]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </div>
-                    <span className="text-[13px] font-semibold text-[#1a1408]/65">{color}</span>
-                  </label>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {colorOpen && (
+          <div className="overflow-hidden animate-accordion-down">
+            <div className="space-y-0.5 mb-1">
+              {availableColors.map((color) => (
+                <label key={color} onClick={() => toggleColor(color)} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-black/5 cursor-pointer transition-colors group">
+                  <div className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center transition-all ${
+                    selectedColors.has(color) ? "bg-[#1a1408] border-[#1a1408]" : "border-[#1a1408]/20 group-hover:border-[#1a1408]/35"
+                  }`}>
+                    {selectedColors.has(color) && (
+                      <svg className="w-3 h-3 text-[#cfbb96]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                  <span className="text-[13px] font-semibold text-[#1a1408]/65">{color}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
 
       <div className="mx-5 border-t border-black/10" />
