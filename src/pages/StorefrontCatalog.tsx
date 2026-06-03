@@ -112,23 +112,35 @@ export default function StorefrontCatalog() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [products, selectedCategory, categories]);
 
-  // Extract unique colors and glazings from products in the current category only.
-  // If the current category has no items with this attribute, the filter is hidden.
+  // Extract unique colors and glazings from products in the current category.
+  // Supports multiple data shapes: scalar `color`/`glazing`, array `colors`/`glazing_options`,
+  // and `variants[].color`/`variants[].glazing` (used by PRIME and similar collections).
+  const collectColors = (p: any): string[] => {
+    const out: string[] = [];
+    const s = p?.specifications || {};
+    if (typeof s.color === "string" && s.color) out.push(s.color);
+    if (Array.isArray(s.colors)) s.colors.forEach((c: any) => typeof c === "string" && c && out.push(c));
+    if (Array.isArray(s.variants)) s.variants.forEach((v: any) => v?.color && out.push(String(v.color)));
+    return out;
+  };
+  const collectGlazings = (p: any): string[] => {
+    const out: string[] = [];
+    const s = p?.specifications || {};
+    if (typeof s.glazing === "string" && s.glazing) out.push(s.glazing);
+    if (Array.isArray(s.glazing_options)) s.glazing_options.forEach((g: any) => typeof g === "string" && g && out.push(g));
+    if (Array.isArray(s.variants)) s.variants.forEach((v: any) => v?.glazing && out.push(String(v.glazing)));
+    return out;
+  };
+
   const availableColors = useMemo(() => {
     const colors = new Set<string>();
-    productsInCategory.forEach((p) => {
-      const c = p.specifications?.color;
-      if (c) colors.add(c);
-    });
+    productsInCategory.forEach((p) => collectColors(p).forEach((c) => colors.add(c)));
     return Array.from(colors).sort();
   }, [productsInCategory]);
 
   const availableGlazings = useMemo(() => {
     const glazings = new Set<string>();
-    productsInCategory.forEach((p) => {
-      const g = p.specifications?.glazing;
-      if (g) glazings.add(g);
-    });
+    productsInCategory.forEach((p) => collectGlazings(p).forEach((g) => glazings.add(g)));
     return Array.from(glazings).sort();
   }, [productsInCategory]);
 
@@ -151,20 +163,14 @@ export default function StorefrontCatalog() {
     if (pf > 0) result = result.filter((p) => !p.rrp || p.rrp >= pf);
     if (pt > 0) result = result.filter((p) => !p.rrp || p.rrp <= pt);
 
-    // Color filter from specifications
+    // Color filter — match if any of the product's colors is selected
     if (selectedColors.size > 0) {
-      result = result.filter((p) => {
-        const c = p.specifications?.color;
-        return c && selectedColors.has(c);
-      });
+      result = result.filter((p) => collectColors(p).some((c) => selectedColors.has(c)));
     }
 
-    // Glazing filter from specifications
+    // Glazing filter — match if any of the product's glazings is selected
     if (selectedGlazings.size > 0) {
-      result = result.filter((p) => {
-        const g = p.specifications?.glazing;
-        return g && selectedGlazings.has(g);
-      });
+      result = result.filter((p) => collectGlazings(p).some((g) => selectedGlazings.has(g)));
     }
 
     switch (sortBy) {
