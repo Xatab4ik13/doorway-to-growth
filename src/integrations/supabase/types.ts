@@ -456,6 +456,7 @@ export type Database = {
           product_id: string
           sort_order: number | null
           url: string
+          variant_key: string | null
         }
         Insert: {
           alt?: string | null
@@ -465,6 +466,7 @@ export type Database = {
           product_id: string
           sort_order?: number | null
           url: string
+          variant_key?: string | null
         }
         Update: {
           alt?: string | null
@@ -474,6 +476,7 @@ export type Database = {
           product_id?: string
           sort_order?: number | null
           url?: string
+          variant_key?: string | null
         }
         Relationships: [
           {
