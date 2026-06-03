@@ -717,10 +717,9 @@ export default function StorefrontProduct() {
                   Персональный расчёт и замер — бесплатно
                 </p>
               </motion.div>
-
-              </motion.div>
             </motion.div>
           </div>
+
 
           {/* ===== SIMILAR PRODUCTS ===== */}
           {similar.length > 0 && (
