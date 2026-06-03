@@ -8,6 +8,108 @@ import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight, Ruler, ShoppingCart, Check, Plus, DoorOpen, Lock, CircleDot } from "lucide-react";
 import { useCartStore } from "@/stores/useCartStore";
+import coatingWood from "@/assets/materials/coating-wood.jpg";
+import coatingSoftTouch from "@/assets/materials/coating-softtouch.jpg";
+import coatingMetal from "@/assets/materials/coating-metal.jpg";
+import coatingEnamel from "@/assets/materials/coating-enamel.jpg";
+import glassFrosted from "@/assets/materials/glass-frosted.jpg";
+import glassMirror from "@/assets/materials/glass-mirror.jpg";
+import glassLacobel from "@/assets/materials/glass-lacobel.jpg";
+
+// ── Material textures map ──
+type MaterialKey = "wood" | "softtouch" | "metal" | "enamel" | "frosted" | "mirror" | "lacobel" | "none";
+const TEXTURE_MAP: Record<Exclude<MaterialKey, "none">, string> = {
+  wood: coatingWood,
+  softtouch: coatingSoftTouch,
+  metal: coatingMetal,
+  enamel: coatingEnamel,
+  frosted: glassFrosted,
+  mirror: glassMirror,
+  lacobel: glassLacobel,
+};
+
+// Heuristic: pick material texture by color name + hex tone
+function pickCoatingMaterial(name: string, hex: string): MaterialKey {
+  const n = name.toLowerCase();
+  if (/(дуб|орех|венге|wood|oak|walnut|шпон)/.test(n)) return "wood";
+  if (/(хром|gold|metal|анодир|al |серебр|медь|латунь)/.test(n)) return "metal";
+  if (/(эмаль|глянец|gloss|enamel|лак)/.test(n)) return "enamel";
+  // Default: soft-touch matte for neutral/grey/anthracite/blue/green tones
+  return "softtouch";
+}
+
+function pickGlazingMaterial(name: string, preview: string): MaterialKey {
+  const n = name.toLowerCase();
+  if (preview === "none") return "none";
+  if (/зеркал|mirror/.test(n)) return "mirror";
+  if (/мат|frost|сатин/.test(n)) return "frosted";
+  return "lacobel";
+}
+
+// Premium photo swatch: texture image + color tint via mix-blend, gold halo when active
+function MaterialSwatch({
+  name,
+  hex,
+  material,
+  selected,
+  onClick,
+}: {
+  name: string;
+  hex?: string;
+  material: MaterialKey;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  const isNone = material === "none";
+  // Mirror/frosted/lacobel glass renders the texture as-is (no tint) — they already look like the material.
+  const isGlassRaw = material === "mirror" || material === "frosted";
+  return (
+    <button
+      onClick={onClick}
+      title={name}
+      aria-pressed={selected}
+      className={`group relative w-16 h-16 rounded-full transition-all duration-300 ease-out will-change-transform ${
+        selected
+          ? "scale-[1.08] shadow-[0_0_0_2px_rgba(207,187,150,0.9),0_8px_24px_-4px_rgba(207,187,150,0.45)]"
+          : "shadow-[0_6px_18px_-6px_rgba(0,0,0,0.7)] hover:scale-[1.06] hover:shadow-[0_10px_24px_-6px_rgba(0,0,0,0.8)]"
+      }`}
+      style={{ transform: selected ? "translateZ(0) scale(1.08)" : undefined }}
+    >
+      <span className="absolute inset-0 rounded-full overflow-hidden">
+        {isNone ? (
+          <span className="block w-full h-full bg-[#0c0e14]">
+            <span className="absolute top-1/2 left-1/2 w-8 h-px bg-storefront-gold/60 -translate-x-1/2 -translate-y-1/2 rotate-45" />
+          </span>
+        ) : (
+          <>
+            <img
+              src={TEXTURE_MAP[material]}
+              alt=""
+              loading="lazy"
+              draggable={false}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            {!isGlassRaw && hex && (
+              <span
+                className="absolute inset-0"
+                style={{ backgroundColor: hex, mixBlendMode: "multiply", opacity: 0.78 }}
+              />
+            )}
+            {/* Subtle top highlight for tactile dimension */}
+            <span className="absolute inset-0 rounded-full bg-gradient-to-br from-white/15 via-transparent to-black/20 pointer-events-none" />
+          </>
+        )}
+      </span>
+      {selected && (
+        <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <span className="w-5 h-5 rounded-full bg-storefront-gold/95 flex items-center justify-center shadow-md">
+            <Check className="w-3 h-3 text-[#07090d]" strokeWidth={3} />
+          </span>
+        </span>
+      )}
+    </button>
+  );
+}
 
 // ── Mock data for swatches (will be replaced with DB data later) ──
 const MOCK_COLORS: { name: string; hex: string }[] = [
@@ -369,124 +471,85 @@ export default function StorefrontProduct() {
               <div className="space-y-5 mb-8">
                 {/* Coating color */}
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center gap-2 mb-4">
                     <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет покрытия:</span>
                     <span className="text-[12px] text-storefront-gold/80">{selectedColor || "—"}</span>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-3">
                     {colorSwatches.map((c) => (
-                      <button
+                      <MaterialSwatch
                         key={c.name}
+                        name={c.name}
+                        hex={c.hex}
+                        material={pickCoatingMaterial(c.name, c.hex)}
+                        selected={selectedColor === c.name}
                         onClick={() => handleSelectColor(c.name)}
-                        title={c.name}
-                        className={`group relative w-11 h-11 rounded-xl border-2 transition-all duration-200 hover:scale-110 ${
-                          selectedColor === c.name
-                            ? "border-storefront-gold shadow-[0_0_12px_rgba(207,187,150,0.3)]"
-                            : "border-white/10 hover:border-white/25"
-                        }`}
-                        style={{ backgroundColor: c.hex }}
-                      >
-                        {selectedColor === c.name && (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <Check className="w-4 h-4" style={{ color: c.hex === "#1A1A1A" || c.hex === "#3A3A3A" || c.hex === "#2A4A3E" || c.hex === "#1B3A5C" ? "#fff" : "#1A1A1A" }} />
-                          </div>
-                        )}
-                      </button>
+                      />
                     ))}
                   </div>
                 </div>
 
                 {/* Glazing */}
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center gap-2 mb-4">
                     <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Остекление:</span>
                     <span className="text-[12px] text-storefront-gold/80">{selectedGlazing || "—"}</span>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {MOCK_GLAZING.map((g) => (
-                      <button
-                        key={g.name}
-                        onClick={() => setSelectedGlazing(g.name)}
-                        title={g.name}
-                        className={`relative w-11 h-11 rounded-xl border-2 transition-all duration-200 hover:scale-110 overflow-hidden ${
-                          selectedGlazing === g.name
-                            ? "border-storefront-gold shadow-[0_0_12px_rgba(207,187,150,0.3)]"
-                            : "border-white/10 hover:border-white/25"
-                        }`}
-                      >
-                        {g.preview === "none" ? (
-                          <div className="w-full h-full bg-[#0c0e14] flex items-center justify-center">
-                            <div className="w-6 h-[1px] bg-white/20 rotate-45" />
-                          </div>
-                        ) : g.preview.startsWith("linear") ? (
-                          <div className="w-full h-full" style={{ background: g.preview }} />
-                        ) : (
-                          <div className="w-full h-full" style={{ backgroundColor: g.preview }} />
-                        )}
-                        {selectedGlazing === g.name && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                            <Check className="w-4 h-4 text-white" />
-                          </div>
-                        )}
-                      </button>
-                    ))}
+                  <div className="flex flex-wrap gap-3">
+                    {MOCK_GLAZING.map((g) => {
+                      const mat = pickGlazingMaterial(g.name, g.preview);
+                      // For lacobel (solid coloured glass), pass hex for tinting
+                      const hex = mat === "lacobel" && g.preview.startsWith("#") ? g.preview : undefined;
+                      return (
+                        <MaterialSwatch
+                          key={g.name}
+                          name={g.name}
+                          hex={hex}
+                          material={mat}
+                          selected={selectedGlazing === g.name}
+                          onClick={() => setSelectedGlazing(g.name)}
+                        />
+                      );
+                    })}
                   </div>
                 </div>
 
                 {/* Edge color */}
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center gap-2 mb-4">
                     <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет кромки:</span>
                     <span className="text-[12px] text-storefront-gold/80">{selectedEdge || "—"}</span>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-3">
                     {MOCK_EDGE_COLORS.map((c) => (
-                      <button
+                      <MaterialSwatch
                         key={c.name}
+                        name={c.name}
+                        hex={c.hex}
+                        material="metal"
+                        selected={selectedEdge === c.name}
                         onClick={() => setSelectedEdge(c.name)}
-                        title={c.name}
-                        className={`relative w-11 h-11 rounded-xl border-2 transition-all duration-200 hover:scale-110 ${
-                          selectedEdge === c.name
-                            ? "border-storefront-gold shadow-[0_0_12px_rgba(207,187,150,0.3)]"
-                            : "border-white/10 hover:border-white/25"
-                        }`}
-                        style={{ backgroundColor: c.hex }}
-                      >
-                        {selectedEdge === c.name && (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <Check className="w-4 h-4" style={{ color: c.hex === "#1A1A1A" ? "#fff" : "#1A1A1A" }} />
-                          </div>
-                        )}
-                      </button>
+                      />
                     ))}
                   </div>
                 </div>
 
                 {/* Molding color */}
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center gap-2 mb-4">
                     <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет молдингов:</span>
                     <span className="text-[12px] text-storefront-gold/80">{selectedMolding || "—"}</span>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-3">
                     {MOCK_MOLDING_COLORS.map((c) => (
-                      <button
+                      <MaterialSwatch
                         key={c.name}
+                        name={c.name}
+                        hex={c.hex}
+                        material={pickCoatingMaterial(c.name, c.hex) === "wood" ? "wood" : "metal"}
+                        selected={selectedMolding === c.name}
                         onClick={() => setSelectedMolding(c.name)}
-                        title={c.name}
-                        className={`relative w-11 h-11 rounded-xl border-2 transition-all duration-200 hover:scale-110 ${
-                          selectedMolding === c.name
-                            ? "border-storefront-gold shadow-[0_0_12px_rgba(207,187,150,0.3)]"
-                            : "border-white/10 hover:border-white/25"
-                        }`}
-                        style={{ backgroundColor: c.hex }}
-                      >
-                        {selectedMolding === c.name && (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <Check className="w-4 h-4" style={{ color: c.hex === "#1A1A1A" ? "#fff" : "#1A1A1A" }} />
-                          </div>
-                        )}
-                      </button>
+                      />
                     ))}
                   </div>
                 </div>
