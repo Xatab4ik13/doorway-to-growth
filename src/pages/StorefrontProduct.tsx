@@ -720,7 +720,7 @@ export default function StorefrontProduct() {
                       </div>
                     )}
                   </div>
-                </motion.div>
+                </div>
               )}
 
               {/* ===== INFO ACCORDION ===== */}
