@@ -239,36 +239,36 @@ export default function StorefrontProduct() {
   return (
     <StorefrontLayout site={site}>
       <div className="min-h-screen pt-14 md:pt-0 bg-[#07090d]">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 md:py-14">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-14">
 
           {/* Breadcrumbs */}
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-2 mb-8"
+            className="flex items-center gap-4 mb-10 text-[10px] uppercase tracking-[0.2em] font-light"
           >
-            <Link to={`/store/${slug}`} className="text-[11px] uppercase tracking-[0.15em] text-storefront-muted hover:text-storefront-gold transition-colors">
-              Главная
-            </Link>
-            <span className="text-storefront-muted/30 text-xs">/</span>
-            <Link to={`/store/${slug}/catalog`} className="text-[11px] uppercase tracking-[0.15em] text-storefront-muted hover:text-storefront-gold transition-colors">
+            <Link to={`/store/${slug}`} className="text-storefront-text/30 hover:text-storefront-gold transition-colors">
               Каталог
             </Link>
-            <span className="text-storefront-muted/30 text-xs">/</span>
-            <span className="text-[11px] uppercase tracking-[0.15em] text-storefront-gold/80">{product.name}</span>
+            <span className="w-1 h-1 rounded-full bg-white/20" />
+            <Link to={`/store/${slug}/catalog`} className="text-storefront-text/30 hover:text-storefront-gold transition-colors">
+              Двери
+            </Link>
+            <span className="w-1 h-1 rounded-full bg-white/20" />
+            <span className="text-storefront-text/60">{product.name}</span>
           </motion.div>
 
-          {/* ===== MAIN: GALLERY + INFO ===== */}
-          <div className="grid grid-cols-1 lg:grid-cols-[430px_1fr] gap-8 lg:gap-14">
+          {/* ===== MAIN: HERO IMAGE + CONFIG ===== */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-start">
 
-            {/* Gallery — compact, fits in viewport */}
+            {/* Hero image — 7/12 columns, dramatic shadow, floating collection badge */}
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:sticky lg:top-24 lg:self-start"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              className="lg:col-span-7 lg:sticky lg:top-12 lg:self-start"
             >
-              <div className="relative aspect-[3/4] max-h-[66vh] bg-[#0c0e14] overflow-hidden group rounded-2xl mx-auto">
+              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#0d0f14] border border-white/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] group">
                 <AnimatePresence mode="wait">
                   {images.length > 0 ? (
                     <motion.img
@@ -279,7 +279,7 @@ export default function StorefrontProduct() {
                       transition={{ duration: 0.4 }}
                       src={images[currentImage]?.url}
                       alt={images[currentImage]?.alt || product.name}
-                      className="w-full h-full object-contain p-4"
+                      className="w-full h-full object-contain p-8 transform transition-transform duration-[1000ms] group-hover:scale-[1.03]"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
@@ -288,15 +288,27 @@ export default function StorefrontProduct() {
                   )}
                 </AnimatePresence>
 
+                {/* Soft bottom gradient for badge legibility */}
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#07090d] via-transparent to-transparent opacity-40" />
+
+                {/* Floating collection badge */}
+                {product.categories && (
+                  <div className="absolute top-8 left-8">
+                    <span className="px-4 py-1.5 rounded-full border border-storefront-gold/30 bg-[#07090d]/60 backdrop-blur-md text-storefront-gold text-[10px] tracking-[0.2em] uppercase">
+                      {(product.categories as any)?.name}
+                    </span>
+                  </div>
+                )}
+
                 {images.length > 1 && (
                   <>
-                    <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-[#07090d]/70 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-storefront-gold hover:text-[#07090d] text-storefront-text">
+                    <button onClick={prevImage} className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-[#07090d]/70 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-storefront-gold hover:text-[#07090d] text-storefront-text">
                       <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <button onClick={nextImage} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-[#07090d]/70 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-storefront-gold hover:text-[#07090d] text-storefront-text">
+                    <button onClick={nextImage} className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-[#07090d]/70 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-storefront-gold hover:text-[#07090d] text-storefront-text">
                       <ChevronRight className="w-5 h-5" />
                     </button>
-                    <div className="absolute bottom-3 right-3 bg-[#07090d]/60 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] text-storefront-text/70 tracking-wider">
+                    <div className="absolute bottom-5 right-5 bg-[#07090d]/60 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] text-storefront-text/70 tracking-wider">
                       {currentImage + 1} / {images.length}
                     </div>
                   </>
@@ -305,12 +317,12 @@ export default function StorefrontProduct() {
 
               {/* Thumbnails */}
               {images.length > 1 && (
-                <div className="flex gap-2 mt-3">
+                <div className="flex gap-2 mt-4 overflow-x-auto">
                   {images.map((img: any, idx: number) => (
                     <button
                       key={img.id || idx}
                       onClick={() => setCurrentImage(idx)}
-                      className={`relative flex-1 aspect-square max-w-[70px] overflow-hidden bg-[#0c0e14] rounded-xl transition-all duration-300 ${
+                      className={`relative shrink-0 w-[72px] aspect-square overflow-hidden bg-[#0c0e14] rounded-xl transition-all duration-300 ${
                         idx === currentImage
                           ? "ring-2 ring-storefront-gold ring-offset-2 ring-offset-[#07090d]"
                           : "opacity-50 hover:opacity-80"
@@ -323,29 +335,35 @@ export default function StorefrontProduct() {
               )}
             </motion.div>
 
-            {/* Product Info */}
+            {/* Product Info — 5/12 columns */}
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="lg:col-span-5 flex flex-col"
             >
-              {/* Category badge */}
-              {product.categories && (
-                <span className="inline-block text-[10px] uppercase tracking-[0.25em] text-storefront-gold/80 bg-storefront-gold/5 border border-storefront-gold/15 px-4 py-1.5 rounded-full mb-4 w-fit">
-                  {(product.categories as any)?.name}
-                </span>
-              )}
-
-              <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-bold text-storefront-text uppercase tracking-wide leading-tight mb-5">
+              {/* Title */}
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extralight tracking-tight text-storefront-text leading-[1.05] mb-6">
                 {product.name}
               </h1>
 
+              {/* Hero price under title */}
+              {product.rrp && Number(product.rrp) > 0 && (
+                <div className="flex items-baseline gap-4 mb-6">
+                  <span className="text-[10px] font-light uppercase tracking-[0.25em] text-storefront-text/40">Стоимость от</span>
+                  <span className="text-5xl font-light text-storefront-gold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                    {Number(product.rrp).toLocaleString("ru-RU")} ₽
+                  </span>
+                </div>
+              )}
+
               {product.description && (
-                <p className="text-[15px] text-storefront-muted leading-relaxed mb-6 max-w-[520px]">
+                <p className="text-sm font-light leading-relaxed text-storefront-text/50 max-w-md mb-10">
                   {product.description}
                 </p>
               )}
+
+
 
               {/* ===== COLOR SWATCHES ===== */}
               <div className="space-y-5 mb-8">
@@ -644,12 +662,12 @@ export default function StorefrontProduct() {
                 </motion.div>
               )}
 
-              {/* ===== PRICE + ADD TO CART ===== */}
+              {/* ===== PRICE SUMMARY (extras only) + CTA ===== */}
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.45 }}
-                className="mt-auto pt-4"
+                className="mt-auto pt-8 border-t border-white/5"
               >
                 {(() => {
                   const doorPrice = product.rrp ? Number(product.rrp) : 0;
@@ -658,51 +676,50 @@ export default function StorefrontProduct() {
                   const totalPrice = doorPrice + trimTotal + hwTotal;
                   const hasExtras = selectedTrim.size > 0 || selectedHardware.size > 0;
 
+                  if (!hasExtras || totalPrice <= 0) return null;
+
                   return (
-                    <>
-                      {totalPrice > 0 && (
-                        <div className="mb-5">
-                          {hasExtras && doorPrice > 0 && (
-                            <div className="text-[11px] text-storefront-muted mb-1">
-                              Дверь {doorPrice.toLocaleString("ru-RU")} ₽
-                              {trimTotal > 0 && ` + погонаж ${trimTotal.toLocaleString("ru-RU")} ₽`}
-                              {hwTotal > 0 && ` + фурнитура ${hwTotal.toLocaleString("ru-RU")} ₽`}
-                            </div>
-                          )}
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-[11px] uppercase tracking-widest text-storefront-muted">{hasExtras ? "итого" : "от"}</span>
-                            <span className="text-3xl font-bold text-storefront-text" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                              {totalPrice.toLocaleString("ru-RU")}
-                            </span>
-                            <span className="text-xl text-storefront-gold">₽</span>
-                          </div>
-                        </div>
-                      )}
-                    </>
+                    <div className="mb-6 flex items-baseline justify-between gap-4">
+                      <div className="text-[10px] text-storefront-text/40 font-light leading-relaxed">
+                        Дверь {doorPrice.toLocaleString("ru-RU")} ₽
+                        {trimTotal > 0 && <> + погонаж {trimTotal.toLocaleString("ru-RU")} ₽</>}
+                        {hwTotal > 0 && <> + фурнитура {hwTotal.toLocaleString("ru-RU")} ₽</>}
+                      </div>
+                      <div className="flex items-baseline gap-2 shrink-0">
+                        <span className="text-[10px] uppercase tracking-[0.25em] text-storefront-text/40">Итого</span>
+                        <span className="text-3xl font-light text-storefront-gold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                          {totalPrice.toLocaleString("ru-RU")} ₽
+                        </span>
+                      </div>
+                    </div>
                   );
                 })()}
 
                 <motion.button
                   onClick={handleAddAllToCart}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.96 }}
-                  className={`w-full font-bold text-[13px] uppercase tracking-wider py-4 rounded-xl transition-all flex items-center justify-center gap-3 relative overflow-hidden group ${
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`w-full py-5 rounded-full text-xs font-medium uppercase tracking-[0.3em] transition-all relative overflow-hidden group flex items-center justify-center gap-3 ${
                     isInCart
-                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                      : "bg-storefront-gold text-[#07090d] hover:brightness-110"
+                      ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                      : "bg-storefront-gold text-[#07090d] hover:brightness-110 shadow-[0_20px_50px_-10px_rgba(212,175,55,0.3)]"
                   }`}
                 >
                   {!isInCart && (
                     <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
                   )}
                   <span className="relative z-10 flex items-center gap-3">
-                    {isInCart ? <Check className="w-5 h-5" /> : <ShoppingCart className="w-5 h-5" />}
+                    {isInCart ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
                     {isInCart ? "В корзине" : (selectedTrim.size > 0 || selectedHardware.size > 0) ? "Добавить комплект" : "Добавить в корзину"}
                   </span>
                 </motion.button>
+                <p className="mt-5 text-center text-[10px] text-storefront-text/30 uppercase tracking-[0.3em] font-light">
+                  Персональный расчёт и замер — бесплатно
+                </p>
               </motion.div>
             </motion.div>
           </div>
+
 
           {/* ===== SIMILAR PRODUCTS ===== */}
           {similar.length > 0 && (
