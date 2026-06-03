@@ -10,6 +10,7 @@ export type ProductImage = {
   is_primary: boolean | null;
   sort_order: number | null;
   alt: string | null;
+  variant_key: string | null;
 };
 
 export function useProductImages(productId: string) {
@@ -30,7 +31,7 @@ export function useProductImages(productId: string) {
 
   const [uploading, setUploading] = useState(false);
 
-  const uploadImage = useCallback(async (file: File) => {
+  const uploadImage = useCallback(async (file: File, variantKey?: string | null) => {
     setUploading(true);
     try {
       const ext = file.name.split(".").pop() || "jpg";
@@ -55,6 +56,7 @@ export function useProductImages(productId: string) {
           url: urlData.publicUrl,
           is_primary: isPrimary,
           sort_order: images.length,
+          variant_key: variantKey ?? null,
         });
 
       if (insertError) throw insertError;
@@ -74,7 +76,6 @@ export function useProductImages(productId: string) {
       const img = images.find((i) => i.id === imageId);
       if (!img) return;
 
-      // Delete from storage
       const path = img.url.split("/product-images/").pop();
       if (path) {
         await supabase.storage.from("product-images").remove([path]);
@@ -90,10 +91,28 @@ export function useProductImages(productId: string) {
     onError: (e) => toast({ title: "Ошибка", description: e.message, variant: "destructive" }),
   });
 
+  const setVariantKeyMut = useMutation({
+    mutationFn: async ({ imageId, variantKey }: { imageId: string; variantKey: string | null }) => {
+      const { error } = await supabase
+        .from("product_images")
+        .update({ variant_key: variantKey })
+        .eq("id", imageId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["product_images", productId] });
+      qc.invalidateQueries({ queryKey: ["products"] });
+      qc.invalidateQueries({ queryKey: ["storefront-products"] });
+    },
+    onError: (e) => toast({ title: "Ошибка", description: e.message, variant: "destructive" }),
+  });
+
   return {
     images,
     uploading,
     uploadImage,
     deleteImage: (id: string) => deleteImageMut.mutate(id),
+    setVariantKey: (imageId: string, variantKey: string | null) =>
+      setVariantKeyMut.mutate({ imageId, variantKey }),
   };
 }

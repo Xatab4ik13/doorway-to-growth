@@ -28,7 +28,7 @@ const COMPLEX_KEYS = new Set(["sizes", "variants"]);
 export function ProductDetail({ product, onClose }: ProductDetailProps) {
   const [activeImage, setActiveImage] = useState(0);
   const updateProduct = useUpdateProduct();
-  const { images, uploading, uploadImage, deleteImage } = useProductImages(product.id);
+  const { images, uploading, uploadImage, deleteImage, setVariantKey } = useProductImages(product.id);
 
   const rawSpecs = (product.specifications ?? {}) as Record<string, any>;
   const sizes: any[] = Array.isArray(rawSpecs.sizes) ? rawSpecs.sizes : [];
@@ -144,6 +144,27 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
                   </div>
                 )}
               </div>
+
+              {/* Variant key (color/glazing name) for active image */}
+              {currentImage && currentImage.id !== "legacy" && (
+                <div className="mt-3">
+                  <label className="block text-[11px] uppercase tracking-wider text-muted-foreground mb-1">
+                    Привязка к варианту (цвет покрытия)
+                  </label>
+                  <input
+                    type="text"
+                    defaultValue={(currentImage as any).variant_key ?? ""}
+                    key={currentImage.id}
+                    onBlur={(e) => {
+                      const v = e.target.value.trim();
+                      const prev = (currentImage as any).variant_key ?? "";
+                      if (v !== prev) setVariantKey(currentImage.id, v || null);
+                    }}
+                    placeholder="например: Аляска, Антрацит — пусто = общая"
+                    className={inputCls}
+                  />
+                </div>
+              )}
 
               {/* Thumbnails + upload button */}
               <div className="flex gap-2 mt-3 overflow-x-auto">
