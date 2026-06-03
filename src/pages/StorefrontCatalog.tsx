@@ -611,40 +611,102 @@ function SidebarContent({
           <span className="text-[15px] font-extrabold uppercase tracking-[0.12em] text-[#1a1408]/90">Остекление</span>
           <ChevronRight className={`w-4 h-4 text-[#1a1408]/40 transition-transform duration-300 ${glazingOpen ? "rotate-90" : ""}`} />
         </button>
-        <AnimatePresence>
-          {glazingOpen && (
-            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-              <div className="space-y-0.5 mb-1">
-                {availableGlazings.map((g) => (
-                  <label key={g} onClick={() => toggleGlazing(g)} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-black/5 cursor-pointer transition-colors group">
-                    <div className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center transition-all ${
-                      selectedGlazings.has(g) ? "bg-[#1a1408] border-[#1a1408]" : "border-[#1a1408]/20 group-hover:border-[#1a1408]/35"
-                    }`}>
-                      {selectedGlazings.has(g) && (
-                        <svg className="w-3 h-3 text-[#cfbb96]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </div>
-                    <span className="text-[13px] font-semibold text-[#1a1408]/65">{g}</span>
-                  </label>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {glazingOpen && (
+          <div className="overflow-hidden animate-accordion-down">
+            <div className="space-y-0.5 mb-1">
+              {availableGlazings.map((g) => (
+                <label key={g} onClick={() => toggleGlazing(g)} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-black/5 cursor-pointer transition-colors group">
+                  <div className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center transition-all ${
+                    selectedGlazings.has(g) ? "bg-[#1a1408] border-[#1a1408]" : "border-[#1a1408]/20 group-hover:border-[#1a1408]/35"
+                  }`}>
+                    {selectedGlazings.has(g) && (
+                      <svg className="w-3 h-3 text-[#cfbb96]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                  <span className="text-[13px] font-semibold text-[#1a1408]/65">{g}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
 }
 
-function CatalogCartButton({ product, img, siteId }: { product: any; img: string | undefined; siteId: string | undefined }) {
+const ProductCard = memo(function ProductCard({
+  product,
+  img,
+  catName,
+  slug,
+  siteId,
+}: {
+  product: any;
+  img: string | undefined;
+  catName: string;
+  slug: string | undefined;
+  siteId: string | undefined;
+}) {
+  return (
+    <div className="group">
+      <Link to={`/store/${slug}/product/${product.slug}`} className="block">
+        <div className="relative overflow-hidden bg-[#0c0e14] flex items-center justify-center aspect-[4/5]">
+          {img ? (
+            <img
+              src={img}
+              alt={product.name}
+              loading="lazy"
+              decoding="async"
+              width="400"
+              height="500"
+              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-[#0f1218]">
+              <span className="text-storefront-muted/20 text-5xl font-bold">B</span>
+            </div>
+          )}
+        </div>
+        <div className="pt-3">
+          {catName && (
+            <span className="text-[10px] uppercase tracking-[0.15em] text-storefront-muted/60 block mb-1">
+              {catName}
+            </span>
+          )}
+          <h3 className="text-xs font-semibold text-storefront-text uppercase tracking-wider leading-snug mb-1 line-clamp-2">
+            {product.name}
+          </h3>
+          {product.rrp && (
+            <p className="text-sm font-medium text-storefront-text tabular-nums">
+              {Number(product.rrp).toLocaleString("ru-RU")} ₽
+            </p>
+          )}
+        </div>
+      </Link>
+      <CatalogCartButton productId={product.id} product={product} img={img} siteId={siteId} />
+    </div>
+  );
+});
+
+function CatalogCartButton({
+  productId,
+  product,
+  img,
+  siteId,
+}: {
+  productId: string;
+  product: any;
+  img: string | undefined;
+  siteId: string | undefined;
+}) {
   const addItem = useCartStore((s) => s.addItem);
-  const isInCart = useCartStore((s) => s.items.some((i) => i.id === product.id));
+  // Subscribe to a boolean derived per-id — prevents re-render on unrelated cart changes
+  const isInCart = useCartStore((s) => s.items.some((i) => i.id === productId));
 
   return (
-    <motion.button
-      whileTap={{ scale: 0.92 }}
+    <button
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -659,7 +721,7 @@ function CatalogCartButton({ product, img, siteId }: { product: any; img: string
           type: "door",
         });
       }}
-      className={`mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-[11px] uppercase tracking-wider font-semibold transition-all duration-300 ${
+      className={`mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-[11px] uppercase tracking-wider font-semibold transition-all duration-300 active:scale-[0.96] ${
         isInCart
           ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
           : "bg-white/[0.04] text-storefront-muted border border-white/[0.06] hover:border-storefront-gold/30 hover:text-storefront-gold"
@@ -667,6 +729,7 @@ function CatalogCartButton({ product, img, siteId }: { product: any; img: string
     >
       {isInCart ? <Check className="w-3.5 h-3.5" /> : <ShoppingCart className="w-3.5 h-3.5" />}
       {isInCart ? "В корзине" : "В корзину"}
-    </motion.button>
+    </button>
   );
 }
+
