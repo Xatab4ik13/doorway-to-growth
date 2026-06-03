@@ -15,6 +15,15 @@ import coatingEnamel from "@/assets/materials/coating-enamel.jpg";
 import glassFrosted from "@/assets/materials/glass-frosted.jpg";
 import glassMirror from "@/assets/materials/glass-mirror.jpg";
 import glassLacobel from "@/assets/materials/glass-lacobel.jpg";
+import trimCasingTele from "@/assets/accessories/trim-casing-telescopic.png";
+import trimExtenderTele from "@/assets/accessories/trim-extender-telescopic.png";
+import trimCasingStraight from "@/assets/accessories/trim-casing-straight.png";
+import trimExtenderStraight from "@/assets/accessories/trim-extender-straight.png";
+import handleMorelli from "@/assets/accessories/handle-morelli.png";
+import handleRenz from "@/assets/accessories/handle-renz.png";
+import lockMagnetic from "@/assets/accessories/lock-magnetic.png";
+import lockBathroom from "@/assets/accessories/lock-bathroom.png";
+import hingesConcealed from "@/assets/accessories/hinges-concealed.png";
 
 // ── Material textures map ──
 type MaterialKey = "wood" | "softtouch" | "metal" | "enamel" | "frosted" | "mirror" | "lacobel" | "none";
@@ -145,23 +154,81 @@ const MOCK_MOLDING_COLORS: { name: string; hex: string }[] = [
   { name: "Черный", hex: "#1A1A1A" },
 ];
 
-type TrimItem = { id: string; name: string; rrp: number; icon: "frame" | "architrave" | "platband" };
-type HardwareItem = { id: string; name: string; rrp: number; icon: "handle" | "lock" | "hinge" };
+type TrimItem = { id: string; name: string; rrp: number; image: string };
+type HardwareItem = { id: string; name: string; rrp: number; image: string };
 
 const MOCK_TRIM: TrimItem[] = [
-  { id: "trim-1", name: "Наличник телескопический", rrp: 850, icon: "frame" },
-  { id: "trim-2", name: "Добор телескопический", rrp: 1200, icon: "architrave" },
-  { id: "trim-3", name: "Наличник прямой", rrp: 600, icon: "platband" },
-  { id: "trim-4", name: "Добор прямой", rrp: 950, icon: "frame" },
+  { id: "trim-1", name: "Наличник телескопический", rrp: 850, image: trimCasingTele },
+  { id: "trim-2", name: "Добор телескопический", rrp: 1200, image: trimExtenderTele },
+  { id: "trim-3", name: "Наличник прямой", rrp: 600, image: trimCasingStraight },
+  { id: "trim-4", name: "Добор прямой", rrp: 950, image: trimExtenderStraight },
 ];
 
 const MOCK_HARDWARE: HardwareItem[] = [
-  { id: "hw-1", name: "Ручка MORELLI", rrp: 2400, icon: "handle" },
-  { id: "hw-2", name: "Замок магнитный", rrp: 1800, icon: "lock" },
-  { id: "hw-3", name: "Петли скрытые (2 шт)", rrp: 3200, icon: "hinge" },
-  { id: "hw-4", name: "Ручка RENZ", rrp: 1600, icon: "handle" },
-  { id: "hw-5", name: "Замок сантехнический", rrp: 1200, icon: "lock" },
+  { id: "hw-1", name: "Ручка MORELLI", rrp: 2400, image: handleMorelli },
+  { id: "hw-2", name: "Замок магнитный", rrp: 1800, image: lockMagnetic },
+  { id: "hw-3", name: "Петли скрытые (2 шт)", rrp: 3200, image: hingesConcealed },
+  { id: "hw-4", name: "Ручка RENZ", rrp: 1600, image: handleRenz },
+  { id: "hw-5", name: "Замок сантехнический", rrp: 1200, image: lockBathroom },
 ];
+
+// Premium photo card for trim / hardware accessory selection.
+// Image fills upper area on a dark backdrop, name + price + add/check sit below.
+function AccessoryCard({
+  name,
+  rrp,
+  image,
+  active,
+  onClick,
+}: {
+  name: string;
+  rrp: number;
+  image: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      aria-pressed={active}
+      className={`group relative flex flex-col rounded-2xl overflow-hidden text-left transition-all duration-300 ease-out ${
+        active
+          ? "ring-2 ring-storefront-gold shadow-[0_10px_30px_-8px_rgba(207,187,150,0.35)]"
+          : "ring-1 ring-white/8 hover:ring-white/20 shadow-[0_6px_18px_-8px_rgba(0,0,0,0.7)]"
+      }`}
+    >
+      {/* Photo */}
+      <div className="relative aspect-[5/4] bg-[#0c0e14] overflow-hidden">
+        <img
+          src={image}
+          alt={name}
+          loading="lazy"
+          draggable={false}
+          className="absolute inset-0 w-full h-full object-contain p-4 transition-transform duration-500 ease-out group-hover:scale-[1.06]"
+        />
+        {/* Add / Check badge */}
+        <span
+          className={`absolute top-2.5 right-2.5 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${
+            active
+              ? "bg-storefront-gold text-[#07090d]"
+              : "bg-[#07090d]/70 backdrop-blur-sm text-storefront-text/80 group-hover:bg-storefront-gold group-hover:text-[#07090d]"
+          }`}
+        >
+          {active ? <Check className="w-3.5 h-3.5" strokeWidth={3} /> : <Plus className="w-3.5 h-3.5" />}
+        </span>
+      </div>
+      {/* Footer */}
+      <div className={`px-3 py-2.5 transition-colors ${active ? "bg-storefront-gold/[0.08]" : "bg-white/[0.02]"}`}>
+        <div className={`text-[12px] font-medium leading-tight line-clamp-2 ${active ? "text-storefront-text" : "text-storefront-text/85"}`}>
+          {name}
+        </div>
+        <div className="text-[11px] text-storefront-gold/80 mt-1 tracking-wide">
+          +{rrp.toLocaleString("ru-RU")} ₽
+        </div>
+      </div>
+    </button>
+  );
+}
 
 export default function StorefrontProduct() {
   const { slug: urlSlug, productSlug } = useParams<{ slug: string; productSlug: string }>();
@@ -565,58 +632,17 @@ export default function StorefrontProduct() {
                     Погонаж коллекции
                   </span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {MOCK_TRIM.map((item) => {
-                    const active = selectedTrim.has(item.id);
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => toggleTrim(item.id)}
-                        className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 text-left ${
-                          active
-                            ? "border-storefront-gold/50 bg-storefront-gold/10"
-                            : "border-white/8 bg-white/[0.02] hover:border-white/15"
-                        }`}
-                      >
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-                          active ? "bg-storefront-gold/20" : "bg-white/5"
-                        }`}>
-                          {item.icon === "frame" && (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={active ? "text-storefront-gold" : "text-storefront-muted"}>
-                              <rect x="3" y="3" width="18" height="18" rx="1" />
-                              <rect x="6" y="6" width="12" height="12" rx="1" />
-                            </svg>
-                          )}
-                          {item.icon === "architrave" && (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={active ? "text-storefront-gold" : "text-storefront-muted"}>
-                              <path d="M4 4v16M8 4v16M4 4h4M4 20h4" />
-                              <path d="M12 8h8M12 12h8M12 16h6" />
-                            </svg>
-                          )}
-                          {item.icon === "platband" && (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={active ? "text-storefront-gold" : "text-storefront-muted"}>
-                              <path d="M6 2v20M10 2v20M6 2h4M6 22h4" />
-                            </svg>
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className={`text-[12px] font-medium truncate ${active ? "text-storefront-text" : "text-storefront-muted"}`}>
-                            {item.name}
-                          </div>
-                          <div className="text-[11px] text-storefront-gold/70">
-                            {item.rrp.toLocaleString("ru-RU")} ₽
-                          </div>
-                        </div>
-                        <div className={`w-6 h-6 rounded-md border flex items-center justify-center shrink-0 transition-all ${
-                          active
-                            ? "bg-storefront-gold border-storefront-gold"
-                            : "border-white/15"
-                        }`}>
-                          {active ? <Check className="w-3.5 h-3.5 text-[#07090d]" /> : <Plus className="w-3.5 h-3.5 text-storefront-muted/40" />}
-                        </div>
-                      </button>
-                    );
-                  })}
+                <div className="grid grid-cols-2 gap-3">
+                  {MOCK_TRIM.map((item) => (
+                    <AccessoryCard
+                      key={item.id}
+                      name={item.name}
+                      rrp={item.rrp}
+                      image={item.image}
+                      active={selectedTrim.has(item.id)}
+                      onClick={() => toggleTrim(item.id)}
+                    />
+                  ))}
                 </div>
               </div>
 
@@ -630,53 +656,17 @@ export default function StorefrontProduct() {
                     Фурнитура
                   </span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {MOCK_HARDWARE.map((item) => {
-                    const active = selectedHardware.has(item.id);
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => toggleHardware(item.id)}
-                        className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 text-left ${
-                          active
-                            ? "border-storefront-gold/50 bg-storefront-gold/10"
-                            : "border-white/8 bg-white/[0.02] hover:border-white/15"
-                        }`}
-                      >
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-                          active ? "bg-storefront-gold/20" : "bg-white/5"
-                        }`}>
-                          {item.icon === "handle" && (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={active ? "text-storefront-gold" : "text-storefront-muted"}>
-                              <path d="M12 4v6M8 10h8c1.1 0 2 .9 2 2v0c0 1.1-.9 2-2 2H8c-1.1 0-2-.9-2-2v0c0-1.1.9-2 2-2z" />
-                              <path d="M12 14v6" />
-                            </svg>
-                          )}
-                          {item.icon === "lock" && (
-                            <Lock className={`w-5 h-5 ${active ? "text-storefront-gold" : "text-storefront-muted"}`} />
-                          )}
-                          {item.icon === "hinge" && (
-                            <CircleDot className={`w-5 h-5 ${active ? "text-storefront-gold" : "text-storefront-muted"}`} />
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className={`text-[12px] font-medium truncate ${active ? "text-storefront-text" : "text-storefront-muted"}`}>
-                            {item.name}
-                          </div>
-                          <div className="text-[11px] text-storefront-gold/70">
-                            {item.rrp.toLocaleString("ru-RU")} ₽
-                          </div>
-                        </div>
-                        <div className={`w-6 h-6 rounded-md border flex items-center justify-center shrink-0 transition-all ${
-                          active
-                            ? "bg-storefront-gold border-storefront-gold"
-                            : "border-white/15"
-                        }`}>
-                          {active ? <Check className="w-3.5 h-3.5 text-[#07090d]" /> : <Plus className="w-3.5 h-3.5 text-storefront-muted/40" />}
-                        </div>
-                      </button>
-                    );
-                  })}
+                <div className="grid grid-cols-2 gap-3">
+                  {MOCK_HARDWARE.map((item) => (
+                    <AccessoryCard
+                      key={item.id}
+                      name={item.name}
+                      rrp={item.rrp}
+                      image={item.image}
+                      active={selectedHardware.has(item.id)}
+                      onClick={() => toggleHardware(item.id)}
+                    />
+                  ))}
                 </div>
               </div>
 
