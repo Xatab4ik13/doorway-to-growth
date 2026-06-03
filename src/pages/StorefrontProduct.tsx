@@ -604,93 +604,102 @@ export default function StorefrontProduct() {
 
 
 
-              {/* ===== COLOR SWATCHES ===== */}
-              <div className="space-y-5 mb-8">
-                {/* Coating color */}
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет покрытия:</span>
-                    <span className="text-[12px] text-storefront-gold/80">{selectedColor || "—"}</span>
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    {colorSwatches.map((c) => (
-                      <MaterialSwatch
-                        key={c.name}
-                        name={c.name}
-                        hex={c.hex}
-                        material={pickCoatingMaterial(c.name, c.hex)}
-                        selected={selectedColor === c.name}
-                        onClick={() => handleSelectColor(c.name)}
-                      />
-                    ))}
-                  </div>
-                </div>
+              {/* ===== COLOR SWATCHES (only when product declares them) ===== */}
+              {(colorSwatches.length > 0 || glazingItems.length > 0 || edgeItems.length > 0 || moldingItems.length > 0) && (
+                <div className="space-y-5 mb-8">
+                  {/* Coating color */}
+                  {colorSwatches.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-4">
+                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет покрытия:</span>
+                        <span className="text-[12px] text-storefront-gold/80">{selectedColor || "—"}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-3">
+                        {colorSwatches.map((c) => (
+                          <MaterialSwatch
+                            key={c.name}
+                            name={c.name}
+                            hex={c.hex}
+                            material={pickCoatingMaterial(c.name, c.hex)}
+                            selected={selectedColor === c.name}
+                            onClick={() => handleSelectColor(c.name)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
-                {/* Glazing */}
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Остекление:</span>
-                    <span className="text-[12px] text-storefront-gold/80">{selectedGlazing || "—"}</span>
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    {MOCK_GLAZING.map((g) => {
-                      const mat = pickGlazingMaterial(g.name, g.preview);
-                      // For lacobel (solid coloured glass), pass hex for tinting
-                      const hex = mat === "lacobel" && g.preview.startsWith("#") ? g.preview : undefined;
-                      return (
-                        <MaterialSwatch
-                          key={g.name}
-                          name={g.name}
-                          hex={hex}
-                          material={mat}
-                          selected={selectedGlazing === g.name}
-                          onClick={() => setSelectedGlazing(g.name)}
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
+                  {/* Glazing */}
+                  {glazingItems.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-4">
+                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Остекление:</span>
+                        <span className="text-[12px] text-storefront-gold/80">{selectedGlazing || "—"}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-3">
+                        {glazingItems.map((g) => {
+                          const mat = pickGlazingMaterial(g.name, g.preview);
+                          const hex = mat === "lacobel" && g.preview.startsWith("#") ? g.preview : undefined;
+                          return (
+                            <MaterialSwatch
+                              key={g.name}
+                              name={g.name}
+                              hex={hex}
+                              material={mat}
+                              selected={selectedGlazing === g.name}
+                              onClick={() => setSelectedGlazing(g.name)}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
 
-                {/* Edge color */}
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет кромки:</span>
-                    <span className="text-[12px] text-storefront-gold/80">{selectedEdge || "—"}</span>
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    {MOCK_EDGE_COLORS.map((c) => (
-                      <MaterialSwatch
-                        key={c.name}
-                        name={c.name}
-                        hex={c.hex}
-                        material="metal"
-                        selected={selectedEdge === c.name}
-                        onClick={() => setSelectedEdge(c.name)}
-                      />
-                    ))}
-                  </div>
-                </div>
+                  {/* Edge color */}
+                  {edgeItems.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-4">
+                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет кромки:</span>
+                        <span className="text-[12px] text-storefront-gold/80">{selectedEdge || "—"}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-3">
+                        {edgeItems.map((c) => (
+                          <MaterialSwatch
+                            key={c.name}
+                            name={c.name}
+                            hex={c.hex}
+                            material="metal"
+                            selected={selectedEdge === c.name}
+                            onClick={() => setSelectedEdge(c.name)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
-                {/* Molding color */}
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет молдингов:</span>
-                    <span className="text-[12px] text-storefront-gold/80">{selectedMolding || "—"}</span>
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    {MOCK_MOLDING_COLORS.map((c) => (
-                      <MaterialSwatch
-                        key={c.name}
-                        name={c.name}
-                        hex={c.hex}
-                        material={pickCoatingMaterial(c.name, c.hex) === "wood" ? "wood" : "metal"}
-                        selected={selectedMolding === c.name}
-                        onClick={() => setSelectedMolding(c.name)}
-                      />
-                    ))}
-                  </div>
+                  {/* Molding color */}
+                  {moldingItems.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-4">
+                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет молдингов:</span>
+                        <span className="text-[12px] text-storefront-gold/80">{selectedMolding || "—"}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-3">
+                        {moldingItems.map((c) => (
+                          <MaterialSwatch
+                            key={c.name}
+                            name={c.name}
+                            hex={c.hex}
+                            material={pickCoatingMaterial(c.name, c.hex) === "wood" ? "wood" : "metal"}
+                            selected={selectedMolding === c.name}
+                            onClick={() => setSelectedMolding(c.name)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
+              )}
 
               {/* ===== TRIM (ПОГОНАЖ) ===== */}
               <div className="mb-8">
