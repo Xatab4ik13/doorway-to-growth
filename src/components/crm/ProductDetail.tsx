@@ -273,6 +273,33 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
                   </div>
                 </>
               )}
+
+              {variants.length > 0 && (
+                <div className="mt-4">
+                  <h4 className="text-[10px] uppercase tracking-wider font-medium text-muted-foreground mb-2">
+                    Цвета <span className="text-muted-foreground/60 normal-case tracking-normal">({variants.length})</span>
+                  </h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {variants.map((v: any, i: number) => (
+                      <div key={i} className="flex items-center gap-2 rounded-xl border border-border bg-muted/40 p-2">
+                        {v.image_url ? (
+                          <img src={v.image_url} alt={v.color} loading="lazy" className="h-12 w-12 rounded-lg object-cover shrink-0 bg-background" />
+                        ) : (
+                          <div className="h-12 w-12 rounded-lg bg-background shrink-0 flex items-center justify-center text-muted-foreground">
+                            <ImageIcon className="h-4 w-4" />
+                          </div>
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <div className="text-xs font-medium text-foreground truncate">{v.color || "—"}</div>
+                          <div className="text-[11px] text-muted-foreground tabular-nums">
+                            {v.price && v.price > 0 ? `${Number(v.price).toLocaleString("ru-RU")} ₽` : "по запросу"}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
