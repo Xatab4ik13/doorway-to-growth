@@ -7,7 +7,7 @@ export function useStorefrontProducts(siteId: string | undefined) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("*, categories(name, slug), product_images(url, alt, is_primary, sort_order)")
+        .select("*, categories(name, slug), product_images(url, alt, is_primary, sort_order, variant_key)")
         .eq("is_active", true)
         .order("sort_order", { ascending: true })
         .limit(50);
