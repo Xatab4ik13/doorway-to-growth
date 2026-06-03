@@ -236,8 +236,23 @@ export default function StorefrontProduct() {
   const slug = useSiteSlug(urlSlug);
   const { data: site, isLoading: siteLoading } = useSiteBySlug(slug);
   const { data: products = [], isLoading: productsLoading } = useStorefrontProducts(site?.id);
+  const { data: allCategories = [] } = useStorefrontCategories();
 
   const product = (products as any[]).find((p) => p.slug === productSlug);
+
+  // Determine the root category slug for the current product (walk up parent_id chain).
+  // Used to gate door-only UI (color/glazing configurator, OpeningSystems) so it does
+  // not appear on Погонаж / Фурнитура / other non-door categories.
+  const rootCategorySlug = useMemo(() => {
+    if (!product?.category_id || !allCategories.length) return null;
+    const byId = new Map((allCategories as any[]).map((c) => [c.id, c]));
+    let cur: any = byId.get(product.category_id);
+    while (cur?.parent_id) cur = byId.get(cur.parent_id);
+    return cur?.slug ?? null;
+  }, [product, allCategories]);
+
+  const isDoorProduct =
+    rootCategorySlug === "mezhkomnatnye-dveri" || rootCategorySlug === "entrance-doors";
 
   const [currentImage, setCurrentImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
