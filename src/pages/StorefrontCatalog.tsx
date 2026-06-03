@@ -519,33 +519,26 @@ function SidebarContent({
                 )}
               </div>
 
-              <AnimatePresence>
-                {isExpanded && children.length > 0 && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                    className="overflow-hidden"
-                  >
-                    <div className="ml-5 pl-3 mb-1 border-l-2 border-black/10">
-                      {children.map((child: any) => (
-                        <button
-                          key={child.id}
-                          onClick={() => selectCategory(child.id)}
-                          className={`w-full text-left text-[14px] font-semibold py-2.5 px-3 rounded-lg transition-all duration-200 ${
-                            selectedCategory === child.id
-                              ? "bg-black/15 text-white"
-                              : "text-[#1a1408]/55 hover:text-[#1a1408] hover:bg-black/5"
-                          }`}
-                        >
-                          {child.name}
-                        </button>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {isExpanded && children.length > 0 && (
+                <div className="overflow-hidden animate-accordion-down">
+                  <div className="ml-5 pl-3 mb-1 border-l-2 border-black/10">
+                    {children.map((child: any) => (
+                      <button
+                        key={child.id}
+                        onClick={() => selectCategory(child.id)}
+                        className={`w-full text-left text-[14px] font-semibold py-2.5 px-3 rounded-lg transition-all duration-200 ${
+                          selectedCategory === child.id
+                            ? "bg-black/15 text-white"
+                            : "text-[#1a1408]/55 hover:text-[#1a1408] hover:bg-black/5"
+                        }`}
+                      >
+                        {child.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
             </div>
           );
         })}
