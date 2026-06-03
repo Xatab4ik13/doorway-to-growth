@@ -24,6 +24,43 @@ export function SitesPage() {
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
   const [assignOpen, setAssignOpen] = useState<Site | null>(null);
   const [assignPartnerId, setAssignPartnerId] = useState("");
+  const [domainOpen, setDomainOpen] = useState<Site | null>(null);
+  const [domainValue, setDomainValue] = useState("");
+  const [domainChecking, setDomainChecking] = useState(false);
+  const [domainCheckResult, setDomainCheckResult] = useState<null | { ok: boolean; message: string }>(null);
+
+  const normalizeDomain = (raw: string) =>
+    raw.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/.*$/, "").replace(/\s+/g, "");
+
+  const handleSaveDomain = async () => {
+    if (!domainOpen) return;
+    const value = normalizeDomain(domainValue);
+    if (value && !/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(value)) {
+      toast({ title: "Некорректный домен", description: "Пример: dveri-msk.ru", variant: "destructive" });
+      return;
+    }
+    await updateSite.mutateAsync({ id: domainOpen.id, domain: value || null } as any);
+    toast({ title: value ? "Домен сохранён" : "Домен удалён" });
+    setDomainOpen(null);
+    setDomainValue("");
+    setDomainCheckResult(null);
+  };
+
+  const handleCheckDomain = async () => {
+    const value = normalizeDomain(domainValue);
+    if (!value) return;
+    setDomainChecking(true);
+    setDomainCheckResult(null);
+    try {
+      const res = await fetch(`https://${value}`, { method: "HEAD", mode: "no-cors" });
+      // no-cors returns opaque; reaching here means DNS resolved + TCP/TLS handshake succeeded
+      setDomainCheckResult({ ok: true, message: "Домен отвечает. Убедитесь, что он привязан к Timeweb." });
+    } catch (e: any) {
+      setDomainCheckResult({ ok: false, message: "Домен не отвечает. Проверьте DNS и SSL в Timeweb." });
+    } finally {
+      setDomainChecking(false);
+    }
+  };
 
   const inputCls = "h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow";
 
@@ -176,12 +213,18 @@ export function SitesPage() {
                           <MoreHorizontal className="h-4 w-4" />
                         </button>
                         {menuOpen === s.id && (
-                          <div className="absolute right-0 top-full mt-1 w-44 rounded-xl border border-border bg-card shadow-lg z-30 overflow-hidden">
+                          <div className="absolute right-0 top-full mt-1 w-48 rounded-xl border border-border bg-card shadow-lg z-30 overflow-hidden">
                             <button
                               onClick={(e) => { e.stopPropagation(); setAssignOpen(s); setMenuOpen(null); }}
                               className="flex w-full items-center gap-2 px-3 py-2.5 text-xs text-foreground hover:bg-muted/40 transition-colors"
                             >
                               <UserPlus className="h-3.5 w-3.5" /> Назначить партнёра
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setDomainOpen(s); setDomainValue(s.domain ?? ""); setDomainCheckResult(null); setMenuOpen(null); }}
+                              className="flex w-full items-center gap-2 px-3 py-2.5 text-xs text-foreground hover:bg-muted/40 transition-colors"
+                            >
+                              <Link2 className="h-3.5 w-3.5" /> {s.domain ? "Изменить домен" : "Привязать домен"}
                             </button>
                             <button
                               onClick={(e) => {
@@ -232,6 +275,61 @@ export function SitesPage() {
           </select>
         </div>
       </Modal>
+
+      {/* Domain modal */}
+      <Modal
+        open={!!domainOpen}
+        onClose={() => { setDomainOpen(null); setDomainValue(""); setDomainCheckResult(null); }}
+        title={`Домен — ${domainOpen?.name}`}
+        footer={
+          <>
+            <button onClick={() => { setDomainOpen(null); setDomainValue(""); setDomainCheckResult(null); }} className="h-9 px-4 rounded-xl border border-border text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors">Отмена</button>
+            <button onClick={handleSaveDomain} className="h-9 px-4 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors">Сохранить</button>
+          </>
+        }
+      >
+        <div className="space-y-3">
+          <div>
+            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Домен</label>
+            <input
+              value={domainValue}
+              onChange={(e) => { setDomainValue(e.target.value); setDomainCheckResult(null); }}
+              placeholder="dveri-msk.ru"
+              className={inputCls}
+              autoFocus
+            />
+            <p className="mt-1.5 text-[11px] text-muted-foreground leading-relaxed">
+              Без https:// и без слеша. Точно как в браузере. Оставьте пустым, чтобы отвязать.
+            </p>
+          </div>
+          <div className="rounded-xl border border-border bg-muted/30 p-3 space-y-2">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Чек-лист подключения</p>
+            <ul className="text-xs text-foreground space-y-1 list-disc pl-4">
+              <li>Привязать домен к контейнеру в Timeweb Apps → Домены</li>
+              <li>DNS: A-запись на IP контейнера или CNAME на технический домен Timeweb</li>
+              <li>Подтвердить SSL (Let's Encrypt) для домена в Timeweb</li>
+              <li>Значение в этом поле = ровно тот хост, что в адресной строке</li>
+            </ul>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleCheckDomain}
+              disabled={!domainValue || domainChecking}
+              className="h-9 px-3.5 rounded-xl border border-border text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors disabled:opacity-40"
+            >
+              {domainChecking ? "Проверка..." : "Проверить домен"}
+            </button>
+            {domainCheckResult && (
+              <span className={`text-xs ${domainCheckResult.ok ? "text-success" : "text-destructive"}`}>
+                {domainCheckResult.message}
+              </span>
+            )}
+          </div>
+        </div>
+      </Modal>
+
+
 
       {/* Delete confirmation */}
       <ConfirmDialog
