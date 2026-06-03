@@ -276,6 +276,61 @@ export function SitesPage() {
         </div>
       </Modal>
 
+      {/* Domain modal */}
+      <Modal
+        open={!!domainOpen}
+        onClose={() => { setDomainOpen(null); setDomainValue(""); setDomainCheckResult(null); }}
+        title={`Домен — ${domainOpen?.name}`}
+        footer={
+          <>
+            <button onClick={() => { setDomainOpen(null); setDomainValue(""); setDomainCheckResult(null); }} className="h-9 px-4 rounded-xl border border-border text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors">Отмена</button>
+            <button onClick={handleSaveDomain} className="h-9 px-4 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors">Сохранить</button>
+          </>
+        }
+      >
+        <div className="space-y-3">
+          <div>
+            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Домен</label>
+            <input
+              value={domainValue}
+              onChange={(e) => { setDomainValue(e.target.value); setDomainCheckResult(null); }}
+              placeholder="dveri-msk.ru"
+              className={inputCls}
+              autoFocus
+            />
+            <p className="mt-1.5 text-[11px] text-muted-foreground leading-relaxed">
+              Без https:// и без слеша. Точно как в браузере. Оставьте пустым, чтобы отвязать.
+            </p>
+          </div>
+          <div className="rounded-xl border border-border bg-muted/30 p-3 space-y-2">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Чек-лист подключения</p>
+            <ul className="text-xs text-foreground space-y-1 list-disc pl-4">
+              <li>Привязать домен к контейнеру в Timeweb Apps → Домены</li>
+              <li>DNS: A-запись на IP контейнера или CNAME на технический домен Timeweb</li>
+              <li>Подтвердить SSL (Let's Encrypt) для домена в Timeweb</li>
+              <li>Значение в этом поле = ровно тот хост, что в адресной строке</li>
+            </ul>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleCheckDomain}
+              disabled={!domainValue || domainChecking}
+              className="h-9 px-3.5 rounded-xl border border-border text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors disabled:opacity-40"
+            >
+              {domainChecking ? "Проверка..." : "Проверить домен"}
+            </button>
+            {domainCheckResult && (
+              <span className={`text-xs ${domainCheckResult.ok ? "text-success" : "text-destructive"}`}>
+                {domainCheckResult.message}
+              </span>
+            )}
+          </div>
+        </div>
+      </Modal>
+
+
+
       {/* Delete confirmation */}
       <ConfirmDialog
         open={!!deleteTarget}
