@@ -803,12 +803,7 @@ export default function StorefrontProduct() {
               </div>
 
               {/* ===== PRICE SUMMARY (extras only) + CTA ===== */}
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.45 }}
-                className="mt-auto pt-8 border-t border-white/5"
-              >
+              <div className="mt-auto pt-8 border-t border-white/5">
                 {(() => {
                   const doorPrice = product.rrp ? Number(product.rrp) : 0;
                   const trimTotal = MOCK_TRIM.filter((t) => selectedTrim.has(t.id)).reduce((s, t) => s + t.rrp, 0);
