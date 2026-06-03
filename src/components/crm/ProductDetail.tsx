@@ -145,6 +145,27 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
                 )}
               </div>
 
+              {/* Variant key (color/glazing name) for active image */}
+              {currentImage && currentImage.id !== "legacy" && (
+                <div className="mt-3">
+                  <label className="block text-[11px] uppercase tracking-wider text-muted-foreground mb-1">
+                    Привязка к варианту (цвет покрытия)
+                  </label>
+                  <input
+                    type="text"
+                    defaultValue={(currentImage as any).variant_key ?? ""}
+                    key={currentImage.id}
+                    onBlur={(e) => {
+                      const v = e.target.value.trim();
+                      const prev = (currentImage as any).variant_key ?? "";
+                      if (v !== prev) setVariantKey(currentImage.id, v || null);
+                    }}
+                    placeholder="например: Аляска, Антрацит — пусто = общая"
+                    className={inputCls}
+                  />
+                </div>
+              )}
+
               {/* Thumbnails + upload button */}
               <div className="flex gap-2 mt-3 overflow-x-auto">
                 {allImages.map((img, i) => (
