@@ -90,11 +90,39 @@ export default function StorefrontProduct() {
 
   const specs = product?.specifications as Record<string, any> | null;
 
+  // Colors derived from images that have a variant_key — these are real, image-bound colors.
+  // Fall back to MOCK_COLORS when no images are tagged, so legacy products still render swatches.
+  const imageColors = useMemo(() => {
+    const seen = new Set<string>();
+    const out: { name: string; hex: string }[] = [];
+    for (const img of images as any[]) {
+      const key = img.variant_key?.trim();
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      const mock = MOCK_COLORS.find((c) => c.name.toLowerCase() === key.toLowerCase());
+      out.push({ name: key, hex: mock?.hex ?? "#2a2a2a" });
+    }
+    return out;
+  }, [images]);
+
+  const colorSwatches = imageColors.length > 0 ? imageColors : MOCK_COLORS;
+  const hasImageBoundColors = imageColors.length > 0;
+
   // Set initial selected color/glazing from specs
   useMemo(() => {
     if (specs?.color && !selectedColor) setSelectedColor(specs.color);
     if (specs?.glazing && !selectedGlazing) setSelectedGlazing(specs.glazing);
   }, [specs]);
+
+  // When user picks a color that is bound to an image, switch the gallery to it.
+  const handleSelectColor = (colorName: string) => {
+    setSelectedColor(colorName);
+    if (!hasImageBoundColors) return;
+    const idx = (images as any[]).findIndex(
+      (img) => img.variant_key && img.variant_key.toLowerCase() === colorName.toLowerCase()
+    );
+    if (idx >= 0) setCurrentImage(idx);
+  };
 
   const similar = useMemo(() => {
     if (!product) return [];
