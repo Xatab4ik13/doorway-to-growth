@@ -100,24 +100,37 @@ export default function StorefrontCatalog() {
     return children.map((c) => c.id);
   };
 
-  // Extract unique colors and glazings from product specifications
+  // Products that match the current category — used to derive which filters make sense
+  const productsInCategory = useMemo(() => {
+    if (!selectedCategory) return products as any[];
+    const children = getChildren(selectedCategory);
+    if (children.length > 0) {
+      const ids = [selectedCategory, ...children.map((c) => c.id)];
+      return (products as any[]).filter((p) => ids.includes(p.category_id));
+    }
+    return (products as any[]).filter((p) => p.category_id === selectedCategory);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products, selectedCategory, categories]);
+
+  // Extract unique colors and glazings from products in the current category only.
+  // If the current category has no items with this attribute, the filter is hidden.
   const availableColors = useMemo(() => {
     const colors = new Set<string>();
-    (products as any[]).forEach((p) => {
+    productsInCategory.forEach((p) => {
       const c = p.specifications?.color;
       if (c) colors.add(c);
     });
     return Array.from(colors).sort();
-  }, [products]);
+  }, [productsInCategory]);
 
   const availableGlazings = useMemo(() => {
     const glazings = new Set<string>();
-    (products as any[]).forEach((p) => {
+    productsInCategory.forEach((p) => {
       const g = p.specifications?.glazing;
       if (g) glazings.add(g);
     });
     return Array.from(glazings).sort();
-  }, [products]);
+  }, [productsInCategory]);
 
   // Filter
   const filtered = useMemo(() => {
