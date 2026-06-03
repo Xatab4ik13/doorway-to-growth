@@ -847,8 +847,8 @@ export default function StorefrontProduct() {
                 <p className="mt-5 text-center text-[10px] text-storefront-text/30 uppercase tracking-[0.3em] font-light">
                   Персональный расчёт и замер — бесплатно
                 </p>
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
           </div>
 
 
