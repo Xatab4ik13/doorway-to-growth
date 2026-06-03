@@ -211,7 +211,7 @@ function AccessoryCard({
           className={`absolute top-2.5 right-2.5 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${
             active
               ? "bg-storefront-gold text-[#07090d]"
-              : "bg-[#07090d]/70 backdrop-blur-sm text-storefront-text/80 group-hover:bg-storefront-gold group-hover:text-[#07090d]"
+              : "bg-[#07090d]/92 text-storefront-text/80 group-hover:bg-storefront-gold group-hover:text-[#07090d]"
           }`}
         >
           {active ? <Check className="w-3.5 h-3.5" strokeWidth={3} /> : <Plus className="w-3.5 h-3.5" />}
@@ -448,7 +448,7 @@ export default function StorefrontProduct() {
                       transition={{ duration: 0.4 }}
                       src={images[currentImage]?.url}
                       alt={images[currentImage]?.alt || product.name}
-                      className="w-full h-full object-contain p-8 transform transition-transform duration-[1000ms] group-hover:scale-[1.03]"
+                      className="w-full h-full object-contain p-8"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
@@ -463,7 +463,7 @@ export default function StorefrontProduct() {
                 {/* Floating collection badge */}
                 {product.categories && (
                   <div className="absolute top-8 left-8">
-                    <span className="px-4 py-1.5 rounded-full border border-storefront-gold/30 bg-[#07090d]/60 backdrop-blur-md text-storefront-gold text-[10px] tracking-[0.2em] uppercase">
+                    <span className="px-4 py-1.5 rounded-full border border-storefront-gold/30 bg-[#07090d]/85 text-storefront-gold text-[10px] tracking-[0.2em] uppercase">
                       {(product.categories as any)?.name}
                     </span>
                   </div>
@@ -471,13 +471,13 @@ export default function StorefrontProduct() {
 
                 {images.length > 1 && (
                   <>
-                    <button onClick={prevImage} className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-[#07090d]/70 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-storefront-gold hover:text-[#07090d] text-storefront-text">
+                    <button onClick={prevImage} className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-[#07090d]/92 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-storefront-gold hover:text-[#07090d] text-storefront-text">
                       <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <button onClick={nextImage} className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-[#07090d]/70 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-storefront-gold hover:text-[#07090d] text-storefront-text">
+                    <button onClick={nextImage} className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-[#07090d]/92 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-storefront-gold hover:text-[#07090d] text-storefront-text">
                       <ChevronRight className="w-5 h-5" />
                     </button>
-                    <div className="absolute bottom-5 right-5 bg-[#07090d]/60 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] text-storefront-text/70 tracking-wider">
+                    <div className="absolute bottom-5 right-5 bg-[#07090d]/85 px-3 py-1 rounded-full text-[10px] text-storefront-text/70 tracking-wider">
                       {currentImage + 1} / {images.length}
                     </div>
                   </>
@@ -520,16 +520,24 @@ export default function StorefrontProduct() {
               {product.rrp && Number(product.rrp) > 0 && (
                 <div className="flex items-baseline gap-4 mb-6">
                   <span className="text-[10px] font-light uppercase tracking-[0.25em] text-storefront-text/40">Стоимость от</span>
-                  <span className="text-5xl font-light text-storefront-gold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                  <span
+                    className="text-[44px] leading-none text-storefront-gold tabular-nums"
+                    style={{ fontFamily: "'Raleway', system-ui, sans-serif", fontWeight: 300, letterSpacing: "-0.01em" }}
+                  >
                     {Number(product.rrp).toLocaleString("ru-RU")} ₽
                   </span>
                 </div>
               )}
 
               {product.description && (
-                <p className="text-sm font-light leading-relaxed text-storefront-text/50 max-w-md mb-10">
-                  {product.description}
-                </p>
+                <div
+                  className="mb-10 rounded-2xl px-5 py-4 border border-storefront-gold/15 max-w-md"
+                  style={{ background: "linear-gradient(180deg, rgba(207,187,150,0.06) 0%, rgba(255,255,255,0.02) 100%)" }}
+                >
+                  <p className="text-[15px] font-light leading-[1.65] text-storefront-text/85">
+                    {product.description}
+                  </p>
+                </div>
               )}
 
 
@@ -740,7 +748,10 @@ export default function StorefrontProduct() {
                       </div>
                       <div className="flex items-baseline gap-2 shrink-0">
                         <span className="text-[10px] uppercase tracking-[0.25em] text-storefront-text/40">Итого</span>
-                        <span className="text-3xl font-light text-storefront-gold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                        <span
+                          className="text-[30px] leading-none text-storefront-gold tabular-nums"
+                          style={{ fontFamily: "'Raleway', system-ui, sans-serif", fontWeight: 300, letterSpacing: "-0.01em" }}
+                        >
                           {totalPrice.toLocaleString("ru-RU")} ₽
                         </span>
                       </div>
@@ -748,24 +759,17 @@ export default function StorefrontProduct() {
                   );
                 })()}
 
-                <motion.button
+                <button
                   onClick={handleAddAllToCart}
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`w-full py-5 rounded-full text-xs font-medium uppercase tracking-[0.3em] transition-all relative overflow-hidden group flex items-center justify-center gap-3 ${
+                  className={`w-full py-5 rounded-full text-xs font-medium uppercase tracking-[0.3em] transition-[transform,filter] duration-200 active:scale-[0.985] flex items-center justify-center gap-3 ${
                     isInCart
                       ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
                       : "bg-storefront-gold text-[#07090d] hover:brightness-110 shadow-[0_20px_50px_-10px_rgba(212,175,55,0.3)]"
                   }`}
                 >
-                  {!isInCart && (
-                    <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-                  )}
-                  <span className="relative z-10 flex items-center gap-3">
-                    {isInCart ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
-                    {isInCart ? "В корзине" : (selectedTrim.size > 0 || selectedHardware.size > 0) ? "Добавить комплект" : "Добавить в корзину"}
-                  </span>
-                </motion.button>
+                  {isInCart ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
+                  {isInCart ? "В корзине" : (selectedTrim.size > 0 || selectedHardware.size > 0) ? "Добавить комплект" : "Добавить в корзину"}
+                </button>
                 <p className="mt-5 text-center text-[10px] text-storefront-text/30 uppercase tracking-[0.3em] font-light">
                   Персональный расчёт и замер — бесплатно
                 </p>
