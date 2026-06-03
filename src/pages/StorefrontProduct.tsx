@@ -684,12 +684,7 @@ export default function StorefrontProduct() {
               </div>
 
               {sizes && sizes.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.35 }}
-                  className="mb-8"
-                >
+                <div className="mb-8">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
                       <Ruler className="w-4 h-4 text-storefront-gold" />
