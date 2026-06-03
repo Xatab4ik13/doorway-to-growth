@@ -23,7 +23,19 @@ const SPEC_LABELS: Record<string, string> = {
   sizes_order_note: "Размеры (под заказ)",
 };
 
-const COMPLEX_KEYS = new Set(["sizes", "variants"]);
+const COMPLEX_KEYS = new Set(["sizes", "variants", "colors"]);
+
+// Палитра покрытий Brandoors — соответствует цветам, доступным в каталоге
+const COATING_PALETTE: { name: string; hex: string }[] = [
+  { name: "Аляска", hex: "#F5F0E8" },
+  { name: "Магнолия", hex: "#F0E6D4" },
+  { name: "Манхэттен", hex: "#B8AFA4" },
+  { name: "Силк грей", hex: "#9E9A94" },
+  { name: "Варм грей", hex: "#A89B8C" },
+  { name: "Антрацит", hex: "#3A3A3A" },
+  { name: "Blue", hex: "#1B3A5C" },
+  { name: "Green", hex: "#2A4A3E" },
+];
 
 export function ProductDetail({ product, onClose }: ProductDetailProps) {
   const [activeImage, setActiveImage] = useState(0);
