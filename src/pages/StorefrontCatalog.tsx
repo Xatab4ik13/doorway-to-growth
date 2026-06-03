@@ -249,77 +249,70 @@ export default function StorefrontCatalog() {
           </div>
 
           {/* ===== MOBILE FILTER SLIDE-OUT ===== */}
-          <AnimatePresence>
-            {mobileFiltersOpen && (
-              <>
-                <motion.div
-                  className="fixed inset-0 z-[60] bg-black/60 md:hidden"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onClick={() => setMobileFiltersOpen(false)}
-                />
-                <motion.div
-                  className="fixed top-0 left-0 bottom-0 z-[70] md:hidden overflow-y-auto scrollbar-hide"
-                  style={{ width: "300px" }}
-                  initial={{ x: -300 }}
-                  animate={{ x: 0 }}
-                  exit={{ x: -300 }}
-                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          {mobileFiltersOpen && (
+            <>
+              <div
+                className="fixed inset-0 z-[60] bg-black/60 md:hidden animate-fade-in"
+                onClick={() => setMobileFiltersOpen(false)}
+              />
+              <div
+                className="fixed top-0 left-0 bottom-0 z-[70] md:hidden overflow-y-auto scrollbar-hide"
+                style={{
+                  width: "300px",
+                  animation: "slide-in-left 0.4s cubic-bezier(0.22, 1, 0.36, 1)",
+                }}
+              >
+                <div
+                  className="min-h-full relative"
+                  style={{
+                    background: "linear-gradient(175deg, #cfbb96 0%, #bda67a 15%, #a8956e 35%, #8d7c5a 55%, #7a6b4d 70%, #6e5f40 85%, #5c5035 100%)",
+                  }}
                 >
-                  <div
-                    className="min-h-full"
-                    style={{
-                      background: "linear-gradient(175deg, #cfbb96 0%, #bda67a 15%, #a8956e 35%, #8d7c5a 55%, #7a6b4d 70%, #6e5f40 85%, #5c5035 100%)",
-                    }}
+                  <button
+                    onClick={() => setMobileFiltersOpen(false)}
+                    className="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center"
+                    aria-label="Закрыть фильтры"
                   >
-                    {/* Close button */}
+                    <X className="w-6 h-6" style={{ color: "rgba(26,20,8,0.6)" }} />
+                  </button>
+
+                  <SidebarContent
+                    brandoorsLogo={brandoorsLogo}
+                    parentCategories={parentCategories}
+                    getChildren={getChildren}
+                    expandedParents={expandedParents}
+                    toggleParent={toggleParent}
+                    selectedCategory={selectedCategory}
+                    selectCategory={(id) => { selectCategory(id); }}
+                    priceFrom={priceFrom}
+                    setPriceFrom={(v) => { setPriceFrom(v); setPage(1); }}
+                    priceTo={priceTo}
+                    setPriceTo={(v) => { setPriceTo(v); setPage(1); }}
+                    colorOpen={colorOpen}
+                    setColorOpen={setColorOpen}
+                    availableColors={availableColors}
+                    selectedColors={selectedColors}
+                    toggleColor={toggleColor}
+                    glazingOpen={glazingOpen}
+                    setGlazingOpen={setGlazingOpen}
+                    availableGlazings={availableGlazings}
+                    selectedGlazings={selectedGlazings}
+                    toggleGlazing={toggleGlazing}
+                  />
+
+                  <div className="px-5 pb-8 pt-2">
                     <button
                       onClick={() => setMobileFiltersOpen(false)}
-                      className="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center"
-                      aria-label="Закрыть фильтры"
+                      className="w-full py-3.5 rounded-xl bg-[#1a1408] text-white text-[13px] font-bold uppercase tracking-[0.15em] hover:bg-[#1a1408]/90 active:scale-[0.97] transition-all"
                     >
-                      <X className="w-6 h-6" style={{ color: "rgba(26,20,8,0.6)" }} />
+                      Показать {filtered.length} товаров
                     </button>
-
-                    <SidebarContent
-                      brandoorsLogo={brandoorsLogo}
-                      parentCategories={parentCategories}
-                      getChildren={getChildren}
-                      expandedParents={expandedParents}
-                      toggleParent={toggleParent}
-                      selectedCategory={selectedCategory}
-                      selectCategory={(id) => { selectCategory(id); }}
-                      priceFrom={priceFrom}
-                      setPriceFrom={(v) => { setPriceFrom(v); setPage(1); }}
-                      priceTo={priceTo}
-                      setPriceTo={(v) => { setPriceTo(v); setPage(1); }}
-                      colorOpen={colorOpen}
-                      setColorOpen={setColorOpen}
-                      availableColors={availableColors}
-                      selectedColors={selectedColors}
-                      toggleColor={toggleColor}
-                      glazingOpen={glazingOpen}
-                      setGlazingOpen={setGlazingOpen}
-                      availableGlazings={availableGlazings}
-                      selectedGlazings={selectedGlazings}
-                      toggleGlazing={toggleGlazing}
-                    />
-
-                    {/* Apply button */}
-                    <div className="px-5 pb-8 pt-2">
-                      <button
-                        onClick={() => setMobileFiltersOpen(false)}
-                        className="w-full py-3.5 rounded-xl bg-[#1a1408] text-white text-[13px] font-bold uppercase tracking-[0.15em] hover:bg-[#1a1408]/90 active:scale-[0.97] transition-all"
-                      >
-                        Показать {filtered.length} товаров
-                      </button>
-                    </div>
                   </div>
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>
+                </div>
+              </div>
+            </>
+          )}
+
 
           <div className="flex gap-6 lg:gap-10">
             {/* ===== LEFT SIDEBAR — Desktop only ===== */}
