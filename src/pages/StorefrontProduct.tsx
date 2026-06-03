@@ -411,11 +411,7 @@ export default function StorefrontProduct() {
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-14">
 
           {/* Breadcrumbs */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-4 mb-10 text-[10px] uppercase tracking-[0.2em] font-light"
-          >
+          <div className="flex items-center gap-4 mb-10 text-[10px] uppercase tracking-[0.2em] font-light">
             <Link to={`/store/${slug}`} className="text-storefront-text/30 hover:text-storefront-gold transition-colors">
               Каталог
             </Link>
@@ -425,7 +421,7 @@ export default function StorefrontProduct() {
             </Link>
             <span className="w-1 h-1 rounded-full bg-white/20" />
             <span className="text-storefront-text/60">{product.name}</span>
-          </motion.div>
+          </div>
 
           {/* ===== MAIN: HERO IMAGE + CONFIG ===== */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-start">
