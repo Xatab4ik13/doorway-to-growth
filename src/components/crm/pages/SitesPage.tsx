@@ -24,6 +24,43 @@ export function SitesPage() {
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
   const [assignOpen, setAssignOpen] = useState<Site | null>(null);
   const [assignPartnerId, setAssignPartnerId] = useState("");
+  const [domainOpen, setDomainOpen] = useState<Site | null>(null);
+  const [domainValue, setDomainValue] = useState("");
+  const [domainChecking, setDomainChecking] = useState(false);
+  const [domainCheckResult, setDomainCheckResult] = useState<null | { ok: boolean; message: string }>(null);
+
+  const normalizeDomain = (raw: string) =>
+    raw.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/.*$/, "").replace(/\s+/g, "");
+
+  const handleSaveDomain = async () => {
+    if (!domainOpen) return;
+    const value = normalizeDomain(domainValue);
+    if (value && !/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(value)) {
+      toast({ title: "Некорректный домен", description: "Пример: dveri-msk.ru", variant: "destructive" });
+      return;
+    }
+    await updateSite.mutateAsync({ id: domainOpen.id, domain: value || null } as any);
+    toast({ title: value ? "Домен сохранён" : "Домен удалён" });
+    setDomainOpen(null);
+    setDomainValue("");
+    setDomainCheckResult(null);
+  };
+
+  const handleCheckDomain = async () => {
+    const value = normalizeDomain(domainValue);
+    if (!value) return;
+    setDomainChecking(true);
+    setDomainCheckResult(null);
+    try {
+      const res = await fetch(`https://${value}`, { method: "HEAD", mode: "no-cors" });
+      // no-cors returns opaque; reaching here means DNS resolved + TCP/TLS handshake succeeded
+      setDomainCheckResult({ ok: true, message: "Домен отвечает. Убедитесь, что он привязан к Timeweb." });
+    } catch (e: any) {
+      setDomainCheckResult({ ok: false, message: "Домен не отвечает. Проверьте DNS и SSL в Timeweb." });
+    } finally {
+      setDomainChecking(false);
+    }
+  };
 
   const inputCls = "h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow";
 
