@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { X, Pencil, Save, Plus, Trash2, Upload, ImageIcon, GripVertical } from "lucide-react";
+import { X, Save, Plus, Trash2, Upload, ImageIcon, Link2, Image as ImageLucide } from "lucide-react";
 import { useUpdateProduct, type Product } from "@/hooks/useProducts";
 import { useProductImages } from "@/hooks/useProductImages";
 import { toast } from "@/hooks/use-toast";
@@ -25,7 +25,7 @@ const SPEC_LABELS: Record<string, string> = {
 
 const COMPLEX_KEYS = new Set(["sizes", "variants", "colors"]);
 
-// Палитра покрытий Brandoors — соответствует цветам, доступным в каталоге
+// Палитра покрытий Brandoors — должна совпадать с цветами в карточке товара витрины
 const COATING_PALETTE: { name: string; hex: string }[] = [
   { name: "Аляска", hex: "#F5F0E8" },
   { name: "Магнолия", hex: "#F0E6D4" },
@@ -49,7 +49,6 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
     ([k, v]) => !COMPLEX_KEYS.has(k) && v != null && v !== "" && typeof v !== "object"
   );
 
-  const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState(product.name);
   const [editRrp, setEditRrp] = useState(String(product.rrp ?? ""));
   const [editDesc, setEditDesc] = useState(product.description ?? "");
@@ -66,9 +65,10 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
     const specsObj: Record<string, any> = {};
     editSpecs.forEach(([k, v]) => { if (k && v) specsObj[k] = v; });
     if (sizes.length > 0) specsObj.sizes = sizes;
+    if (variants.length > 0) specsObj.variants = variants;
     updateProduct.mutate(
       { id: product.id, name: editName.trim(), rrp: editRrp ? Number(editRrp) : null, description: editDesc.trim() || null, specifications: specsObj, is_active: editActive } as any,
-      { onSuccess: () => { toast({ title: "Товар обновлён" }); setEditing(false); onClose(); } }
+      { onSuccess: () => { toast({ title: "Товар сохранён" }); onClose(); } }
     );
   };
 
@@ -89,9 +89,7 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
   const handleFiles = useCallback((files: FileList | null) => {
     if (!files) return;
     Array.from(files).forEach((file) => {
-      if (file.type.startsWith("image/")) {
-        uploadImage(file);
-      }
+      if (file.type.startsWith("image/")) uploadImage(file);
     });
   }, [uploadImage]);
 
@@ -102,133 +100,126 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
 
   const allImages = images.length > 0 ? images : (product.primary_image ? [{ id: "legacy", url: product.primary_image, is_primary: true }] : []);
   const currentImage = allImages[activeImage] ?? allImages[0];
+  const currentVariantKey: string | null = currentImage ? ((currentImage as any).variant_key ?? null) : null;
+  const currentSwatch = currentVariantKey ? COATING_PALETTE.find((c) => c.name.toLowerCase() === currentVariantKey.toLowerCase()) : null;
 
   const inputCls = "h-9 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow";
 
+  // Сколько фото уже привязаны к цветам
+  const boundCount = allImages.filter((img) => (img as any).variant_key).length;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-foreground/20" onClick={onClose} />
-      <div className="relative w-full max-w-3xl max-h-[90vh] rounded-2xl border border-border bg-card shadow-xl overflow-y-auto animate-fade-up">
-        <div className="sticky top-0 z-10 flex items-center justify-between px-4 sm:px-6 py-4 border-b border-border bg-card">
-          <h3 className="text-sm font-semibold text-foreground truncate mr-2">{product.name}</h3>
-          <div className="flex items-center gap-1.5 shrink-0">
-            {!editing ? (
-              <button onClick={() => setEditing(true)} className="flex h-8 items-center gap-1.5 rounded-lg border border-border px-3 text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors">
-                <Pencil className="h-3.5 w-3.5" /> Редактировать
-              </button>
-            ) : (
-              <button onClick={handleSave} disabled={updateProduct.isPending} className="flex h-8 items-center gap-1.5 rounded-lg bg-foreground px-3 text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-40">
-                <Save className="h-3.5 w-3.5" /> Сохранить
-              </button>
-            )}
-            <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors">
-              <X className="h-4 w-4" />
-            </button>
+    <div className="fixed inset-0 z-50 bg-background flex flex-col animate-fade-in">
+      {/* Sticky header */}
+      <div className="sticky top-0 z-10 flex items-center justify-between gap-3 px-4 sm:px-8 py-3 border-b border-border bg-card">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          <button
+            onClick={onClose}
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors shrink-0"
+            aria-label="Закрыть"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <div className="min-w-0">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              {product.category?.name ?? "Без категории"} · Редактирование товара
+            </div>
+            <h3 className="text-sm font-semibold text-foreground truncate">{product.name}</h3>
           </div>
         </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <label className="hidden sm:flex items-center gap-1.5 cursor-pointer text-xs text-muted-foreground">
+            <input type="checkbox" checked={editActive} onChange={(e) => setEditActive(e.target.checked)} className="h-4 w-4 rounded accent-foreground" />
+            <span>{editActive ? "Активен" : "Скрыт"}</span>
+          </label>
+          <button
+            onClick={handleSave}
+            disabled={updateProduct.isPending}
+            className="flex h-9 items-center gap-1.5 rounded-lg bg-foreground px-4 text-xs font-semibold text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-40"
+          >
+            <Save className="h-3.5 w-3.5" /> Сохранить
+          </button>
+        </div>
+      </div>
 
-        <div className="p-4 sm:p-6">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {/* Gallery + Upload */}
-            <div>
-              <div
-                className={`relative aspect-square rounded-2xl bg-muted flex items-center justify-center overflow-hidden transition-colors ${dragOver ? "ring-2 ring-primary bg-primary/5" : ""}`}
-                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-                onDragLeave={() => setDragOver(false)}
-                onDrop={handleDrop}
-              >
-                {currentImage ? (
-                  <img src={currentImage.url} alt={product.name} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                    <ImageIcon className="h-10 w-10" />
-                    <span className="text-xs">Перетащите фото сюда</span>
-                  </div>
-                )}
-                {uploading && (
-                  <div className="absolute inset-0 bg-background/60 flex items-center justify-center">
-                    <div className="h-6 w-6 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin" />
-                  </div>
-                )}
-                {dragOver && (
-                  <div className="absolute inset-0 bg-primary/10 flex items-center justify-center">
-                    <Upload className="h-8 w-8 text-primary" />
-                  </div>
-                )}
-              </div>
-
-              {/* Привязка фото к цвету покрытия — нативная палитра */}
-              {currentImage && currentImage.id !== "legacy" && (
-                <div className="mt-3 rounded-2xl border border-border bg-muted/30 p-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                      Цвет покрытия на фото
-                    </label>
-                    {(currentImage as any).variant_key && (
-                      <button
-                        onClick={() => setVariantKey(currentImage.id, null)}
-                        className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        Сбросить
-                      </button>
-                    )}
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {COATING_PALETTE.map((c) => {
-                      const active = ((currentImage as any).variant_key ?? "").toLowerCase() === c.name.toLowerCase();
-                      return (
-                        <button
-                          key={c.name}
-                          onClick={() => setVariantKey(currentImage.id, active ? null : c.name)}
-                          title={c.name}
-                          className={`group flex items-center gap-1.5 rounded-full border pl-1 pr-2.5 py-1 text-[11px] font-medium transition-all active:scale-95 ${
-                            active
-                              ? "border-foreground bg-foreground text-primary-foreground"
-                              : "border-border bg-background text-foreground hover:border-foreground/40"
-                          }`}
-                        >
-                          <span
-                            className="h-4 w-4 rounded-full border border-black/10 shrink-0"
-                            style={{ backgroundColor: c.hex }}
-                          />
-                          {c.name}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  {(currentImage as any).variant_key &&
-                    !COATING_PALETTE.some((c) => c.name.toLowerCase() === ((currentImage as any).variant_key ?? "").toLowerCase()) && (
-                      <div className="mt-2 text-[11px] text-muted-foreground">
-                        Своё значение: <span className="font-medium text-foreground">{(currentImage as any).variant_key}</span>
-                      </div>
-                    )}
+      {/* Body */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-8 py-6 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] gap-8">
+          {/* ===== LEFT: Gallery & color binding ===== */}
+          <div className="space-y-4">
+            {/* Active image */}
+            <div
+              className={`relative aspect-[4/5] rounded-2xl bg-muted flex items-center justify-center overflow-hidden transition-colors ${dragOver ? "ring-2 ring-primary bg-primary/5" : "border border-border"}`}
+              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+              onDragLeave={() => setDragOver(false)}
+              onDrop={handleDrop}
+            >
+              {currentImage ? (
+                <img src={currentImage.url} alt={product.name} className="w-full h-full object-contain" />
+              ) : (
+                <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                  <ImageIcon className="h-10 w-10" />
+                  <span className="text-xs">Перетащите фото сюда или нажмите «Загрузить»</span>
+                </div>
+              )}
+              {uploading && (
+                <div className="absolute inset-0 bg-background/60 flex items-center justify-center">
+                  <div className="h-6 w-6 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin" />
+                </div>
+              )}
+              {dragOver && (
+                <div className="absolute inset-0 bg-primary/10 flex items-center justify-center">
+                  <Upload className="h-8 w-8 text-primary" />
                 </div>
               )}
 
-              {/* Thumbnails + upload button */}
-              <div className="flex gap-2 mt-3 overflow-x-auto">
+              {/* Бейдж привязанного цвета */}
+              {currentSwatch && (
+                <div className="absolute top-3 left-3 flex items-center gap-1.5 rounded-full bg-background/95 backdrop-blur border border-border pl-1 pr-3 py-1 shadow-sm">
+                  <span className="h-4 w-4 rounded-full border border-black/10" style={{ backgroundColor: currentSwatch.hex }} />
+                  <span className="text-[11px] font-medium text-foreground">{currentSwatch.name}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Thumbnails + загрузка */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-[10px] uppercase tracking-wider font-medium text-muted-foreground">
+                  Фото товара <span className="normal-case tracking-normal">({allImages.length})</span>
+                </h4>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex items-center gap-1.5 text-[11px] font-medium text-foreground hover:underline"
+                >
+                  <Upload className="h-3 w-3" /> Загрузить
+                </button>
+                <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
+              </div>
+              <div className="grid grid-cols-5 sm:grid-cols-6 gap-2">
                 {allImages.map((img, i) => {
                   const vk = (img as any).variant_key as string | undefined;
                   const swatch = vk ? COATING_PALETTE.find((c) => c.name.toLowerCase() === vk.toLowerCase()) : null;
                   return (
-                    <div key={img.id} className="relative group shrink-0">
+                    <div key={img.id} className="relative group">
                       <button
                         onClick={() => setActiveImage(i)}
-                        className={`h-14 w-14 rounded-xl overflow-hidden transition-all active:scale-95 ${activeImage === i ? "ring-2 ring-foreground" : "hover:ring-1 hover:ring-border"}`}
+                        className={`block w-full aspect-square rounded-xl overflow-hidden transition-all active:scale-95 bg-muted ${activeImage === i ? "ring-2 ring-foreground" : "ring-1 ring-border hover:ring-foreground/40"}`}
                       >
                         <img src={img.url} alt="" className="w-full h-full object-cover" />
                       </button>
                       {vk && (
                         <span
-                          title={vk}
-                          className="absolute -bottom-1 -left-1 h-4 w-4 rounded-full border-2 border-card shadow-sm"
+                          title={`Привязано к: ${vk}`}
+                          className="absolute -bottom-1 -left-1 h-5 w-5 rounded-full border-2 border-card shadow"
                           style={{ backgroundColor: swatch?.hex ?? "#999" }}
                         />
                       )}
                       {img.id !== "legacy" && (
                         <button
                           onClick={() => deleteImage(img.id)}
-                          className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-destructive text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          title="Удалить фото"
                         >
                           <X className="h-3 w-3" />
                         </button>
@@ -238,140 +229,175 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
                 })}
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="h-14 w-14 rounded-xl border-2 border-dashed border-border flex items-center justify-center text-muted-foreground hover:border-foreground hover:text-foreground transition-colors active:scale-95 shrink-0"
+                  className="aspect-square rounded-xl border-2 border-dashed border-border flex items-center justify-center text-muted-foreground hover:border-foreground hover:text-foreground transition-colors active:scale-95"
+                  title="Добавить фото"
                 >
                   <Plus className="h-5 w-5" />
                 </button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                  onChange={(e) => handleFiles(e.target.files)}
-                />
               </div>
             </div>
 
-            {/* Info / Edit */}
-            <div>
-              <div className="flex items-center gap-2 mb-3 flex-wrap">
-                <span className="inline-block rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground">
-                  {product.category?.name ?? "Без категории"}
-                </span>
-                {editing ? (
-                  <label className="flex items-center gap-1.5 cursor-pointer">
-                    <input type="checkbox" checked={editActive} onChange={(e) => setEditActive(e.target.checked)} className="h-4 w-4 rounded accent-foreground" />
-                    <span className="text-xs text-muted-foreground">Активен</span>
-                  </label>
-                ) : (
-                  <>
-                    <span className={`h-2.5 w-2.5 rounded-full ${product.is_active ? "bg-success" : "bg-muted-foreground/30"}`} />
-                    <span className="text-xs text-muted-foreground">{product.is_active ? "Активен" : "Неактивен"}</span>
-                  </>
-                )}
+            {/* Привязка фото к цвету — крупная панель */}
+            <div className="rounded-2xl border border-border bg-muted/30 p-4">
+              <div className="flex items-start gap-2 mb-3">
+                <Link2 className="h-4 w-4 text-foreground mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <h4 className="text-xs font-semibold text-foreground">Привязка фото к цвету покрытия</h4>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    Выберите цвет — текущее фото будет показываться на витрине, когда покупатель выберет этот оттенок. Привязано: <span className="font-semibold text-foreground">{boundCount}</span> из {allImages.length}.
+                  </p>
+                </div>
               </div>
 
-              {editing ? (
-                <input value={editName} onChange={(e) => setEditName(e.target.value)} className={`${inputCls} mb-2 text-lg font-semibold`} />
-              ) : (
-                <h2 className="text-xl font-semibold text-foreground mb-1">{product.name}</h2>
-              )}
-
-              {editing ? (
-                <div className="mb-3">
-                  <label className="block text-[10px] uppercase tracking-wider font-medium text-muted-foreground mb-1">РРЦ (₽)</label>
-                  <input value={editRrp} onChange={(e) => setEditRrp(e.target.value.replace(/[^\d.]/g, ""))} placeholder="0" className={`${inputCls} tabular-nums`} />
-                </div>
-              ) : (
-                <p className="text-2xl font-semibold tabular-nums text-foreground mb-2">
-                  {product.rrp && product.rrp > 0 ? `${product.rrp.toLocaleString("ru-RU")} ₽` : "Цена по запросу"}
+              {!currentImage || currentImage.id === "legacy" ? (
+                <p className="text-[11px] text-muted-foreground italic">
+                  {currentImage ? "Это устаревшее фото. Загрузите новое, чтобы привязать к цвету." : "Сначала загрузите хотя бы одно фото."}
                 </p>
-              )}
-
-              {editing ? (
-                <div className="mb-4">
-                  <label className="block text-[10px] uppercase tracking-wider font-medium text-muted-foreground mb-1">Описание</label>
-                  <textarea value={editDesc} onChange={(e) => setEditDesc(e.target.value)} rows={3} className={`${inputCls} h-auto py-2 resize-none`} />
-                </div>
-              ) : product.description ? (
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-4">{product.description}</p>
-              ) : null}
-
-              <h4 className="text-[10px] uppercase tracking-wider font-medium text-muted-foreground mb-2">Характеристики</h4>
-              {editing ? (
-                <div className="space-y-2 mb-4">
-                  {editSpecs.map(([key, val], idx) => (
-                    <div key={idx} className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground w-24 shrink-0 capitalize">{SPEC_LABELS[key] || key}</span>
-                      <input value={val} onChange={(e) => updateSpecVal(idx, e.target.value)} className={`${inputCls} flex-1`} />
-                      <button onClick={() => removeSpec(idx)} className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted active:scale-95 transition-colors shrink-0">
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  ))}
-                  <div className="flex items-center gap-2 pt-1">
-                    <input value={newSpecKey} onChange={(e) => setNewSpecKey(e.target.value)} placeholder="Ключ" className={`${inputCls} w-24 shrink-0`} />
-                    <input value={newSpecVal} onChange={(e) => setNewSpecVal(e.target.value)} placeholder="Значение" className={`${inputCls} flex-1`} />
-                    <button onClick={addSpec} disabled={!newSpecKey.trim() || !newSpecVal.trim()} className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-30 shrink-0">
-                      <Plus className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                </div>
               ) : (
-                <div className="space-y-1 mb-4">
-                  {flatSpecs.length > 0 ? flatSpecs.map(([key, value]) => (
-                    <div key={key} className="flex items-center justify-between py-1.5 text-sm border-b border-border last:border-0">
-                      <span className="text-muted-foreground capitalize">{SPEC_LABELS[key] || key}</span>
-                      <span className="font-medium text-foreground">{String(value)}</span>
-                    </div>
-                  )) : (
-                    <p className="text-xs text-muted-foreground">Нет характеристик</p>
-                  )}
-                </div>
-              )}
-
-              {sizes.length > 0 && (
                 <>
-                  <h4 className="text-[10px] uppercase tracking-wider font-medium text-muted-foreground mb-2">Размеры (мм)</h4>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {sizes.map((s: any, i: number) => (
-                      <div key={i} className="rounded-lg bg-muted px-3 py-2 text-xs text-foreground">
-                        {s.h_from || s.h_to ? <span>В: {s.h_from ?? "—"}–{s.h_to ?? "—"}</span> : null}
-                        {s.w_from || s.w_to ? <span className="ml-2">Ш: {s.w_from ?? "—"}–{s.w_to ?? "—"}</span> : null}
-                      </div>
-                    ))}
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                      Текущее фото #{activeImage + 1}
+                    </span>
+                    {currentVariantKey && (
+                      <button
+                        onClick={() => setVariantKey(currentImage.id, null)}
+                        className="text-[11px] text-muted-foreground hover:text-destructive transition-colors"
+                      >
+                        Снять привязку
+                      </button>
+                    )}
                   </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {COATING_PALETTE.map((c) => {
+                      const active = (currentVariantKey ?? "").toLowerCase() === c.name.toLowerCase();
+                      return (
+                        <button
+                          key={c.name}
+                          onClick={() => setVariantKey(currentImage.id, active ? null : c.name)}
+                          className={`flex items-center gap-1.5 rounded-full border pl-1 pr-2.5 py-1 text-[11px] font-medium transition-all active:scale-95 ${
+                            active
+                              ? "border-foreground bg-foreground text-primary-foreground"
+                              : "border-border bg-background text-foreground hover:border-foreground/40"
+                          }`}
+                        >
+                          <span className="h-4 w-4 rounded-full border border-black/10 shrink-0" style={{ backgroundColor: c.hex }} />
+                          {c.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {currentVariantKey && !currentSwatch && (
+                    <div className="mt-2 text-[11px] text-muted-foreground">
+                      Своё значение: <span className="font-medium text-foreground">{currentVariantKey}</span>
+                    </div>
+                  )}
                 </>
               )}
+            </div>
+          </div>
 
-              {variants.length > 0 && (
-                <div className="mt-4">
-                  <h4 className="text-[10px] uppercase tracking-wider font-medium text-muted-foreground mb-2">
-                    Цвета <span className="text-muted-foreground/60 normal-case tracking-normal">({variants.length})</span>
-                  </h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    {variants.map((v: any, i: number) => (
-                      <div key={i} className="flex items-center gap-2 rounded-xl border border-border bg-muted/40 p-2">
-                        {v.image_url ? (
-                          <img src={v.image_url} alt={v.color} loading="lazy" className="h-12 w-12 rounded-lg object-cover shrink-0 bg-background" />
-                        ) : (
-                          <div className="h-12 w-12 rounded-lg bg-background shrink-0 flex items-center justify-center text-muted-foreground">
-                            <ImageIcon className="h-4 w-4" />
-                          </div>
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs font-medium text-foreground truncate">{v.color || "—"}</div>
-                          <div className="text-[11px] text-muted-foreground tabular-nums">
-                            {v.price && v.price > 0 ? `${Number(v.price).toLocaleString("ru-RU")} ₽` : "по запросу"}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+          {/* ===== RIGHT: editable fields ===== */}
+          <div className="space-y-5">
+            {/* Базовое */}
+            <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
+              <h4 className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-3">Основное</h4>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-[10px] uppercase tracking-wider font-medium text-muted-foreground mb-1">Название</label>
+                  <input value={editName} onChange={(e) => setEditName(e.target.value)} className={`${inputCls} text-base font-semibold`} />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-wider font-medium text-muted-foreground mb-1">РРЦ (₽)</label>
+                    <input value={editRrp} onChange={(e) => setEditRrp(e.target.value.replace(/[^\d.]/g, ""))} placeholder="0 — цена по запросу" className={`${inputCls} tabular-nums`} />
+                  </div>
+                  <div className="sm:hidden">
+                    <label className="block text-[10px] uppercase tracking-wider font-medium text-muted-foreground mb-1">Статус</label>
+                    <label className="flex items-center gap-2 h-9 px-3 rounded-xl border border-border cursor-pointer">
+                      <input type="checkbox" checked={editActive} onChange={(e) => setEditActive(e.target.checked)} className="h-4 w-4 rounded accent-foreground" />
+                      <span className="text-xs">{editActive ? "Активен" : "Скрыт"}</span>
+                    </label>
                   </div>
                 </div>
-              )}
-            </div>
+                <div>
+                  <label className="block text-[10px] uppercase tracking-wider font-medium text-muted-foreground mb-1">Описание</label>
+                  <textarea value={editDesc} onChange={(e) => setEditDesc(e.target.value)} rows={4} className={`${inputCls} h-auto py-2 resize-none`} placeholder="Краткое описание товара для витрины" />
+                </div>
+              </div>
+            </section>
+
+            {/* Характеристики */}
+            <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
+              <h4 className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-3">Характеристики</h4>
+              <div className="space-y-2">
+                {editSpecs.length === 0 && (
+                  <p className="text-xs text-muted-foreground italic">Характеристик пока нет — добавьте ниже.</p>
+                )}
+                {editSpecs.map(([key, val], idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground w-32 shrink-0 truncate">{SPEC_LABELS[key] || key}</span>
+                    <input value={val} onChange={(e) => updateSpecVal(idx, e.target.value)} className={`${inputCls} flex-1`} />
+                    <button onClick={() => removeSpec(idx)} className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted active:scale-95 transition-colors shrink-0">
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ))}
+                <div className="flex items-center gap-2 pt-2 border-t border-border mt-3">
+                  <input value={newSpecKey} onChange={(e) => setNewSpecKey(e.target.value)} placeholder="Ключ (color, material…)" className={`${inputCls} w-40 shrink-0`} />
+                  <input value={newSpecVal} onChange={(e) => setNewSpecVal(e.target.value)} placeholder="Значение" className={`${inputCls} flex-1`} onKeyDown={(e) => e.key === "Enter" && addSpec()} />
+                  <button onClick={addSpec} disabled={!newSpecKey.trim() || !newSpecVal.trim()} className="flex h-9 items-center gap-1.5 px-3 rounded-lg bg-foreground text-primary-foreground text-xs font-medium hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-30 shrink-0">
+                    <Plus className="h-3.5 w-3.5" /> Добавить
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            {/* Размеры (read-only — задаются массовым импортом) */}
+            {sizes.length > 0 && (
+              <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
+                <h4 className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-3">
+                  Размеры (мм) <span className="normal-case tracking-normal">· {sizes.length}</span>
+                </h4>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                  {sizes.map((s: any, i: number) => (
+                    <div key={i} className="rounded-lg bg-muted px-3 py-2 text-xs text-foreground tabular-nums">
+                      {s.h_from || s.h_to ? <span>В: {s.h_from ?? "—"}–{s.h_to ?? "—"}</span> : null}
+                      {s.w_from || s.w_to ? <span className="ml-2">Ш: {s.w_from ?? "—"}–{s.w_to ?? "—"}</span> : null}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Варианты-цвета из JSONB (если есть) */}
+            {variants.length > 0 && (
+              <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
+                <h4 className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-3 flex items-center gap-2">
+                  <ImageLucide className="h-3.5 w-3.5" />
+                  Цвета из спецификации <span className="normal-case tracking-normal">· {variants.length}</span>
+                </h4>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {variants.map((v: any, i: number) => (
+                    <div key={i} className="flex items-center gap-2 rounded-xl border border-border bg-muted/40 p-2">
+                      {v.image_url ? (
+                        <img src={v.image_url} alt={v.color} loading="lazy" className="h-12 w-12 rounded-lg object-cover shrink-0 bg-background" />
+                      ) : (
+                        <div className="h-12 w-12 rounded-lg bg-background shrink-0 flex items-center justify-center text-muted-foreground">
+                          <ImageIcon className="h-4 w-4" />
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-medium text-foreground truncate">{v.color || "—"}</div>
+                        <div className="text-[11px] text-muted-foreground tabular-nums">
+                          {v.price && v.price > 0 ? `${Number(v.price).toLocaleString("ru-RU")} ₽` : "по запросу"}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
         </div>
       </div>
