@@ -15,7 +15,15 @@ const SPEC_LABELS: Record<string, string> = {
   covering: "Покрытие",
   material: "Материал",
   style: "Стиль",
+  collection: "Коллекция",
+  markup_height: "Наценка за высоту",
+  markup_width: "Наценка за ширину",
+  glazing_options: "Остекление",
+  sizes_stock_note: "Размеры (склад)",
+  sizes_order_note: "Размеры (под заказ)",
 };
+
+const COMPLEX_KEYS = new Set(["sizes", "variants"]);
 
 export function ProductDetail({ product, onClose }: ProductDetailProps) {
   const [activeImage, setActiveImage] = useState(0);
@@ -24,7 +32,10 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
 
   const rawSpecs = (product.specifications ?? {}) as Record<string, any>;
   const sizes: any[] = Array.isArray(rawSpecs.sizes) ? rawSpecs.sizes : [];
-  const flatSpecs = Object.entries(rawSpecs).filter(([k]) => k !== "sizes" && rawSpecs[k]);
+  const variants: any[] = Array.isArray(rawSpecs.variants) ? rawSpecs.variants : [];
+  const flatSpecs = Object.entries(rawSpecs).filter(
+    ([k, v]) => !COMPLEX_KEYS.has(k) && v != null && v !== "" && typeof v !== "object"
+  );
 
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState(product.name);
