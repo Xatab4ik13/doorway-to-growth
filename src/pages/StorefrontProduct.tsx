@@ -6,7 +6,6 @@ import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight, Ruler, ShoppingCart, Check, Plus, DoorOpen, Lock, CircleDot } from "lucide-react";
 import { useCartStore } from "@/stores/useCartStore";
 import coatingWood from "@/assets/materials/coating-wood.jpg";
@@ -412,11 +411,7 @@ export default function StorefrontProduct() {
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-14">
 
           {/* Breadcrumbs */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-4 mb-10 text-[10px] uppercase tracking-[0.2em] font-light"
-          >
+          <div className="flex items-center gap-4 mb-10 text-[10px] uppercase tracking-[0.2em] font-light">
             <Link to={`/store/${slug}`} className="text-storefront-text/30 hover:text-storefront-gold transition-colors">
               Каталог
             </Link>
@@ -426,40 +421,26 @@ export default function StorefrontProduct() {
             </Link>
             <span className="w-1 h-1 rounded-full bg-white/20" />
             <span className="text-storefront-text/60">{product.name}</span>
-          </motion.div>
+          </div>
 
           {/* ===== MAIN: HERO IMAGE + CONFIG ===== */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-start">
 
-            {/* Hero image — 7/12 columns, dramatic shadow, floating collection badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:col-span-7 lg:sticky lg:top-12 lg:self-start"
-            >
+            {/* Hero image — 7/12 columns */}
+            <div className="lg:col-span-7 lg:sticky lg:top-12 lg:self-start">
               <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#0d0f14] border border-white/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] group">
-                <AnimatePresence mode="wait">
-                  {images.length > 0 ? (
-                    <motion.img
-                      key={currentImage}
-                      initial={{ opacity: 0, scale: 1.03 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.97 }}
-                      transition={{ duration: 0.4 }}
-                      src={images[currentImage]?.url}
-                      alt={images[currentImage]?.alt || product.name}
-                      className="w-full h-full object-contain p-8"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-storefront-muted/15 text-9xl font-bold">B</span>
-                    </div>
-                  )}
-                </AnimatePresence>
-
-                {/* Soft bottom gradient for badge legibility */}
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#07090d] via-transparent to-transparent opacity-40" />
+                {images.length > 0 ? (
+                  <img
+                    key={currentImage}
+                    src={images[currentImage]?.url}
+                    alt={images[currentImage]?.alt || product.name}
+                    className="w-full h-full object-contain p-8 animate-fade-in"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <span className="text-storefront-muted/15 text-9xl font-bold">B</span>
+                  </div>
+                )}
 
                 {/* Floating collection badge */}
                 {product.categories && (
@@ -472,13 +453,13 @@ export default function StorefrontProduct() {
 
                 {images.length > 1 && (
                   <>
-                    <button onClick={prevImage} className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-[#07090d]/92 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-storefront-gold hover:text-[#07090d] text-storefront-text">
+                    <button onClick={prevImage} aria-label="Предыдущее" className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-[#07090d]/92 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-storefront-gold hover:text-[#07090d] text-storefront-text">
                       <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <button onClick={nextImage} className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-[#07090d]/92 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-storefront-gold hover:text-[#07090d] text-storefront-text">
+                    <button onClick={nextImage} aria-label="Следующее" className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-[#07090d]/92 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-storefront-gold hover:text-[#07090d] text-storefront-text">
                       <ChevronRight className="w-5 h-5" />
                     </button>
-                    <div className="absolute bottom-5 right-5 bg-[#07090d]/85 px-3 py-1 rounded-full text-[10px] text-storefront-text/70 tracking-wider">
+                    <div className="absolute bottom-5 right-5 bg-[#07090d]/85 px-3 py-1 rounded-full text-[10px] text-storefront-text/70 tracking-wider tabular-nums">
                       {currentImage + 1} / {images.length}
                     </div>
                   </>
@@ -487,31 +468,26 @@ export default function StorefrontProduct() {
 
               {/* Thumbnails */}
               {images.length > 1 && (
-                <div className="flex gap-2 mt-4 overflow-x-auto">
+                <div className="flex gap-2 mt-4 overflow-x-auto scrollbar-hide">
                   {images.map((img: any, idx: number) => (
                     <button
                       key={img.id || idx}
                       onClick={() => setCurrentImage(idx)}
-                      className={`relative shrink-0 w-[72px] aspect-square overflow-hidden bg-[#0c0e14] rounded-xl transition-all duration-300 ${
+                      className={`relative shrink-0 w-[72px] aspect-square overflow-hidden bg-[#0c0e14] rounded-xl transition-opacity duration-200 ${
                         idx === currentImage
                           ? "ring-2 ring-storefront-gold ring-offset-2 ring-offset-[#07090d]"
                           : "opacity-50 hover:opacity-80"
                       }`}
                     >
-                      <img src={img.url} alt="" className="w-full h-full object-cover" />
+                      <img src={img.url} alt="" loading="lazy" className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>
               )}
-            </motion.div>
+            </div>
 
             {/* Product Info — 5/12 columns */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:col-span-5 flex flex-col"
-            >
+            <div className="lg:col-span-5 flex flex-col">
               {/* Sticky selection summary — appears once user picks anything */}
               {(() => {
                 const pills: { label: string; value: string }[] = [];
@@ -708,12 +684,7 @@ export default function StorefrontProduct() {
               </div>
 
               {sizes && sizes.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.35 }}
-                  className="mb-8"
-                >
+                <div className="mb-8">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
                       <Ruler className="w-4 h-4 text-storefront-gold" />
@@ -749,7 +720,7 @@ export default function StorefrontProduct() {
                       </div>
                     )}
                   </div>
-                </motion.div>
+                </div>
               )}
 
               {/* ===== INFO ACCORDION ===== */}
@@ -832,12 +803,7 @@ export default function StorefrontProduct() {
               </div>
 
               {/* ===== PRICE SUMMARY (extras only) + CTA ===== */}
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.45 }}
-                className="mt-auto pt-8 border-t border-white/5"
-              >
+              <div className="mt-auto pt-8 border-t border-white/5">
                 {(() => {
                   const doorPrice = product.rrp ? Number(product.rrp) : 0;
                   const trimTotal = MOCK_TRIM.filter((t) => selectedTrim.has(t.id)).reduce((s, t) => s + t.rrp, 0);
@@ -881,19 +847,14 @@ export default function StorefrontProduct() {
                 <p className="mt-5 text-center text-[10px] text-storefront-text/30 uppercase tracking-[0.3em] font-light">
                   Персональный расчёт и замер — бесплатно
                 </p>
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
           </div>
 
 
           {/* ===== SIMILAR PRODUCTS ===== */}
           {similar.length > 0 && (
-            <motion.section
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.5 }}
-              className="mt-20"
-            >
+            <section className="mt-20">
               <div className="flex items-center gap-4 mb-8">
                 <div className="w-10 h-[1px] bg-storefront-gold/40" />
                 <h2 className="text-xl sm:text-2xl font-bold text-storefront-text uppercase tracking-wide">
@@ -902,34 +863,33 @@ export default function StorefrontProduct() {
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {similar.map((p: any, i: number) => {
+                {similar.map((p: any) => {
                   const img = getPrimaryImage(p);
                   return (
-                    <motion.div key={p.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 + i * 0.05 }}>
-                      <Link
-                        to={`/store/${slug}/product/${p.slug}`}
-                        className="group block"
-                        onClick={() => { setCurrentImage(0); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                      >
-                        <div className="relative overflow-hidden bg-[#0c0e14] flex items-center justify-center rounded-2xl" style={{ minHeight: "250px" }}>
-                          {img ? (
-                            <img src={img} alt={p.name} loading="lazy" className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <span className="text-storefront-muted/15 text-5xl font-bold">B</span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="pt-3">
-                          <h3 className="text-xs font-semibold text-storefront-text uppercase tracking-wider leading-snug mb-1 line-clamp-2">{p.name}</h3>
-                          {p.rrp && <p className="text-sm font-medium text-storefront-text">{Number(p.rrp).toLocaleString("ru-RU")} ₽</p>}
-                        </div>
-                      </Link>
-                    </motion.div>
+                    <Link
+                      key={p.id}
+                      to={`/store/${slug}/product/${p.slug}`}
+                      className="group block"
+                      onClick={() => { setCurrentImage(0); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    >
+                      <div className="relative overflow-hidden bg-[#0c0e14] flex items-center justify-center rounded-2xl" style={{ minHeight: "250px" }}>
+                        {img ? (
+                          <img src={img} alt={p.name} loading="lazy" className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <span className="text-storefront-muted/15 text-5xl font-bold">B</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="pt-3">
+                        <h3 className="text-xs font-semibold text-storefront-text uppercase tracking-wider leading-snug mb-1 line-clamp-2">{p.name}</h3>
+                        {p.rrp && <p className="text-sm font-medium text-storefront-text tabular-nums">{Number(p.rrp).toLocaleString("ru-RU")} ₽</p>}
+                      </div>
+                    </Link>
                   );
                 })}
               </div>
-            </motion.section>
+            </section>
           )}
 
           {/* Back to catalog */}
