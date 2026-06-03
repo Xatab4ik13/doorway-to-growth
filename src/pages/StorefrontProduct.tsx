@@ -275,8 +275,30 @@ export default function StorefrontProduct() {
 
   const specs = product?.specifications as Record<string, any> | null;
 
+  // ── Extract real configurator options from product data ──
+  // Show a section only when the product actually declares its options
+  // (via specs.{colors|glazing_options|edge_colors|molding_colors},
+  //  scalar specs.{color|glazing}, or nested variants[].{color|glazing|edge|molding}).
+  const variants: any[] = Array.isArray(specs?.variants) ? specs!.variants : [];
+  const collectFromSpecs = (
+    arrKey: string,
+    scalarKey: string | null,
+    variantKey: string,
+  ): string[] => {
+    const seen = new Set<string>();
+    const push = (v: any) => {
+      if (!v) return;
+      const s = typeof v === "string" ? v : v.name;
+      if (typeof s === "string" && s.trim()) seen.add(s.trim());
+    };
+    const arr = specs?.[arrKey];
+    if (Array.isArray(arr)) arr.forEach(push);
+    if (scalarKey && specs?.[scalarKey]) push(specs[scalarKey]);
+    variants.forEach((v) => push(v?.[variantKey]));
+    return Array.from(seen);
+  };
+
   // Colors derived from images that have a variant_key — these are real, image-bound colors.
-  // Fall back to MOCK_COLORS when no images are tagged, so legacy products still render swatches.
   const imageColors = useMemo(() => {
     const seen = new Set<string>();
     const out: { name: string; hex: string }[] = [];
@@ -290,8 +312,27 @@ export default function StorefrontProduct() {
     return out;
   }, [images]);
 
-  const colorSwatches = imageColors.length > 0 ? imageColors : MOCK_COLORS;
+  const specColorNames = collectFromSpecs("colors", "color", "color");
+  const colorSwatches: { name: string; hex: string }[] = imageColors.length > 0
+    ? imageColors
+    : specColorNames.map((name) => {
+        const mock = MOCK_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
+        return { name, hex: mock?.hex ?? "#2a2a2a" };
+      });
   const hasImageBoundColors = imageColors.length > 0;
+
+  const glazingItems = collectFromSpecs("glazing_options", "glazing", "glazing").map((name) => {
+    const mock = MOCK_GLAZING.find((g) => g.name.toLowerCase() === name.toLowerCase());
+    return { name, preview: mock?.preview ?? "#2a2a2a" };
+  });
+  const edgeItems = collectFromSpecs("edge_colors", null, "edge").map((name) => {
+    const mock = MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
+    return { name, hex: mock?.hex ?? "#2a2a2a" };
+  });
+  const moldingItems = collectFromSpecs("molding_colors", null, "molding").map((name) => {
+    const mock = MOCK_MOLDING_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
+    return { name, hex: mock?.hex ?? "#2a2a2a" };
+  });
 
   // Set initial selected color/glazing from specs
   useMemo(() => {
@@ -563,93 +604,102 @@ export default function StorefrontProduct() {
 
 
 
-              {/* ===== COLOR SWATCHES ===== */}
-              <div className="space-y-5 mb-8">
-                {/* Coating color */}
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет покрытия:</span>
-                    <span className="text-[12px] text-storefront-gold/80">{selectedColor || "—"}</span>
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    {colorSwatches.map((c) => (
-                      <MaterialSwatch
-                        key={c.name}
-                        name={c.name}
-                        hex={c.hex}
-                        material={pickCoatingMaterial(c.name, c.hex)}
-                        selected={selectedColor === c.name}
-                        onClick={() => handleSelectColor(c.name)}
-                      />
-                    ))}
-                  </div>
-                </div>
+              {/* ===== COLOR SWATCHES (only when product declares them) ===== */}
+              {(colorSwatches.length > 0 || glazingItems.length > 0 || edgeItems.length > 0 || moldingItems.length > 0) && (
+                <div className="space-y-5 mb-8">
+                  {/* Coating color */}
+                  {colorSwatches.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-4">
+                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет покрытия:</span>
+                        <span className="text-[12px] text-storefront-gold/80">{selectedColor || "—"}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-3">
+                        {colorSwatches.map((c) => (
+                          <MaterialSwatch
+                            key={c.name}
+                            name={c.name}
+                            hex={c.hex}
+                            material={pickCoatingMaterial(c.name, c.hex)}
+                            selected={selectedColor === c.name}
+                            onClick={() => handleSelectColor(c.name)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
-                {/* Glazing */}
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Остекление:</span>
-                    <span className="text-[12px] text-storefront-gold/80">{selectedGlazing || "—"}</span>
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    {MOCK_GLAZING.map((g) => {
-                      const mat = pickGlazingMaterial(g.name, g.preview);
-                      // For lacobel (solid coloured glass), pass hex for tinting
-                      const hex = mat === "lacobel" && g.preview.startsWith("#") ? g.preview : undefined;
-                      return (
-                        <MaterialSwatch
-                          key={g.name}
-                          name={g.name}
-                          hex={hex}
-                          material={mat}
-                          selected={selectedGlazing === g.name}
-                          onClick={() => setSelectedGlazing(g.name)}
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
+                  {/* Glazing */}
+                  {glazingItems.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-4">
+                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Остекление:</span>
+                        <span className="text-[12px] text-storefront-gold/80">{selectedGlazing || "—"}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-3">
+                        {glazingItems.map((g) => {
+                          const mat = pickGlazingMaterial(g.name, g.preview);
+                          const hex = mat === "lacobel" && g.preview.startsWith("#") ? g.preview : undefined;
+                          return (
+                            <MaterialSwatch
+                              key={g.name}
+                              name={g.name}
+                              hex={hex}
+                              material={mat}
+                              selected={selectedGlazing === g.name}
+                              onClick={() => setSelectedGlazing(g.name)}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
 
-                {/* Edge color */}
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет кромки:</span>
-                    <span className="text-[12px] text-storefront-gold/80">{selectedEdge || "—"}</span>
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    {MOCK_EDGE_COLORS.map((c) => (
-                      <MaterialSwatch
-                        key={c.name}
-                        name={c.name}
-                        hex={c.hex}
-                        material="metal"
-                        selected={selectedEdge === c.name}
-                        onClick={() => setSelectedEdge(c.name)}
-                      />
-                    ))}
-                  </div>
-                </div>
+                  {/* Edge color */}
+                  {edgeItems.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-4">
+                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет кромки:</span>
+                        <span className="text-[12px] text-storefront-gold/80">{selectedEdge || "—"}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-3">
+                        {edgeItems.map((c) => (
+                          <MaterialSwatch
+                            key={c.name}
+                            name={c.name}
+                            hex={c.hex}
+                            material="metal"
+                            selected={selectedEdge === c.name}
+                            onClick={() => setSelectedEdge(c.name)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
-                {/* Molding color */}
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет молдингов:</span>
-                    <span className="text-[12px] text-storefront-gold/80">{selectedMolding || "—"}</span>
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    {MOCK_MOLDING_COLORS.map((c) => (
-                      <MaterialSwatch
-                        key={c.name}
-                        name={c.name}
-                        hex={c.hex}
-                        material={pickCoatingMaterial(c.name, c.hex) === "wood" ? "wood" : "metal"}
-                        selected={selectedMolding === c.name}
-                        onClick={() => setSelectedMolding(c.name)}
-                      />
-                    ))}
-                  </div>
+                  {/* Molding color */}
+                  {moldingItems.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-4">
+                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет молдингов:</span>
+                        <span className="text-[12px] text-storefront-gold/80">{selectedMolding || "—"}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-3">
+                        {moldingItems.map((c) => (
+                          <MaterialSwatch
+                            key={c.name}
+                            name={c.name}
+                            hex={c.hex}
+                            material={pickCoatingMaterial(c.name, c.hex) === "wood" ? "wood" : "metal"}
+                            selected={selectedMolding === c.name}
+                            onClick={() => setSelectedMolding(c.name)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
+              )}
 
               {/* ===== TRIM (ПОГОНАЖ) ===== */}
               <div className="mb-8">
