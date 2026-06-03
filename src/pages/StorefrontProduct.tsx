@@ -8,6 +8,108 @@ import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight, Ruler, ShoppingCart, Check, Plus, DoorOpen, Lock, CircleDot } from "lucide-react";
 import { useCartStore } from "@/stores/useCartStore";
+import coatingWood from "@/assets/materials/coating-wood.jpg";
+import coatingSoftTouch from "@/assets/materials/coating-softtouch.jpg";
+import coatingMetal from "@/assets/materials/coating-metal.jpg";
+import coatingEnamel from "@/assets/materials/coating-enamel.jpg";
+import glassFrosted from "@/assets/materials/glass-frosted.jpg";
+import glassMirror from "@/assets/materials/glass-mirror.jpg";
+import glassLacobel from "@/assets/materials/glass-lacobel.jpg";
+
+// ── Material textures map ──
+type MaterialKey = "wood" | "softtouch" | "metal" | "enamel" | "frosted" | "mirror" | "lacobel" | "none";
+const TEXTURE_MAP: Record<Exclude<MaterialKey, "none">, string> = {
+  wood: coatingWood,
+  softtouch: coatingSoftTouch,
+  metal: coatingMetal,
+  enamel: coatingEnamel,
+  frosted: glassFrosted,
+  mirror: glassMirror,
+  lacobel: glassLacobel,
+};
+
+// Heuristic: pick material texture by color name + hex tone
+function pickCoatingMaterial(name: string, hex: string): MaterialKey {
+  const n = name.toLowerCase();
+  if (/(дуб|орех|венге|wood|oak|walnut|шпон)/.test(n)) return "wood";
+  if (/(хром|gold|metal|анодир|al |серебр|медь|латунь)/.test(n)) return "metal";
+  if (/(эмаль|глянец|gloss|enamel|лак)/.test(n)) return "enamel";
+  // Default: soft-touch matte for neutral/grey/anthracite/blue/green tones
+  return "softtouch";
+}
+
+function pickGlazingMaterial(name: string, preview: string): MaterialKey {
+  const n = name.toLowerCase();
+  if (preview === "none") return "none";
+  if (/зеркал|mirror/.test(n)) return "mirror";
+  if (/мат|frost|сатин/.test(n)) return "frosted";
+  return "lacobel";
+}
+
+// Premium photo swatch: texture image + color tint via mix-blend, gold halo when active
+function MaterialSwatch({
+  name,
+  hex,
+  material,
+  selected,
+  onClick,
+}: {
+  name: string;
+  hex?: string;
+  material: MaterialKey;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  const isNone = material === "none";
+  // Mirror/frosted/lacobel glass renders the texture as-is (no tint) — they already look like the material.
+  const isGlassRaw = material === "mirror" || material === "frosted";
+  return (
+    <button
+      onClick={onClick}
+      title={name}
+      aria-pressed={selected}
+      className={`group relative w-16 h-16 rounded-full transition-all duration-300 ease-out will-change-transform ${
+        selected
+          ? "scale-[1.08] shadow-[0_0_0_2px_rgba(207,187,150,0.9),0_8px_24px_-4px_rgba(207,187,150,0.45)]"
+          : "shadow-[0_6px_18px_-6px_rgba(0,0,0,0.7)] hover:scale-[1.06] hover:shadow-[0_10px_24px_-6px_rgba(0,0,0,0.8)]"
+      }`}
+      style={{ transform: selected ? "translateZ(0) scale(1.08)" : undefined }}
+    >
+      <span className="absolute inset-0 rounded-full overflow-hidden">
+        {isNone ? (
+          <span className="block w-full h-full bg-[#0c0e14]">
+            <span className="absolute top-1/2 left-1/2 w-8 h-px bg-storefront-gold/60 -translate-x-1/2 -translate-y-1/2 rotate-45" />
+          </span>
+        ) : (
+          <>
+            <img
+              src={TEXTURE_MAP[material]}
+              alt=""
+              loading="lazy"
+              draggable={false}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            {!isGlassRaw && hex && (
+              <span
+                className="absolute inset-0"
+                style={{ backgroundColor: hex, mixBlendMode: "multiply", opacity: 0.78 }}
+              />
+            )}
+            {/* Subtle top highlight for tactile dimension */}
+            <span className="absolute inset-0 rounded-full bg-gradient-to-br from-white/15 via-transparent to-black/20 pointer-events-none" />
+          </>
+        )}
+      </span>
+      {selected && (
+        <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <span className="w-5 h-5 rounded-full bg-storefront-gold/95 flex items-center justify-center shadow-md">
+            <Check className="w-3 h-3 text-[#07090d]" strokeWidth={3} />
+          </span>
+        </span>
+      )}
+    </button>
+  );
+}
 
 // ── Mock data for swatches (will be replaced with DB data later) ──
 const MOCK_COLORS: { name: string; hex: string }[] = [
