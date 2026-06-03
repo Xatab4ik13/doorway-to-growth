@@ -471,124 +471,85 @@ export default function StorefrontProduct() {
               <div className="space-y-5 mb-8">
                 {/* Coating color */}
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center gap-2 mb-4">
                     <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет покрытия:</span>
                     <span className="text-[12px] text-storefront-gold/80">{selectedColor || "—"}</span>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-3">
                     {colorSwatches.map((c) => (
-                      <button
+                      <MaterialSwatch
                         key={c.name}
+                        name={c.name}
+                        hex={c.hex}
+                        material={pickCoatingMaterial(c.name, c.hex)}
+                        selected={selectedColor === c.name}
                         onClick={() => handleSelectColor(c.name)}
-                        title={c.name}
-                        className={`group relative w-11 h-11 rounded-xl border-2 transition-all duration-200 hover:scale-110 ${
-                          selectedColor === c.name
-                            ? "border-storefront-gold shadow-[0_0_12px_rgba(207,187,150,0.3)]"
-                            : "border-white/10 hover:border-white/25"
-                        }`}
-                        style={{ backgroundColor: c.hex }}
-                      >
-                        {selectedColor === c.name && (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <Check className="w-4 h-4" style={{ color: c.hex === "#1A1A1A" || c.hex === "#3A3A3A" || c.hex === "#2A4A3E" || c.hex === "#1B3A5C" ? "#fff" : "#1A1A1A" }} />
-                          </div>
-                        )}
-                      </button>
+                      />
                     ))}
                   </div>
                 </div>
 
                 {/* Glazing */}
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center gap-2 mb-4">
                     <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Остекление:</span>
                     <span className="text-[12px] text-storefront-gold/80">{selectedGlazing || "—"}</span>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {MOCK_GLAZING.map((g) => (
-                      <button
-                        key={g.name}
-                        onClick={() => setSelectedGlazing(g.name)}
-                        title={g.name}
-                        className={`relative w-11 h-11 rounded-xl border-2 transition-all duration-200 hover:scale-110 overflow-hidden ${
-                          selectedGlazing === g.name
-                            ? "border-storefront-gold shadow-[0_0_12px_rgba(207,187,150,0.3)]"
-                            : "border-white/10 hover:border-white/25"
-                        }`}
-                      >
-                        {g.preview === "none" ? (
-                          <div className="w-full h-full bg-[#0c0e14] flex items-center justify-center">
-                            <div className="w-6 h-[1px] bg-white/20 rotate-45" />
-                          </div>
-                        ) : g.preview.startsWith("linear") ? (
-                          <div className="w-full h-full" style={{ background: g.preview }} />
-                        ) : (
-                          <div className="w-full h-full" style={{ backgroundColor: g.preview }} />
-                        )}
-                        {selectedGlazing === g.name && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                            <Check className="w-4 h-4 text-white" />
-                          </div>
-                        )}
-                      </button>
-                    ))}
+                  <div className="flex flex-wrap gap-3">
+                    {MOCK_GLAZING.map((g) => {
+                      const mat = pickGlazingMaterial(g.name, g.preview);
+                      // For lacobel (solid coloured glass), pass hex for tinting
+                      const hex = mat === "lacobel" && g.preview.startsWith("#") ? g.preview : undefined;
+                      return (
+                        <MaterialSwatch
+                          key={g.name}
+                          name={g.name}
+                          hex={hex}
+                          material={mat}
+                          selected={selectedGlazing === g.name}
+                          onClick={() => setSelectedGlazing(g.name)}
+                        />
+                      );
+                    })}
                   </div>
                 </div>
 
                 {/* Edge color */}
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center gap-2 mb-4">
                     <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет кромки:</span>
                     <span className="text-[12px] text-storefront-gold/80">{selectedEdge || "—"}</span>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-3">
                     {MOCK_EDGE_COLORS.map((c) => (
-                      <button
+                      <MaterialSwatch
                         key={c.name}
+                        name={c.name}
+                        hex={c.hex}
+                        material="metal"
+                        selected={selectedEdge === c.name}
                         onClick={() => setSelectedEdge(c.name)}
-                        title={c.name}
-                        className={`relative w-11 h-11 rounded-xl border-2 transition-all duration-200 hover:scale-110 ${
-                          selectedEdge === c.name
-                            ? "border-storefront-gold shadow-[0_0_12px_rgba(207,187,150,0.3)]"
-                            : "border-white/10 hover:border-white/25"
-                        }`}
-                        style={{ backgroundColor: c.hex }}
-                      >
-                        {selectedEdge === c.name && (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <Check className="w-4 h-4" style={{ color: c.hex === "#1A1A1A" ? "#fff" : "#1A1A1A" }} />
-                          </div>
-                        )}
-                      </button>
+                      />
                     ))}
                   </div>
                 </div>
 
                 {/* Molding color */}
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center gap-2 mb-4">
                     <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет молдингов:</span>
                     <span className="text-[12px] text-storefront-gold/80">{selectedMolding || "—"}</span>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-3">
                     {MOCK_MOLDING_COLORS.map((c) => (
-                      <button
+                      <MaterialSwatch
                         key={c.name}
+                        name={c.name}
+                        hex={c.hex}
+                        material={pickCoatingMaterial(c.name, c.hex) === "wood" ? "wood" : "metal"}
+                        selected={selectedMolding === c.name}
                         onClick={() => setSelectedMolding(c.name)}
-                        title={c.name}
-                        className={`relative w-11 h-11 rounded-xl border-2 transition-all duration-200 hover:scale-110 ${
-                          selectedMolding === c.name
-                            ? "border-storefront-gold shadow-[0_0_12px_rgba(207,187,150,0.3)]"
-                            : "border-white/10 hover:border-white/25"
-                        }`}
-                        style={{ backgroundColor: c.hex }}
-                      >
-                        {selectedMolding === c.name && (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <Check className="w-4 h-4" style={{ color: c.hex === "#1A1A1A" ? "#fff" : "#1A1A1A" }} />
-                          </div>
-                        )}
-                      </button>
+                      />
                     ))}
                   </div>
                 </div>
