@@ -211,7 +211,7 @@ function AccessoryCard({
           className={`absolute top-2.5 right-2.5 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${
             active
               ? "bg-storefront-gold text-[#07090d]"
-              : "bg-[#07090d]/70 backdrop-blur-sm text-storefront-text/80 group-hover:bg-storefront-gold group-hover:text-[#07090d]"
+              : "bg-[#07090d]/92 text-storefront-text/80 group-hover:bg-storefront-gold group-hover:text-[#07090d]"
           }`}
         >
           {active ? <Check className="w-3.5 h-3.5" strokeWidth={3} /> : <Plus className="w-3.5 h-3.5" />}
@@ -463,7 +463,7 @@ export default function StorefrontProduct() {
                 {/* Floating collection badge */}
                 {product.categories && (
                   <div className="absolute top-8 left-8">
-                    <span className="px-4 py-1.5 rounded-full border border-storefront-gold/30 bg-[#07090d]/60 backdrop-blur-md text-storefront-gold text-[10px] tracking-[0.2em] uppercase">
+                    <span className="px-4 py-1.5 rounded-full border border-storefront-gold/30 bg-[#07090d]/85 text-storefront-gold text-[10px] tracking-[0.2em] uppercase">
                       {(product.categories as any)?.name}
                     </span>
                   </div>
@@ -471,13 +471,13 @@ export default function StorefrontProduct() {
 
                 {images.length > 1 && (
                   <>
-                    <button onClick={prevImage} className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-[#07090d]/70 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-storefront-gold hover:text-[#07090d] text-storefront-text">
+                    <button onClick={prevImage} className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-[#07090d]/92 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-storefront-gold hover:text-[#07090d] text-storefront-text">
                       <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <button onClick={nextImage} className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-[#07090d]/70 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-storefront-gold hover:text-[#07090d] text-storefront-text">
+                    <button onClick={nextImage} className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-[#07090d]/92 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-storefront-gold hover:text-[#07090d] text-storefront-text">
                       <ChevronRight className="w-5 h-5" />
                     </button>
-                    <div className="absolute bottom-5 right-5 bg-[#07090d]/60 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] text-storefront-text/70 tracking-wider">
+                    <div className="absolute bottom-5 right-5 bg-[#07090d]/85 px-3 py-1 rounded-full text-[10px] text-storefront-text/70 tracking-wider">
                       {currentImage + 1} / {images.length}
                     </div>
                   </>
