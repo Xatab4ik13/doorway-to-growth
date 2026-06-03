@@ -699,8 +699,8 @@ export default function StorefrontProduct() {
                 </div>
               </div>
 
-              {/* ===== OPENING SYSTEMS ===== */}
-              <OpeningSystems />
+              {/* ===== OPENING SYSTEMS — only for door products ===== */}
+              {isDoorProduct && <OpeningSystems />}
 
 
               {sizes && sizes.length > 0 && (
