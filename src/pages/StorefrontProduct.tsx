@@ -275,8 +275,30 @@ export default function StorefrontProduct() {
 
   const specs = product?.specifications as Record<string, any> | null;
 
+  // ── Extract real configurator options from product data ──
+  // Show a section only when the product actually declares its options
+  // (via specs.{colors|glazing_options|edge_colors|molding_colors},
+  //  scalar specs.{color|glazing}, or nested variants[].{color|glazing|edge|molding}).
+  const variants: any[] = Array.isArray(specs?.variants) ? specs!.variants : [];
+  const collectFromSpecs = (
+    arrKey: string,
+    scalarKey: string | null,
+    variantKey: string,
+  ): string[] => {
+    const seen = new Set<string>();
+    const push = (v: any) => {
+      if (!v) return;
+      const s = typeof v === "string" ? v : v.name;
+      if (typeof s === "string" && s.trim()) seen.add(s.trim());
+    };
+    const arr = specs?.[arrKey];
+    if (Array.isArray(arr)) arr.forEach(push);
+    if (scalarKey && specs?.[scalarKey]) push(specs[scalarKey]);
+    variants.forEach((v) => push(v?.[variantKey]));
+    return Array.from(seen);
+  };
+
   // Colors derived from images that have a variant_key — these are real, image-bound colors.
-  // Fall back to MOCK_COLORS when no images are tagged, so legacy products still render swatches.
   const imageColors = useMemo(() => {
     const seen = new Set<string>();
     const out: { name: string; hex: string }[] = [];
@@ -290,8 +312,27 @@ export default function StorefrontProduct() {
     return out;
   }, [images]);
 
-  const colorSwatches = imageColors.length > 0 ? imageColors : MOCK_COLORS;
+  const specColorNames = collectFromSpecs("colors", "color", "color");
+  const colorSwatches: { name: string; hex: string }[] = imageColors.length > 0
+    ? imageColors
+    : specColorNames.map((name) => {
+        const mock = MOCK_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
+        return { name, hex: mock?.hex ?? "#2a2a2a" };
+      });
   const hasImageBoundColors = imageColors.length > 0;
+
+  const glazingItems = collectFromSpecs("glazing_options", "glazing", "glazing").map((name) => {
+    const mock = MOCK_GLAZING.find((g) => g.name.toLowerCase() === name.toLowerCase());
+    return { name, preview: mock?.preview ?? "#2a2a2a" };
+  });
+  const edgeItems = collectFromSpecs("edge_colors", null, "edge").map((name) => {
+    const mock = MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
+    return { name, hex: mock?.hex ?? "#2a2a2a" };
+  });
+  const moldingItems = collectFromSpecs("molding_colors", null, "molding").map((name) => {
+    const mock = MOCK_MOLDING_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
+    return { name, hex: mock?.hex ?? "#2a2a2a" };
+  });
 
   // Set initial selected color/glazing from specs
   useMemo(() => {
