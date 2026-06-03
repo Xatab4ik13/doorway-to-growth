@@ -520,16 +520,24 @@ export default function StorefrontProduct() {
               {product.rrp && Number(product.rrp) > 0 && (
                 <div className="flex items-baseline gap-4 mb-6">
                   <span className="text-[10px] font-light uppercase tracking-[0.25em] text-storefront-text/40">Стоимость от</span>
-                  <span className="text-5xl font-light text-storefront-gold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                  <span
+                    className="text-[44px] leading-none text-storefront-gold tabular-nums"
+                    style={{ fontFamily: "'Raleway', system-ui, sans-serif", fontWeight: 300, letterSpacing: "-0.01em" }}
+                  >
                     {Number(product.rrp).toLocaleString("ru-RU")} ₽
                   </span>
                 </div>
               )}
 
               {product.description && (
-                <p className="text-sm font-light leading-relaxed text-storefront-text/50 max-w-md mb-10">
-                  {product.description}
-                </p>
+                <div
+                  className="mb-10 rounded-2xl px-5 py-4 border border-storefront-gold/15 max-w-md"
+                  style={{ background: "linear-gradient(180deg, rgba(207,187,150,0.06) 0%, rgba(255,255,255,0.02) 100%)" }}
+                >
+                  <p className="text-[15px] font-light leading-[1.65] text-storefront-text/85">
+                    {product.description}
+                  </p>
+                </div>
               )}
 
 
