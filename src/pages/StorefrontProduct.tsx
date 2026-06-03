@@ -662,12 +662,12 @@ export default function StorefrontProduct() {
                 </motion.div>
               )}
 
-              {/* ===== PRICE + ADD TO CART ===== */}
+              {/* ===== PRICE SUMMARY (extras only) + CTA ===== */}
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.45 }}
-                className="mt-auto pt-4"
+                className="mt-auto pt-8 border-t border-white/5"
               >
                 {(() => {
                   const doorPrice = product.rrp ? Number(product.rrp) : 0;
@@ -676,48 +676,48 @@ export default function StorefrontProduct() {
                   const totalPrice = doorPrice + trimTotal + hwTotal;
                   const hasExtras = selectedTrim.size > 0 || selectedHardware.size > 0;
 
+                  if (!hasExtras || totalPrice <= 0) return null;
+
                   return (
-                    <>
-                      {totalPrice > 0 && (
-                        <div className="mb-5">
-                          {hasExtras && doorPrice > 0 && (
-                            <div className="text-[11px] text-storefront-muted mb-1">
-                              Дверь {doorPrice.toLocaleString("ru-RU")} ₽
-                              {trimTotal > 0 && ` + погонаж ${trimTotal.toLocaleString("ru-RU")} ₽`}
-                              {hwTotal > 0 && ` + фурнитура ${hwTotal.toLocaleString("ru-RU")} ₽`}
-                            </div>
-                          )}
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-[11px] uppercase tracking-widest text-storefront-muted">{hasExtras ? "итого" : "от"}</span>
-                            <span className="text-3xl font-bold text-storefront-text" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                              {totalPrice.toLocaleString("ru-RU")}
-                            </span>
-                            <span className="text-xl text-storefront-gold">₽</span>
-                          </div>
-                        </div>
-                      )}
-                    </>
+                    <div className="mb-6 flex items-baseline justify-between gap-4">
+                      <div className="text-[10px] text-storefront-text/40 font-light leading-relaxed">
+                        Дверь {doorPrice.toLocaleString("ru-RU")} ₽
+                        {trimTotal > 0 && <> + погонаж {trimTotal.toLocaleString("ru-RU")} ₽</>}
+                        {hwTotal > 0 && <> + фурнитура {hwTotal.toLocaleString("ru-RU")} ₽</>}
+                      </div>
+                      <div className="flex items-baseline gap-2 shrink-0">
+                        <span className="text-[10px] uppercase tracking-[0.25em] text-storefront-text/40">Итого</span>
+                        <span className="text-3xl font-light text-storefront-gold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                          {totalPrice.toLocaleString("ru-RU")} ₽
+                        </span>
+                      </div>
+                    </div>
                   );
                 })()}
 
                 <motion.button
                   onClick={handleAddAllToCart}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.96 }}
-                  className={`w-full font-bold text-[13px] uppercase tracking-wider py-4 rounded-xl transition-all flex items-center justify-center gap-3 relative overflow-hidden group ${
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`w-full py-5 rounded-full text-xs font-medium uppercase tracking-[0.3em] transition-all relative overflow-hidden group flex items-center justify-center gap-3 ${
                     isInCart
-                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                      : "bg-storefront-gold text-[#07090d] hover:brightness-110"
+                      ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                      : "bg-storefront-gold text-[#07090d] hover:brightness-110 shadow-[0_20px_50px_-10px_rgba(212,175,55,0.3)]"
                   }`}
                 >
                   {!isInCart && (
                     <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
                   )}
                   <span className="relative z-10 flex items-center gap-3">
-                    {isInCart ? <Check className="w-5 h-5" /> : <ShoppingCart className="w-5 h-5" />}
+                    {isInCart ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
                     {isInCart ? "В корзине" : (selectedTrim.size > 0 || selectedHardware.size > 0) ? "Добавить комплект" : "Добавить в корзину"}
                   </span>
                 </motion.button>
+                <p className="mt-5 text-center text-[10px] text-storefront-text/30 uppercase tracking-[0.3em] font-light">
+                  Персональный расчёт и замер — бесплатно
+                </p>
+              </motion.div>
+
               </motion.div>
             </motion.div>
           </div>
