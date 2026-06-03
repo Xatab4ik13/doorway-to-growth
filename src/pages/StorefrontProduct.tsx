@@ -683,6 +683,10 @@ export default function StorefrontProduct() {
                 </div>
               </div>
 
+              {/* ===== OPENING SYSTEMS ===== */}
+              <OpeningSystems />
+
+
               {sizes && sizes.length > 0 && (
                 <div className="mb-8">
                   <div className="flex items-center gap-3 mb-4">
