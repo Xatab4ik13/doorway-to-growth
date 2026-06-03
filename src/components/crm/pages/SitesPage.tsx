@@ -213,12 +213,18 @@ export function SitesPage() {
                           <MoreHorizontal className="h-4 w-4" />
                         </button>
                         {menuOpen === s.id && (
-                          <div className="absolute right-0 top-full mt-1 w-44 rounded-xl border border-border bg-card shadow-lg z-30 overflow-hidden">
+                          <div className="absolute right-0 top-full mt-1 w-48 rounded-xl border border-border bg-card shadow-lg z-30 overflow-hidden">
                             <button
                               onClick={(e) => { e.stopPropagation(); setAssignOpen(s); setMenuOpen(null); }}
                               className="flex w-full items-center gap-2 px-3 py-2.5 text-xs text-foreground hover:bg-muted/40 transition-colors"
                             >
                               <UserPlus className="h-3.5 w-3.5" /> Назначить партнёра
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setDomainOpen(s); setDomainValue(s.domain ?? ""); setDomainCheckResult(null); setMenuOpen(null); }}
+                              className="flex w-full items-center gap-2 px-3 py-2.5 text-xs text-foreground hover:bg-muted/40 transition-colors"
+                            >
+                              <Link2 className="h-3.5 w-3.5" /> {s.domain ? "Изменить домен" : "Привязать домен"}
                             </button>
                             <button
                               onClick={(e) => {
