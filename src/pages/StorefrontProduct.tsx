@@ -512,6 +512,34 @@ export default function StorefrontProduct() {
               transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
               className="lg:col-span-5 flex flex-col"
             >
+              {/* Sticky selection summary — appears once user picks anything */}
+              {(() => {
+                const pills: { label: string; value: string }[] = [];
+                if (selectedColor) pills.push({ label: "Покрытие", value: selectedColor });
+                if (selectedGlazing) pills.push({ label: "Стекло", value: selectedGlazing });
+                if (selectedEdge) pills.push({ label: "Кромка", value: selectedEdge });
+                if (selectedMolding) pills.push({ label: "Молдинг", value: selectedMolding });
+                if (selectedTrim.size > 0) pills.push({ label: "Погонаж", value: `${selectedTrim.size} поз.` });
+                if (selectedHardware.size > 0) pills.push({ label: "Фурнитура", value: `${selectedHardware.size} поз.` });
+                if (pills.length === 0) return null;
+                return (
+                  <div className="lg:sticky lg:top-4 z-20 mb-6 -mx-2 px-2 py-2.5 rounded-2xl bg-[#0c0e14]/95 border border-storefront-gold/15 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.8)]">
+                    <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+                      <span className="shrink-0 text-[9px] uppercase tracking-[0.2em] text-storefront-text/40 pl-1">Ваш выбор</span>
+                      {pills.map((p) => (
+                        <span
+                          key={p.label}
+                          className="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.06] text-[11px]"
+                        >
+                          <span className="text-storefront-text/40">{p.label}:</span>
+                          <span className="text-storefront-text/90">{p.value}</span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+
               {/* Title */}
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extralight tracking-tight text-storefront-text leading-[1.05] mb-6">
                 {product.name}
