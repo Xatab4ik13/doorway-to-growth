@@ -15,6 +15,15 @@ import coatingEnamel from "@/assets/materials/coating-enamel.jpg";
 import glassFrosted from "@/assets/materials/glass-frosted.jpg";
 import glassMirror from "@/assets/materials/glass-mirror.jpg";
 import glassLacobel from "@/assets/materials/glass-lacobel.jpg";
+import trimCasingTele from "@/assets/accessories/trim-casing-telescopic.png";
+import trimExtenderTele from "@/assets/accessories/trim-extender-telescopic.png";
+import trimCasingStraight from "@/assets/accessories/trim-casing-straight.png";
+import trimExtenderStraight from "@/assets/accessories/trim-extender-straight.png";
+import handleMorelli from "@/assets/accessories/handle-morelli.png";
+import handleRenz from "@/assets/accessories/handle-renz.png";
+import lockMagnetic from "@/assets/accessories/lock-magnetic.png";
+import lockBathroom from "@/assets/accessories/lock-bathroom.png";
+import hingesConcealed from "@/assets/accessories/hinges-concealed.png";
 
 // ── Material textures map ──
 type MaterialKey = "wood" | "softtouch" | "metal" | "enamel" | "frosted" | "mirror" | "lacobel" | "none";
