@@ -154,23 +154,81 @@ const MOCK_MOLDING_COLORS: { name: string; hex: string }[] = [
   { name: "Черный", hex: "#1A1A1A" },
 ];
 
-type TrimItem = { id: string; name: string; rrp: number; icon: "frame" | "architrave" | "platband" };
-type HardwareItem = { id: string; name: string; rrp: number; icon: "handle" | "lock" | "hinge" };
+type TrimItem = { id: string; name: string; rrp: number; image: string };
+type HardwareItem = { id: string; name: string; rrp: number; image: string };
 
 const MOCK_TRIM: TrimItem[] = [
-  { id: "trim-1", name: "Наличник телескопический", rrp: 850, icon: "frame" },
-  { id: "trim-2", name: "Добор телескопический", rrp: 1200, icon: "architrave" },
-  { id: "trim-3", name: "Наличник прямой", rrp: 600, icon: "platband" },
-  { id: "trim-4", name: "Добор прямой", rrp: 950, icon: "frame" },
+  { id: "trim-1", name: "Наличник телескопический", rrp: 850, image: trimCasingTele },
+  { id: "trim-2", name: "Добор телескопический", rrp: 1200, image: trimExtenderTele },
+  { id: "trim-3", name: "Наличник прямой", rrp: 600, image: trimCasingStraight },
+  { id: "trim-4", name: "Добор прямой", rrp: 950, image: trimExtenderStraight },
 ];
 
 const MOCK_HARDWARE: HardwareItem[] = [
-  { id: "hw-1", name: "Ручка MORELLI", rrp: 2400, icon: "handle" },
-  { id: "hw-2", name: "Замок магнитный", rrp: 1800, icon: "lock" },
-  { id: "hw-3", name: "Петли скрытые (2 шт)", rrp: 3200, icon: "hinge" },
-  { id: "hw-4", name: "Ручка RENZ", rrp: 1600, icon: "handle" },
-  { id: "hw-5", name: "Замок сантехнический", rrp: 1200, icon: "lock" },
+  { id: "hw-1", name: "Ручка MORELLI", rrp: 2400, image: handleMorelli },
+  { id: "hw-2", name: "Замок магнитный", rrp: 1800, image: lockMagnetic },
+  { id: "hw-3", name: "Петли скрытые (2 шт)", rrp: 3200, image: hingesConcealed },
+  { id: "hw-4", name: "Ручка RENZ", rrp: 1600, image: handleRenz },
+  { id: "hw-5", name: "Замок сантехнический", rrp: 1200, image: lockBathroom },
 ];
+
+// Premium photo card for trim / hardware accessory selection.
+// Image fills upper area on a dark backdrop, name + price + add/check sit below.
+function AccessoryCard({
+  name,
+  rrp,
+  image,
+  active,
+  onClick,
+}: {
+  name: string;
+  rrp: number;
+  image: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      aria-pressed={active}
+      className={`group relative flex flex-col rounded-2xl overflow-hidden text-left transition-all duration-300 ease-out ${
+        active
+          ? "ring-2 ring-storefront-gold shadow-[0_10px_30px_-8px_rgba(207,187,150,0.35)]"
+          : "ring-1 ring-white/8 hover:ring-white/20 shadow-[0_6px_18px_-8px_rgba(0,0,0,0.7)]"
+      }`}
+    >
+      {/* Photo */}
+      <div className="relative aspect-[5/4] bg-[#0c0e14] overflow-hidden">
+        <img
+          src={image}
+          alt={name}
+          loading="lazy"
+          draggable={false}
+          className="absolute inset-0 w-full h-full object-contain p-4 transition-transform duration-500 ease-out group-hover:scale-[1.06]"
+        />
+        {/* Add / Check badge */}
+        <span
+          className={`absolute top-2.5 right-2.5 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${
+            active
+              ? "bg-storefront-gold text-[#07090d]"
+              : "bg-[#07090d]/70 backdrop-blur-sm text-storefront-text/80 group-hover:bg-storefront-gold group-hover:text-[#07090d]"
+          }`}
+        >
+          {active ? <Check className="w-3.5 h-3.5" strokeWidth={3} /> : <Plus className="w-3.5 h-3.5" />}
+        </span>
+      </div>
+      {/* Footer */}
+      <div className={`px-3 py-2.5 transition-colors ${active ? "bg-storefront-gold/[0.08]" : "bg-white/[0.02]"}`}>
+        <div className={`text-[12px] font-medium leading-tight line-clamp-2 ${active ? "text-storefront-text" : "text-storefront-text/85"}`}>
+          {name}
+        </div>
+        <div className="text-[11px] text-storefront-gold/80 mt-1 tracking-wide">
+          +{rrp.toLocaleString("ru-RU")} ₽
+        </div>
+      </div>
+    </button>
+  );
+}
 
 export default function StorefrontProduct() {
   const { slug: urlSlug, productSlug } = useParams<{ slug: string; productSlug: string }>();
