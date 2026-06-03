@@ -748,7 +748,10 @@ export default function StorefrontProduct() {
                       </div>
                       <div className="flex items-baseline gap-2 shrink-0">
                         <span className="text-[10px] uppercase tracking-[0.25em] text-storefront-text/40">Итого</span>
-                        <span className="text-3xl font-light text-storefront-gold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                        <span
+                          className="text-[30px] leading-none text-storefront-gold tabular-nums"
+                          style={{ fontFamily: "'Raleway', system-ui, sans-serif", fontWeight: 300, letterSpacing: "-0.01em" }}
+                        >
                           {totalPrice.toLocaleString("ru-RU")} ₽
                         </span>
                       </div>
@@ -756,24 +759,17 @@ export default function StorefrontProduct() {
                   );
                 })()}
 
-                <motion.button
+                <button
                   onClick={handleAddAllToCart}
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`w-full py-5 rounded-full text-xs font-medium uppercase tracking-[0.3em] transition-all relative overflow-hidden group flex items-center justify-center gap-3 ${
+                  className={`w-full py-5 rounded-full text-xs font-medium uppercase tracking-[0.3em] transition-[transform,filter] duration-200 active:scale-[0.985] flex items-center justify-center gap-3 ${
                     isInCart
                       ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
                       : "bg-storefront-gold text-[#07090d] hover:brightness-110 shadow-[0_20px_50px_-10px_rgba(212,175,55,0.3)]"
                   }`}
                 >
-                  {!isInCart && (
-                    <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-                  )}
-                  <span className="relative z-10 flex items-center gap-3">
-                    {isInCart ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
-                    {isInCart ? "В корзине" : (selectedTrim.size > 0 || selectedHardware.size > 0) ? "Добавить комплект" : "Добавить в корзину"}
-                  </span>
-                </motion.button>
+                  {isInCart ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
+                  {isInCart ? "В корзине" : (selectedTrim.size > 0 || selectedHardware.size > 0) ? "Добавить комплект" : "Добавить в корзину"}
+                </button>
                 <p className="mt-5 text-center text-[10px] text-storefront-text/30 uppercase tracking-[0.3em] font-light">
                   Персональный расчёт и замер — бесплатно
                 </p>
