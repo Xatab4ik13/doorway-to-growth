@@ -367,55 +367,16 @@ export default function StorefrontCatalog() {
                   const catName = getCategoryName(product.category_id);
 
                   return (
-                    <motion.div
+                    <ProductCard
                       key={product.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.25, delay: Math.min(i * 0.03, 0.3) }}
-                      className="group"
-                    >
-                      <Link
-                        to={`/store/${slug}/product/${product.slug}`}
-                        className="block"
-                      >
-                        {/* Image */}
-                        <div className="relative overflow-hidden bg-[#0c0e14] flex items-center justify-center" style={{ minHeight: "280px" }}>
-                          {img ? (
-                            <img
-                              src={img}
-                              alt={product.name}
-                              loading="lazy"
-                              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-[#0f1218]">
-                              <span className="text-storefront-muted/20 text-5xl font-bold">B</span>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Info */}
-                        <div className="pt-3">
-                          {catName && (
-                            <span className="text-[10px] uppercase tracking-[0.15em] text-storefront-muted/60 block mb-1">
-                              {catName}
-                            </span>
-                          )}
-                          <h3 className="text-xs font-semibold text-storefront-text uppercase tracking-wider leading-snug mb-1 line-clamp-2">
-                            {product.name}
-                          </h3>
-                          {product.rrp && (
-                            <p className="text-sm font-medium text-storefront-text">
-                              {Number(product.rrp).toLocaleString("ru-RU")} ₽
-                            </p>
-                          )}
-                        </div>
-                      </Link>
-
-                      {/* Add to cart button */}
-                      <CatalogCartButton product={product} img={img} siteId={site?.id} />
-                    </motion.div>
+                      product={product}
+                      img={img}
+                      catName={catName}
+                      slug={slug}
+                      siteId={site?.id}
+                    />
                   );
+
                 })}
               </div>
 
