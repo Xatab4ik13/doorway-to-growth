@@ -56,14 +56,14 @@ export function HeroSection({ site, banners }: Props) {
       {/* === GOLD L-SHAPE: sidebar + nav tab === */}
       <motion.div
         className="absolute left-0 top-0 bottom-0 z-20 hidden lg:block"
-        style={{ width: "820px" }}
+        style={{ width: "1020px" }}
         initial={{ x: -260 }}
         animate={{ x: 0 }}
         transition={{ duration: 0.8, ease: EASE_SMOOTH, delay: 0.1 }}
       >
         <svg
           className="absolute inset-0 w-full h-full"
-          viewBox="0 0 820 900"
+          viewBox="0 0 1020 900"
           preserveAspectRatio="none"
           xmlns="http://www.w3.org/2000/svg"
         >
@@ -82,9 +82,9 @@ export function HeroSection({ site, banners }: Props) {
           <path
             d={`
               M 0 0
-              L 780 0
-              L 780 16
-              Q 780 56, 740 56
+              L 980 0
+              L 980 16
+              Q 980 56, 940 56
               L 308 56
               Q 260 56, 260 104
               L 260 852
