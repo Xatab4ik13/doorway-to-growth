@@ -5,6 +5,7 @@ import { useStorefrontProducts } from "@/hooks/useStorefrontData";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight, Ruler, ShoppingCart, Check, Plus, DoorOpen, Lock, CircleDot } from "lucide-react";
 import { useCartStore } from "@/stores/useCartStore";
@@ -511,6 +512,34 @@ export default function StorefrontProduct() {
               transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
               className="lg:col-span-5 flex flex-col"
             >
+              {/* Sticky selection summary — appears once user picks anything */}
+              {(() => {
+                const pills: { label: string; value: string }[] = [];
+                if (selectedColor) pills.push({ label: "Покрытие", value: selectedColor });
+                if (selectedGlazing) pills.push({ label: "Стекло", value: selectedGlazing });
+                if (selectedEdge) pills.push({ label: "Кромка", value: selectedEdge });
+                if (selectedMolding) pills.push({ label: "Молдинг", value: selectedMolding });
+                if (selectedTrim.size > 0) pills.push({ label: "Погонаж", value: `${selectedTrim.size} поз.` });
+                if (selectedHardware.size > 0) pills.push({ label: "Фурнитура", value: `${selectedHardware.size} поз.` });
+                if (pills.length === 0) return null;
+                return (
+                  <div className="lg:sticky lg:top-4 z-20 mb-6 -mx-2 px-2 py-2.5 rounded-2xl bg-[#0c0e14]/95 border border-storefront-gold/15 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.8)]">
+                    <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+                      <span className="shrink-0 text-[9px] uppercase tracking-[0.2em] text-storefront-text/40 pl-1">Ваш выбор</span>
+                      {pills.map((p) => (
+                        <span
+                          key={p.label}
+                          className="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.06] text-[11px]"
+                        >
+                          <span className="text-storefront-text/40">{p.label}:</span>
+                          <span className="text-storefront-text/90">{p.value}</span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+
               {/* Title */}
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extralight tracking-tight text-storefront-text leading-[1.05] mb-6">
                 {product.name}
@@ -722,6 +751,85 @@ export default function StorefrontProduct() {
                   </div>
                 </motion.div>
               )}
+
+              {/* ===== INFO ACCORDION ===== */}
+              <div className="mb-8">
+                <Accordion type="single" collapsible className="border-y border-white/5">
+                  {(() => {
+                    const reserved = new Set(["color", "glazing", "sizes"]);
+                    const specEntries = specs
+                      ? Object.entries(specs).filter(([k, v]) => !reserved.has(k) && v != null && typeof v !== "object")
+                      : [];
+                    return specEntries.length > 0 ? (
+                      <AccordionItem value="specs" className="border-b border-white/5">
+                        <AccordionTrigger className="text-[12px] uppercase tracking-[0.2em] text-storefront-text/80 hover:no-underline font-medium">
+                          Характеристики
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <dl className="grid grid-cols-1 gap-y-2.5 text-[13px] font-light">
+                            {specEntries.map(([k, v]) => (
+                              <div key={k} className="flex justify-between gap-4 border-b border-white/[0.04] pb-2 last:border-0">
+                                <dt className="text-storefront-text/50 capitalize">{k}</dt>
+                                <dd className="text-storefront-text/90 text-right">{String(v)}</dd>
+                              </div>
+                            ))}
+                          </dl>
+                        </AccordionContent>
+                      </AccordionItem>
+                    ) : null;
+                  })()}
+
+                  <AccordionItem value="construction" className="border-b border-white/5">
+                    <AccordionTrigger className="text-[12px] uppercase tracking-[0.2em] text-storefront-text/80 hover:no-underline font-medium">
+                      Конструкция и материалы
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <p className="text-[13px] font-light leading-relaxed text-storefront-text/70">
+                        Каркас из массива хвойных пород, заполнение — экологичный сотовый наполнитель.
+                        Облицовка — экошпон премиум-класса с микротекстурой. Кромка алюминиевая по периметру,
+                        скрытые петли, магнитный замок в стандартной комплектации.
+                      </p>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="care" className="border-b border-white/5">
+                    <AccordionTrigger className="text-[12px] uppercase tracking-[0.2em] text-storefront-text/80 hover:no-underline font-medium">
+                      Уход
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <ul className="text-[13px] font-light leading-relaxed text-storefront-text/70 space-y-1.5 list-disc list-inside marker:text-storefront-gold/60">
+                        <li>Протирайте мягкой влажной тканью без абразивов</li>
+                        <li>Избегайте растворителей и спиртосодержащих средств</li>
+                        <li>Поддерживайте влажность в помещении 40–60%</li>
+                      </ul>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="delivery" className="border-b border-white/5">
+                    <AccordionTrigger className="text-[12px] uppercase tracking-[0.2em] text-storefront-text/80 hover:no-underline font-medium">
+                      Доставка и оплата
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <p className="text-[13px] font-light leading-relaxed text-storefront-text/70">
+                        Срок изготовления — от 3 до 5 рабочих дней. Доставка по {site.city ?? "городу"} —
+                        от 1500 ₽. Оплата при получении или по счёту. Возможна рассрочка через партнёрские банки.
+                      </p>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="warranty" className="border-b-0">
+                    <AccordionTrigger className="text-[12px] uppercase tracking-[0.2em] text-storefront-text/80 hover:no-underline font-medium">
+                      Гарантия
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <p className="text-[13px] font-light leading-relaxed text-storefront-text/70">
+                        10 лет на конструкцию, 5 лет на покрытие, 2 года на фурнитуру.
+                        Бесплатный сервисный выезд в течение всего гарантийного срока.
+                      </p>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
 
               {/* ===== PRICE SUMMARY (extras only) + CTA ===== */}
               <motion.div
