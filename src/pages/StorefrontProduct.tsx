@@ -356,10 +356,10 @@ export default function StorefrontProduct() {
                     <span className="text-[12px] text-storefront-gold/80">{selectedColor || "—"}</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {MOCK_COLORS.map((c) => (
+                    {colorSwatches.map((c) => (
                       <button
                         key={c.name}
-                        onClick={() => setSelectedColor(c.name)}
+                        onClick={() => handleSelectColor(c.name)}
                         title={c.name}
                         className={`group relative w-11 h-11 rounded-xl border-2 transition-all duration-200 hover:scale-110 ${
                           selectedColor === c.name
