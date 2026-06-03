@@ -5,15 +5,25 @@ export function useStorefrontProducts(siteId: string | undefined) {
   return useQuery({
     queryKey: ["storefront-products", siteId],
     queryFn: async () => {
-      // Fetch products with only primary image to keep payload tiny
-      const { data, error } = await supabase
-        .from("products")
-        .select("id, slug, name, rrp, sort_order, category_id, specifications, categories(name, slug), product_images(url, is_primary, sort_order, variant_key)")
-        .eq("is_active", true)
-        .order("sort_order", { ascending: true })
-        .limit(500);
-      if (error) throw error;
-      return data ?? [];
+      // Fetch all active products in chunks to bypass PostgREST default 1000-row limit
+      const PAGE = 1000;
+      const select =
+        "id, slug, name, rrp, sort_order, category_id, specifications, categories(name, slug), product_images(url, is_primary, sort_order, variant_key)";
+      const all: any[] = [];
+      for (let from = 0; ; from += PAGE) {
+        const { data, error } = await supabase
+          .from("products")
+          .select(select)
+          .eq("is_active", true)
+          .order("sort_order", { ascending: true })
+          .order("id", { ascending: true })
+          .range(from, from + PAGE - 1);
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        all.push(...data);
+        if (data.length < PAGE) break;
+      }
+      return all;
     },
     enabled: !!siteId,
     staleTime: 5 * 60 * 1000,
