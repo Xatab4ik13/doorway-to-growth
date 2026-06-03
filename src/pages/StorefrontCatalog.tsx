@@ -1,16 +1,16 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, memo } from "react";
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
-import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ChevronDown, ShoppingCart, Check, SlidersHorizontal, X } from "lucide-react";
 import brandoorsLogo from "@/assets/logo.png";
 import { useCartStore } from "@/stores/useCartStore";
 
 const ITEMS_PER_PAGE = 16;
+
 
 export default function StorefrontCatalog() {
   const { slug: urlSlug } = useParams<{ slug: string }>();
