@@ -23,7 +23,19 @@ const SPEC_LABELS: Record<string, string> = {
   sizes_order_note: "Размеры (под заказ)",
 };
 
-const COMPLEX_KEYS = new Set(["sizes", "variants"]);
+const COMPLEX_KEYS = new Set(["sizes", "variants", "colors"]);
+
+// Палитра покрытий Brandoors — соответствует цветам, доступным в каталоге
+const COATING_PALETTE: { name: string; hex: string }[] = [
+  { name: "Аляска", hex: "#F5F0E8" },
+  { name: "Магнолия", hex: "#F0E6D4" },
+  { name: "Манхэттен", hex: "#B8AFA4" },
+  { name: "Силк грей", hex: "#9E9A94" },
+  { name: "Варм грей", hex: "#A89B8C" },
+  { name: "Антрацит", hex: "#3A3A3A" },
+  { name: "Blue", hex: "#1B3A5C" },
+  { name: "Green", hex: "#2A4A3E" },
+];
 
 export function ProductDetail({ product, onClose }: ProductDetailProps) {
   const [activeImage, setActiveImage] = useState(0);
@@ -145,47 +157,85 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
                 )}
               </div>
 
-              {/* Variant key (color/glazing name) for active image */}
+              {/* Привязка фото к цвету покрытия — нативная палитра */}
               {currentImage && currentImage.id !== "legacy" && (
-                <div className="mt-3">
-                  <label className="block text-[11px] uppercase tracking-wider text-muted-foreground mb-1">
-                    Привязка к варианту (цвет покрытия)
-                  </label>
-                  <input
-                    type="text"
-                    defaultValue={(currentImage as any).variant_key ?? ""}
-                    key={currentImage.id}
-                    onBlur={(e) => {
-                      const v = e.target.value.trim();
-                      const prev = (currentImage as any).variant_key ?? "";
-                      if (v !== prev) setVariantKey(currentImage.id, v || null);
-                    }}
-                    placeholder="например: Аляска, Антрацит — пусто = общая"
-                    className={inputCls}
-                  />
+                <div className="mt-3 rounded-2xl border border-border bg-muted/30 p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                      Цвет покрытия на фото
+                    </label>
+                    {(currentImage as any).variant_key && (
+                      <button
+                        onClick={() => setVariantKey(currentImage.id, null)}
+                        className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        Сбросить
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {COATING_PALETTE.map((c) => {
+                      const active = ((currentImage as any).variant_key ?? "").toLowerCase() === c.name.toLowerCase();
+                      return (
+                        <button
+                          key={c.name}
+                          onClick={() => setVariantKey(currentImage.id, active ? null : c.name)}
+                          title={c.name}
+                          className={`group flex items-center gap-1.5 rounded-full border pl-1 pr-2.5 py-1 text-[11px] font-medium transition-all active:scale-95 ${
+                            active
+                              ? "border-foreground bg-foreground text-primary-foreground"
+                              : "border-border bg-background text-foreground hover:border-foreground/40"
+                          }`}
+                        >
+                          <span
+                            className="h-4 w-4 rounded-full border border-black/10 shrink-0"
+                            style={{ backgroundColor: c.hex }}
+                          />
+                          {c.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {(currentImage as any).variant_key &&
+                    !COATING_PALETTE.some((c) => c.name.toLowerCase() === ((currentImage as any).variant_key ?? "").toLowerCase()) && (
+                      <div className="mt-2 text-[11px] text-muted-foreground">
+                        Своё значение: <span className="font-medium text-foreground">{(currentImage as any).variant_key}</span>
+                      </div>
+                    )}
                 </div>
               )}
 
               {/* Thumbnails + upload button */}
               <div className="flex gap-2 mt-3 overflow-x-auto">
-                {allImages.map((img, i) => (
-                  <div key={img.id} className="relative group shrink-0">
-                    <button
-                      onClick={() => setActiveImage(i)}
-                      className={`h-14 w-14 rounded-xl overflow-hidden transition-all active:scale-95 ${activeImage === i ? "ring-2 ring-foreground" : "hover:ring-1 hover:ring-border"}`}
-                    >
-                      <img src={img.url} alt="" className="w-full h-full object-cover" />
-                    </button>
-                    {img.id !== "legacy" && (
+                {allImages.map((img, i) => {
+                  const vk = (img as any).variant_key as string | undefined;
+                  const swatch = vk ? COATING_PALETTE.find((c) => c.name.toLowerCase() === vk.toLowerCase()) : null;
+                  return (
+                    <div key={img.id} className="relative group shrink-0">
                       <button
-                        onClick={() => deleteImage(img.id)}
-                        className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => setActiveImage(i)}
+                        className={`h-14 w-14 rounded-xl overflow-hidden transition-all active:scale-95 ${activeImage === i ? "ring-2 ring-foreground" : "hover:ring-1 hover:ring-border"}`}
                       >
-                        <X className="h-3 w-3" />
+                        <img src={img.url} alt="" className="w-full h-full object-cover" />
                       </button>
-                    )}
-                  </div>
-                ))}
+                      {vk && (
+                        <span
+                          title={vk}
+                          className="absolute -bottom-1 -left-1 h-4 w-4 rounded-full border-2 border-card shadow-sm"
+                          style={{ backgroundColor: swatch?.hex ?? "#999" }}
+                        />
+                      )}
+                      {img.id !== "legacy" && (
+                        <button
+                          onClick={() => deleteImage(img.id)}
+                          className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   className="h-14 w-14 rounded-xl border-2 border-dashed border-border flex items-center justify-center text-muted-foreground hover:border-foreground hover:text-foreground transition-colors active:scale-95 shrink-0"

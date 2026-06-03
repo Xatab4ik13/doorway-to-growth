@@ -14,11 +14,11 @@ const MOCK_COLORS: { name: string; hex: string }[] = [
   { name: "Аляска", hex: "#F5F0E8" },
   { name: "Магнолия", hex: "#F0E6D4" },
   { name: "Манхэттен", hex: "#B8AFA4" },
-  { name: "Deep Blue", hex: "#1B3A5C" },
-  { name: "Deep Green", hex: "#2A4A3E" },
+  { name: "Blue", hex: "#1B3A5C" },
+  { name: "Green", hex: "#2A4A3E" },
   { name: "Антрацит", hex: "#3A3A3A" },
   { name: "Силк грей", hex: "#9E9A94" },
-  { name: "Милк", hex: "#FEFCF5" },
+  { name: "Варм грей", hex: "#A89B8C" },
 ];
 
 const MOCK_GLAZING: { name: string; preview: string }[] = [
