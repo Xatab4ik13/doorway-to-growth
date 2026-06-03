@@ -854,12 +854,7 @@ export default function StorefrontProduct() {
 
           {/* ===== SIMILAR PRODUCTS ===== */}
           {similar.length > 0 && (
-            <motion.section
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.5 }}
-              className="mt-20"
-            >
+            <section className="mt-20">
               <div className="flex items-center gap-4 mb-8">
                 <div className="w-10 h-[1px] bg-storefront-gold/40" />
                 <h2 className="text-xl sm:text-2xl font-bold text-storefront-text uppercase tracking-wide">
@@ -868,34 +863,33 @@ export default function StorefrontProduct() {
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {similar.map((p: any, i: number) => {
+                {similar.map((p: any) => {
                   const img = getPrimaryImage(p);
                   return (
-                    <motion.div key={p.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 + i * 0.05 }}>
-                      <Link
-                        to={`/store/${slug}/product/${p.slug}`}
-                        className="group block"
-                        onClick={() => { setCurrentImage(0); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                      >
-                        <div className="relative overflow-hidden bg-[#0c0e14] flex items-center justify-center rounded-2xl" style={{ minHeight: "250px" }}>
-                          {img ? (
-                            <img src={img} alt={p.name} loading="lazy" className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <span className="text-storefront-muted/15 text-5xl font-bold">B</span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="pt-3">
-                          <h3 className="text-xs font-semibold text-storefront-text uppercase tracking-wider leading-snug mb-1 line-clamp-2">{p.name}</h3>
-                          {p.rrp && <p className="text-sm font-medium text-storefront-text">{Number(p.rrp).toLocaleString("ru-RU")} ₽</p>}
-                        </div>
-                      </Link>
-                    </motion.div>
+                    <Link
+                      key={p.id}
+                      to={`/store/${slug}/product/${p.slug}`}
+                      className="group block"
+                      onClick={() => { setCurrentImage(0); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    >
+                      <div className="relative overflow-hidden bg-[#0c0e14] flex items-center justify-center rounded-2xl" style={{ minHeight: "250px" }}>
+                        {img ? (
+                          <img src={img} alt={p.name} loading="lazy" className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <span className="text-storefront-muted/15 text-5xl font-bold">B</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="pt-3">
+                        <h3 className="text-xs font-semibold text-storefront-text uppercase tracking-wider leading-snug mb-1 line-clamp-2">{p.name}</h3>
+                        {p.rrp && <p className="text-sm font-medium text-storefront-text tabular-nums">{Number(p.rrp).toLocaleString("ru-RU")} ₽</p>}
+                      </div>
+                    </Link>
                   );
                 })}
               </div>
-            </motion.section>
+            </section>
           )}
 
           {/* Back to catalog */}
