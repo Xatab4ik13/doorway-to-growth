@@ -732,7 +732,11 @@ export default function StorefrontProduct() {
               <div className="mb-8">
                 <Accordion type="single" collapsible className="border-y border-white/5">
                   {(() => {
-                    const reserved = new Set(["color", "glazing", "sizes"]);
+                    const reserved = new Set([
+                      "color", "glazing", "sizes", "collection",
+                      "markup_height", "markup_width", "markup_h", "markup_w",
+                      "sizes_order_note", "sizes_stock_note",
+                    ]);
                     const specEntries = specs
                       ? Object.entries(specs).filter(([k, v]) => !reserved.has(k) && v != null && typeof v !== "object")
                       : [];
