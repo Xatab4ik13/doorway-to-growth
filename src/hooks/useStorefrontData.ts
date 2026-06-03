@@ -100,5 +100,7 @@ export function useStorefrontCategories() {
       if (error) throw error;
       return data ?? [];
     },
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 }
