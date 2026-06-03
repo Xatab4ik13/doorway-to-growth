@@ -24,6 +24,7 @@ import handleRenz from "@/assets/accessories/handle-renz.png";
 import lockMagnetic from "@/assets/accessories/lock-magnetic.png";
 import lockBathroom from "@/assets/accessories/lock-bathroom.png";
 import hingesConcealed from "@/assets/accessories/hinges-concealed.png";
+import OpeningSystems from "@/components/storefront/OpeningSystems";
 
 // ── Material textures map ──
 type MaterialKey = "wood" | "softtouch" | "metal" | "enamel" | "frosted" | "mirror" | "lacobel" | "none";
