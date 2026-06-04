@@ -1,11 +1,5 @@
 import { memo, useState, useRef, useEffect } from "react";
 import { DoorOpen } from "lucide-react";
-import invisibleAsset from "@/assets/opening-systems/invisible.mp4.asset.json";
-import compactAsset from "@/assets/opening-systems/compact.mp4.asset.json";
-import magicAsset from "@/assets/opening-systems/magic.mp4.asset.json";
-import penalAsset from "@/assets/opening-systems/penal.mp4.asset.json";
-import cupeOneAsset from "@/assets/opening-systems/cupe-one.mp4.asset.json";
-import cupeTwoAsset from "@/assets/opening-systems/cupe-two.mp4.asset.json";
 
 type System = {
   id: string;
@@ -21,42 +15,42 @@ const SYSTEMS: System[] = [
     name: "Invisible",
     tag: "Скрытая",
     description: "Скрытый короб заподлицо со стеной. Полотно становится продолжением плоскости интерьера.",
-    video: invisibleAsset.url,
+    video: "/opening-systems/invisible.mp4",
   },
   {
     id: "compact",
     name: "Compact 180°",
     tag: "Распашная",
     description: "Классическая распашная система с углом открывания до 180°. Универсальное решение для любой геометрии.",
-    video: compactAsset.url,
+    video: "/opening-systems/compact.mp4",
   },
   {
     id: "magic",
     name: "Magic",
     tag: "Реверсивная",
     description: "Реверсивный механизм — одна дверь открывается в обе стороны. Магия без видимых деталей.",
-    video: magicAsset.url,
+    video: "/opening-systems/magic.mp4",
   },
   {
     id: "penal",
     name: "Пенал",
     tag: "Откатная",
     description: "Полотно уходит внутрь стены. Экономия пространства без визуального компромисса.",
-    video: penalAsset.url,
+    video: "/opening-systems/penal.mp4",
   },
   {
     id: "cupe-one",
     name: "Купе",
     tag: "Одностворчатая",
     description: "Раздвижная система по направляющей вдоль стены. Минимум места — максимум характера.",
-    video: cupeOneAsset.url,
+    video: "/opening-systems/cupe-one.mp4",
   },
   {
     id: "cupe-two",
     name: "Купе 2",
     tag: "Двустворчатая",
     description: "Две створки расходятся в стороны. Идеально для широких проёмов и зонирования.",
-    video: cupeTwoAsset.url,
+    video: "/opening-systems/cupe-two.mp4",
   },
 ];
 
