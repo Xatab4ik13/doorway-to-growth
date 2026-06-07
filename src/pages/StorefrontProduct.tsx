@@ -258,6 +258,57 @@ export default function StorefrontProduct() {
   const [selectedMolding, setSelectedMolding] = useState<string | null>(null);
   const [selectedTrim, setSelectedTrim] = useState<Set<string>>(new Set());
   const [selectedHardware, setSelectedHardware] = useState<Set<string>>(new Set());
+  const [hardwareTab, setHardwareTab] = useState<string>("all");
+
+  // ── Build real Погонаж / Фурнитура lists from DB ──
+  // Walk parent_id chain to find each product's root category, then pick those
+  // rooted in 'pogonazh' / 'furnitura'.
+  const rootSlugById = useMemo(() => {
+    const byId = new Map((allCategories as any[]).map((c) => [c.id, c]));
+    const cache = new Map<string, string | null>();
+    const resolve = (id: string | null | undefined): string | null => {
+      if (!id) return null;
+      if (cache.has(id)) return cache.get(id)!;
+      let cur: any = byId.get(id);
+      while (cur?.parent_id) cur = byId.get(cur.parent_id);
+      const slug = cur?.slug ?? null;
+      cache.set(id, slug);
+      return slug;
+    };
+    const map = new Map<string, string | null>();
+    for (const p of products as any[]) map.set(p.id, resolve(p.category_id));
+    return map;
+  }, [products, allCategories]);
+
+  const toAccessoryItem = (p: any): AccessoryItem => {
+    const primary = p.product_images?.find((i: any) => i.is_primary);
+    const img = primary?.url || p.product_images?.[0]?.url || null;
+    return {
+      id: p.id,
+      name: p.name,
+      rrp: p.rrp ? Number(p.rrp) : null,
+      image: img,
+      slug: p.slug,
+    };
+  };
+
+  const realTrim = useMemo<AccessoryItem[]>(() => {
+    return (products as any[])
+      .filter((p) => rootSlugById.get(p.id) === "pogonazh")
+      .map(toAccessoryItem);
+  }, [products, rootSlugById]);
+
+  const realHardware = useMemo<AccessoryItem[]>(() => {
+    return (products as any[])
+      .filter((p) => rootSlugById.get(p.id) === "furnitura")
+      .map(toAccessoryItem);
+  }, [products, rootSlugById]);
+
+  const filteredHardware = useMemo<AccessoryItem[]>(() => {
+    const tab = HARDWARE_TABS.find((t) => t.key === hardwareTab) || HARDWARE_TABS[0];
+    if (tab.key === "all") return realHardware;
+    return realHardware.filter((h) => tab.match(h.name));
+  }, [realHardware, hardwareTab]);
 
   const primaryImg = product?.product_images?.find((i: any) => i.is_primary)?.url || product?.product_images?.[0]?.url;
   useDocumentMeta({
