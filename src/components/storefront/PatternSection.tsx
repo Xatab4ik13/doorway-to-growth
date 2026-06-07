@@ -14,7 +14,7 @@ import colUlichnye from "@/assets/collections/ulichnye.webp";
 type CollectionItem = { src: string; name: string };
 
 const ENTRANCE_COLLECTIONS: CollectionItem[] = [
-  { src: colKvartirnye, name: "Квартирные двери" },
+  { src: colKvartirnye, name: "Входные двери" },
   { src: colUlichnye, name: "Двери с терморазрывом" },
 ];
 
