@@ -11,7 +11,8 @@ export function CartButton() {
       onClick={toggleCart}
       whileHover={{ scale: 1.08 }}
       whileTap={{ scale: 0.92 }}
-      className="relative w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300"
+      aria-label="Корзина"
+      className="relative w-12 h-12 -mr-1 rounded-xl flex items-center justify-center transition-all duration-300"
       style={{
         background: count > 0
           ? "linear-gradient(135deg, rgba(207,187,150,0.15) 0%, rgba(207,187,150,0.05) 100%)"
@@ -21,7 +22,7 @@ export function CartButton() {
           : "1px solid rgba(255,255,255,0.06)",
       }}
     >
-      <ShoppingBag className="w-[22px] h-[22px] text-storefront-gold" />
+      <ShoppingBag className="w-[26px] h-[26px] text-storefront-gold" strokeWidth={1.5} />
 
       {/* Badge */}
       <AnimatePresence>
