@@ -754,7 +754,7 @@ const ProductCard = memo(function ProductCard({
   return (
     <div className="group">
       <Link to={`/store/${slug}/product/${product.slug}`} className="block">
-        <div className="relative overflow-hidden bg-[#0c0e14] flex items-center justify-center aspect-[4/5]">
+        <div className="relative overflow-hidden bg-[#0c0e14] flex items-center justify-center aspect-[4/5] rounded-2xl">
           {img ? (
             <img
               src={img}
@@ -766,7 +766,7 @@ const ProductCard = memo(function ProductCard({
               className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-[#0f1218]">
+            <div className="w-full h-full flex items-center justify-center bg-[#0f1218] rounded-2xl">
               <span className="text-storefront-muted/20 text-5xl font-bold">B</span>
             </div>
           )}
