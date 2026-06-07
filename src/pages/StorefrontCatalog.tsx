@@ -306,8 +306,9 @@ export default function StorefrontCatalog() {
 
   return (
     <StorefrontLayout site={site}>
-      <div className="min-h-screen pt-[68px] md:pt-0 bg-[#07090d]">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 md:py-12">
+      <div className="min-h-screen pt-[68px] md:pt-0 bg-[#07090d] overflow-x-hidden">
+        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 py-8 md:py-12 min-w-0">
+
           {/* Breadcrumbs */}
           <div className="flex items-center gap-2 mb-6 text-xs flex-wrap">
             <Link to={`/store/${slug}`} className="uppercase tracking-[0.15em] text-storefront-muted hover:text-storefront-gold transition-colors">
@@ -819,13 +820,13 @@ function CatalogCartButton({
           type: "door",
         });
       }}
-      className={`mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-[11px] uppercase tracking-wider font-semibold transition-all duration-300 active:scale-[0.96] ${
+      className={`mt-2.5 w-full h-11 flex items-center justify-center gap-2 rounded-xl text-[11px] uppercase tracking-[0.18em] font-semibold transition-all duration-300 active:scale-[0.97] ${
         isInCart
-          ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
-          : "bg-white/[0.04] text-storefront-muted border border-white/[0.06] hover:border-storefront-gold/30 hover:text-storefront-gold"
+          ? "bg-storefront-gold/15 text-storefront-gold border border-storefront-gold/35"
+          : "bg-transparent text-storefront-gold border border-storefront-gold/40 hover:bg-storefront-gold hover:text-[#1a1408]"
       }`}
     >
-      {isInCart ? <Check className="w-3.5 h-3.5" /> : <ShoppingCart className="w-3.5 h-3.5" />}
+      {isInCart ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
       {isInCart ? "В корзине" : "В корзину"}
     </button>
   );
