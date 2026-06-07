@@ -448,32 +448,32 @@ export default function StorefrontProduct() {
   const handleAddAllToCart = () => {
     if (!product || !site) return;
     handleAddToCart();
-    // Add selected trim items
+    // Add selected trim items (real Погонаж products)
     selectedTrim.forEach((id) => {
-      const item = MOCK_TRIM.find((t) => t.id === id);
+      const item = realTrim.find((t) => t.id === id);
       if (item) {
         addItem({
           id: `${product.id}-${item.id}`,
           name: item.name,
-          slug: item.id,
+          slug: item.slug,
           rrp: item.rrp,
-          imageUrl: null,
+          imageUrl: item.image,
           siteId: site.id,
           type: "trim",
           parentProductId: product.id,
         });
       }
     });
-    // Add selected hardware items
+    // Add selected hardware items (real Фурнитура products)
     selectedHardware.forEach((id) => {
-      const item = MOCK_HARDWARE.find((h) => h.id === id);
+      const item = realHardware.find((h) => h.id === id);
       if (item) {
         addItem({
           id: `${product.id}-${item.id}`,
           name: item.name,
-          slug: item.id,
+          slug: item.slug,
           rrp: item.rrp,
-          imageUrl: null,
+          imageUrl: item.image,
           siteId: site.id,
           type: "hardware",
           parentProductId: product.id,
