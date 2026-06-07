@@ -82,8 +82,10 @@ export default function StorefrontCatalog() {
     setPage(1);
   };
 
+  // Note: lockedParent (entering via ?category=parentSlug) is page context, not a user-applied filter.
+  // Don't count it in the badge — otherwise we show "1" on first load before the user changes anything.
   const activeFiltersCount =
-    (selectedCategory ? 1 : 0) +
+    (selectedCategory && selectedCategory !== lockedParent?.id ? 1 : 0) +
     (priceFrom ? 1 : 0) +
     (priceTo ? 1 : 0) +
     selectedColors.size +
