@@ -93,7 +93,12 @@ function MaterialSwatch({
             {!isGlassRaw && hex && (
               <span
                 className="absolute inset-0"
-                style={{ backgroundColor: hex, mixBlendMode: "multiply", opacity: 0.78 }}
+                style={{
+                  backgroundColor: hex,
+                  mixBlendMode: "multiply",
+                  // Wood texture is mid-tone; lighter overlay so the actual wood color reads true.
+                  opacity: material === "wood" ? 0.6 : 0.78,
+                }}
               />
             )}
             {/* Subtle top highlight for tactile dimension */}
