@@ -333,7 +333,7 @@ export default function StorefrontCatalog() {
 
           {/* Title row */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-3 mb-8">
-            <h1 className="text-2xl sm:text-4xl font-bold text-storefront-text uppercase tracking-wide break-words">
+            <h1 className="text-2xl sm:text-4xl font-bold text-storefront-text uppercase tracking-normal sm:tracking-wide break-words">
               {lockedParent ? lockedParent.name : "Каталог"}
             </h1>
             <div className="flex items-center gap-2 sm:shrink-0">
