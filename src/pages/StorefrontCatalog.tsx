@@ -276,20 +276,31 @@ export default function StorefrontCatalog() {
       <div className="min-h-screen pt-14 md:pt-0 bg-[#07090d]">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 md:py-12">
           {/* Breadcrumbs */}
-          <div className="flex items-center gap-2 mb-6 text-xs">
+          <div className="flex items-center gap-2 mb-6 text-xs flex-wrap">
             <Link to={`/store/${slug}`} className="uppercase tracking-[0.15em] text-storefront-muted hover:text-storefront-gold transition-colors">
               Главная
             </Link>
             <span className="text-storefront-muted/40">/</span>
-            <span className="uppercase tracking-[0.15em] text-storefront-text">Каталог</span>
+            {lockedParent ? (
+              <>
+                <Link to={categoriesBackHref} className="uppercase tracking-[0.15em] text-storefront-muted hover:text-storefront-gold transition-colors">
+                  Каталог
+                </Link>
+                <span className="text-storefront-muted/40">/</span>
+                <span className="uppercase tracking-[0.15em] text-storefront-text">{lockedParent.name}</span>
+              </>
+            ) : (
+              <span className="uppercase tracking-[0.15em] text-storefront-text">Каталог</span>
+            )}
           </div>
 
           {/* Title row */}
           <div className="flex items-end justify-between mb-8 gap-3">
             <h1 className="text-3xl sm:text-4xl font-bold text-storefront-text uppercase tracking-wide">
-              Каталог
+              {lockedParent ? lockedParent.name : "Каталог"}
             </h1>
             <div className="flex items-center gap-2 shrink-0">
+
               {/* Mobile filter button */}
               <button
                 onClick={() => setMobileFiltersOpen(true)}
