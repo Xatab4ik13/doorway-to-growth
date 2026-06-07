@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
@@ -250,6 +250,9 @@ export default function StorefrontProduct() {
   const [selectedTrim, setSelectedTrim] = useState<Set<string>>(new Set());
   const [selectedHardware, setSelectedHardware] = useState<Set<string>>(new Set());
   const [hardwareTab, setHardwareTab] = useState<string>("all");
+
+  const trimScrollRef = useRef<HTMLDivElement>(null);
+  const hardwareScrollRef = useRef<HTMLDivElement>(null);
 
   // ── Build real Погонаж / Фурнитура lists from DB ──
   // Walk parent_id chain to find each product's root category, then pick those
