@@ -155,13 +155,24 @@ export default function StorefrontCatalog() {
   }, [collectionParam, categories]);
 
   // Auto-select parent category from URL ?category=<parentSlug> param
+  // AND reset all per-category filters so options from a previous category don't leak in.
   useEffect(() => {
-    if (!categoryParam || categories.length === 0) return;
+    setSelectedColors(new Set());
+    setSelectedGlazings(new Set());
+    setPriceFrom("");
+    setPriceTo("");
+    setPage(1);
+
+    if (!categoryParam || categories.length === 0) {
+      // Returning to /catalog/list with no category — also clear the active selection
+      if (!categoryParam) setSelectedCategory(null);
+      return;
+    }
     const match = (categories as any[]).find(
       (c) => c.slug === categoryParam && !c.parent_id
     );
     if (match) {
-      selectCategory(match.id);
+      setSelectedCategory(match.id);
       setExpandedParents((prev) => new Set(prev).add(match.id));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
