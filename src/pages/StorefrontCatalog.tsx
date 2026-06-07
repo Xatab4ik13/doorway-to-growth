@@ -805,6 +805,8 @@ interface MobileFilterSheetProps {
   resultsCount: number;
   activeCount: number;
   parentCategories: any[];
+  backHref: string | null;
+
   getChildren: (id: string) => any[];
   expandedParents: Set<string>;
   toggleParent: (id: string) => void;
@@ -824,7 +826,8 @@ interface MobileFilterSheetProps {
 
 function MobileFilterSheet({
   onClose, onReset, resultsCount, activeCount,
-  parentCategories, getChildren, expandedParents, toggleParent,
+  parentCategories, backHref, getChildren, expandedParents, toggleParent,
+
   selectedCategory, selectCategory,
   priceFrom, setPriceFrom, priceTo, setPriceTo,
   availableColors, selectedColors, toggleColor,
@@ -863,16 +866,28 @@ function MobileFilterSheet({
         <section className="mb-5">
           <h3 className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#1a1408]/50 mb-3 px-1">Категории</h3>
           <div className="space-y-1.5">
-            <button
-              onClick={() => selectCategory(null)}
-              className={`w-full text-left px-4 py-3 rounded-xl text-[14px] font-bold transition-all ${
-                !selectedCategory
-                  ? "bg-black/20 text-white shadow-[inset_0_0_20px_rgba(0,0,0,0.15)]"
-                  : "text-[#1a1408]/75 active:bg-black/5"
-              }`}
-            >
-              Все товары
-            </button>
+            {backHref ? (
+              <Link
+                to={backHref}
+                onClick={onClose}
+                className="flex items-center gap-2 px-4 py-3 rounded-xl text-[14px] font-bold text-[#1a1408]/75 active:bg-black/5 transition-all"
+              >
+                <ChevronRight className="w-4 h-4 rotate-180" />
+                К категориям
+              </Link>
+            ) : (
+              <button
+                onClick={() => selectCategory(null)}
+                className={`w-full text-left px-4 py-3 rounded-xl text-[14px] font-bold transition-all ${
+                  !selectedCategory
+                    ? "bg-black/20 text-white shadow-[inset_0_0_20px_rgba(0,0,0,0.15)]"
+                    : "text-[#1a1408]/75 active:bg-black/5"
+                }`}
+              >
+                Все товары
+              </button>
+            )}
+
             {parentCategories.map((parent) => {
               const children = getChildren(parent.id);
               const isExpanded = expandedParents.has(parent.id);
