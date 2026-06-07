@@ -71,21 +71,22 @@ export function StorefrontHeader({ site }: Props) {
 
       {/* ═══ MOBILE TOP BAR ═══ */}
       <header className="fixed top-0 left-0 right-0 z-50 md:hidden">
-        <div className="px-5 h-14 flex items-center justify-between bg-storefront-bg/80 backdrop-blur-md border-b border-white/5">
+        <div className="px-4 h-[68px] flex items-center justify-between bg-storefront-bg/85 backdrop-blur-md border-b border-white/5">
           <button
             onClick={() => setMobileOpen(true)}
-            className="w-8 h-8 flex flex-col items-center justify-center gap-[5px]"
+            aria-label="Открыть меню"
+            className="w-12 h-12 -ml-1 flex flex-col items-center justify-center gap-[6px]"
           >
-            <span className="block w-5 h-[1.5px] bg-storefront-gold" />
-            <span className="block w-4 h-[1.5px] bg-storefront-gold" />
-            <span className="block w-5 h-[1.5px] bg-storefront-gold" />
+            <span className="block w-7 h-[2px] bg-storefront-gold rounded-full" />
+            <span className="block w-5 h-[2px] bg-storefront-gold rounded-full" />
+            <span className="block w-7 h-[2px] bg-storefront-gold rounded-full" />
           </button>
 
-          <Link to={`/store/${site.slug}`}>
+          <Link to={`/store/${site.slug}`} className="flex items-center">
             <img
               src={brandoorsLogo}
               alt="Brandoors"
-              className="h-6"
+              className="h-8"
               style={{ filter: "brightness(0) invert(1)", opacity: 0.9 }}
             />
           </Link>
