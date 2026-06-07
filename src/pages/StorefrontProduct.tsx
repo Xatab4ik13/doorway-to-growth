@@ -16,7 +16,6 @@ import glassFrosted from "@/assets/materials/glass-frosted.jpg";
 import glassMirror from "@/assets/materials/glass-mirror.jpg";
 import glassLacobel from "@/assets/materials/glass-lacobel.jpg";
 import OpeningSystems from "@/components/storefront/OpeningSystems";
-import OpeningSystems from "@/components/storefront/OpeningSystems";
 
 // ── Material textures map ──
 type MaterialKey = "wood" | "softtouch" | "metal" | "enamel" | "frosted" | "mirror" | "lacobel" | "none";
