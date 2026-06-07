@@ -75,6 +75,16 @@ export default function StorefrontCatalog() {
   const getChildren = (parentId: string) =>
     (categories as any[]).filter((c) => c.parent_id === parentId).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
 
+  // When user enters via /catalog/list?category=<slug> from the category select page,
+  // lock the sidebar to only that parent so the user is browsing within that section.
+  const lockedParent = useMemo(
+    () => (categoryParam ? parentCategories.find((c: any) => c.slug === categoryParam) : null),
+    [categoryParam, parentCategories]
+  );
+  const displayedParents = lockedParent ? [lockedParent] : parentCategories;
+  const categoriesBackHref = `/store/${slug}/catalog`;
+
+
   const toggleParent = (id: string) => {
     setExpandedParents((prev) => {
       const next = new Set(prev);
