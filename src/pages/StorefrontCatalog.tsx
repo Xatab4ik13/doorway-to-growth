@@ -40,6 +40,32 @@ export default function StorefrontCatalog() {
   const [page, setPage] = useState(1);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
+  // Lock body scroll when the mobile filter sheet is open
+  useEffect(() => {
+    if (!mobileFiltersOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [mobileFiltersOpen]);
+
+  const resetAllFilters = () => {
+    setSelectedCategory(null);
+    setPriceFrom("");
+    setPriceTo("");
+    setSelectedColors(new Set());
+    setSelectedGlazings(new Set());
+    setPage(1);
+  };
+
+  const activeFiltersCount =
+    (selectedCategory ? 1 : 0) +
+    (priceFrom ? 1 : 0) +
+    (priceTo ? 1 : 0) +
+    selectedColors.size +
+    selectedGlazings.size;
+
   // Category tree
   const parentCategories = useMemo(
     () => (categories as any[]).filter((c) => !c.parent_id).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)),
