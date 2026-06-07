@@ -15,15 +15,6 @@ import coatingEnamel from "@/assets/materials/coating-enamel.jpg";
 import glassFrosted from "@/assets/materials/glass-frosted.jpg";
 import glassMirror from "@/assets/materials/glass-mirror.jpg";
 import glassLacobel from "@/assets/materials/glass-lacobel.jpg";
-import trimCasingTele from "@/assets/accessories/trim-casing-telescopic.png";
-import trimExtenderTele from "@/assets/accessories/trim-extender-telescopic.png";
-import trimCasingStraight from "@/assets/accessories/trim-casing-straight.png";
-import trimExtenderStraight from "@/assets/accessories/trim-extender-straight.png";
-import handleMorelli from "@/assets/accessories/handle-morelli.png";
-import handleRenz from "@/assets/accessories/handle-renz.png";
-import lockMagnetic from "@/assets/accessories/lock-magnetic.png";
-import lockBathroom from "@/assets/accessories/lock-bathroom.png";
-import hingesConcealed from "@/assets/accessories/hinges-concealed.png";
 import OpeningSystems from "@/components/storefront/OpeningSystems";
 
 // ── Material textures map ──
@@ -155,22 +146,15 @@ const MOCK_MOLDING_COLORS: { name: string; hex: string }[] = [
   { name: "Черный", hex: "#1A1A1A" },
 ];
 
-type TrimItem = { id: string; name: string; rrp: number; image: string };
-type HardwareItem = { id: string; name: string; rrp: number; image: string };
+type AccessoryItem = { id: string; name: string; rrp: number | null; image: string | null; slug: string };
 
-const MOCK_TRIM: TrimItem[] = [
-  { id: "trim-1", name: "Наличник телескопический", rrp: 850, image: trimCasingTele },
-  { id: "trim-2", name: "Добор телескопический", rrp: 1200, image: trimExtenderTele },
-  { id: "trim-3", name: "Наличник прямой", rrp: 600, image: trimCasingStraight },
-  { id: "trim-4", name: "Добор прямой", rrp: 950, image: trimExtenderStraight },
-];
-
-const MOCK_HARDWARE: HardwareItem[] = [
-  { id: "hw-1", name: "Ручка MORELLI", rrp: 2400, image: handleMorelli },
-  { id: "hw-2", name: "Замок магнитный", rrp: 1800, image: lockMagnetic },
-  { id: "hw-3", name: "Петли скрытые (2 шт)", rrp: 3200, image: hingesConcealed },
-  { id: "hw-4", name: "Ручка RENZ", rrp: 1600, image: handleRenz },
-  { id: "hw-5", name: "Замок сантехнический", rrp: 1200, image: lockBathroom },
+// Hardware subcategory tabs derived from product name keywords.
+const HARDWARE_TABS: { key: string; label: string; match: (n: string) => boolean }[] = [
+  { key: "all", label: "Все", match: () => true },
+  { key: "handles", label: "Ручки", match: (n) => /ручк|скоб|кноп/i.test(n) },
+  { key: "locks", label: "Защёлки и замки", match: (n) => /защ[её]лк|замк|замок|корпус/i.test(n) },
+  { key: "hinges", label: "Петли", match: (n) => /петл/i.test(n) },
+  { key: "systems", label: "Системы", match: (n) => /invisible|compack|magic|пенал|купе|sky/i.test(n) },
 ];
 
 // Premium photo card for trim / hardware accessory selection.
@@ -183,8 +167,8 @@ function AccessoryCard({
   onClick,
 }: {
   name: string;
-  rrp: number;
-  image: string;
+  rrp: number | null;
+  image: string | null;
   active: boolean;
   onClick: () => void;
 }) {
@@ -200,13 +184,17 @@ function AccessoryCard({
     >
       {/* Photo */}
       <div className="relative aspect-[5/4] bg-[#0c0e14] overflow-hidden">
-        <img
-          src={image}
-          alt={name}
-          loading="lazy"
-          draggable={false}
-          className="absolute inset-0 w-full h-full object-contain p-4 transition-transform duration-500 ease-out group-hover:scale-[1.06]"
-        />
+        {image ? (
+          <img
+            src={image}
+            alt={name}
+            loading="lazy"
+            draggable={false}
+            className="absolute inset-0 w-full h-full object-contain p-4 transition-transform duration-500 ease-out group-hover:scale-[1.06]"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-storefront-muted/20 text-4xl font-bold">B</div>
+        )}
         {/* Add / Check badge */}
         <span
           className={`absolute top-2.5 right-2.5 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${
@@ -224,7 +212,7 @@ function AccessoryCard({
           {name}
         </div>
         <div className="text-[11px] text-storefront-gold/80 mt-1 tracking-wide">
-          +{rrp.toLocaleString("ru-RU")} ₽
+          {rrp && rrp > 0 ? `+${rrp.toLocaleString("ru-RU")} ₽` : "По запросу"}
         </div>
       </div>
     </button>
@@ -261,6 +249,57 @@ export default function StorefrontProduct() {
   const [selectedMolding, setSelectedMolding] = useState<string | null>(null);
   const [selectedTrim, setSelectedTrim] = useState<Set<string>>(new Set());
   const [selectedHardware, setSelectedHardware] = useState<Set<string>>(new Set());
+  const [hardwareTab, setHardwareTab] = useState<string>("all");
+
+  // ── Build real Погонаж / Фурнитура lists from DB ──
+  // Walk parent_id chain to find each product's root category, then pick those
+  // rooted in 'pogonazh' / 'furnitura'.
+  const rootSlugById = useMemo(() => {
+    const byId = new Map((allCategories as any[]).map((c) => [c.id, c]));
+    const cache = new Map<string, string | null>();
+    const resolve = (id: string | null | undefined): string | null => {
+      if (!id) return null;
+      if (cache.has(id)) return cache.get(id)!;
+      let cur: any = byId.get(id);
+      while (cur?.parent_id) cur = byId.get(cur.parent_id);
+      const slug = cur?.slug ?? null;
+      cache.set(id, slug);
+      return slug;
+    };
+    const map = new Map<string, string | null>();
+    for (const p of products as any[]) map.set(p.id, resolve(p.category_id));
+    return map;
+  }, [products, allCategories]);
+
+  const toAccessoryItem = (p: any): AccessoryItem => {
+    const primary = p.product_images?.find((i: any) => i.is_primary);
+    const img = primary?.url || p.product_images?.[0]?.url || null;
+    return {
+      id: p.id,
+      name: p.name,
+      rrp: p.rrp ? Number(p.rrp) : null,
+      image: img,
+      slug: p.slug,
+    };
+  };
+
+  const realTrim = useMemo<AccessoryItem[]>(() => {
+    return (products as any[])
+      .filter((p) => rootSlugById.get(p.id) === "pogonazh")
+      .map(toAccessoryItem);
+  }, [products, rootSlugById]);
+
+  const realHardware = useMemo<AccessoryItem[]>(() => {
+    return (products as any[])
+      .filter((p) => rootSlugById.get(p.id) === "furnitura")
+      .map(toAccessoryItem);
+  }, [products, rootSlugById]);
+
+  const filteredHardware = useMemo<AccessoryItem[]>(() => {
+    const tab = HARDWARE_TABS.find((t) => t.key === hardwareTab) || HARDWARE_TABS[0];
+    if (tab.key === "all") return realHardware;
+    return realHardware.filter((h) => tab.match(h.name));
+  }, [realHardware, hardwareTab]);
 
   const primaryImg = product?.product_images?.find((i: any) => i.is_primary)?.url || product?.product_images?.[0]?.url;
   useDocumentMeta({
@@ -400,32 +439,32 @@ export default function StorefrontProduct() {
   const handleAddAllToCart = () => {
     if (!product || !site) return;
     handleAddToCart();
-    // Add selected trim items
+    // Add selected trim items (real Погонаж products)
     selectedTrim.forEach((id) => {
-      const item = MOCK_TRIM.find((t) => t.id === id);
+      const item = realTrim.find((t) => t.id === id);
       if (item) {
         addItem({
           id: `${product.id}-${item.id}`,
           name: item.name,
-          slug: item.id,
+          slug: item.slug,
           rrp: item.rrp,
-          imageUrl: null,
+          imageUrl: item.image,
           siteId: site.id,
           type: "trim",
           parentProductId: product.id,
         });
       }
     });
-    // Add selected hardware items
+    // Add selected hardware items (real Фурнитура products)
     selectedHardware.forEach((id) => {
-      const item = MOCK_HARDWARE.find((h) => h.id === id);
+      const item = realHardware.find((h) => h.id === id);
       if (item) {
         addItem({
           id: `${product.id}-${item.id}`,
           name: item.name,
-          slug: item.id,
+          slug: item.slug,
           rrp: item.rrp,
-          imageUrl: null,
+          imageUrl: item.image,
           siteId: site.id,
           type: "hardware",
           parentProductId: product.id,
@@ -702,52 +741,96 @@ export default function StorefrontProduct() {
               )}
 
               {/* ===== TRIM (ПОГОНАЖ) ===== */}
-              <div className="mb-8">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
-                    <DoorOpen className="w-4 h-4 text-storefront-gold" />
+              {realTrim.length > 0 && (
+                <div className="mb-8">
+                  <div className="flex items-center justify-between gap-2 mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
+                        <DoorOpen className="w-4 h-4 text-storefront-gold" />
+                      </div>
+                      <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
+                        Погонаж коллекции
+                      </span>
+                    </div>
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-text/40">
+                      {realTrim.length} поз.
+                    </span>
                   </div>
-                  <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
-                    Погонаж коллекции
-                  </span>
+                  <div className="-mx-2 px-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
+                    <div className="flex gap-3 pb-2">
+                      {realTrim.map((item) => (
+                        <div key={item.id} className="snap-start shrink-0 w-[160px]">
+                          <AccessoryCard
+                            name={item.name}
+                            rrp={item.rrp}
+                            image={item.image}
+                            active={selectedTrim.has(item.id)}
+                            onClick={() => toggleTrim(item.id)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  {MOCK_TRIM.map((item) => (
-                    <AccessoryCard
-                      key={item.id}
-                      name={item.name}
-                      rrp={item.rrp}
-                      image={item.image}
-                      active={selectedTrim.has(item.id)}
-                      onClick={() => toggleTrim(item.id)}
-                    />
-                  ))}
-                </div>
-              </div>
+              )}
 
               {/* ===== HARDWARE (ФУРНИТУРА) ===== */}
-              <div className="mb-8">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
-                    <Lock className="w-4 h-4 text-storefront-gold" />
+              {realHardware.length > 0 && (
+                <div className="mb-8">
+                  <div className="flex items-center justify-between gap-2 mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
+                        <Lock className="w-4 h-4 text-storefront-gold" />
+                      </div>
+                      <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
+                        Фурнитура
+                      </span>
+                    </div>
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-text/40">
+                      {filteredHardware.length} из {realHardware.length}
+                    </span>
                   </div>
-                  <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
-                    Фурнитура
-                  </span>
+
+                  {/* Subcategory tabs */}
+                  <div className="flex gap-1.5 mb-3 overflow-x-auto scrollbar-hide -mx-2 px-2">
+                    {HARDWARE_TABS.map((t) => {
+                      const count = t.key === "all" ? realHardware.length : realHardware.filter((h) => t.match(h.name)).length;
+                      if (count === 0) return null;
+                      const active = hardwareTab === t.key;
+                      return (
+                        <button
+                          key={t.key}
+                          onClick={() => setHardwareTab(t.key)}
+                          className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] uppercase tracking-[0.15em] transition-colors duration-150 ${
+                            active
+                              ? "bg-storefront-gold text-[#07090d]"
+                              : "bg-white/[0.04] text-storefront-text/70 hover:bg-white/[0.08]"
+                          }`}
+                        >
+                          {t.label}
+                          <span className={`ml-1.5 text-[10px] ${active ? "opacity-70" : "opacity-50"}`}>{count}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="-mx-2 px-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
+                    <div className="flex gap-3 pb-2">
+                      {filteredHardware.map((item) => (
+                        <div key={item.id} className="snap-start shrink-0 w-[160px]">
+                          <AccessoryCard
+                            name={item.name}
+                            rrp={item.rrp}
+                            image={item.image}
+                            active={selectedHardware.has(item.id)}
+                            onClick={() => toggleHardware(item.id)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  {MOCK_HARDWARE.map((item) => (
-                    <AccessoryCard
-                      key={item.id}
-                      name={item.name}
-                      rrp={item.rrp}
-                      image={item.image}
-                      active={selectedHardware.has(item.id)}
-                      onClick={() => toggleHardware(item.id)}
-                    />
-                  ))}
-                </div>
-              </div>
+              )}
 
               {/* ===== OPENING SYSTEMS — only for door products ===== */}
               {isDoorProduct && <OpeningSystems />}
@@ -880,8 +963,8 @@ export default function StorefrontProduct() {
               <div className="mt-auto pt-8 border-t border-white/5">
                 {(() => {
                   const doorPrice = product.rrp ? Number(product.rrp) : 0;
-                  const trimTotal = MOCK_TRIM.filter((t) => selectedTrim.has(t.id)).reduce((s, t) => s + t.rrp, 0);
-                  const hwTotal = MOCK_HARDWARE.filter((h) => selectedHardware.has(h.id)).reduce((s, h) => s + h.rrp, 0);
+                  const trimTotal = realTrim.filter((t) => selectedTrim.has(t.id)).reduce((s, t) => s + (t.rrp ?? 0), 0);
+                  const hwTotal = realHardware.filter((h) => selectedHardware.has(h.id)).reduce((s, h) => s + (h.rrp ?? 0), 0);
                   const totalPrice = doorPrice + trimTotal + hwTotal;
                   const hasExtras = selectedTrim.size > 0 || selectedHardware.size > 0;
 
