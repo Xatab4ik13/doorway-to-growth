@@ -306,8 +306,9 @@ export default function StorefrontCatalog() {
 
   return (
     <StorefrontLayout site={site}>
-      <div className="min-h-screen pt-[68px] md:pt-0 bg-[#07090d]">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 md:py-12">
+      <div className="min-h-screen pt-[68px] md:pt-0 bg-[#07090d] overflow-x-hidden">
+        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 py-8 md:py-12 min-w-0">
+
           {/* Breadcrumbs */}
           <div className="flex items-center gap-2 mb-6 text-xs flex-wrap">
             <Link to={`/store/${slug}`} className="uppercase tracking-[0.15em] text-storefront-muted hover:text-storefront-gold transition-colors">
