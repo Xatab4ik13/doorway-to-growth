@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useCallback, memo } from "react";
+import { createPortal } from "react-dom";
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
@@ -41,13 +42,34 @@ export default function StorefrontCatalog() {
   const [page, setPage] = useState(1);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  // Lock body scroll when the mobile filter sheet is open
+  // Lock body scroll when the mobile filter sheet is open — preserve scroll position
+  // so the page doesn't jump when the sheet opens/closes.
   useEffect(() => {
     if (!mobileFiltersOpen) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const scrollY = window.scrollY;
+    const body = document.body;
+    const prev = {
+      position: body.style.position,
+      top: body.style.top,
+      left: body.style.left,
+      right: body.style.right,
+      width: body.style.width,
+      overflow: body.style.overflow,
+    };
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.left = "0";
+    body.style.right = "0";
+    body.style.width = "100%";
+    body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = prev;
+      body.style.position = prev.position;
+      body.style.top = prev.top;
+      body.style.left = prev.left;
+      body.style.right = prev.right;
+      body.style.width = prev.width;
+      body.style.overflow = prev.overflow;
+      window.scrollTo(0, scrollY);
     };
   }, [mobileFiltersOpen]);
 
@@ -836,8 +858,32 @@ function MobileFilterSheet({
   const goldGradient =
     "linear-gradient(175deg, #cfbb96 0%, #bda67a 15%, #a8956e 35%, #8d7c5a 55%, #7a6b4d 70%, #6e5f40 85%, #5c5035 100%)";
 
-  return (
-    <div className="md:hidden fixed inset-0 z-[80] flex flex-col animate-fade-in" style={{ background: goldGradient }}>
+  // Slide-in animation: start off-screen, then translate to 0 on next frame.
+  const [entered, setEntered] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setEntered(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  if (typeof document === "undefined") return null;
+
+  const node = (
+    <div className="md:hidden fixed inset-0 z-[9999]">
+      {/* Backdrop */}
+      <div
+        onClick={onClose}
+        className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ${
+          entered ? "opacity-100" : "opacity-0"
+        }`}
+      />
+
+      {/* Left drawer panel */}
+      <div
+        className={`absolute top-0 left-0 h-full w-[85vw] max-w-[360px] flex flex-col shadow-[8px_0_32px_rgba(0,0,0,0.45)] transition-transform duration-300 ease-out ${
+          entered ? "translate-x-0" : "-translate-x-full"
+        }`}
+        style={{ background: goldGradient }}
+      >
       {/* Header — sticky, gold, dark text */}
       <div
         className="shrink-0 flex items-center justify-between px-5 h-14 border-b border-black/10"
@@ -1047,6 +1093,9 @@ function MobileFilterSheet({
           Показать {resultsCount}
         </button>
       </div>
+      </div>
     </div>
   );
+
+  return createPortal(node, document.body);
 }
