@@ -489,6 +489,7 @@ export default function StorefrontCatalog() {
 interface SidebarContentProps {
   brandoorsLogo: string;
   parentCategories: any[];
+  backHref: string | null;
   getChildren: (id: string) => any[];
   expandedParents: Set<string>;
   toggleParent: (id: string) => void;
@@ -511,11 +512,12 @@ interface SidebarContentProps {
 }
 
 function SidebarContent({
-  brandoorsLogo, parentCategories, getChildren, expandedParents, toggleParent,
+  brandoorsLogo, parentCategories, backHref, getChildren, expandedParents, toggleParent,
   selectedCategory, selectCategory, priceFrom, setPriceFrom, priceTo, setPriceTo,
   colorOpen, setColorOpen, availableColors, selectedColors, toggleColor,
   glazingOpen, setGlazingOpen, availableGlazings, selectedGlazings, toggleGlazing,
 }: SidebarContentProps) {
+
   return (
     <>
       {/* Logo */}
