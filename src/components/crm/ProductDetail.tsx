@@ -27,13 +27,36 @@ const COMPLEX_KEYS = new Set(["sizes", "variants", "colors"]);
 
 // Палитра покрытий Brandoors — должна совпадать с цветами в карточке товара витрины
 const COATING_PALETTE: { name: string; hex: string }[] = [
+  // Нейтральные
   { name: "Аляска", hex: "#F5F0E8" },
   { name: "Магнолия", hex: "#F0E6D4" },
   { name: "Манхэттен", hex: "#B8AFA4" },
-  { name: "Силк грей", hex: "#9E9A94" },
-  { name: "Варм грей", hex: "#A89B8C" },
-  { name: "Антрацит", hex: "#3A3A3A" },
+  { name: "Силк Грей", hex: "#9E9A94" },
+  { name: "Варм Грей", hex: "#A89B8C" },
+  { name: "Туман", hex: "#A8A5A0" },
+  { name: "Милк", hex: "#F2EDE3" },
+  { name: "Белый", hex: "#F6F4EE" },
+  { name: "Белый жемчуг", hex: "#EFEAE0" },
+  { name: "Серый", hex: "#8C8B88" },
+  { name: "Графит", hex: "#3F4145" },
+  { name: "Антрацит", hex: "#2E3033" },
+  { name: "Черный", hex: "#15161A" },
+  { name: "Черный глянец", hex: "#0E0F12" },
+  // Дерево
+  { name: "Орех Натуральный", hex: "#8B5A35" },
+  { name: "Орех Бохо", hex: "#5C3520" },
+  { name: "Орех Пацифик", hex: "#6B4A35" },
+  { name: "Дуб Керамика", hex: "#C8B89A" },
+  { name: "Дуб Светло-серый", hex: "#B3ADA2" },
+  { name: "Обветренный Тик", hex: "#8D7458" },
+  { name: "Итальянский тисненый", hex: "#A88563" },
+  { name: "Карамельный Мусс", hex: "#B58456" },
+  { name: "Кофе", hex: "#5A3A2A" },
+  { name: "Кофе глянец", hex: "#3D2418" },
+  // Цветные
   { name: "Blue", hex: "#1B3A5C" },
+  { name: "Blue Green", hex: "#264C57" },
+  { name: "Deep Green", hex: "#1F3A2E" },
   { name: "Green", hex: "#2A4A3E" },
 ];
 
