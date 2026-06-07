@@ -972,8 +972,8 @@ export default function StorefrontProduct() {
               <div className="mt-auto pt-8 border-t border-white/5">
                 {(() => {
                   const doorPrice = product.rrp ? Number(product.rrp) : 0;
-                  const trimTotal = MOCK_TRIM.filter((t) => selectedTrim.has(t.id)).reduce((s, t) => s + t.rrp, 0);
-                  const hwTotal = MOCK_HARDWARE.filter((h) => selectedHardware.has(h.id)).reduce((s, h) => s + h.rrp, 0);
+                  const trimTotal = realTrim.filter((t) => selectedTrim.has(t.id)).reduce((s, t) => s + (t.rrp ?? 0), 0);
+                  const hwTotal = realHardware.filter((h) => selectedHardware.has(h.id)).reduce((s, h) => s + (h.rrp ?? 0), 0);
                   const totalPrice = doorPrice + trimTotal + hwTotal;
                   const hasExtras = selectedTrim.size > 0 || selectedHardware.size > 0;
 
