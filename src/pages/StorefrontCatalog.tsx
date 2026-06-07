@@ -338,7 +338,9 @@ export default function StorefrontCatalog() {
               onReset={resetAllFilters}
               resultsCount={filtered.length}
               activeCount={activeFiltersCount}
-              parentCategories={parentCategories}
+              parentCategories={displayedParents}
+              backHref={lockedParent ? categoriesBackHref : null}
+
               getChildren={getChildren}
               expandedParents={expandedParents}
               toggleParent={toggleParent}
@@ -372,7 +374,9 @@ export default function StorefrontCatalog() {
               >
                 <SidebarContent
                   brandoorsLogo={brandoorsLogo}
-                  parentCategories={parentCategories}
+                  parentCategories={displayedParents}
+                  backHref={lockedParent ? categoriesBackHref : null}
+
                   getChildren={getChildren}
                   expandedParents={expandedParents}
                   toggleParent={toggleParent}
