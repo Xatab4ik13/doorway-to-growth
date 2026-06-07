@@ -47,6 +47,15 @@ const CollectionCarousel = memo(function CollectionCarousel({
 }) {
   const [current, setCurrent] = useState(0);
   const len = items.length;
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 768 : false
+  );
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   if (len === 0) return null;
 
@@ -54,7 +63,9 @@ const CollectionCarousel = memo(function CollectionCarousel({
   const next = () => setCurrent((c) => getIndex(c + 1, len));
 
   const visible: { idx: number; offset: number }[] = [];
-  if (len >= 5) {
+  if (isMobile) {
+    visible.push({ idx: current, offset: 0 });
+  } else if (len >= 5) {
     for (let o = -2; o <= 2; o++) visible.push({ idx: getIndex(current + o, len), offset: o });
   } else if (len >= 3) {
     for (let o = -1; o <= 1; o++) visible.push({ idx: getIndex(current + o, len), offset: o });
