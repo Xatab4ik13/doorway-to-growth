@@ -75,6 +75,16 @@ export default function StorefrontCatalog() {
   const getChildren = (parentId: string) =>
     (categories as any[]).filter((c) => c.parent_id === parentId).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
 
+  // When user enters via /catalog/list?category=<slug> from the category select page,
+  // lock the sidebar to only that parent so the user is browsing within that section.
+  const lockedParent = useMemo(
+    () => (categoryParam ? parentCategories.find((c: any) => c.slug === categoryParam) : null),
+    [categoryParam, parentCategories]
+  );
+  const displayedParents = lockedParent ? [lockedParent] : parentCategories;
+  const categoriesBackHref = `/store/${slug}/catalog`;
+
+
   const toggleParent = (id: string) => {
     setExpandedParents((prev) => {
       const next = new Set(prev);
@@ -266,20 +276,31 @@ export default function StorefrontCatalog() {
       <div className="min-h-screen pt-14 md:pt-0 bg-[#07090d]">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 md:py-12">
           {/* Breadcrumbs */}
-          <div className="flex items-center gap-2 mb-6 text-xs">
+          <div className="flex items-center gap-2 mb-6 text-xs flex-wrap">
             <Link to={`/store/${slug}`} className="uppercase tracking-[0.15em] text-storefront-muted hover:text-storefront-gold transition-colors">
               Главная
             </Link>
             <span className="text-storefront-muted/40">/</span>
-            <span className="uppercase tracking-[0.15em] text-storefront-text">Каталог</span>
+            {lockedParent ? (
+              <>
+                <Link to={categoriesBackHref} className="uppercase tracking-[0.15em] text-storefront-muted hover:text-storefront-gold transition-colors">
+                  Каталог
+                </Link>
+                <span className="text-storefront-muted/40">/</span>
+                <span className="uppercase tracking-[0.15em] text-storefront-text">{lockedParent.name}</span>
+              </>
+            ) : (
+              <span className="uppercase tracking-[0.15em] text-storefront-text">Каталог</span>
+            )}
           </div>
 
           {/* Title row */}
           <div className="flex items-end justify-between mb-8 gap-3">
             <h1 className="text-3xl sm:text-4xl font-bold text-storefront-text uppercase tracking-wide">
-              Каталог
+              {lockedParent ? lockedParent.name : "Каталог"}
             </h1>
             <div className="flex items-center gap-2 shrink-0">
+
               {/* Mobile filter button */}
               <button
                 onClick={() => setMobileFiltersOpen(true)}
@@ -317,7 +338,9 @@ export default function StorefrontCatalog() {
               onReset={resetAllFilters}
               resultsCount={filtered.length}
               activeCount={activeFiltersCount}
-              parentCategories={parentCategories}
+              parentCategories={displayedParents}
+              backHref={lockedParent ? categoriesBackHref : null}
+
               getChildren={getChildren}
               expandedParents={expandedParents}
               toggleParent={toggleParent}
@@ -351,7 +374,9 @@ export default function StorefrontCatalog() {
               >
                 <SidebarContent
                   brandoorsLogo={brandoorsLogo}
-                  parentCategories={parentCategories}
+                  parentCategories={displayedParents}
+                  backHref={lockedParent ? categoriesBackHref : null}
+
                   getChildren={getChildren}
                   expandedParents={expandedParents}
                   toggleParent={toggleParent}
@@ -464,6 +489,7 @@ export default function StorefrontCatalog() {
 interface SidebarContentProps {
   brandoorsLogo: string;
   parentCategories: any[];
+  backHref: string | null;
   getChildren: (id: string) => any[];
   expandedParents: Set<string>;
   toggleParent: (id: string) => void;
@@ -486,11 +512,12 @@ interface SidebarContentProps {
 }
 
 function SidebarContent({
-  brandoorsLogo, parentCategories, getChildren, expandedParents, toggleParent,
+  brandoorsLogo, parentCategories, backHref, getChildren, expandedParents, toggleParent,
   selectedCategory, selectCategory, priceFrom, setPriceFrom, priceTo, setPriceTo,
   colorOpen, setColorOpen, availableColors, selectedColors, toggleColor,
   glazingOpen, setGlazingOpen, availableGlazings, selectedGlazings, toggleGlazing,
 }: SidebarContentProps) {
+
   return (
     <>
       {/* Logo */}
@@ -502,16 +529,27 @@ function SidebarContent({
       <div className="px-3 py-5">
         <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#1a1408]/40 px-4 mb-3">Категории</span>
 
-        <button
-          onClick={() => selectCategory(null)}
-          className={`w-full text-left text-[16px] font-bold py-3.5 px-4 mb-1 rounded-xl transition-all duration-300 ${
-            !selectedCategory
-              ? "bg-black/20 text-white shadow-[inset_0_0_20px_rgba(0,0,0,0.15)]"
-              : "text-[#1a1408]/70 hover:text-[#1a1408] hover:bg-black/5"
-          }`}
-        >
-          Все товары
-        </button>
+        {backHref ? (
+          <Link
+            to={backHref}
+            className="flex items-center gap-2 text-[14px] font-bold py-3.5 px-4 mb-2 rounded-xl text-[#1a1408]/75 hover:text-[#1a1408] hover:bg-black/5 transition-all duration-300"
+          >
+            <ChevronRight className="w-4 h-4 rotate-180" />
+            К категориям
+          </Link>
+        ) : (
+          <button
+            onClick={() => selectCategory(null)}
+            className={`w-full text-left text-[16px] font-bold py-3.5 px-4 mb-1 rounded-xl transition-all duration-300 ${
+              !selectedCategory
+                ? "bg-black/20 text-white shadow-[inset_0_0_20px_rgba(0,0,0,0.15)]"
+                : "text-[#1a1408]/70 hover:text-[#1a1408] hover:bg-black/5"
+            }`}
+          >
+            Все товары
+          </button>
+        )}
+
 
         {parentCategories.map((parent) => {
           const children = getChildren(parent.id);
@@ -767,6 +805,8 @@ interface MobileFilterSheetProps {
   resultsCount: number;
   activeCount: number;
   parentCategories: any[];
+  backHref: string | null;
+
   getChildren: (id: string) => any[];
   expandedParents: Set<string>;
   toggleParent: (id: string) => void;
@@ -786,7 +826,8 @@ interface MobileFilterSheetProps {
 
 function MobileFilterSheet({
   onClose, onReset, resultsCount, activeCount,
-  parentCategories, getChildren, expandedParents, toggleParent,
+  parentCategories, backHref, getChildren, expandedParents, toggleParent,
+
   selectedCategory, selectCategory,
   priceFrom, setPriceFrom, priceTo, setPriceTo,
   availableColors, selectedColors, toggleColor,
@@ -825,16 +866,28 @@ function MobileFilterSheet({
         <section className="mb-5">
           <h3 className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#1a1408]/50 mb-3 px-1">Категории</h3>
           <div className="space-y-1.5">
-            <button
-              onClick={() => selectCategory(null)}
-              className={`w-full text-left px-4 py-3 rounded-xl text-[14px] font-bold transition-all ${
-                !selectedCategory
-                  ? "bg-black/20 text-white shadow-[inset_0_0_20px_rgba(0,0,0,0.15)]"
-                  : "text-[#1a1408]/75 active:bg-black/5"
-              }`}
-            >
-              Все товары
-            </button>
+            {backHref ? (
+              <Link
+                to={backHref}
+                onClick={onClose}
+                className="flex items-center gap-2 px-4 py-3 rounded-xl text-[14px] font-bold text-[#1a1408]/75 active:bg-black/5 transition-all"
+              >
+                <ChevronRight className="w-4 h-4 rotate-180" />
+                К категориям
+              </Link>
+            ) : (
+              <button
+                onClick={() => selectCategory(null)}
+                className={`w-full text-left px-4 py-3 rounded-xl text-[14px] font-bold transition-all ${
+                  !selectedCategory
+                    ? "bg-black/20 text-white shadow-[inset_0_0_20px_rgba(0,0,0,0.15)]"
+                    : "text-[#1a1408]/75 active:bg-black/5"
+                }`}
+              >
+                Все товары
+              </button>
+            )}
+
             {parentCategories.map((parent) => {
               const children = getChildren(parent.id);
               const isExpanded = expandedParents.has(parent.id);
