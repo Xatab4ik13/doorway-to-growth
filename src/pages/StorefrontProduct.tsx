@@ -117,16 +117,49 @@ function MaterialSwatch({
   );
 }
 
-// ── Mock data for swatches (will be replaced with DB data later) ──
+// ── Coating colors — realistic hex values for ALL known variant_keys.
+// Hex is multiplied over a wood/softtouch/enamel/metal texture in MaterialSwatch,
+// so the values below approximate the *real* coating tone.
 const MOCK_COLORS: { name: string; hex: string }[] = [
+  // Neutrals / soft-touch
   { name: "Аляска", hex: "#F5F0E8" },
   { name: "Магнолия", hex: "#F0E6D4" },
   { name: "Манхэттен", hex: "#B8AFA4" },
-  { name: "Blue", hex: "#1B3A5C" },
-  { name: "Green", hex: "#2A4A3E" },
-  { name: "Антрацит", hex: "#3A3A3A" },
+  { name: "Силк Грей", hex: "#9E9A94" },
   { name: "Силк грей", hex: "#9E9A94" },
+  { name: "Варм Грей", hex: "#A89B8C" },
   { name: "Варм грей", hex: "#A89B8C" },
+  { name: "Туман", hex: "#A8A5A0" },
+  { name: "Милк", hex: "#F2EDE3" },
+  { name: "Белый", hex: "#F6F4EE" },
+  { name: "Белый жемчуг", hex: "#EFEAE0" },
+  { name: "Серый", hex: "#8C8B88" },
+  { name: "Графит", hex: "#3F4145" },
+  { name: "Антрацит", hex: "#2E3033" },
+  { name: "Черный", hex: "#15161A" },
+  { name: "Черный глянец", hex: "#0E0F12" },
+  { name: "Без цвета", hex: "#9C9994" },
+  // Woods — values tuned for multiply over the wood texture
+  { name: "Орех Натуральный", hex: "#A47148" },
+  { name: "Орех Бохо", hex: "#6E3E22" },
+  { name: "Орех Пацифик", hex: "#7A5840" },
+  { name: "Дуб Керамика", hex: "#C8B89A" },
+  { name: "Дуб Светло-серый", hex: "#B3ADA2" },
+  { name: "Обветренный Тик", hex: "#8D7458" },
+  { name: "Итальянский тисненый", hex: "#A88563" },
+  { name: "Карамельный Мусс", hex: "#B58456" },
+  { name: "Кофе", hex: "#5A3A2A" },
+  { name: "Кофе глянец", hex: "#4A2E22" },
+  // Colored coatings
+  { name: "Blue", hex: "#1B3A5C" },
+  { name: "Blue Green", hex: "#264C57" },
+  { name: "Deep Green", hex: "#1F3A2E" },
+  { name: "Green", hex: "#2A4A3E" },
+  // RAL / NCS placeholders
+  { name: "Ral & Ncs", hex: "#C9C4BB" },
+  { name: "NCS S 0502Y", hex: "#EFEAD8" },
+  { name: "NCS S 3010 Y30R", hex: "#BFA68C" },
+  { name: "NSC S 4050 Y60R", hex: "#A86B3E" },
 ];
 
 const MOCK_GLAZING: { name: string; preview: string }[] = [
