@@ -272,8 +272,10 @@ export default function StorefrontCatalog() {
               >
                 <SlidersHorizontal className="w-3.5 h-3.5" />
                 Фильтры
-                {(selectedCategory || priceFrom || priceTo || selectedColors.size > 0 || selectedGlazings.size > 0) && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-storefront-gold" />
+                {activeFiltersCount > 0 && (
+                  <span className="ml-0.5 min-w-[18px] h-[18px] px-1.5 inline-flex items-center justify-center rounded-full bg-storefront-gold text-[10px] font-bold text-[#1a1408] leading-none">
+                    {activeFiltersCount}
+                  </span>
                 )}
               </button>
               {/* Sort */}
@@ -293,69 +295,30 @@ export default function StorefrontCatalog() {
             </div>
           </div>
 
-          {/* ===== MOBILE FILTER SLIDE-OUT ===== */}
+          {/* ===== MOBILE FILTER SHEET ===== */}
           {mobileFiltersOpen && (
-            <>
-              <div
-                className="fixed inset-0 z-[60] bg-black/60 md:hidden animate-fade-in"
-                onClick={() => setMobileFiltersOpen(false)}
-              />
-              <div
-                className="fixed top-0 left-0 bottom-0 z-[70] md:hidden overflow-y-auto scrollbar-hide"
-                style={{
-                  width: "300px",
-                  animation: "slide-in-left 0.4s cubic-bezier(0.22, 1, 0.36, 1)",
-                }}
-              >
-                <div
-                  className="min-h-full relative"
-                  style={{
-                    background: "linear-gradient(175deg, #cfbb96 0%, #bda67a 15%, #a8956e 35%, #8d7c5a 55%, #7a6b4d 70%, #6e5f40 85%, #5c5035 100%)",
-                  }}
-                >
-                  <button
-                    onClick={() => setMobileFiltersOpen(false)}
-                    className="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center"
-                    aria-label="Закрыть фильтры"
-                  >
-                    <X className="w-6 h-6" style={{ color: "rgba(26,20,8,0.6)" }} />
-                  </button>
-
-                  <SidebarContent
-                    brandoorsLogo={brandoorsLogo}
-                    parentCategories={parentCategories}
-                    getChildren={getChildren}
-                    expandedParents={expandedParents}
-                    toggleParent={toggleParent}
-                    selectedCategory={selectedCategory}
-                    selectCategory={(id) => { selectCategory(id); }}
-                    priceFrom={priceFrom}
-                    setPriceFrom={(v) => { setPriceFrom(v); setPage(1); }}
-                    priceTo={priceTo}
-                    setPriceTo={(v) => { setPriceTo(v); setPage(1); }}
-                    colorOpen={colorOpen}
-                    setColorOpen={setColorOpen}
-                    availableColors={availableColors}
-                    selectedColors={selectedColors}
-                    toggleColor={toggleColor}
-                    glazingOpen={glazingOpen}
-                    setGlazingOpen={setGlazingOpen}
-                    availableGlazings={availableGlazings}
-                    selectedGlazings={selectedGlazings}
-                    toggleGlazing={toggleGlazing}
-                  />
-
-                  <div className="px-5 pb-8 pt-2">
-                    <button
-                      onClick={() => setMobileFiltersOpen(false)}
-                      className="w-full py-3.5 rounded-xl bg-[#1a1408] text-white text-[13px] font-bold uppercase tracking-[0.15em] hover:bg-[#1a1408]/90 active:scale-[0.97] transition-all"
-                    >
-                      Показать {filtered.length} товаров
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </>
+            <MobileFilterSheet
+              onClose={() => setMobileFiltersOpen(false)}
+              onReset={resetAllFilters}
+              resultsCount={filtered.length}
+              activeCount={activeFiltersCount}
+              parentCategories={parentCategories}
+              getChildren={getChildren}
+              expandedParents={expandedParents}
+              toggleParent={toggleParent}
+              selectedCategory={selectedCategory}
+              selectCategory={selectCategory}
+              priceFrom={priceFrom}
+              setPriceFrom={(v) => { setPriceFrom(v); setPage(1); }}
+              priceTo={priceTo}
+              setPriceTo={(v) => { setPriceTo(v); setPage(1); }}
+              availableColors={availableColors}
+              selectedColors={selectedColors}
+              toggleColor={toggleColor}
+              availableGlazings={availableGlazings}
+              selectedGlazings={selectedGlazings}
+              toggleGlazing={toggleGlazing}
+            />
           )}
 
 
