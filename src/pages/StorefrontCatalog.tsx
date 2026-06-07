@@ -777,21 +777,27 @@ function MobileFilterSheet({
   availableColors, selectedColors, toggleColor,
   availableGlazings, selectedGlazings, toggleGlazing,
 }: MobileFilterSheetProps) {
+  const goldGradient =
+    "linear-gradient(175deg, #cfbb96 0%, #bda67a 15%, #a8956e 35%, #8d7c5a 55%, #7a6b4d 70%, #6e5f40 85%, #5c5035 100%)";
+
   return (
-    <div className="md:hidden fixed inset-0 z-[80] flex flex-col bg-[#0b0d12] animate-fade-in">
-      {/* Header */}
-      <div className="shrink-0 flex items-center justify-between px-5 h-14 border-b border-white/[0.06] bg-[#0b0d12]">
-        <div className="flex items-center gap-2">
-          <span className="text-[15px] font-bold uppercase tracking-[0.15em] text-storefront-text">Фильтры</span>
+    <div className="md:hidden fixed inset-0 z-[80] flex flex-col animate-fade-in" style={{ background: goldGradient }}>
+      {/* Header — sticky, gold, dark text */}
+      <div
+        className="shrink-0 flex items-center justify-between px-5 h-14 border-b border-black/10"
+        style={{ background: goldGradient }}
+      >
+        <div className="flex items-center gap-2.5">
+          <span className="text-[14px] font-extrabold uppercase tracking-[0.18em] text-[#1a1408]">Фильтры</span>
           {activeCount > 0 && (
-            <span className="min-w-[20px] h-5 px-1.5 inline-flex items-center justify-center rounded-full bg-storefront-gold text-[10px] font-bold text-[#1a1408] leading-none">
+            <span className="min-w-[20px] h-5 px-1.5 inline-flex items-center justify-center rounded-full bg-[#1a1408] text-[10px] font-bold text-[#cfbb96] leading-none">
               {activeCount}
             </span>
           )}
         </div>
         <button
           onClick={onClose}
-          className="-mr-2 w-10 h-10 flex items-center justify-center text-storefront-muted active:text-storefront-text"
+          className="-mr-2 w-10 h-10 flex items-center justify-center text-[#1a1408]/70 active:text-[#1a1408]"
           aria-label="Закрыть"
         >
           <X className="w-6 h-6" />
@@ -799,17 +805,17 @@ function MobileFilterSheet({
       </div>
 
       {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto overscroll-contain px-5 pt-4 pb-6 scrollbar-hide">
+      <div className="flex-1 overflow-y-auto overscroll-contain px-5 pt-5 pb-6 scrollbar-hide">
         {/* Categories */}
-        <section className="mb-6">
-          <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-storefront-muted/70 mb-3">Категории</h3>
-          <div className="space-y-1">
+        <section className="mb-5">
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#1a1408]/50 mb-3 px-1">Категории</h3>
+          <div className="space-y-1.5">
             <button
               onClick={() => selectCategory(null)}
-              className={`w-full text-left px-4 py-3 rounded-xl text-[14px] font-semibold transition-colors ${
+              className={`w-full text-left px-4 py-3 rounded-xl text-[14px] font-bold transition-all ${
                 !selectedCategory
-                  ? "bg-storefront-gold/15 text-storefront-gold border border-storefront-gold/30"
-                  : "bg-white/[0.03] text-storefront-text border border-white/[0.06] active:bg-white/[0.06]"
+                  ? "bg-black/20 text-white shadow-[inset_0_0_20px_rgba(0,0,0,0.15)]"
+                  : "text-[#1a1408]/75 active:bg-black/5"
               }`}
             >
               Все товары
@@ -822,13 +828,13 @@ function MobileFilterSheet({
               const highlighted = isActive || hasActiveChild;
               return (
                 <div key={parent.id}>
-                  <div className="flex items-stretch gap-1">
+                  <div className="flex items-stretch gap-1.5">
                     <button
                       onClick={() => selectCategory(parent.id)}
-                      className={`flex-1 text-left px-4 py-3 rounded-xl text-[14px] font-semibold transition-colors ${
+                      className={`flex-1 text-left px-4 py-3 rounded-xl text-[14px] font-bold transition-all ${
                         highlighted
-                          ? "bg-storefront-gold/15 text-storefront-gold border border-storefront-gold/30"
-                          : "bg-white/[0.03] text-storefront-text border border-white/[0.06] active:bg-white/[0.06]"
+                          ? "bg-black/20 text-white shadow-[inset_0_0_20px_rgba(0,0,0,0.15)]"
+                          : "text-[#1a1408]/75 active:bg-black/5"
                       }`}
                     >
                       {parent.name}
@@ -836,23 +842,23 @@ function MobileFilterSheet({
                     {children.length > 0 && (
                       <button
                         onClick={() => toggleParent(parent.id)}
-                        className="w-11 shrink-0 flex items-center justify-center rounded-xl bg-white/[0.03] border border-white/[0.06] text-storefront-muted active:bg-white/[0.06]"
+                        className="w-11 shrink-0 flex items-center justify-center rounded-xl bg-black/5 text-[#1a1408]/60 active:bg-black/10"
                         aria-label={isExpanded ? "Свернуть" : "Развернуть"}
                       >
-                        <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`} />
+                        <ChevronRight className={`w-4.5 h-4.5 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`} />
                       </button>
                     )}
                   </div>
                   {isExpanded && children.length > 0 && (
-                    <div className="mt-1 ml-3 pl-3 border-l border-white/10 space-y-1">
+                    <div className="mt-1.5 ml-3 pl-3 border-l-2 border-black/10 space-y-1">
                       {children.map((child: any) => (
                         <button
                           key={child.id}
                           onClick={() => selectCategory(child.id)}
-                          className={`w-full text-left px-3 py-2.5 rounded-lg text-[13px] font-medium transition-colors ${
+                          className={`w-full text-left px-3 py-2.5 rounded-lg text-[13px] font-semibold transition-all ${
                             selectedCategory === child.id
-                              ? "bg-storefront-gold/15 text-storefront-gold"
-                              : "text-storefront-muted active:text-storefront-text active:bg-white/[0.04]"
+                              ? "bg-black/15 text-white"
+                              : "text-[#1a1408]/60 active:bg-black/5"
                           }`}
                         >
                           {child.name}
@@ -866,9 +872,11 @@ function MobileFilterSheet({
           </div>
         </section>
 
+        <div className="border-t border-black/10 my-5" />
+
         {/* Price */}
-        <section className="mb-6">
-          <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-storefront-muted/70 mb-3">Цена, ₽</h3>
+        <section className="mb-5">
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#1a1408]/50 mb-3 px-1">Цена, ₽</h3>
           <div className="flex items-center gap-2">
             <input
               type="text"
@@ -877,9 +885,9 @@ function MobileFilterSheet({
               placeholder="от"
               value={priceFrom}
               onChange={(e) => setPriceFrom(e.target.value.replace(/[^0-9]/g, ""))}
-              className="w-full bg-white/[0.04] border border-white/[0.08] text-storefront-text text-[14px] font-semibold px-4 py-3 rounded-xl placeholder:text-storefront-muted/50 focus:outline-none focus:border-storefront-gold/40"
+              className="w-full bg-black/10 border border-black/10 text-[#1a1408] text-[14px] font-bold px-3 py-3 rounded-xl placeholder:text-[#1a1408]/30 focus:outline-none focus:border-black/25 focus:bg-black/15 transition-all"
             />
-            <span className="text-storefront-muted/40 shrink-0">—</span>
+            <span className="text-[#1a1408]/30 text-base font-bold shrink-0">—</span>
             <input
               type="text"
               inputMode="numeric"
@@ -887,77 +895,86 @@ function MobileFilterSheet({
               placeholder="до"
               value={priceTo}
               onChange={(e) => setPriceTo(e.target.value.replace(/[^0-9]/g, ""))}
-              className="w-full bg-white/[0.04] border border-white/[0.08] text-storefront-text text-[14px] font-semibold px-4 py-3 rounded-xl placeholder:text-storefront-muted/50 focus:outline-none focus:border-storefront-gold/40"
+              className="w-full bg-black/10 border border-black/10 text-[#1a1408] text-[14px] font-bold px-3 py-3 rounded-xl placeholder:text-[#1a1408]/30 focus:outline-none focus:border-black/25 focus:bg-black/15 transition-all"
             />
           </div>
         </section>
 
         {/* Colors as chips */}
         {availableColors.length > 0 && (
-          <section className="mb-6">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-storefront-muted/70 mb-3">Цвет</h3>
-            <div className="flex flex-wrap gap-2">
-              {availableColors.map((color) => {
-                const active = selectedColors.has(color);
-                return (
-                  <button
-                    key={color}
-                    onClick={() => toggleColor(color)}
-                    className={`px-3.5 py-2 rounded-full text-[13px] font-medium transition-colors border ${
-                      active
-                        ? "bg-storefront-gold/15 text-storefront-gold border-storefront-gold/40"
-                        : "bg-white/[0.03] text-storefront-text border-white/[0.08] active:bg-white/[0.06]"
-                    }`}
-                  >
-                    {color}
-                  </button>
-                );
-              })}
-            </div>
-          </section>
+          <>
+            <div className="border-t border-black/10 my-5" />
+            <section className="mb-5">
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#1a1408]/50 mb-3 px-1">Цвет</h3>
+              <div className="flex flex-wrap gap-2">
+                {availableColors.map((color) => {
+                  const active = selectedColors.has(color);
+                  return (
+                    <button
+                      key={color}
+                      onClick={() => toggleColor(color)}
+                      className={`px-3.5 py-2 rounded-full text-[13px] font-semibold transition-all border ${
+                        active
+                          ? "bg-[#1a1408] text-[#cfbb96] border-[#1a1408]"
+                          : "bg-black/5 text-[#1a1408]/75 border-black/10 active:bg-black/10"
+                      }`}
+                    >
+                      {color}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          </>
         )}
 
         {/* Glazing as chips */}
         {availableGlazings.length > 0 && (
-          <section className="mb-6">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-storefront-muted/70 mb-3">Остекление</h3>
-            <div className="flex flex-wrap gap-2">
-              {availableGlazings.map((g) => {
-                const active = selectedGlazings.has(g);
-                return (
-                  <button
-                    key={g}
-                    onClick={() => toggleGlazing(g)}
-                    className={`px-3.5 py-2 rounded-full text-[13px] font-medium transition-colors border ${
-                      active
-                        ? "bg-storefront-gold/15 text-storefront-gold border-storefront-gold/40"
-                        : "bg-white/[0.03] text-storefront-text border-white/[0.08] active:bg-white/[0.06]"
-                    }`}
-                  >
-                    {g}
-                  </button>
-                );
-              })}
-            </div>
-          </section>
+          <>
+            <div className="border-t border-black/10 my-5" />
+            <section className="mb-5">
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#1a1408]/50 mb-3 px-1">Остекление</h3>
+              <div className="flex flex-wrap gap-2">
+                {availableGlazings.map((g) => {
+                  const active = selectedGlazings.has(g);
+                  return (
+                    <button
+                      key={g}
+                      onClick={() => toggleGlazing(g)}
+                      className={`px-3.5 py-2 rounded-full text-[13px] font-semibold transition-all border ${
+                        active
+                          ? "bg-[#1a1408] text-[#cfbb96] border-[#1a1408]"
+                          : "bg-black/5 text-[#1a1408]/75 border-black/10 active:bg-black/10"
+                      }`}
+                    >
+                      {g}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          </>
         )}
       </div>
 
       {/* Sticky footer */}
       <div
-        className="shrink-0 border-t border-white/[0.06] bg-[#0b0d12] px-5 pt-3 flex items-center gap-2"
-        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)" }}
+        className="shrink-0 border-t border-black/15 px-5 pt-3 flex items-center gap-2"
+        style={{
+          background: goldGradient,
+          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)",
+        }}
       >
         <button
           onClick={onReset}
           disabled={activeCount === 0}
-          className="h-12 px-5 rounded-xl text-[13px] font-semibold uppercase tracking-[0.1em] text-storefront-text bg-white/[0.04] border border-white/[0.08] disabled:opacity-40 active:bg-white/[0.08] transition-colors"
+          className="h-12 px-5 rounded-xl text-[12px] font-bold uppercase tracking-[0.12em] text-[#1a1408] bg-black/10 border border-black/10 disabled:opacity-40 active:bg-black/15 transition-colors"
         >
           Сбросить
         </button>
         <button
           onClick={onClose}
-          className="flex-1 h-12 rounded-xl bg-storefront-gold text-[#1a1408] text-[13px] font-bold uppercase tracking-[0.15em] active:scale-[0.98] transition-transform"
+          className="flex-1 h-12 rounded-xl bg-[#1a1408] text-white text-[13px] font-bold uppercase tracking-[0.15em] active:scale-[0.98] transition-transform"
         >
           Показать {resultsCount}
         </button>
