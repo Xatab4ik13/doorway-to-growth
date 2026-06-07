@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useCallback, memo } from "react";
+import { createPortal } from "react-dom";
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
