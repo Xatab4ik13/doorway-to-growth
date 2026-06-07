@@ -750,52 +750,96 @@ export default function StorefrontProduct() {
               )}
 
               {/* ===== TRIM (ПОГОНАЖ) ===== */}
-              <div className="mb-8">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
-                    <DoorOpen className="w-4 h-4 text-storefront-gold" />
+              {realTrim.length > 0 && (
+                <div className="mb-8">
+                  <div className="flex items-center justify-between gap-2 mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
+                        <DoorOpen className="w-4 h-4 text-storefront-gold" />
+                      </div>
+                      <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
+                        Погонаж коллекции
+                      </span>
+                    </div>
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-text/40">
+                      {realTrim.length} поз.
+                    </span>
                   </div>
-                  <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
-                    Погонаж коллекции
-                  </span>
+                  <div className="-mx-2 px-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
+                    <div className="flex gap-3 pb-2">
+                      {realTrim.map((item) => (
+                        <div key={item.id} className="snap-start shrink-0 w-[160px]">
+                          <AccessoryCard
+                            name={item.name}
+                            rrp={item.rrp}
+                            image={item.image}
+                            active={selectedTrim.has(item.id)}
+                            onClick={() => toggleTrim(item.id)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  {MOCK_TRIM.map((item) => (
-                    <AccessoryCard
-                      key={item.id}
-                      name={item.name}
-                      rrp={item.rrp}
-                      image={item.image}
-                      active={selectedTrim.has(item.id)}
-                      onClick={() => toggleTrim(item.id)}
-                    />
-                  ))}
-                </div>
-              </div>
+              )}
 
               {/* ===== HARDWARE (ФУРНИТУРА) ===== */}
-              <div className="mb-8">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
-                    <Lock className="w-4 h-4 text-storefront-gold" />
+              {realHardware.length > 0 && (
+                <div className="mb-8">
+                  <div className="flex items-center justify-between gap-2 mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
+                        <Lock className="w-4 h-4 text-storefront-gold" />
+                      </div>
+                      <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
+                        Фурнитура
+                      </span>
+                    </div>
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-text/40">
+                      {filteredHardware.length} из {realHardware.length}
+                    </span>
                   </div>
-                  <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
-                    Фурнитура
-                  </span>
+
+                  {/* Subcategory tabs */}
+                  <div className="flex gap-1.5 mb-3 overflow-x-auto scrollbar-hide -mx-2 px-2">
+                    {HARDWARE_TABS.map((t) => {
+                      const count = t.key === "all" ? realHardware.length : realHardware.filter((h) => t.match(h.name)).length;
+                      if (count === 0) return null;
+                      const active = hardwareTab === t.key;
+                      return (
+                        <button
+                          key={t.key}
+                          onClick={() => setHardwareTab(t.key)}
+                          className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] uppercase tracking-[0.15em] transition-colors duration-150 ${
+                            active
+                              ? "bg-storefront-gold text-[#07090d]"
+                              : "bg-white/[0.04] text-storefront-text/70 hover:bg-white/[0.08]"
+                          }`}
+                        >
+                          {t.label}
+                          <span className={`ml-1.5 text-[10px] ${active ? "opacity-70" : "opacity-50"}`}>{count}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="-mx-2 px-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
+                    <div className="flex gap-3 pb-2">
+                      {filteredHardware.map((item) => (
+                        <div key={item.id} className="snap-start shrink-0 w-[160px]">
+                          <AccessoryCard
+                            name={item.name}
+                            rrp={item.rrp}
+                            image={item.image}
+                            active={selectedHardware.has(item.id)}
+                            onClick={() => toggleHardware(item.id)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  {MOCK_HARDWARE.map((item) => (
-                    <AccessoryCard
-                      key={item.id}
-                      name={item.name}
-                      rrp={item.rrp}
-                      image={item.image}
-                      active={selectedHardware.has(item.id)}
-                      onClick={() => toggleHardware(item.id)}
-                    />
-                  ))}
-                </div>
-              </div>
+              )}
 
               {/* ===== OPENING SYSTEMS — only for door products ===== */}
               {isDoorProduct && <OpeningSystems />}
