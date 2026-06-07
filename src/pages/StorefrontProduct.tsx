@@ -759,20 +759,38 @@ export default function StorefrontProduct() {
                       {realTrim.length} поз.
                     </span>
                   </div>
-                  <div className="-mx-2 px-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
-                    <div className="flex gap-3 pb-2">
-                      {realTrim.map((item) => (
-                        <div key={item.id} className="snap-start shrink-0 w-[160px]">
-                          <AccessoryCard
-                            name={item.name}
-                            rrp={item.rrp}
-                            image={item.image}
-                            active={selectedTrim.has(item.id)}
-                            onClick={() => toggleTrim(item.id)}
-                          />
-                        </div>
-                      ))}
+                  <div className="relative">
+                    <button
+                      onClick={() => trimScrollRef.current?.scrollBy({ left: -340, behavior: "smooth" })}
+                      className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-[#07090d]/90 border border-white/10 flex items-center justify-center hover:bg-storefront-gold hover:text-[#07090d] hover:border-storefront-gold transition-colors"
+                      style={{ color: "rgba(245,245,240,0.5)" }}
+                      aria-label="Назад"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <div ref={trimScrollRef} className="-mx-2 px-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
+                      <div className="flex gap-3 pb-2">
+                        {realTrim.map((item) => (
+                          <div key={item.id} className="snap-start shrink-0 w-[160px]">
+                            <AccessoryCard
+                              name={item.name}
+                              rrp={item.rrp}
+                              image={item.image}
+                              active={selectedTrim.has(item.id)}
+                              onClick={() => toggleTrim(item.id)}
+                            />
+                          </div>
+                        ))}
+                      </div>
                     </div>
+                    <button
+                      onClick={() => trimScrollRef.current?.scrollBy({ left: 340, behavior: "smooth" })}
+                      className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-[#07090d]/90 border border-white/10 flex items-center justify-center hover:bg-storefront-gold hover:text-[#07090d] hover:border-storefront-gold transition-colors"
+                      style={{ color: "rgba(245,245,240,0.5)" }}
+                      aria-label="Вперёд"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               )}
