@@ -134,7 +134,6 @@ export default function StorefrontCatalog() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryParam, categories]);
-  }, [collectionParam, categories]);
 
   // Get all descendant IDs for a parent
   const getDescendantIds = (parentId: string): string[] => {
