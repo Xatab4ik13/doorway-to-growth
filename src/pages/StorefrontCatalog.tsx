@@ -1093,6 +1093,9 @@ function MobileFilterSheet({
           Показать {resultsCount}
         </button>
       </div>
+      </div>
     </div>
   );
+
+  return createPortal(node, document.body);
 }
