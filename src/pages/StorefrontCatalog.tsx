@@ -17,6 +17,7 @@ export default function StorefrontCatalog() {
   const slug = useSiteSlug(urlSlug);
   const [searchParams] = useSearchParams();
   const collectionParam = searchParams.get("collection");
+  const categoryParam = searchParams.get("category");
   const { data: site, isLoading } = useSiteBySlug(slug);
   const { data: products = [] } = useStorefrontProducts(site?.id);
   const { data: categories = [] } = useStorefrontCategories();
@@ -118,6 +119,21 @@ export default function StorefrontCatalog() {
         setExpandedParents((prev) => new Set(prev).add(match.parent_id));
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collectionParam, categories]);
+
+  // Auto-select parent category from URL ?category=<parentSlug> param
+  useEffect(() => {
+    if (!categoryParam || categories.length === 0) return;
+    const match = (categories as any[]).find(
+      (c) => c.slug === categoryParam && !c.parent_id
+    );
+    if (match) {
+      selectCategory(match.id);
+      setExpandedParents((prev) => new Set(prev).add(match.id));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryParam, categories]);
   }, [collectionParam, categories]);
 
   // Get all descendant IDs for a parent
