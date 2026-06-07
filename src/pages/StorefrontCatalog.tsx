@@ -441,8 +441,13 @@ export default function StorefrontCatalog() {
             {/* ===== PRODUCTS GRID ===== */}
             <div className="flex-1 min-w-0">
               {/* Count */}
-              <div className="text-xs text-storefront-muted mb-4">
-                Найдено: {filtered.length} товаров · Страница {page} из {totalPages || 1}
+              <div className="flex items-baseline justify-between gap-3 mb-4 text-[13px]">
+                <span className="text-storefront-text/80">
+                  Найдено: <span className="font-semibold text-storefront-text">{filtered.length}</span>
+                </span>
+                <span className="text-storefront-muted tabular-nums">
+                  Стр. {page} / {totalPages || 1}
+                </span>
               </div>
 
               {/* Grid */}
