@@ -82,12 +82,7 @@ export default function StorefrontCatalog() {
     setPage(1);
   };
 
-  const activeFiltersCount =
-    (selectedCategory ? 1 : 0) +
-    (priceFrom ? 1 : 0) +
-    (priceTo ? 1 : 0) +
-    selectedColors.size +
-    selectedGlazings.size;
+  // activeFiltersCount is computed below, after `lockedParent` is defined.
 
   // Category tree
   const parentCategories = useMemo(
@@ -105,6 +100,14 @@ export default function StorefrontCatalog() {
   );
   const displayedParents = lockedParent ? [lockedParent] : parentCategories;
   const categoriesBackHref = `/store/${slug}/catalog`;
+
+  // Don't count lockedParent (page context from ?category=) as a user-applied filter.
+  const activeFiltersCount =
+    (selectedCategory && selectedCategory !== lockedParent?.id ? 1 : 0) +
+    (priceFrom ? 1 : 0) +
+    (priceTo ? 1 : 0) +
+    selectedColors.size +
+    selectedGlazings.size;
 
 
   const toggleParent = (id: string) => {
@@ -330,7 +333,7 @@ export default function StorefrontCatalog() {
 
           {/* Title row */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-3 mb-8">
-            <h1 className="text-2xl sm:text-4xl font-bold text-storefront-text uppercase tracking-wide break-words">
+            <h1 className="text-2xl sm:text-4xl font-bold text-storefront-text uppercase tracking-normal sm:tracking-wide break-words">
               {lockedParent ? lockedParent.name : "Каталог"}
             </h1>
             <div className="flex items-center gap-2 sm:shrink-0">
@@ -438,8 +441,13 @@ export default function StorefrontCatalog() {
             {/* ===== PRODUCTS GRID ===== */}
             <div className="flex-1 min-w-0">
               {/* Count */}
-              <div className="text-xs text-storefront-muted mb-4">
-                Найдено: {filtered.length} товаров · Страница {page} из {totalPages || 1}
+              <div className="flex items-baseline justify-between gap-3 mb-4 text-[13px]">
+                <span className="text-storefront-text/80">
+                  Найдено: <span className="font-semibold text-storefront-text">{filtered.length}</span>
+                </span>
+                <span className="text-storefront-muted tabular-nums">
+                  Стр. {page} / {totalPages || 1}
+                </span>
               </div>
 
               {/* Grid */}
@@ -751,7 +759,7 @@ const ProductCard = memo(function ProductCard({
   return (
     <div className="group">
       <Link to={`/store/${slug}/product/${product.slug}`} className="block">
-        <div className="relative overflow-hidden bg-[#0c0e14] flex items-center justify-center aspect-[4/5]">
+        <div className="relative overflow-hidden bg-[#0c0e14] flex items-center justify-center aspect-[4/5] rounded-2xl">
           {img ? (
             <img
               src={img}
@@ -763,7 +771,7 @@ const ProductCard = memo(function ProductCard({
               className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-[#0f1218]">
+            <div className="w-full h-full flex items-center justify-center bg-[#0f1218] rounded-2xl">
               <span className="text-storefront-muted/20 text-5xl font-bold">B</span>
             </div>
           )}
