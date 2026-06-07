@@ -176,8 +176,8 @@ function AccessoryCard({
   onClick,
 }: {
   name: string;
-  rrp: number;
-  image: string;
+  rrp: number | null;
+  image: string | null;
   active: boolean;
   onClick: () => void;
 }) {
@@ -193,13 +193,17 @@ function AccessoryCard({
     >
       {/* Photo */}
       <div className="relative aspect-[5/4] bg-[#0c0e14] overflow-hidden">
-        <img
-          src={image}
-          alt={name}
-          loading="lazy"
-          draggable={false}
-          className="absolute inset-0 w-full h-full object-contain p-4 transition-transform duration-500 ease-out group-hover:scale-[1.06]"
-        />
+        {image ? (
+          <img
+            src={image}
+            alt={name}
+            loading="lazy"
+            draggable={false}
+            className="absolute inset-0 w-full h-full object-contain p-4 transition-transform duration-500 ease-out group-hover:scale-[1.06]"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-storefront-muted/20 text-4xl font-bold">B</div>
+        )}
         {/* Add / Check badge */}
         <span
           className={`absolute top-2.5 right-2.5 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${
@@ -217,7 +221,7 @@ function AccessoryCard({
           {name}
         </div>
         <div className="text-[11px] text-storefront-gold/80 mt-1 tracking-wide">
-          +{rrp.toLocaleString("ru-RU")} ₽
+          {rrp && rrp > 0 ? `+${rrp.toLocaleString("ru-RU")} ₽` : "По запросу"}
         </div>
       </div>
     </button>
