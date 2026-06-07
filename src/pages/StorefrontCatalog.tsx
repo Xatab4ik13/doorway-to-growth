@@ -529,16 +529,27 @@ function SidebarContent({
       <div className="px-3 py-5">
         <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#1a1408]/40 px-4 mb-3">Категории</span>
 
-        <button
-          onClick={() => selectCategory(null)}
-          className={`w-full text-left text-[16px] font-bold py-3.5 px-4 mb-1 rounded-xl transition-all duration-300 ${
-            !selectedCategory
-              ? "bg-black/20 text-white shadow-[inset_0_0_20px_rgba(0,0,0,0.15)]"
-              : "text-[#1a1408]/70 hover:text-[#1a1408] hover:bg-black/5"
-          }`}
-        >
-          Все товары
-        </button>
+        {backHref ? (
+          <Link
+            to={backHref}
+            className="flex items-center gap-2 text-[14px] font-bold py-3.5 px-4 mb-2 rounded-xl text-[#1a1408]/75 hover:text-[#1a1408] hover:bg-black/5 transition-all duration-300"
+          >
+            <ChevronRight className="w-4 h-4 rotate-180" />
+            К категориям
+          </Link>
+        ) : (
+          <button
+            onClick={() => selectCategory(null)}
+            className={`w-full text-left text-[16px] font-bold py-3.5 px-4 mb-1 rounded-xl transition-all duration-300 ${
+              !selectedCategory
+                ? "bg-black/20 text-white shadow-[inset_0_0_20px_rgba(0,0,0,0.15)]"
+                : "text-[#1a1408]/70 hover:text-[#1a1408] hover:bg-black/5"
+            }`}
+          >
+            Все товары
+          </button>
+        )}
+
 
         {parentCategories.map((parent) => {
           const children = getChildren(parent.id);
