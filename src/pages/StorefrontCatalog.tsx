@@ -480,20 +480,20 @@ export default function StorefrontCatalog() {
                   <button
                     onClick={() => setPage(Math.max(1, page - 1))}
                     disabled={page <= 1}
-                    className="px-3 py-2 text-xs text-storefront-muted hover:text-storefront-text disabled:opacity-30 transition-colors"
+                    className="w-11 h-11 flex items-center justify-center text-base text-storefront-muted hover:text-storefront-text disabled:opacity-30 transition-colors rounded-md"
                   >
                     ←
                   </button>
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
-                    .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 2)
+                    .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
                     .map((p, idx, arr) => (
                       <span key={p} className="contents">
                         {idx > 0 && arr[idx - 1] !== p - 1 && (
-                          <span className="px-2 text-storefront-muted/40 text-xs">…</span>
+                          <span className="px-1 text-storefront-muted/40 text-xs">…</span>
                         )}
                         <button
                           onClick={() => setPage(p)}
-                          className={`w-8 h-8 text-xs transition-colors ${
+                          className={`w-11 h-11 text-sm rounded-md transition-colors ${
                             p === page
                               ? "bg-storefront-gold text-[#07090d] font-bold"
                               : "text-storefront-muted hover:text-storefront-text hover:bg-white/5"
@@ -506,7 +506,7 @@ export default function StorefrontCatalog() {
                   <button
                     onClick={() => setPage(Math.min(totalPages, page + 1))}
                     disabled={page >= totalPages}
-                    className="px-3 py-2 text-xs text-storefront-muted hover:text-storefront-text disabled:opacity-30 transition-colors"
+                    className="w-11 h-11 flex items-center justify-center text-base text-storefront-muted hover:text-storefront-text disabled:opacity-30 transition-colors rounded-md"
                   >
                     →
                   </button>
