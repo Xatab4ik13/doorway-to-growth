@@ -544,7 +544,7 @@ export default function StorefrontProduct() {
 
   return (
     <StorefrontLayout site={site}>
-      <div className="min-h-screen pt-14 md:pt-0 bg-[#07090d]">
+      <div className="min-h-screen pt-[68px] md:pt-0 bg-[#07090d]">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-14">
 
           {/* Breadcrumbs */}
