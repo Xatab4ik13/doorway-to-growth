@@ -155,22 +155,15 @@ const MOCK_MOLDING_COLORS: { name: string; hex: string }[] = [
   { name: "Черный", hex: "#1A1A1A" },
 ];
 
-type TrimItem = { id: string; name: string; rrp: number; image: string };
-type HardwareItem = { id: string; name: string; rrp: number; image: string };
+type AccessoryItem = { id: string; name: string; rrp: number | null; image: string | null; slug: string };
 
-const MOCK_TRIM: TrimItem[] = [
-  { id: "trim-1", name: "Наличник телескопический", rrp: 850, image: trimCasingTele },
-  { id: "trim-2", name: "Добор телескопический", rrp: 1200, image: trimExtenderTele },
-  { id: "trim-3", name: "Наличник прямой", rrp: 600, image: trimCasingStraight },
-  { id: "trim-4", name: "Добор прямой", rrp: 950, image: trimExtenderStraight },
-];
-
-const MOCK_HARDWARE: HardwareItem[] = [
-  { id: "hw-1", name: "Ручка MORELLI", rrp: 2400, image: handleMorelli },
-  { id: "hw-2", name: "Замок магнитный", rrp: 1800, image: lockMagnetic },
-  { id: "hw-3", name: "Петли скрытые (2 шт)", rrp: 3200, image: hingesConcealed },
-  { id: "hw-4", name: "Ручка RENZ", rrp: 1600, image: handleRenz },
-  { id: "hw-5", name: "Замок сантехнический", rrp: 1200, image: lockBathroom },
+// Hardware subcategory tabs derived from product name keywords.
+const HARDWARE_TABS: { key: string; label: string; match: (n: string) => boolean }[] = [
+  { key: "all", label: "Все", match: () => true },
+  { key: "handles", label: "Ручки", match: (n) => /ручк|скоб|кноп/i.test(n) },
+  { key: "locks", label: "Защёлки и замки", match: (n) => /защ[её]лк|замк|замок|корпус/i.test(n) },
+  { key: "hinges", label: "Петли", match: (n) => /петл/i.test(n) },
+  { key: "systems", label: "Системы", match: (n) => /invisible|compack|magic|пенал|купе|sky/i.test(n) },
 ];
 
 // Premium photo card for trim / hardware accessory selection.
