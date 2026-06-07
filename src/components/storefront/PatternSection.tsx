@@ -115,18 +115,32 @@ const CollectionCarousel = memo(function CollectionCarousel({
               className="h-[400px] md:h-[480px] lg:h-[560px] w-auto object-contain select-none rounded-3xl"
               draggable={false}
             />
-            <span
-              className="mt-6 text-[13px] md:text-[14px] tracking-[0.3em] uppercase text-center"
-              style={{
-                fontFamily: "'Raleway', sans-serif",
-                color: (isCenter || len <= 2) ? "rgba(245,245,240,0.8)" : "rgba(245,245,240,0.4)",
-              }}
-            >
-              {items[idx].name}
-            </span>
+            {len !== 2 && (
+              <span
+                className="mt-6 text-[13px] md:text-[14px] tracking-[0.3em] uppercase text-center"
+                style={{
+                  fontFamily: "'Raleway', sans-serif",
+                  color: isCenter ? "rgba(245,245,240,0.8)" : "rgba(245,245,240,0.4)",
+                }}
+              >
+                {items[idx].name}
+              </span>
+            )}
           </div>
         );
       })}
+
+      {len === 2 && (
+        <div
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 px-4 text-center text-[13px] md:text-[14px] tracking-[0.3em] uppercase whitespace-nowrap"
+          style={{
+            fontFamily: "'Raleway', sans-serif",
+            color: "rgba(245,245,240,0.8)",
+          }}
+        >
+          {items.map((it) => it.name).join(" и ")}
+        </div>
+      )}
 
       {len > 1 && (
         <>
