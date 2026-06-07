@@ -15,6 +15,7 @@ import Login from "./pages/Login.tsx";
 const Partner = lazy(() => import("./pages/Partner.tsx"));
 const Storefront = lazy(() => import("./pages/Storefront.tsx"));
 const StorefrontCatalog = lazy(() => import("./pages/StorefrontCatalog.tsx"));
+const StorefrontCategorySelect = lazy(() => import("./pages/StorefrontCategorySelect.tsx"));
 const StorefrontProduct = lazy(() => import("./pages/StorefrontProduct.tsx"));
 const StorefrontCart = lazy(() => import("./pages/StorefrontCart.tsx"));
 const StorefrontBrand = lazy(() => import("./pages/StorefrontBrand.tsx"));
@@ -87,7 +88,8 @@ function AppRoutes() {
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<Storefront />} />
-          <Route path="/catalog" element={<StorefrontCatalog />} />
+          <Route path="/catalog" element={<StorefrontCategorySelect />} />
+          <Route path="/catalog/list" element={<StorefrontCatalog />} />
           <Route path="/product/:productSlug" element={<StorefrontProduct />} />
           <Route path="/cart" element={<StorefrontCart />} />
           <Route path="/brand" element={<StorefrontBrand />} />
@@ -119,7 +121,8 @@ function AppRoutes() {
         <Route path="/partner" element={<ProtectedRoute requiredRole="partner"><Partner /></ProtectedRoute>} />
         <Route path="/login" element={<LoginRoute />} />
         <Route path="/store/:slug" element={<Storefront />} />
-        <Route path="/store/:slug/catalog" element={<StorefrontCatalog />} />
+        <Route path="/store/:slug/catalog" element={<StorefrontCategorySelect />} />
+        <Route path="/store/:slug/catalog/list" element={<StorefrontCatalog />} />
         <Route path="/store/:slug/product/:productSlug" element={<StorefrontProduct />} />
         <Route path="/store/:slug/cart" element={<StorefrontCart />} />
         <Route path="/store/:slug/brand" element={<StorefrontBrand />} />

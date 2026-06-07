@@ -34,6 +34,9 @@ export function StorefrontHeader({ site }: Props) {
     const basePath = `/store/${site.slug}`;
     if (item.isRoute) {
       const fullPath = item.href ? `${basePath}/${item.href}` : basePath;
+      if (item.href === "catalog") {
+        return location.pathname === fullPath || location.pathname.startsWith(`${fullPath}/`);
+      }
       return location.pathname === fullPath || location.pathname === `${fullPath}/`;
     }
     return false;

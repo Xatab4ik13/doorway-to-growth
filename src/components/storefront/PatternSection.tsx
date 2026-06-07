@@ -163,7 +163,7 @@ export function PatternSection() {
   };
 
   const handleSelect = (name: string) => {
-    navigate(`/store/${slug}/catalog?collection=${encodeURIComponent(name)}`);
+    navigate(`/store/${slug}/catalog/list?collection=${encodeURIComponent(name)}`);
   };
 
   return (
