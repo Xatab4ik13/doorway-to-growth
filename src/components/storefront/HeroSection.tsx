@@ -5,6 +5,7 @@ import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { CartButton } from "./CartButton";
 import brandoorsLogo from "@/assets/logo.png";
 import heroBanner from "@/assets/hero-banner.jpg";
+import { getSiteMedia } from "@/config/siteMedia";
 
 interface Props {
   site: StorefrontSite;
@@ -21,12 +22,13 @@ const NAV_ITEMS = [
 ];
 
 export function HeroSection({ site, banners }: Props) {
+  const heroImage = getSiteMedia(site.slug).heroImage ?? heroBanner;
   return (
     <section className="relative h-screen min-h-[700px] overflow-hidden select-none bg-storefront-bg">
 
       {/* Hero banner image */}
       <div className="absolute inset-0 z-0">
-        <img src={heroBanner} alt="Brandoors — скрытые двери в интерьере" className="w-full h-full object-cover" />
+        <img src={heroImage} alt="Brandoors — скрытые двери в интерьере" className="w-full h-full object-cover" />
         <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(7,9,13,0.6) 0%, rgba(7,9,13,0.3) 50%, rgba(7,9,13,0.5) 100%)" }} />
       </div>
 
