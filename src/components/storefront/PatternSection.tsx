@@ -70,15 +70,14 @@ const CollectionCarousel = memo(function CollectionCarousel({
   } else if (len >= 3) {
     for (let o = -1; o <= 1; o++) visible.push({ idx: getIndex(current + o, len), offset: o });
   } else if (len === 2) {
-    visible.push({ idx: 0, offset: -0.7 }, { idx: 1, offset: 0.7 });
+    // Show current centered + the other at the side; arrows rotate which is active.
+    visible.push({ idx: current, offset: 0 });
+    visible.push({ idx: getIndex(current + 1, len), offset: 1 });
   } else {
     visible.push({ idx: current, offset: 0 });
   }
 
   const getStyle = (offset: number) => {
-    if (len === 2) {
-      return { xPercent: offset * 38, scale: 0.9, opacity: 1, z: 5 };
-    }
     const absOff = Math.abs(offset);
     const xPercent = offset * 38;
     const scale = absOff === 0 ? 1 : absOff <= 1 ? 0.78 : 0.55;
@@ -87,6 +86,7 @@ const CollectionCarousel = memo(function CollectionCarousel({
     const z = absOff === 0 ? 10 : absOff <= 1 ? 5 : 1;
     return { xPercent, scale, opacity, z };
   };
+
 
   return (
     <div className="relative mx-auto h-[500px] md:h-[620px] lg:h-[720px] overflow-hidden">
