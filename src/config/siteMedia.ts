@@ -17,6 +17,7 @@ import roomer5 from "@/assets/roomer/roomer-showroom-5.webp";
 import roomerBuilding from "@/assets/roomer/roomer-building.webp";
 import roomerStaff from "@/assets/roomer/roomer-staff.webp";
 import roomerTour from "@/assets/roomer/roomer-tour.mp4";
+import roomerHero from "@/assets/roomer/roomer-hero.webp";
 
 export type SiteMedia = {
   gallery: Array<{ src: string; alt: string }>;
