@@ -245,11 +245,11 @@ export function AboutSection({ site, staff }: Props) {
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.4 }}
             >
-              <img src={staffPhoto} alt="Менеджер салона" className="w-full aspect-[3/4] object-cover" />
+              <img src={media.staffPhoto} alt="Менеджер салона" className="w-full aspect-[3/4] object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
               <div className="absolute bottom-4 left-4 right-4">
-                <p className="text-sm font-medium" style={{ color: "#F5F5F0" }}>Светлана</p>
-                <p className="text-xs" style={{ color: "rgba(207,187,150,0.7)" }}>Менеджер салона</p>
+                <p className="text-sm font-medium" style={{ color: "#F5F5F0" }}>{media.staffName ?? "Менеджер"}</p>
+                <p className="text-xs" style={{ color: "rgba(207,187,150,0.7)" }}>{media.staffPosition ?? "Менеджер салона"}</p>
               </div>
             </motion.div>
 
