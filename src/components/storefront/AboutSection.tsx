@@ -5,21 +5,7 @@ import { MapPin, Phone, Mail, Clock, ChevronLeft, ChevronRight, Play } from "luc
 import { ReviewsCarousel } from "./ReviewsCarousel";
 import { YandexMap } from "./YandexMap";
 
-import showroom1 from "@/assets/showroom/showroom-1.webp";
-import showroom2 from "@/assets/showroom/showroom-2.webp";
-import showroom3 from "@/assets/showroom/showroom-3.webp";
-import showroom4 from "@/assets/showroom/showroom-4.webp";
-import showroom5 from "@/assets/showroom/showroom-5.webp";
-import showroom6 from "@/assets/showroom/showroom-6.webp";
-import staffPhoto from "@/assets/showroom/staff.webp";
-
-const GALLERY = [
-  { src: showroom2, alt: "Зона консультации" },
-  { src: showroom3, alt: "Экспозиция дверей BRANDOORS" },
-  { src: showroom4, alt: "Коридор входных дверей" },
-  { src: showroom5, alt: "Межкомнатные двери в шоуруме" },
-  { src: showroom6, alt: "Основной зал шоурума" },
-];
+import { getSiteMedia } from "@/config/siteMedia";
 
 interface Props {
   site: StorefrontSite;
