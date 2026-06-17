@@ -538,10 +538,6 @@ interface SidebarContentProps {
   toggleParent: (id: string) => void;
   selectedCategory: string | null;
   selectCategory: (id: string | null) => void;
-  priceFrom: string;
-  setPriceFrom: (v: string) => void;
-  priceTo: string;
-  setPriceTo: (v: string) => void;
   colorOpen: boolean;
   setColorOpen: (v: boolean) => void;
   availableColors: string[];
