@@ -163,8 +163,6 @@ export default function StorefrontCatalog() {
   useEffect(() => {
     setSelectedColors(new Set());
     setSelectedGlazings(new Set());
-    setPriceFrom("");
-    setPriceTo("");
     setPage(1);
 
     if (!categoryParam || categories.length === 0) {
