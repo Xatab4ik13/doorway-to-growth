@@ -837,7 +837,6 @@ function MobileFilterSheet({
   parentCategories, backHref, getChildren, expandedParents, toggleParent,
 
   selectedCategory, selectCategory,
-  priceFrom, setPriceFrom, priceTo, setPriceTo,
   availableColors, selectedColors, toggleColor,
   availableGlazings, selectedGlazings, toggleGlazing,
 }: MobileFilterSheetProps) {
