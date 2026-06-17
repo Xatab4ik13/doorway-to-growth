@@ -198,16 +198,16 @@ export default function StorefrontCatalog() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [products, selectedCategory, categories]);
 
-  // Extract unique colors and glazings from products in the current category.
-  // Supports multiple data shapes: scalar `color`/`glazing`, array `colors`/`glazing_options`,
-  // and `variants[].color`/`variants[].glazing` (used by PRIME and similar collections).
+  // Colors are derived strictly from product_images.variant_key — i.e. colors that
+  // have an actual photo for the product. This makes the filter list match reality
+  // (no orphan text-only entries) and lets us swap the card image to the selected color.
   const collectColors = (p: any): string[] => {
-    const out: string[] = [];
-    const s = p?.specifications || {};
-    if (typeof s.color === "string" && s.color) out.push(s.color);
-    if (Array.isArray(s.colors)) s.colors.forEach((c: any) => typeof c === "string" && c && out.push(c));
-    if (Array.isArray(s.variants)) s.variants.forEach((v: any) => v?.color && out.push(String(v.color)));
-    return out;
+    const out = new Set<string>();
+    (p?.product_images || []).forEach((i: any) => {
+      const k = i?.variant_key;
+      if (typeof k === "string" && k && !k.includes("|")) out.add(k);
+    });
+    return Array.from(out);
   };
   const collectGlazings = (p: any): string[] => {
     const out: string[] = [];
@@ -290,6 +290,13 @@ export default function StorefrontCatalog() {
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   const getPrimaryImage = (p: any) => {
+    // If user filtered by colors, show the matching color photo so cards visibly reflect the choice.
+    if (selectedColors.size > 0) {
+      const match = p.product_images?.find(
+        (i: any) => i?.variant_key && !i.variant_key.includes("|") && selectedColors.has(i.variant_key)
+      );
+      if (match?.url) return match.url;
+    }
     const primary = p.product_images?.find((i: any) => i.is_primary);
     return primary?.url || p.product_images?.[0]?.url;
   };
