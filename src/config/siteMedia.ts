@@ -59,6 +59,7 @@ const MEDIA_BY_SLUG: Record<string, SiteMedia> = {
     staffPosition: "Салон BRANDOORS в ROOMER",
     videoUrl: roomerTour,
     videoPoster: roomer3,
+    heroImage: roomerHero,
   },
 };
 
