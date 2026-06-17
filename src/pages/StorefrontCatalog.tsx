@@ -284,7 +284,7 @@ export default function StorefrontCatalog() {
     }
 
     return result;
-  }, [products, categories, selectedCategory, priceFrom, priceTo, sortBy, selectedColors, selectedGlazings]);
+  }, [products, categories, selectedCategory, sortBy, selectedColors, selectedGlazings]);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
