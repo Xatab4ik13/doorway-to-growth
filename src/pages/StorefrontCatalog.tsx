@@ -824,10 +824,6 @@ interface MobileFilterSheetProps {
   toggleParent: (id: string) => void;
   selectedCategory: string | null;
   selectCategory: (id: string | null) => void;
-  priceFrom: string;
-  setPriceFrom: (v: string) => void;
-  priceTo: string;
-  setPriceTo: (v: string) => void;
   availableColors: string[];
   selectedColors: Set<string>;
   toggleColor: (c: string) => void;
