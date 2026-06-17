@@ -169,8 +169,17 @@ const MOCK_GLAZING: { name: string; preview: string }[] = [
 ];
 
 const MOCK_EDGE_COLORS: { name: string; hex: string }[] = [
+  // Real values from products.specifications.edge_colors
+  { name: "AL Gold", hex: "#C9A96E" },
+  { name: "AL Black", hex: "#1A1A1A" },
+  { name: "AL White", hex: "#F0F0F0" },
+  { name: "AL Хром", hex: "#C8CCD0" },
+  { name: "AL Chrome", hex: "#C8CCD0" },
+  { name: "Хром", hex: "#C8CCD0" },
+  { name: "Цветная", hex: "#B07A4A" },
+  { name: "Ral & Ncs", hex: "#8A8A8A" },
+  // Legacy fallbacks
   { name: "Анодированная AL", hex: "#C0C0C0" },
-  { name: "Al White", hex: "#F0F0F0" },
   { name: "Black Edition", hex: "#1A1A1A" },
   { name: "Gold Edition", hex: "#C9A96E" },
 ];
@@ -212,10 +221,10 @@ function AccessoryCard({
     <button
       onClick={onClick}
       aria-pressed={active}
-      className={`group relative flex flex-col rounded-2xl overflow-hidden text-left transition-all duration-300 ease-out ${
+      className={`group relative flex flex-col rounded-2xl overflow-hidden text-left transition-all duration-300 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-storefront-gold/60 ${
         active
           ? "ring-2 ring-storefront-gold shadow-[0_10px_30px_-8px_rgba(207,187,150,0.35)]"
-          : "ring-1 ring-white/8 hover:ring-white/20 shadow-[0_6px_18px_-8px_rgba(0,0,0,0.7)]"
+          : "ring-1 ring-white/10 hover:ring-storefront-gold/40 shadow-[0_6px_18px_-8px_rgba(0,0,0,0.7)]"
       }`}
     >
       {/* Photo */}
