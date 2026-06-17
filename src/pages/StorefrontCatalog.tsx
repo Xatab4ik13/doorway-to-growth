@@ -167,18 +167,22 @@ export default function StorefrontCatalog() {
 
     if (!categoryParam || categories.length === 0) {
       // Returning to /catalog/list with no category — also clear the active selection
-      if (!categoryParam) setSelectedCategory(null);
+      if (!categoryParam && !collectionParam) setSelectedCategory(null);
       return;
     }
     const match = (categories as any[]).find(
       (c) => c.slug === categoryParam && !c.parent_id
     );
     if (match) {
-      setSelectedCategory(match.id);
       setExpandedParents((prev) => new Set(prev).add(match.id));
+      // When a collection (child) is also requested, let the collection effect set the child.
+      if (!collectionParam) {
+        setSelectedCategory(match.id);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryParam, categories]);
+  }, [categoryParam, collectionParam, categories]);
+
 
   // Get all descendant IDs for a parent
   const getDescendantIds = (parentId: string): string[] => {
