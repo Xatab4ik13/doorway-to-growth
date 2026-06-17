@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import ScrollToTop from "@/components/ScrollToTop";
 
 // Eager load CRM (primary use case)
 import Index from "./pages/Index.tsx";
@@ -138,6 +139,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
         <AuthProvider>
           <AppRoutes />
         </AuthProvider>
