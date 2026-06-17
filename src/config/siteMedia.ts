@@ -26,6 +26,7 @@ export type SiteMedia = {
   staffPosition?: string;
   videoUrl?: string;
   videoPoster?: string;
+  heroImage?: string;
 };
 
 const DEFAULT_MEDIA: SiteMedia = {
