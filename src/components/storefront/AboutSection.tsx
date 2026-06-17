@@ -222,7 +222,7 @@ export function AboutSection({ site, staff }: Props) {
           transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
         >
           <ReviewsCarousel siteSlug={site.slug} />
-          <YandexMap />
+          <YandexMap siteSlug={site.slug} />
         </motion.div>
 
         {/* Staff — manager card */}
