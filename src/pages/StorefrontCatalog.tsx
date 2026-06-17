@@ -39,7 +39,13 @@ export default function StorefrontCatalog() {
   const [selectedColors, setSelectedColors] = useState<Set<string>>(new Set());
   const [selectedGlazings, setSelectedGlazings] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState("default");
-  const [page, setPage] = useState(1);
+  const [page, _setPage] = useState(1);
+  const setPage = (p: number | ((prev: number) => number)) => {
+    _setPage(p);
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Lock body scroll when the mobile filter sheet is open — preserve scroll position
