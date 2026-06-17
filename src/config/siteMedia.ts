@@ -29,6 +29,17 @@ import kashirskyStaff from "@/assets/kashirsky/kashirsky-staff.webp";
 import kashirskyTour from "@/assets/kashirsky/kashirsky-tour.mp4";
 import kashirskyHero from "@/assets/kashirsky/kashirsky-hero.webp";
 
+import dekorator1 from "@/assets/dekorator/dekorator-showroom-1.webp";
+import dekorator2 from "@/assets/dekorator/dekorator-showroom-2.webp";
+import dekorator3 from "@/assets/dekorator/dekorator-showroom-3.webp";
+import dekorator4 from "@/assets/dekorator/dekorator-showroom-4.webp";
+import dekoratorBuilding from "@/assets/dekorator/dekorator-building.webp";
+import dekoratorStaff from "@/assets/dekorator/dekorator-staff.webp";
+import dekoratorTour from "@/assets/dekorator/dekorator-tour.mp4";
+import dekoratorHero from "@/assets/dekorator/dekorator-hero.webp";
+
+
+
 export type SiteMedia = {
   gallery: Array<{ src: string; alt: string }>;
   staffPhoto: string;
@@ -86,6 +97,21 @@ const MEDIA_BY_SLUG: Record<string, SiteMedia> = {
     videoUrl: kashirskyTour,
     videoPoster: kashirsky2,
     heroImage: kashirskyHero,
+  },
+  dekorator: {
+    gallery: [
+      { src: dekorator1, alt: "Экспозиция межкомнатных дверей в салоне BRANDOORS Декоратор" },
+      { src: dekorator2, alt: "Цветные межкомнатные двери в шоуруме" },
+      { src: dekorator3, alt: "Современные двери разных оттенков" },
+      { src: dekorator4, alt: "Дверь премиум-серии под дерево" },
+      { src: dekoratorBuilding, alt: "Вход в салон BRANDOORS в ТЦ Декоратор" },
+    ],
+    staffPhoto: dekoratorStaff,
+    staffName: "Менеджер",
+    staffPosition: "Салон BRANDOORS Декоратор",
+    videoUrl: dekoratorTour,
+    videoPoster: dekorator1,
+    heroImage: dekoratorHero,
   },
 };
 
