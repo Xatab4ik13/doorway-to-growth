@@ -106,10 +106,9 @@ export default function StorefrontCatalog() {
   // Don't count lockedParent (page context from ?category=) as a user-applied filter.
   const activeFiltersCount =
     (selectedCategory && selectedCategory !== lockedParent?.id ? 1 : 0) +
-    (priceFrom ? 1 : 0) +
-    (priceTo ? 1 : 0) +
     selectedColors.size +
     selectedGlazings.size;
+
 
 
   const toggleParent = (id: string) => {
