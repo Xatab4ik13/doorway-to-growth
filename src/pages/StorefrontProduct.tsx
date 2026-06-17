@@ -169,8 +169,17 @@ const MOCK_GLAZING: { name: string; preview: string }[] = [
 ];
 
 const MOCK_EDGE_COLORS: { name: string; hex: string }[] = [
+  // Real values from products.specifications.edge_colors
+  { name: "AL Gold", hex: "#C9A96E" },
+  { name: "AL Black", hex: "#1A1A1A" },
+  { name: "AL White", hex: "#F0F0F0" },
+  { name: "AL Хром", hex: "#C8CCD0" },
+  { name: "AL Chrome", hex: "#C8CCD0" },
+  { name: "Хром", hex: "#C8CCD0" },
+  { name: "Цветная", hex: "#B07A4A" },
+  { name: "Ral & Ncs", hex: "#8A8A8A" },
+  // Legacy fallbacks
   { name: "Анодированная AL", hex: "#C0C0C0" },
-  { name: "Al White", hex: "#F0F0F0" },
   { name: "Black Edition", hex: "#1A1A1A" },
   { name: "Gold Edition", hex: "#C9A96E" },
 ];
