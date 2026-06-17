@@ -148,9 +148,9 @@ export function AboutSection({ site, staff }: Props) {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
         >
-          <ShowroomGallery />
+          <ShowroomGallery gallery={media.gallery} />
           <div className="hidden lg:block">
-            <VideoBlock />
+            <VideoBlock videoUrl={media.videoUrl} poster={media.videoPoster} />
           </div>
         </motion.div>
 
