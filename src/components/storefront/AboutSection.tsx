@@ -113,6 +113,7 @@ function VideoBlock({ videoUrl, poster }: { videoUrl?: string; poster?: string }
 }
 
 export function AboutSection({ site, staff }: Props) {
+  const media = getSiteMedia(site.slug);
   return (
     <section id="about" className="relative w-full overflow-hidden py-20 lg:py-28" style={{ backgroundColor: "#07090D" }}>
       <div className="relative z-10 max-w-[1400px] mx-auto px-6">
