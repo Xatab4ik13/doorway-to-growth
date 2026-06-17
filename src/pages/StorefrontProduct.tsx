@@ -687,8 +687,75 @@ export default function StorefrontProduct() {
 
 
 
+              {/* ===== ENTRANCE DOOR PANEL + COLOR PICKER ===== */}
+              {isEntranceDoor && Array.isArray(specs?.panels) && Array.isArray(specs?.colors) && Array.isArray(specs?.skus) && (
+                <div className="space-y-5 mb-8">
+                  <div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Панель:</span>
+                      <span className="text-[12px] text-storefront-gold/80">{selectedPanel || "—"}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {(specs!.panels as string[]).map((p) => (
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => {
+                            setSelectedPanel(p);
+                            const sku = (specs!.skus as any[]).find((s) => s.panel === p && (!selectedColor || s.color === selectedColor))
+                              || (specs!.skus as any[]).find((s) => s.panel === p);
+                            if (sku?.color) setSelectedColor(sku.color);
+                            const idx = (images as any[]).findIndex(
+                              (img) => img.variant_key && sku && img.variant_key.toLowerCase() === `${sku.panel}|${sku.color}`.toLowerCase()
+                            );
+                            if (idx >= 0) setCurrentImage(idx);
+                          }}
+                          className={`px-3 py-2 text-[12px] tracking-[0.1em] border transition-colors ${
+                            selectedPanel === p
+                              ? "border-storefront-gold text-storefront-gold bg-storefront-gold/5"
+                              : "border-white/10 text-storefront-text/70 hover:border-storefront-gold/40"
+                          }`}
+                        >
+                          {p}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет внутренней панели:</span>
+                      <span className="text-[12px] text-storefront-gold/80">{selectedColor || "—"}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      {(specs!.colors as string[]).map((c) => {
+                        const mock = MOCK_COLORS.find((m) => m.name.toLowerCase() === c.toLowerCase());
+                        return (
+                          <MaterialSwatch
+                            key={c}
+                            name={c}
+                            hex={mock?.hex ?? "#2a2a2a"}
+                            material={pickCoatingMaterial(c, mock?.hex ?? "#2a2a2a")}
+                            selected={selectedColor === c}
+                            onClick={() => {
+                              setSelectedColor(c);
+                              const sku = (specs!.skus as any[]).find((s) => s.color === c && (!selectedPanel || s.panel === selectedPanel))
+                                || (specs!.skus as any[]).find((s) => s.color === c);
+                              if (sku?.panel) setSelectedPanel(sku.panel);
+                              const idx = (images as any[]).findIndex(
+                                (img) => img.variant_key && sku && img.variant_key.toLowerCase() === `${sku.panel}|${sku.color}`.toLowerCase()
+                              );
+                              if (idx >= 0) setCurrentImage(idx);
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* ===== COLOR SWATCHES (only when product declares them) ===== */}
-              {(colorSwatches.length > 0 || glazingItems.length > 0 || edgeItems.length > 0 || moldingItems.length > 0) && (
+              {!isEntranceDoor && (colorSwatches.length > 0 || glazingItems.length > 0 || edgeItems.length > 0 || moldingItems.length > 0) && (
                 <div className="space-y-5 mb-8">
                   {/* Coating color */}
                   {colorSwatches.length > 0 && (
