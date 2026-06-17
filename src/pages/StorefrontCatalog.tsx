@@ -244,10 +244,6 @@ export default function StorefrontCatalog() {
       }
     }
 
-    const pf = Number(priceFrom);
-    const pt = Number(priceTo);
-    if (pf > 0) result = result.filter((p) => !p.rrp || p.rrp >= pf);
-    if (pt > 0) result = result.filter((p) => !p.rrp || p.rrp <= pt);
 
     // Color filter — match if any of the product's colors is selected
     if (selectedColors.size > 0) {
