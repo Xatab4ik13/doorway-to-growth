@@ -121,6 +121,20 @@ const MEDIA_BY_SLUG: Record<string, SiteMedia> = {
     videoPoster: dekorator1,
     heroImage: dekoratorHero,
   },
+  m2: {
+    gallery: [
+      { src: m21, alt: "Зона консультации в салоне BRANDOORS Метр Квадратный" },
+      { src: m22, alt: "Вход в салон BRANDOORS в ТЦ Метр Квадратный" },
+      { src: m23, alt: "Экспозиция межкомнатных дверей" },
+      { src: m2Building, alt: "Витрина салона BRANDOORS, ТЦ Метр Квадратный" },
+    ],
+    staffPhoto: m2Staff,
+    staffName: "Менеджер",
+    staffPosition: "Салон BRANDOORS Метр Квадратный",
+    videoUrl: m2Tour,
+    videoPoster: m21,
+    heroImage: m2Hero,
+  },
 };
 
 export function getSiteMedia(slug?: string | null): SiteMedia {
