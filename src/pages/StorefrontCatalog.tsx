@@ -290,6 +290,13 @@ export default function StorefrontCatalog() {
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   const getPrimaryImage = (p: any) => {
+    // If user filtered by colors, show the matching color photo so cards visibly reflect the choice.
+    if (selectedColors.size > 0) {
+      const match = p.product_images?.find(
+        (i: any) => i?.variant_key && !i.variant_key.includes("|") && selectedColors.has(i.variant_key)
+      );
+      if (match?.url) return match.url;
+    }
     const primary = p.product_images?.find((i: any) => i.is_primary);
     return primary?.url || p.product_images?.[0]?.url;
   };
