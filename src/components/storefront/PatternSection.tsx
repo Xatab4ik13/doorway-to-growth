@@ -166,8 +166,13 @@ export function PatternSection() {
   };
 
   const handleSelect = (name: string) => {
-    navigate(`/store/${slug}/catalog/list?collection=${encodeURIComponent(name)}`);
+    if (activeTab === "entrance") {
+      navigate(`/store/${slug}/catalog/list?category=entrance-doors`);
+    } else {
+      navigate(`/store/${slug}/catalog/list?category=mezhkomnatnye-dveri&collection=${encodeURIComponent(name)}`);
+    }
   };
+
 
   return (
     <section
