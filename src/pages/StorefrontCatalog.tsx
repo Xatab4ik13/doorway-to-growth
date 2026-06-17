@@ -392,10 +392,6 @@ export default function StorefrontCatalog() {
               toggleParent={toggleParent}
               selectedCategory={selectedCategory}
               selectCategory={selectCategory}
-              priceFrom={priceFrom}
-              setPriceFrom={(v) => { setPriceFrom(v); setPage(1); }}
-              priceTo={priceTo}
-              setPriceTo={(v) => { setPriceTo(v); setPage(1); }}
               availableColors={availableColors}
               selectedColors={selectedColors}
               toggleColor={toggleColor}
