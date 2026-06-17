@@ -1,35 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, ChevronLeft, ChevronRight, ExternalLink, Quote } from "lucide-react";
+import { YANDEX_REVIEWS } from "@/data/yandexReviews";
 
-const REVIEWS = [
-  {
-    author: "Анастасия Морозова",
-    date: "Март 2026",
-    rating: 5,
-    text: "Купили входную дверь у этого бренда, быстро проконсультировали по всем дверям и выбрали оптимальную по нашим пожеланиям 💧 спасибо",
-  },
-  {
-    author: "Светлана",
-    date: "Январь 2026",
-    rating: 5,
-    text: "Удобный заезд, погрузка и отгрузка. Территория всегда почищена от снега. Сотрудники вежливые",
-  },
-  {
-    author: "Артем",
-    date: "Декабрь 2025",
-    rating: 5,
-    text: "Удобная зона разгрузки-погрузки, уютный офис, приветливые сотрудники.",
-  },
-  {
-    author: "Покупатель",
-    date: "Ноябрь 2025",
-    rating: 3,
-    text: "Большой выбор дверей, есть что посмотреть. Менеджеры помогли определиться с моделью.",
-  },
-];
+const REVIEWS = YANDEX_REVIEWS;
 
-const YANDEX_ORG_URL = "https://yandex.ru/maps/org/brandoors/244726749264/reviews/";
+const YANDEX_ORG_URL = "https://yandex.ru/maps/org/brandoors/79431648490/reviews/";
 
 export function ReviewsCarousel() {
   const [current, setCurrent] = useState(0);
