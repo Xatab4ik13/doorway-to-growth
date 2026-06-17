@@ -38,6 +38,14 @@ import dekoratorStaff from "@/assets/dekorator/dekorator-staff.webp";
 import dekoratorTour from "@/assets/dekorator/dekorator-tour.mp4";
 import dekoratorHero from "@/assets/dekorator/dekorator-hero.webp";
 
+import m21 from "@/assets/m2/m2-showroom-1.webp";
+import m22 from "@/assets/m2/m2-showroom-2.webp";
+import m23 from "@/assets/m2/m2-showroom-3.webp";
+import m2Building from "@/assets/m2/m2-building.webp";
+import m2Staff from "@/assets/m2/m2-staff.webp";
+import m2Tour from "@/assets/m2/m2-tour.mp4";
+import m2Hero from "@/assets/m2/m2-hero.webp";
+
 
 
 export type SiteMedia = {
@@ -112,6 +120,20 @@ const MEDIA_BY_SLUG: Record<string, SiteMedia> = {
     videoUrl: dekoratorTour,
     videoPoster: dekorator1,
     heroImage: dekoratorHero,
+  },
+  m2: {
+    gallery: [
+      { src: m21, alt: "Зона консультации в салоне BRANDOORS Метр Квадратный" },
+      { src: m22, alt: "Вход в салон BRANDOORS в ТЦ Метр Квадратный" },
+      { src: m23, alt: "Экспозиция межкомнатных дверей" },
+      { src: m2Building, alt: "Витрина салона BRANDOORS, ТЦ Метр Квадратный" },
+    ],
+    staffPhoto: m2Staff,
+    staffName: "Менеджер",
+    staffPosition: "Салон BRANDOORS Метр Квадратный",
+    videoUrl: m2Tour,
+    videoPoster: m21,
+    heroImage: m2Hero,
   },
 };
 

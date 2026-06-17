@@ -4,6 +4,7 @@ import { Star, ChevronLeft, ChevronRight, ExternalLink, Quote } from "lucide-rea
 import { YANDEX_REVIEWS } from "@/data/yandexReviews";
 import { YANDEX_REVIEWS_KASHIRSKY } from "@/data/yandexReviewsKashirsky";
 import { YANDEX_REVIEWS_DEKORATOR } from "@/data/yandexReviewsDekorator";
+import { YANDEX_REVIEWS_M2 } from "@/data/yandexReviewsM2";
 
 const REVIEWS_BY_SLUG: Record<string, { reviews: typeof YANDEX_REVIEWS; url: string }> = {
   kashirsky: {
@@ -13,6 +14,10 @@ const REVIEWS_BY_SLUG: Record<string, { reviews: typeof YANDEX_REVIEWS; url: str
   dekorator: {
     reviews: YANDEX_REVIEWS_DEKORATOR,
     url: "https://yandex.ru/maps/org/brandoors/32287988599/reviews/",
+  },
+  m2: {
+    reviews: YANDEX_REVIEWS_M2,
+    url: "https://yandex.ru/maps/org/brand_oors/139936222681/reviews/",
   },
 };
 
@@ -27,6 +32,7 @@ export function ReviewsCarousel({ siteSlug }: { siteSlug?: string | null }) {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(0);
   const len = REVIEWS.length;
+  const hasReviews = len > 0;
 
 
   const go = useCallback((dir: number) => {
@@ -36,9 +42,12 @@ export function ReviewsCarousel({ siteSlug }: { siteSlug?: string | null }) {
 
   // Auto-advance every 6s
   useEffect(() => {
+    if (!hasReviews) return;
     const timer = setInterval(() => go(1), 6000);
     return () => clearInterval(timer);
-  }, [go]);
+  }, [go, hasReviews]);
+
+  if (!hasReviews) return null;
 
   const avgRating = (REVIEWS.reduce((s, r) => s + r.rating, 0) / len).toFixed(1);
 
