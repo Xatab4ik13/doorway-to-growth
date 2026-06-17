@@ -475,7 +475,7 @@ export default function StorefrontCatalog() {
                 <div className="text-center py-20 text-storefront-muted">
                   <p className="text-lg mb-2">Товары не найдены</p>
                   <button
-                    onClick={() => { selectCategory(null); setPriceFrom(""); setPriceTo(""); setSelectedColors(new Set()); setSelectedGlazings(new Set()); }}
+                    onClick={() => { selectCategory(null); setSelectedColors(new Set()); setSelectedGlazings(new Set()); }}
                     className="text-storefront-gold text-sm"
                   >
                     Сбросить фильтры
