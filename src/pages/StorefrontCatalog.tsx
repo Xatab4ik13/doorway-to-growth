@@ -31,9 +31,6 @@ export default function StorefrontCatalog() {
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [expandedParents, setExpandedParents] = useState<Set<string>>(new Set());
-  const [priceFrom, setPriceFrom] = useState("");
-  const [priceTo, setPriceTo] = useState("");
-  const [priceOpen, setPriceOpen] = useState(true);
   const [colorOpen, setColorOpen] = useState(true);
   const [glazingOpen, setGlazingOpen] = useState(true);
   const [selectedColors, setSelectedColors] = useState<Set<string>>(new Set());
