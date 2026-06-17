@@ -81,7 +81,7 @@ function MaterialSwatch({
           <span className="block w-full h-full bg-[#0c0e14]">
             <span className="absolute top-1/2 left-1/2 w-8 h-px bg-storefront-gold/60 -translate-x-1/2 -translate-y-1/2 rotate-45" />
           </span>
-        ) : (
+        ) : isGlassRaw ? (
           <>
             <img
               src={TEXTURE_MAP[material]}
@@ -90,22 +90,20 @@ function MaterialSwatch({
               draggable={false}
               className="absolute inset-0 w-full h-full object-cover"
             />
-            {!isGlassRaw && hex && (
-              <span
-                className="absolute inset-0"
-                style={{
-                  backgroundColor: hex,
-                  mixBlendMode: "multiply",
-                  // Wood texture is mid-tone; lighter overlay so the actual wood color reads true.
-                  opacity: material === "wood" ? 0.6 : 0.78,
-                }}
-              />
-            )}
-            {/* Subtle top highlight for tactile dimension */}
-            <span className="absolute inset-0 rounded-full bg-gradient-to-br from-white/15 via-transparent to-black/20 pointer-events-none" />
+            <span className="absolute inset-0 rounded-full bg-gradient-to-br from-white/10 via-transparent to-black/10 pointer-events-none" />
+          </>
+        ) : (
+          <>
+            <span
+              className="absolute inset-0"
+              style={{ backgroundColor: hex || "#9C9994" }}
+            />
+            {/* Very subtle highlight only — no darkening, so the swatch reads as the true color. */}
+            <span className="absolute inset-0 rounded-full bg-gradient-to-br from-white/8 via-transparent to-black/5 pointer-events-none" />
           </>
         )}
       </span>
+
       {selected && (
         <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <span className="w-5 h-5 rounded-full bg-storefront-gold/95 flex items-center justify-center shadow-md">
