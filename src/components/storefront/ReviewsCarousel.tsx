@@ -2,15 +2,27 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, ChevronLeft, ChevronRight, ExternalLink, Quote } from "lucide-react";
 import { YANDEX_REVIEWS } from "@/data/yandexReviews";
+import { YANDEX_REVIEWS_KASHIRSKY } from "@/data/yandexReviewsKashirsky";
 
-const REVIEWS = YANDEX_REVIEWS;
+const REVIEWS_BY_SLUG: Record<string, { reviews: typeof YANDEX_REVIEWS; url: string }> = {
+  kashirsky: {
+    reviews: YANDEX_REVIEWS_KASHIRSKY,
+    url: "https://yandex.ru/maps/org/brandoors/59741360576/reviews/",
+  },
+};
 
-const YANDEX_ORG_URL = "https://yandex.ru/maps/org/brandoors/79431648490/reviews/";
+const DEFAULT_SET = {
+  reviews: YANDEX_REVIEWS,
+  url: "https://yandex.ru/maps/org/brandoors/79431648490/reviews/",
+};
 
-export function ReviewsCarousel() {
+export function ReviewsCarousel({ siteSlug }: { siteSlug?: string | null }) {
+  const { reviews: REVIEWS, url: YANDEX_ORG_URL } =
+    (siteSlug && REVIEWS_BY_SLUG[siteSlug]) || DEFAULT_SET;
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(0);
   const len = REVIEWS.length;
+
 
   const go = useCallback((dir: number) => {
     setDirection(dir);

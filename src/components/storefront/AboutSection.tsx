@@ -221,7 +221,7 @@ export function AboutSection({ site, staff }: Props) {
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
         >
-          <ReviewsCarousel />
+          <ReviewsCarousel siteSlug={site.slug} />
           <YandexMap />
         </motion.div>
 
