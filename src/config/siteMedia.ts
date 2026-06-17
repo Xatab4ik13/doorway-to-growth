@@ -98,6 +98,21 @@ const MEDIA_BY_SLUG: Record<string, SiteMedia> = {
     videoPoster: kashirsky2,
     heroImage: kashirskyHero,
   },
+  dekorator: {
+    gallery: [
+      { src: dekorator1, alt: "Экспозиция межкомнатных дверей в салоне BRANDOORS Декоратор" },
+      { src: dekorator2, alt: "Цветные межкомнатные двери в шоуруме" },
+      { src: dekorator3, alt: "Современные двери разных оттенков" },
+      { src: dekorator4, alt: "Дверь премиум-серии под дерево" },
+      { src: dekoratorBuilding, alt: "Вход в салон BRANDOORS в ТЦ Декоратор" },
+    ],
+    staffPhoto: dekoratorStaff,
+    staffName: "Менеджер",
+    staffPosition: "Салон BRANDOORS Декоратор",
+    videoUrl: dekoratorTour,
+    videoPoster: dekorator1,
+    heroImage: dekoratorHero,
+  },
 };
 
 export function getSiteMedia(slug?: string | null): SiteMedia {

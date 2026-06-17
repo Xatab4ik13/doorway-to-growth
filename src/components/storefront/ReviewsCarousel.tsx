@@ -3,11 +3,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Star, ChevronLeft, ChevronRight, ExternalLink, Quote } from "lucide-react";
 import { YANDEX_REVIEWS } from "@/data/yandexReviews";
 import { YANDEX_REVIEWS_KASHIRSKY } from "@/data/yandexReviewsKashirsky";
+import { YANDEX_REVIEWS_DEKORATOR } from "@/data/yandexReviewsDekorator";
 
 const REVIEWS_BY_SLUG: Record<string, { reviews: typeof YANDEX_REVIEWS; url: string }> = {
   kashirsky: {
     reviews: YANDEX_REVIEWS_KASHIRSKY,
     url: "https://yandex.ru/maps/org/brandoors/59741360576/reviews/",
+  },
+  dekorator: {
+    reviews: YANDEX_REVIEWS_DEKORATOR,
+    url: "https://yandex.ru/maps/org/brandoors/32287988599/reviews/",
   },
 };
 
