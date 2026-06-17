@@ -12,13 +12,13 @@ interface Props {
   staff: Array<{ id: string; name: string; position: string | null; photo_url: string | null }>;
 }
 
-function ShowroomGallery() {
+function ShowroomGallery({ gallery }: { gallery: Array<{ src: string; alt: string }> }) {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(0);
 
   const go = (dir: number) => {
     setDirection(dir);
-    setCurrent((c) => ((c + dir) % GALLERY.length + GALLERY.length) % GALLERY.length);
+    setCurrent((c) => ((c + dir) % gallery.length + gallery.length) % gallery.length);
   };
 
   const variants = {
@@ -32,8 +32,8 @@ function ShowroomGallery() {
       <AnimatePresence initial={false} custom={direction} mode="popLayout">
         <motion.img
           key={current}
-          src={GALLERY[current].src}
-          alt={GALLERY[current].alt}
+          src={gallery[current].src}
+          alt={gallery[current].alt}
           custom={direction}
           variants={variants}
           initial="enter"
@@ -54,7 +54,7 @@ function ShowroomGallery() {
       </button>
 
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-2">
-        {GALLERY.map((_, i) => (
+        {gallery.map((_, i) => (
           <button
             key={i}
             onClick={() => { setDirection(i > current ? 1 : -1); setCurrent(i); }}
@@ -71,21 +71,22 @@ function ShowroomGallery() {
 
       <div className="absolute top-4 right-4 z-10 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/10">
         <span className="text-xs tracking-[0.15em] text-white/70" style={{ fontFamily: "'Raleway', sans-serif" }}>
-          {String(current + 1).padStart(2, "0")} / {String(GALLERY.length).padStart(2, "0")}
+          {String(current + 1).padStart(2, "0")} / {String(gallery.length).padStart(2, "0")}
         </span>
       </div>
     </div>
   );
 }
 
-function VideoBlock() {
+function VideoBlock({ videoUrl, poster }: { videoUrl?: string; poster?: string }) {
   const [playing, setPlaying] = useState(false);
+  if (!videoUrl) return null;
 
   return (
     <div className="relative w-full overflow-hidden rounded-2xl" style={{ aspectRatio: "9/16", maxHeight: "480px" }}>
       {!playing ? (
         <button onClick={() => setPlaying(true)} className="group w-full h-full relative">
-          <img src={showroom3} alt="Видеотур по салону" className="w-full h-full object-cover" />
+          {poster && <img src={poster} alt="Видеотур по салону" className="w-full h-full object-cover" />}
           <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors duration-300" />
           <div className="absolute inset-0 flex items-center justify-center">
             <motion.div
@@ -105,7 +106,7 @@ function VideoBlock() {
           </span>
         </button>
       ) : (
-        <video src="/showroom-video.mp4" autoPlay controls playsInline className="w-full h-full object-cover" />
+        <video src={videoUrl} autoPlay controls playsInline preload="metadata" className="w-full h-full object-cover" />
       )}
     </div>
   );
