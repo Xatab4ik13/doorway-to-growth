@@ -47,6 +47,8 @@ const CollectionCarousel = memo(function CollectionCarousel({
 }) {
   const [current, setCurrent] = useState(0);
   const len = items.length;
+  useEffect(() => { setCurrent(0); }, [items]);
+
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth < 768 : false
   );
