@@ -971,33 +971,6 @@ function MobileFilterSheet({
           </div>
         </section>
 
-        <div className="border-t border-black/10 my-5" />
-
-        {/* Price */}
-        <section className="mb-5">
-          <h3 className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#1a1408]/50 mb-3 px-1">Цена, ₽</h3>
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              placeholder="от"
-              value={priceFrom}
-              onChange={(e) => setPriceFrom(e.target.value.replace(/[^0-9]/g, ""))}
-              className="w-full bg-black/10 border border-black/10 text-[#1a1408] text-[14px] font-bold px-3 py-3 rounded-xl placeholder:text-[#1a1408]/30 focus:outline-none focus:border-black/25 focus:bg-black/15 transition-all"
-            />
-            <span className="text-[#1a1408]/30 text-base font-bold shrink-0">—</span>
-            <input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              placeholder="до"
-              value={priceTo}
-              onChange={(e) => setPriceTo(e.target.value.replace(/[^0-9]/g, ""))}
-              className="w-full bg-black/10 border border-black/10 text-[#1a1408] text-[14px] font-bold px-3 py-3 rounded-xl placeholder:text-[#1a1408]/30 focus:outline-none focus:border-black/25 focus:bg-black/15 transition-all"
-            />
-          </div>
-        </section>
 
         {/* Colors as chips */}
         {availableColors.length > 0 && (
