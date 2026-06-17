@@ -279,6 +279,8 @@ export default function StorefrontProduct() {
 
   const isDoorProduct =
     rootCategorySlug === "mezhkomnatnye-dveri" || rootCategorySlug === "entrance-doors";
+  const isEntranceDoor = rootCategorySlug === "entrance-doors";
+
 
   const [currentImage, setCurrentImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -782,7 +784,7 @@ export default function StorefrontProduct() {
               )}
 
               {/* ===== TRIM (ПОГОНАЖ) ===== */}
-              {realTrim.length > 0 && (
+              {!isEntranceDoor && realTrim.length > 0 && (
                 <div className="mb-8">
                   <div className="flex items-center justify-between gap-2 mb-4">
                     <div className="flex items-center gap-2">
@@ -834,7 +836,7 @@ export default function StorefrontProduct() {
               )}
 
               {/* ===== HARDWARE (ФУРНИТУРА) ===== */}
-              {realHardware.length > 0 && (
+              {!isEntranceDoor && realHardware.length > 0 && (
                 <div className="mb-8">
                   <div className="flex items-center justify-between gap-2 mb-4">
                     <div className="flex items-center gap-2">
@@ -909,8 +911,9 @@ export default function StorefrontProduct() {
                 </div>
               )}
 
-              {/* ===== OPENING SYSTEMS — only for door products ===== */}
-              {isDoorProduct && <OpeningSystems />}
+              {/* ===== OPENING SYSTEMS — only for interior doors ===== */}
+              {isDoorProduct && !isEntranceDoor && <OpeningSystems />}
+
 
 
               {sizes && sizes.length > 0 && (
