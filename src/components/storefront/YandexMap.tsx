@@ -5,6 +5,7 @@ const COORDS_BY_SLUG: Record<string, { lat: number; lng: number; title: string }
   roomer: { lat: 55.709874, lng: 37.653736, title: "Карта — салон BRANDOORS в ТЦ ROOMER" },
   kashirsky: { lat: 55.665163, lng: 37.629858, title: "Карта — салон BRANDOORS в ТК Каширский двор" },
   dekorator: { lat: 55.729397, lng: 37.734524, title: "Карта — салон BRANDOORS в ТЦ Декоратор" },
+  m2: { lat: 55.720798, lng: 37.697433, title: "Карта — салон BRANDOORS в ТЦ Метр Квадратный" },
 };
 
 const DEFAULT_COORDS = COORDS_BY_SLUG.scherbinka;

@@ -38,6 +38,14 @@ import dekoratorStaff from "@/assets/dekorator/dekorator-staff.webp";
 import dekoratorTour from "@/assets/dekorator/dekorator-tour.mp4";
 import dekoratorHero from "@/assets/dekorator/dekorator-hero.webp";
 
+import m21 from "@/assets/m2/m2-showroom-1.webp";
+import m22 from "@/assets/m2/m2-showroom-2.webp";
+import m23 from "@/assets/m2/m2-showroom-3.webp";
+import m2Building from "@/assets/m2/m2-building.webp";
+import m2Staff from "@/assets/m2/m2-staff.webp";
+import m2Tour from "@/assets/m2/m2-tour.mp4";
+import m2Hero from "@/assets/m2/m2-hero.webp";
+
 
 
 export type SiteMedia = {
