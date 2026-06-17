@@ -19,6 +19,16 @@ import roomerStaff from "@/assets/roomer/roomer-staff.webp";
 import roomerTour from "@/assets/roomer/roomer-tour.mp4";
 import roomerHero from "@/assets/roomer/roomer-hero.webp";
 
+import kashirsky1 from "@/assets/kashirsky/kashirsky-showroom-1.webp";
+import kashirsky2 from "@/assets/kashirsky/kashirsky-showroom-2.webp";
+import kashirsky3 from "@/assets/kashirsky/kashirsky-showroom-3.webp";
+import kashirsky4 from "@/assets/kashirsky/kashirsky-showroom-4.webp";
+import kashirsky5 from "@/assets/kashirsky/kashirsky-showroom-5.webp";
+import kashirskyBuilding from "@/assets/kashirsky/kashirsky-building.webp";
+import kashirskyStaff from "@/assets/kashirsky/kashirsky-staff.webp";
+import kashirskyTour from "@/assets/kashirsky/kashirsky-tour.mp4";
+import kashirskyHero from "@/assets/kashirsky/kashirsky-hero.webp";
+
 export type SiteMedia = {
   gallery: Array<{ src: string; alt: string }>;
   staffPhoto: string;
@@ -60,6 +70,22 @@ const MEDIA_BY_SLUG: Record<string, SiteMedia> = {
     videoUrl: roomerTour,
     videoPoster: roomer3,
     heroImage: roomerHero,
+  },
+  kashirsky: {
+    gallery: [
+      { src: kashirsky1, alt: "Вход в салон BRANDOORS в ТК Каширский двор" },
+      { src: kashirsky2, alt: "Экспозиция входных дверей" },
+      { src: kashirsky3, alt: "Межкомнатные двери в шоуруме" },
+      { src: kashirsky4, alt: "Линейка дверей разных цветов" },
+      { src: kashirsky5, alt: "Дизайнерские двери с фотопечатью" },
+      { src: kashirskyBuilding, alt: "ТК Каширский двор, павильон 4-А40" },
+    ],
+    staffPhoto: kashirskyStaff,
+    staffName: "Менеджер",
+    staffPosition: "Салон BRANDOORS Каширский двор",
+    videoUrl: kashirskyTour,
+    videoPoster: kashirsky2,
+    heroImage: kashirskyHero,
   },
 };
 
