@@ -9,14 +9,14 @@ import showroom5 from "@/assets/showroom/showroom-5.webp";
 import showroom6 from "@/assets/showroom/showroom-6.webp";
 import staffDefault from "@/assets/showroom/staff.webp";
 
-import roomer1 from "@/assets/roomer/roomer-showroom-1.webp.asset.json";
-import roomer2 from "@/assets/roomer/roomer-showroom-2.webp.asset.json";
-import roomer3 from "@/assets/roomer/roomer-showroom-3.webp.asset.json";
-import roomer4 from "@/assets/roomer/roomer-showroom-4.webp.asset.json";
-import roomer5 from "@/assets/roomer/roomer-showroom-5.webp.asset.json";
-import roomerBuilding from "@/assets/roomer/roomer-building.webp.asset.json";
-import roomerStaff from "@/assets/roomer/roomer-staff.webp.asset.json";
-import roomerTour from "@/assets/roomer/roomer-tour.mp4.asset.json";
+import roomer1 from "@/assets/roomer/roomer-showroom-1.webp";
+import roomer2 from "@/assets/roomer/roomer-showroom-2.webp";
+import roomer3 from "@/assets/roomer/roomer-showroom-3.webp";
+import roomer4 from "@/assets/roomer/roomer-showroom-4.webp";
+import roomer5 from "@/assets/roomer/roomer-showroom-5.webp";
+import roomerBuilding from "@/assets/roomer/roomer-building.webp";
+import roomerStaff from "@/assets/roomer/roomer-staff.webp";
+import roomerTour from "@/assets/roomer/roomer-tour.mp4";
 
 export type SiteMedia = {
   gallery: Array<{ src: string; alt: string }>;
@@ -45,18 +45,18 @@ const DEFAULT_MEDIA: SiteMedia = {
 const MEDIA_BY_SLUG: Record<string, SiteMedia> = {
   roomer: {
     gallery: [
-      { src: roomer1.url, alt: "Вход в салон BRANDOORS в ТЦ ROOMER" },
-      { src: roomer2.url, alt: "Зона консультации" },
-      { src: roomer3.url, alt: "Межкомнатные двери в экспозиции" },
-      { src: roomer4.url, alt: "Входная дверь BRANDOORS" },
-      { src: roomer5.url, alt: "Классические двери в шоуруме" },
-      { src: roomerBuilding.url, alt: "ТЦ ROOMER, Ленинская слобода" },
+      { src: roomer1, alt: "Вход в салон BRANDOORS в ТЦ ROOMER" },
+      { src: roomer2, alt: "Зона консультации" },
+      { src: roomer3, alt: "Межкомнатные двери в экспозиции" },
+      { src: roomer4, alt: "Входная дверь BRANDOORS" },
+      { src: roomer5, alt: "Классические двери в шоуруме" },
+      { src: roomerBuilding, alt: "ТЦ ROOMER, Ленинская слобода" },
     ],
-    staffPhoto: roomerStaff.url,
+    staffPhoto: roomerStaff,
     staffName: "Менеджер",
     staffPosition: "Салон BRANDOORS в ROOMER",
-    videoUrl: roomerTour.url,
-    videoPoster: roomer3.url,
+    videoUrl: roomerTour,
+    videoPoster: roomer3,
   },
 };
 
