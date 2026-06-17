@@ -31,9 +31,6 @@ export default function StorefrontCatalog() {
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [expandedParents, setExpandedParents] = useState<Set<string>>(new Set());
-  const [priceFrom, setPriceFrom] = useState("");
-  const [priceTo, setPriceTo] = useState("");
-  const [priceOpen, setPriceOpen] = useState(true);
   const [colorOpen, setColorOpen] = useState(true);
   const [glazingOpen, setGlazingOpen] = useState(true);
   const [selectedColors, setSelectedColors] = useState<Set<string>>(new Set());
@@ -81,12 +78,11 @@ export default function StorefrontCatalog() {
 
   const resetAllFilters = () => {
     setSelectedCategory(null);
-    setPriceFrom("");
-    setPriceTo("");
     setSelectedColors(new Set());
     setSelectedGlazings(new Set());
     setPage(1);
   };
+
 
   // activeFiltersCount is computed below, after `lockedParent` is defined.
 
@@ -110,10 +106,9 @@ export default function StorefrontCatalog() {
   // Don't count lockedParent (page context from ?category=) as a user-applied filter.
   const activeFiltersCount =
     (selectedCategory && selectedCategory !== lockedParent?.id ? 1 : 0) +
-    (priceFrom ? 1 : 0) +
-    (priceTo ? 1 : 0) +
     selectedColors.size +
     selectedGlazings.size;
+
 
 
   const toggleParent = (id: string) => {
@@ -168,8 +163,6 @@ export default function StorefrontCatalog() {
   useEffect(() => {
     setSelectedColors(new Set());
     setSelectedGlazings(new Set());
-    setPriceFrom("");
-    setPriceTo("");
     setPage(1);
 
     if (!categoryParam || categories.length === 0) {
@@ -251,10 +244,6 @@ export default function StorefrontCatalog() {
       }
     }
 
-    const pf = Number(priceFrom);
-    const pt = Number(priceTo);
-    if (pf > 0) result = result.filter((p) => !p.rrp || p.rrp >= pf);
-    if (pt > 0) result = result.filter((p) => !p.rrp || p.rrp <= pt);
 
     // Color filter — match if any of the product's colors is selected
     if (selectedColors.size > 0) {
@@ -295,7 +284,7 @@ export default function StorefrontCatalog() {
     }
 
     return result;
-  }, [products, categories, selectedCategory, priceFrom, priceTo, sortBy, selectedColors, selectedGlazings]);
+  }, [products, categories, selectedCategory, sortBy, selectedColors, selectedGlazings]);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -403,10 +392,6 @@ export default function StorefrontCatalog() {
               toggleParent={toggleParent}
               selectedCategory={selectedCategory}
               selectCategory={selectCategory}
-              priceFrom={priceFrom}
-              setPriceFrom={(v) => { setPriceFrom(v); setPage(1); }}
-              priceTo={priceTo}
-              setPriceTo={(v) => { setPriceTo(v); setPage(1); }}
               availableColors={availableColors}
               selectedColors={selectedColors}
               toggleColor={toggleColor}
@@ -439,10 +424,6 @@ export default function StorefrontCatalog() {
                   toggleParent={toggleParent}
                   selectedCategory={selectedCategory}
                   selectCategory={selectCategory}
-                  priceFrom={priceFrom}
-                  setPriceFrom={(v) => { setPriceFrom(v); setPage(1); }}
-                  priceTo={priceTo}
-                  setPriceTo={(v) => { setPriceTo(v); setPage(1); }}
                   colorOpen={colorOpen}
                   setColorOpen={setColorOpen}
                   availableColors={availableColors}
@@ -494,7 +475,7 @@ export default function StorefrontCatalog() {
                 <div className="text-center py-20 text-storefront-muted">
                   <p className="text-lg mb-2">Товары не найдены</p>
                   <button
-                    onClick={() => { selectCategory(null); setPriceFrom(""); setPriceTo(""); setSelectedColors(new Set()); setSelectedGlazings(new Set()); }}
+                    onClick={() => { selectCategory(null); setSelectedColors(new Set()); setSelectedGlazings(new Set()); }}
                     className="text-storefront-gold text-sm"
                   >
                     Сбросить фильтры
@@ -557,10 +538,6 @@ interface SidebarContentProps {
   toggleParent: (id: string) => void;
   selectedCategory: string | null;
   selectCategory: (id: string | null) => void;
-  priceFrom: string;
-  setPriceFrom: (v: string) => void;
-  priceTo: string;
-  setPriceTo: (v: string) => void;
   colorOpen: boolean;
   setColorOpen: (v: boolean) => void;
   availableColors: string[];
@@ -575,7 +552,7 @@ interface SidebarContentProps {
 
 function SidebarContent({
   brandoorsLogo, parentCategories, backHref, getChildren, expandedParents, toggleParent,
-  selectedCategory, selectCategory, priceFrom, setPriceFrom, priceTo, setPriceTo,
+  selectedCategory, selectCategory,
   colorOpen, setColorOpen, availableColors, selectedColors, toggleColor,
   glazingOpen, setGlazingOpen, availableGlazings, selectedGlazings, toggleGlazing,
 }: SidebarContentProps) {
@@ -669,33 +646,6 @@ function SidebarContent({
 
       <div className="mx-5 border-t border-black/10" />
 
-      {/* Price */}
-      <div className="px-5 pt-5 pb-3">
-        <span className="block text-[15px] font-extrabold uppercase tracking-[0.12em] text-[#1a1408]/90 mb-4">Цена, ₽</span>
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            placeholder="от"
-            value={priceFrom}
-            onChange={(e) => setPriceFrom(e.target.value)}
-            className="w-full bg-black/10 border border-black/10 text-[#1a1408] text-[14px] font-bold px-3 py-3 rounded-xl placeholder:text-[#1a1408]/30 focus:outline-none focus:border-black/25 focus:bg-black/15 transition-all"
-          />
-          <span className="text-[#1a1408]/25 text-base font-bold shrink-0">—</span>
-          <input
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            placeholder="до"
-            value={priceTo}
-            onChange={(e) => setPriceTo(e.target.value)}
-            className="w-full bg-black/10 border border-black/10 text-[#1a1408] text-[14px] font-bold px-3 py-3 rounded-xl placeholder:text-[#1a1408]/30 focus:outline-none focus:border-black/25 focus:bg-black/15 transition-all"
-          />
-        </div>
-      </div>
-
-      <div className="mx-5 border-t border-black/10" />
 
       {/* Color — only shown when current category has products with colors */}
       {availableColors.length > 0 && (
@@ -874,10 +824,6 @@ interface MobileFilterSheetProps {
   toggleParent: (id: string) => void;
   selectedCategory: string | null;
   selectCategory: (id: string | null) => void;
-  priceFrom: string;
-  setPriceFrom: (v: string) => void;
-  priceTo: string;
-  setPriceTo: (v: string) => void;
   availableColors: string[];
   selectedColors: Set<string>;
   toggleColor: (c: string) => void;
@@ -891,7 +837,6 @@ function MobileFilterSheet({
   parentCategories, backHref, getChildren, expandedParents, toggleParent,
 
   selectedCategory, selectCategory,
-  priceFrom, setPriceFrom, priceTo, setPriceTo,
   availableColors, selectedColors, toggleColor,
   availableGlazings, selectedGlazings, toggleGlazing,
 }: MobileFilterSheetProps) {
@@ -1026,33 +971,6 @@ function MobileFilterSheet({
           </div>
         </section>
 
-        <div className="border-t border-black/10 my-5" />
-
-        {/* Price */}
-        <section className="mb-5">
-          <h3 className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#1a1408]/50 mb-3 px-1">Цена, ₽</h3>
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              placeholder="от"
-              value={priceFrom}
-              onChange={(e) => setPriceFrom(e.target.value.replace(/[^0-9]/g, ""))}
-              className="w-full bg-black/10 border border-black/10 text-[#1a1408] text-[14px] font-bold px-3 py-3 rounded-xl placeholder:text-[#1a1408]/30 focus:outline-none focus:border-black/25 focus:bg-black/15 transition-all"
-            />
-            <span className="text-[#1a1408]/30 text-base font-bold shrink-0">—</span>
-            <input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              placeholder="до"
-              value={priceTo}
-              onChange={(e) => setPriceTo(e.target.value.replace(/[^0-9]/g, ""))}
-              className="w-full bg-black/10 border border-black/10 text-[#1a1408] text-[14px] font-bold px-3 py-3 rounded-xl placeholder:text-[#1a1408]/30 focus:outline-none focus:border-black/25 focus:bg-black/15 transition-all"
-            />
-          </div>
-        </section>
 
         {/* Colors as chips */}
         {availableColors.length > 0 && (
