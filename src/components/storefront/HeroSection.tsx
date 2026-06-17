@@ -5,6 +5,7 @@ import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { CartButton } from "./CartButton";
 import brandoorsLogo from "@/assets/logo.png";
 import heroBanner from "@/assets/hero-banner.jpg";
+import { getSiteMedia } from "@/config/siteMedia";
 
 interface Props {
   site: StorefrontSite;
