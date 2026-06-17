@@ -1,0 +1,1 @@
+UPDATE products SET category_id='a0000001-0000-0000-0000-000000000003' WHERE category_id IN (SELECT id FROM categories WHERE parent_id='a0000001-0000-0000-0000-000000000001') AND name ~* '^(добор|коробочн|наличник|погонаж|капитель|рейка|молдинг)';
