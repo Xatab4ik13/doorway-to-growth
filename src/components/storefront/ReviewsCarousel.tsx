@@ -42,9 +42,12 @@ export function ReviewsCarousel({ siteSlug }: { siteSlug?: string | null }) {
 
   // Auto-advance every 6s
   useEffect(() => {
+    if (!hasReviews) return;
     const timer = setInterval(() => go(1), 6000);
     return () => clearInterval(timer);
-  }, [go]);
+  }, [go, hasReviews]);
+
+  if (!hasReviews) return null;
 
   const avgRating = (REVIEWS.reduce((s, r) => s + r.rating, 0) / len).toFixed(1);
 
