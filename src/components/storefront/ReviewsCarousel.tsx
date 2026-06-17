@@ -1,35 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, ChevronLeft, ChevronRight, ExternalLink, Quote } from "lucide-react";
+import { YANDEX_REVIEWS } from "@/data/yandexReviews";
 
-const REVIEWS = [
-  {
-    author: "Анастасия Морозова",
-    date: "Март 2026",
-    rating: 5,
-    text: "Купили входную дверь у этого бренда, быстро проконсультировали по всем дверям и выбрали оптимальную по нашим пожеланиям 💧 спасибо",
-  },
-  {
-    author: "Светлана",
-    date: "Январь 2026",
-    rating: 5,
-    text: "Удобный заезд, погрузка и отгрузка. Территория всегда почищена от снега. Сотрудники вежливые",
-  },
-  {
-    author: "Артем",
-    date: "Декабрь 2025",
-    rating: 5,
-    text: "Удобная зона разгрузки-погрузки, уютный офис, приветливые сотрудники.",
-  },
-  {
-    author: "Покупатель",
-    date: "Ноябрь 2025",
-    rating: 3,
-    text: "Большой выбор дверей, есть что посмотреть. Менеджеры помогли определиться с моделью.",
-  },
-];
+const REVIEWS = YANDEX_REVIEWS;
 
-const YANDEX_ORG_URL = "https://yandex.ru/maps/org/brandoors/244726749264/reviews/";
+const YANDEX_ORG_URL = "https://yandex.ru/maps/org/brandoors/79431648490/reviews/";
 
 export function ReviewsCarousel() {
   const [current, setCurrent] = useState(0);
@@ -153,22 +129,10 @@ export function ReviewsCarousel() {
             >
               <ChevronRight className="w-4 h-4" style={{ color: "rgba(245,245,240,0.5)" }} />
             </button>
-            <div className="flex items-center gap-1.5 ml-auto">
-              {REVIEWS.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => { setDirection(i > current ? 1 : -1); setCurrent(i); }}
-                  className="transition-all duration-300"
-                  style={{
-                    width: i === current ? 20 : 6,
-                    height: 6,
-                    borderRadius: 3,
-                    background: i === current
-                      ? "linear-gradient(90deg, #cfbb96, #a89060)"
-                      : "rgba(255,255,255,0.15)",
-                  }}
-                />
-              ))}
+            <div className="flex gap-2 ml-auto items-center">
+              <span className="text-xs tabular-nums" style={{ color: "rgba(245,245,240,0.4)", fontFamily: "'Raleway', sans-serif" }}>
+                {String(current + 1).padStart(2, "0")} / {String(len).padStart(2, "0")}
+              </span>
             </div>
           </div>
         )}
@@ -176,3 +140,4 @@ export function ReviewsCarousel() {
     </div>
   );
 }
+
