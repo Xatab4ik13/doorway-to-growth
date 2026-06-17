@@ -78,12 +78,11 @@ export default function StorefrontCatalog() {
 
   const resetAllFilters = () => {
     setSelectedCategory(null);
-    setPriceFrom("");
-    setPriceTo("");
     setSelectedColors(new Set());
     setSelectedGlazings(new Set());
     setPage(1);
   };
+
 
   // activeFiltersCount is computed below, after `lockedParent` is defined.
 
