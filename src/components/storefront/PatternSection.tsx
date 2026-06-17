@@ -47,6 +47,8 @@ const CollectionCarousel = memo(function CollectionCarousel({
 }) {
   const [current, setCurrent] = useState(0);
   const len = items.length;
+  useEffect(() => { setCurrent(0); }, [items]);
+
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth < 768 : false
   );
@@ -70,15 +72,14 @@ const CollectionCarousel = memo(function CollectionCarousel({
   } else if (len >= 3) {
     for (let o = -1; o <= 1; o++) visible.push({ idx: getIndex(current + o, len), offset: o });
   } else if (len === 2) {
-    visible.push({ idx: 0, offset: -0.7 }, { idx: 1, offset: 0.7 });
+    // Show current centered + the other at the side; arrows rotate which is active.
+    visible.push({ idx: current, offset: 0 });
+    visible.push({ idx: getIndex(current + 1, len), offset: 1 });
   } else {
     visible.push({ idx: current, offset: 0 });
   }
 
   const getStyle = (offset: number) => {
-    if (len === 2) {
-      return { xPercent: offset * 38, scale: 0.9, opacity: 1, z: 5 };
-    }
     const absOff = Math.abs(offset);
     const xPercent = offset * 38;
     const scale = absOff === 0 ? 1 : absOff <= 1 ? 0.78 : 0.55;
@@ -88,15 +89,16 @@ const CollectionCarousel = memo(function CollectionCarousel({
     return { xPercent, scale, opacity, z };
   };
 
+
   return (
     <div className="relative mx-auto h-[500px] md:h-[620px] lg:h-[720px] overflow-hidden">
       {visible.map(({ idx, offset }) => {
         const s = getStyle(offset);
-        const isCenter = len > 2 && offset === 0;
+        const isCenter = offset === 0;
 
         return (
           <div
-            key={idx}
+            key={`${idx}-${offset}`}
             className="absolute top-0 left-1/2 h-full flex flex-col items-center justify-center cursor-pointer"
             style={{
               transform: `translate3d(calc(-50% + ${s.xPercent}%), 0, 0) scale(${s.scale})`,
@@ -105,7 +107,7 @@ const CollectionCarousel = memo(function CollectionCarousel({
               transition: "transform 500ms cubic-bezier(0.76,0,0.24,1), opacity 500ms cubic-bezier(0.76,0,0.24,1)",
               willChange: "transform, opacity",
             }}
-            onClick={() => onSelect(items[idx].name)}
+            onClick={() => (isCenter ? onSelect(items[idx].name) : setCurrent(idx))}
           >
             <img
               src={items[idx].src}
@@ -115,32 +117,19 @@ const CollectionCarousel = memo(function CollectionCarousel({
               className="h-[400px] md:h-[480px] lg:h-[560px] w-auto object-contain select-none rounded-3xl"
               draggable={false}
             />
-            {len !== 2 && (
-              <span
-                className="mt-6 text-[13px] md:text-[14px] tracking-[0.3em] uppercase text-center"
-                style={{
-                  fontFamily: "'Raleway', sans-serif",
-                  color: isCenter ? "rgba(245,245,240,0.8)" : "rgba(245,245,240,0.4)",
-                }}
-              >
-                {items[idx].name}
-              </span>
-            )}
+            <span
+              className="mt-6 text-[13px] md:text-[14px] tracking-[0.3em] uppercase text-center"
+              style={{
+                fontFamily: "'Raleway', sans-serif",
+                color: isCenter ? "rgba(245,245,240,0.8)" : "rgba(245,245,240,0.4)",
+              }}
+            >
+              {items[idx].name}
+            </span>
           </div>
         );
       })}
 
-      {len === 2 && (
-        <div
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 px-4 text-center text-[13px] md:text-[14px] tracking-[0.3em] uppercase whitespace-nowrap"
-          style={{
-            fontFamily: "'Raleway', sans-serif",
-            color: "rgba(245,245,240,0.8)",
-          }}
-        >
-          {items.map((it) => it.name).join(" и ")}
-        </div>
-      )}
 
       {len > 1 && (
         <>
@@ -177,8 +166,13 @@ export function PatternSection() {
   };
 
   const handleSelect = (name: string) => {
-    navigate(`/store/${slug}/catalog/list?collection=${encodeURIComponent(name)}`);
+    if (activeTab === "entrance") {
+      navigate(`/store/${slug}/catalog/list?category=entrance-doors`);
+    } else {
+      navigate(`/store/${slug}/catalog/list?category=mezhkomnatnye-dveri&collection=${encodeURIComponent(name)}`);
+    }
   };
+
 
   return (
     <section
