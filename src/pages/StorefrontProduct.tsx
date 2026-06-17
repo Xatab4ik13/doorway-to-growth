@@ -1016,8 +1016,8 @@ export default function StorefrontProduct() {
                     </AccordionTrigger>
                     <AccordionContent>
                       <p className="text-[13px] font-light leading-relaxed text-storefront-text/70">
-                        Срок изготовления — от 3 до 5 рабочих дней. Доставка по {site.city ?? "городу"} —
-                        от 1500 ₽. Оплата при получении или по счёту. Возможна рассрочка через партнёрские банки.
+                        Срок изготовления — 25 рабочих дней. Доставка по Москве — 3 500 ₽.
+                        Оплата при получении или по счёту.
                       </p>
                     </AccordionContent>
                   </AccordionItem>
@@ -1028,11 +1028,11 @@ export default function StorefrontProduct() {
                     </AccordionTrigger>
                     <AccordionContent>
                       <p className="text-[13px] font-light leading-relaxed text-storefront-text/70">
-                        10 лет на конструкцию, 5 лет на покрытие, 2 года на фурнитуру.
-                        Бесплатный сервисный выезд в течение всего гарантийного срока.
+                        1 год на изделие. Сервисный выезд в течение гарантийного срока.
                       </p>
                     </AccordionContent>
                   </AccordionItem>
+
                 </Accordion>
               </div>
 
@@ -1079,8 +1079,9 @@ export default function StorefrontProduct() {
                   {isInCart ? "В корзине" : (selectedTrim.size > 0 || selectedHardware.size > 0) ? "Добавить комплект" : "Добавить в корзину"}
                 </button>
                 <p className="mt-5 text-center text-[10px] text-storefront-text/30 uppercase tracking-[0.3em] font-light">
-                  Персональный расчёт и замер — бесплатно
+                  Замер — платная услуга · Срок изготовления 25 рабочих дней
                 </p>
+
               </div>
             </div>
           </div>
