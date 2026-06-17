@@ -552,7 +552,7 @@ interface SidebarContentProps {
 
 function SidebarContent({
   brandoorsLogo, parentCategories, backHref, getChildren, expandedParents, toggleParent,
-  selectedCategory, selectCategory, priceFrom, setPriceFrom, priceTo, setPriceTo,
+  selectedCategory, selectCategory,
   colorOpen, setColorOpen, availableColors, selectedColors, toggleColor,
   glazingOpen, setGlazingOpen, availableGlazings, selectedGlazings, toggleGlazing,
 }: SidebarContentProps) {
