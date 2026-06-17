@@ -284,6 +284,7 @@ export default function StorefrontProduct() {
 
   const [currentImage, setCurrentImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [selectedPanel, setSelectedPanel] = useState<string | null>(null);
   const [selectedGlazing, setSelectedGlazing] = useState<string | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<string | null>(null);
   const [selectedMolding, setSelectedMolding] = useState<string | null>(null);
