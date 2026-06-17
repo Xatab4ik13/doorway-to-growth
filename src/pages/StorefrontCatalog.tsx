@@ -276,8 +276,22 @@ export default function StorefrontCatalog() {
       case "name":
         result.sort((a, b) => a.name.localeCompare(b.name));
         break;
-      default:
-        result.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+      default: {
+        const collectionOrder: Record<string, number> = {
+          "26e19cbd-9e2a-4bc6-9713-26c1a36a5861": 1, // ESTETICA
+          "ab947964-22a7-4630-9d13-307c48cf6b5d": 2, // GHOST
+          "6e5df85e-feb0-47a0-8ca5-9019913a477c": 3, // HEAVY
+          "87ff89ae-e580-4c06-b8b4-a5caba34c05b": 4, // PRIME
+          "7bc36af7-9b81-438b-9701-a2bead021d49": 5, // REFLECT
+          "903d9380-218f-47c1-aa8a-56f832b66267": 6, // MAZE
+        };
+        result.sort((a, b) => {
+          const aOrder = collectionOrder[a.category_id] || 0;
+          const bOrder = collectionOrder[b.category_id] || 0;
+          if (aOrder !== bOrder) return aOrder - bOrder;
+          return (a.sort_order || 0) - (b.sort_order || 0);
+        });
+      }
     }
 
     return result;
