@@ -129,22 +129,10 @@ export function ReviewsCarousel() {
             >
               <ChevronRight className="w-4 h-4" style={{ color: "rgba(245,245,240,0.5)" }} />
             </button>
-            <div className="flex items-center gap-1.5 ml-auto">
-              {REVIEWS.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => { setDirection(i > current ? 1 : -1); setCurrent(i); }}
-                  className="transition-all duration-300"
-                  style={{
-                    width: i === current ? 20 : 6,
-                    height: 6,
-                    borderRadius: 3,
-                    background: i === current
-                      ? "linear-gradient(90deg, #cfbb96, #a89060)"
-                      : "rgba(255,255,255,0.15)",
-                  }}
-                />
-              ))}
+            <div className="flex gap-2 ml-auto items-center">
+              <span className="text-xs tabular-nums" style={{ color: "rgba(245,245,240,0.4)", fontFamily: "'Raleway', sans-serif" }}>
+                {String(current + 1).padStart(2, "0")} / {String(len).padStart(2, "0")}
+              </span>
             </div>
           </div>
         )}
@@ -152,3 +140,4 @@ export function ReviewsCarousel() {
     </div>
   );
 }
+
