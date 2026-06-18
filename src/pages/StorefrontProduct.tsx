@@ -464,13 +464,24 @@ export default function StorefrontProduct() {
     }
   };
 
-  // When user picks a glazing: show a photo with that glazing, even if it means
-  // switching the color (mirrors brandoors.ru behavior where each photo is a unique combo).
+  // When user picks a glazing: prefer exact (color+glazing) match, then any photo with
+  // that glazing (switching color to match). Mirrors brandoors.ru behavior where each
+  // photo is a unique combo.
   const handleSelectGlazing = (glazingName: string) => {
     setSelectedGlazing(glazingName);
-    const { i, img } = findImage(selectedColor, glazingName);
+    const imgs = images as any[];
+    const eq = (a: any, b: any) =>
+      typeof a === "string" && typeof b === "string" && a.toLowerCase() === b.toLowerCase();
+    let i = -1;
+    if (selectedColor) {
+      i = imgs.findIndex((img) => eq(img.variant_key, selectedColor) && eq(img.glazing_key, glazingName));
+    }
+    if (i < 0) {
+      i = imgs.findIndex((img) => eq(img.glazing_key, glazingName));
+    }
     if (i >= 0) {
       setCurrentImage(i);
+      const img = imgs[i];
       if (img?.variant_key && img.variant_key !== selectedColor) {
         setSelectedColor(img.variant_key);
       }
