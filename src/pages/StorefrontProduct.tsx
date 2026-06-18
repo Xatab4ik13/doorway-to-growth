@@ -834,7 +834,7 @@ export default function StorefrontProduct() {
                               hex={hex}
                               material={mat}
                               selected={selectedGlazing === g.name}
-                              onClick={() => setSelectedGlazing(g.name)}
+                              onClick={() => handleSelectGlazing(g.name)}
                             />
                           );
                         })}
