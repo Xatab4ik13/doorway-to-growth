@@ -430,44 +430,51 @@ export default function StorefrontProduct() {
     if (specs?.glazing && !selectedGlazing) setSelectedGlazing(specs.glazing);
   }, [specs]);
 
-  // Find image index matching a (color, glazing) combination, with graceful fallbacks:
-  // 1) exact match on both color AND glazing
-  // 2) match on color with no glazing recorded
-  // 3) match on color alone (any glazing)
-  const findImageIndex = (color: string | null, glazing: string | null): number => {
+  // Find image matching a (color, glazing) combination, with graceful fallbacks.
+  // Returns both the index and the image so callers can sync the other axis.
+  const findImage = (color: string | null, glazing: string | null) => {
     const imgs = images as any[];
     const eq = (a: any, b: any) =>
       typeof a === "string" && typeof b === "string" && a.toLowerCase() === b.toLowerCase();
     if (color && glazing) {
-      const exact = imgs.findIndex((img) => eq(img.variant_key, color) && eq(img.glazing_key, glazing));
-      if (exact >= 0) return exact;
-      const colorNoGlaz = imgs.findIndex((img) => eq(img.variant_key, color) && !img.glazing_key);
-      if (colorNoGlaz >= 0) return colorNoGlaz;
+      const i = imgs.findIndex((img) => eq(img.variant_key, color) && eq(img.glazing_key, glazing));
+      if (i >= 0) return { i, img: imgs[i] };
     }
     if (color) {
-      const colorAny = imgs.findIndex((img) => eq(img.variant_key, color));
-      if (colorAny >= 0) return colorAny;
+      const i = imgs.findIndex((img) => eq(img.variant_key, color));
+      if (i >= 0) return { i, img: imgs[i] };
     }
     if (glazing) {
-      const glazAny = imgs.findIndex((img) => eq(img.glazing_key, glazing));
-      if (glazAny >= 0) return glazAny;
+      const i = imgs.findIndex((img) => eq(img.glazing_key, glazing));
+      if (i >= 0) return { i, img: imgs[i] };
     }
-    return -1;
+    return { i: -1, img: null as any };
   };
 
-  // When user picks a color, switch the gallery to the matching (color, current glazing) image.
+  // When user picks a color: show its photo, and sync glazing if the photo has one.
   const handleSelectColor = (colorName: string) => {
     setSelectedColor(colorName);
     if (!hasImageBoundColors) return;
-    const idx = findImageIndex(colorName, selectedGlazing);
-    if (idx >= 0) setCurrentImage(idx);
+    const { i, img } = findImage(colorName, selectedGlazing);
+    if (i >= 0) {
+      setCurrentImage(i);
+      if (img?.glazing_key && img.glazing_key !== selectedGlazing) {
+        setSelectedGlazing(img.glazing_key);
+      }
+    }
   };
 
-  // When user picks a glazing, switch the gallery to the matching (current color, glazing) image.
+  // When user picks a glazing: show a photo with that glazing, even if it means
+  // switching the color (mirrors brandoors.ru behavior where each photo is a unique combo).
   const handleSelectGlazing = (glazingName: string) => {
     setSelectedGlazing(glazingName);
-    const idx = findImageIndex(selectedColor, glazingName);
-    if (idx >= 0) setCurrentImage(idx);
+    const { i, img } = findImage(selectedColor, glazingName);
+    if (i >= 0) {
+      setCurrentImage(i);
+      if (img?.variant_key && img.variant_key !== selectedColor) {
+        setSelectedColor(img.variant_key);
+      }
+    }
   };
 
   const similar = useMemo(() => {
