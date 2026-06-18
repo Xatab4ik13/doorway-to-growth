@@ -430,13 +430,43 @@ export default function StorefrontProduct() {
     if (specs?.glazing && !selectedGlazing) setSelectedGlazing(specs.glazing);
   }, [specs]);
 
-  // When user picks a color that is bound to an image, switch the gallery to it.
+  // Find image index matching a (color, glazing) combination, with graceful fallbacks:
+  // 1) exact match on both color AND glazing
+  // 2) match on color with no glazing recorded
+  // 3) match on color alone (any glazing)
+  const findImageIndex = (color: string | null, glazing: string | null): number => {
+    const imgs = images as any[];
+    const eq = (a: any, b: any) =>
+      typeof a === "string" && typeof b === "string" && a.toLowerCase() === b.toLowerCase();
+    if (color && glazing) {
+      const exact = imgs.findIndex((img) => eq(img.variant_key, color) && eq(img.glazing_key, glazing));
+      if (exact >= 0) return exact;
+      const colorNoGlaz = imgs.findIndex((img) => eq(img.variant_key, color) && !img.glazing_key);
+      if (colorNoGlaz >= 0) return colorNoGlaz;
+    }
+    if (color) {
+      const colorAny = imgs.findIndex((img) => eq(img.variant_key, color));
+      if (colorAny >= 0) return colorAny;
+    }
+    if (glazing) {
+      const glazAny = imgs.findIndex((img) => eq(img.glazing_key, glazing));
+      if (glazAny >= 0) return glazAny;
+    }
+    return -1;
+  };
+
+  // When user picks a color, switch the gallery to the matching (color, current glazing) image.
   const handleSelectColor = (colorName: string) => {
     setSelectedColor(colorName);
     if (!hasImageBoundColors) return;
-    const idx = (images as any[]).findIndex(
-      (img) => img.variant_key && img.variant_key.toLowerCase() === colorName.toLowerCase()
-    );
+    const idx = findImageIndex(colorName, selectedGlazing);
+    if (idx >= 0) setCurrentImage(idx);
+  };
+
+  // When user picks a glazing, switch the gallery to the matching (current color, glazing) image.
+  const handleSelectGlazing = (glazingName: string) => {
+    setSelectedGlazing(glazingName);
+    const idx = findImageIndex(selectedColor, glazingName);
     if (idx >= 0) setCurrentImage(idx);
   };
 
