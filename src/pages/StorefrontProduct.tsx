@@ -430,14 +430,62 @@ export default function StorefrontProduct() {
     if (specs?.glazing && !selectedGlazing) setSelectedGlazing(specs.glazing);
   }, [specs]);
 
-  // When user picks a color that is bound to an image, switch the gallery to it.
+  // Find image matching a (color, glazing) combination, with graceful fallbacks.
+  // Returns both the index and the image so callers can sync the other axis.
+  const findImage = (color: string | null, glazing: string | null) => {
+    const imgs = images as any[];
+    const eq = (a: any, b: any) =>
+      typeof a === "string" && typeof b === "string" && a.toLowerCase() === b.toLowerCase();
+    if (color && glazing) {
+      const i = imgs.findIndex((img) => eq(img.variant_key, color) && eq(img.glazing_key, glazing));
+      if (i >= 0) return { i, img: imgs[i] };
+    }
+    if (color) {
+      const i = imgs.findIndex((img) => eq(img.variant_key, color));
+      if (i >= 0) return { i, img: imgs[i] };
+    }
+    if (glazing) {
+      const i = imgs.findIndex((img) => eq(img.glazing_key, glazing));
+      if (i >= 0) return { i, img: imgs[i] };
+    }
+    return { i: -1, img: null as any };
+  };
+
+  // When user picks a color: show its photo, and sync glazing if the photo has one.
   const handleSelectColor = (colorName: string) => {
     setSelectedColor(colorName);
     if (!hasImageBoundColors) return;
-    const idx = (images as any[]).findIndex(
-      (img) => img.variant_key && img.variant_key.toLowerCase() === colorName.toLowerCase()
-    );
-    if (idx >= 0) setCurrentImage(idx);
+    const { i, img } = findImage(colorName, selectedGlazing);
+    if (i >= 0) {
+      setCurrentImage(i);
+      if (img?.glazing_key && img.glazing_key !== selectedGlazing) {
+        setSelectedGlazing(img.glazing_key);
+      }
+    }
+  };
+
+  // When user picks a glazing: prefer exact (color+glazing) match, then any photo with
+  // that glazing (switching color to match). Mirrors brandoors.ru behavior where each
+  // photo is a unique combo.
+  const handleSelectGlazing = (glazingName: string) => {
+    setSelectedGlazing(glazingName);
+    const imgs = images as any[];
+    const eq = (a: any, b: any) =>
+      typeof a === "string" && typeof b === "string" && a.toLowerCase() === b.toLowerCase();
+    let i = -1;
+    if (selectedColor) {
+      i = imgs.findIndex((img) => eq(img.variant_key, selectedColor) && eq(img.glazing_key, glazingName));
+    }
+    if (i < 0) {
+      i = imgs.findIndex((img) => eq(img.glazing_key, glazingName));
+    }
+    if (i >= 0) {
+      setCurrentImage(i);
+      const img = imgs[i];
+      if (img?.variant_key && img.variant_key !== selectedColor) {
+        setSelectedColor(img.variant_key);
+      }
+    }
   };
 
   const similar = useMemo(() => {
@@ -804,7 +852,7 @@ export default function StorefrontProduct() {
                               hex={hex}
                               material={mat}
                               selected={selectedGlazing === g.name}
-                              onClick={() => setSelectedGlazing(g.name)}
+                              onClick={() => handleSelectGlazing(g.name)}
                             />
                           );
                         })}
