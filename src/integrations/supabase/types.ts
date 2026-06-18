@@ -82,6 +82,36 @@ export type Database = {
           },
         ]
       }
+      glazing_options: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          name: string
+          sort_order: number
+          swatch_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          name: string
+          sort_order?: number
+          swatch_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          name?: string
+          sort_order?: number
+          swatch_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       lead_attachments: {
         Row: {
           created_at: string
@@ -451,6 +481,7 @@ export type Database = {
         Row: {
           alt: string | null
           created_at: string
+          glazing_key: string | null
           id: string
           is_primary: boolean | null
           product_id: string
@@ -461,6 +492,7 @@ export type Database = {
         Insert: {
           alt?: string | null
           created_at?: string
+          glazing_key?: string | null
           id?: string
           is_primary?: boolean | null
           product_id: string
@@ -471,6 +503,7 @@ export type Database = {
         Update: {
           alt?: string | null
           created_at?: string
+          glazing_key?: string | null
           id?: string
           is_primary?: boolean | null
           product_id?: string
@@ -499,6 +532,7 @@ export type Database = {
           rrp: number | null
           slug: string
           sort_order: number | null
+          source_id: string | null
           specifications: Json | null
           updated_at: string
         }
@@ -512,6 +546,7 @@ export type Database = {
           rrp?: number | null
           slug: string
           sort_order?: number | null
+          source_id?: string | null
           specifications?: Json | null
           updated_at?: string
         }
@@ -525,6 +560,7 @@ export type Database = {
           rrp?: number | null
           slug?: string
           sort_order?: number | null
+          source_id?: string | null
           specifications?: Json | null
           updated_at?: string
         }
