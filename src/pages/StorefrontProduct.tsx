@@ -396,7 +396,7 @@ function DimensionSlider({
           value={idx}
           onChange={(e) => onChange(values[Number(e.target.value)])}
           aria-label={label}
-          className="absolute inset-x-0 top-0 w-full h-20 appearance-none bg-transparent cursor-pointer
+          className="absolute left-5 right-5 top-[20px] w-[calc(100%-40px)] h-7 appearance-none bg-transparent cursor-pointer
             [&::-webkit-slider-thumb]:appearance-none
             [&::-webkit-slider-thumb]:w-7 [&::-webkit-slider-thumb]:h-7
             [&::-webkit-slider-thumb]:rounded-full
