@@ -32,9 +32,8 @@ export function StorefrontHeader({ site }: Props) {
   const location = useLocation();
 
   const isActive = useCallback((item: typeof NAV_ITEMS[0]) => {
-    const basePath = storeHref(site.slug);
     if (item.isRoute) {
-      const fullPath = item.href ? `${basePath}/${item.href}` : basePath;
+      const fullPath = storeHref(site.slug, item.href || "");
       if (item.href === "catalog") {
         return location.pathname === fullPath || location.pathname.startsWith(`${fullPath}/`);
       }
@@ -42,6 +41,7 @@ export function StorefrontHeader({ site }: Props) {
     }
     return false;
   }, [site.slug, location.pathname]);
+
 
   const handleNavClick = useCallback((item: typeof NAV_ITEMS[0]) => {
     setMobileOpen(false);
