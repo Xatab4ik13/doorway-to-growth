@@ -443,11 +443,17 @@ export default function StorefrontProduct() {
       });
   const hasImageBoundMoldings = imageMoldings.length > 0;
 
-  // Set initial selected color/glazing from specs
+  // Set initial selected color/glazing/molding from specs or first image
   useMemo(() => {
     if (specs?.color && !selectedColor) setSelectedColor(specs.color);
     if (specs?.glazing && !selectedGlazing) setSelectedGlazing(specs.glazing);
-  }, [specs]);
+    const firstImg = (images as any[])[0];
+    if (firstImg) {
+      if (!selectedColor && firstImg.variant_key) setSelectedColor(firstImg.variant_key);
+      if (!selectedGlazing && firstImg.glazing_key) setSelectedGlazing(firstImg.glazing_key);
+      if (!selectedMolding && firstImg.molding_key) setSelectedMolding(firstImg.molding_key);
+    }
+  }, [specs, images]);
 
   // Find image matching (color, glazing, molding) with graceful fallbacks.
   // Returns both the index and the image so callers can sync other axes.
