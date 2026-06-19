@@ -919,7 +919,7 @@ export default function StorefrontProduct() {
                             hex={c.hex}
                             material={pickCoatingMaterial(c.name, c.hex) === "wood" ? "wood" : "metal"}
                             selected={selectedMolding === c.name}
-                            onClick={() => setSelectedMolding(c.name)}
+                            onClick={() => handleSelectMolding(c.name)}
                           />
                         ))}
                       </div>
