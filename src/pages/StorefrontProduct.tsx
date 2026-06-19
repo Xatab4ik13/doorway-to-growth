@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect, ReactNode } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
@@ -285,6 +285,72 @@ function AccessoryCard({
     </button>
   );
 }
+
+// Horizontal scroll wrapper with chevron arrows on desktop.
+function ScrollCarousel({ children }: { children: ReactNode }) {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(false);
+
+  const update = () => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    setCanPrev(el.scrollLeft > 4);
+    setCanNext(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  };
+
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    update();
+    el.addEventListener("scroll", update, { passive: true });
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener("scroll", update);
+      ro.disconnect();
+    };
+  }, []);
+
+  const scrollBy = (dir: 1 | -1) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * Math.round(el.clientWidth * 0.85), behavior: "smooth" });
+  };
+
+  return (
+    <div className="relative group/scroller">
+      <div
+        ref={scrollerRef}
+        className="-mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto scrollbar-hide snap-x"
+      >
+        <div className="flex gap-3 pb-2">{children}</div>
+      </div>
+
+      {canPrev && (
+        <button
+          type="button"
+          aria-label="Назад"
+          onClick={() => scrollBy(-1)}
+          className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#07090d]/90 border border-storefront-gold/30 text-storefront-gold items-center justify-center backdrop-blur-md shadow-[0_10px_30px_-8px_rgba(0,0,0,0.8)] opacity-0 group-hover/scroller:opacity-100 transition-opacity duration-200 hover:bg-storefront-gold hover:text-[#07090d]"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+      )}
+      {canNext && (
+        <button
+          type="button"
+          aria-label="Вперёд"
+          onClick={() => scrollBy(1)}
+          className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#07090d]/90 border border-storefront-gold/30 text-storefront-gold items-center justify-center backdrop-blur-md shadow-[0_10px_30px_-8px_rgba(0,0,0,0.8)] opacity-0 group-hover/scroller:opacity-100 transition-opacity duration-200 hover:bg-storefront-gold hover:text-[#07090d]"
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
+      )}
+    </div>
+  );
+}
+
 
 export default function StorefrontProduct() {
   const { slug: urlSlug, productSlug } = useParams<{ slug: string; productSlug: string }>();
@@ -1052,29 +1118,24 @@ export default function StorefrontProduct() {
               {/* ===== TRIM (ПОГОНАЖ) ===== */}
               {!isEntranceDoor && realTrim.length > 0 && (
                 <div className="mb-10">
-                  <div className="flex items-baseline justify-between gap-2 mb-5 pb-3 border-b border-white/5">
+                  <div className="mb-5 pb-3 border-b border-white/5">
                     <h2 className="text-[13px] uppercase tracking-[0.22em] font-light text-storefront-text/85">
                       Погонаж коллекции
                     </h2>
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-text/35 tabular-nums">
-                      {realTrim.length} поз.
-                    </span>
                   </div>
-                  <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto scrollbar-hide snap-x">
-                    <div className="flex gap-3 pb-2">
-                      {realTrim.map((item) => (
-                        <div key={item.id} className="snap-start shrink-0 w-[230px] sm:w-[250px]">
-                          <AccessoryCard
-                            name={item.name}
-                            rrp={item.rrp}
-                            image={item.image}
-                            active={selectedTrim.has(item.id)}
-                            onClick={() => toggleTrim(item.id)}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <ScrollCarousel>
+                    {realTrim.map((item) => (
+                      <div key={item.id} className="snap-start shrink-0 w-[230px] sm:w-[250px]">
+                        <AccessoryCard
+                          name={item.name}
+                          rrp={item.rrp}
+                          image={item.image}
+                          active={selectedTrim.has(item.id)}
+                          onClick={() => toggleTrim(item.id)}
+                        />
+                      </div>
+                    ))}
+                  </ScrollCarousel>
                 </div>
               )}
 
@@ -1082,16 +1143,13 @@ export default function StorefrontProduct() {
               {/* ===== HARDWARE (ФУРНИТУРА) ===== */}
               {!isEntranceDoor && realHardware.length > 0 && (
                 <div className="mb-10">
-                  <div className="flex items-baseline justify-between gap-2 mb-5 pb-3 border-b border-white/5">
+                  <div className="mb-5 pb-3 border-b border-white/5">
                     <h2 className="text-[13px] uppercase tracking-[0.22em] font-light text-storefront-text/85">
                       Фурнитура
                     </h2>
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-text/35 tabular-nums">
-                      {filteredHardware.length} из {realHardware.length}
-                    </span>
                   </div>
 
-                  {/* Subcategory tabs — large separate pill buttons */}
+                  {/* Subcategory tabs */}
                   <div className="flex flex-wrap gap-2.5 mb-6">
                     {HARDWARE_TABS.map((t) => {
                       const count = t.key === "all" ? realHardware.length : realHardware.filter((h) => t.match(h.name)).length;
@@ -1108,29 +1166,28 @@ export default function StorefrontProduct() {
                           }`}
                         >
                           {t.label}
-                          <span className={`ml-2 text-[11px] tabular-nums ${active ? "opacity-70" : "opacity-50"}`}>{count}</span>
                         </button>
                       );
                     })}
                   </div>
 
-                  <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto scrollbar-hide snap-x">
-                    <div className="flex gap-3 pb-2">
-                      {filteredHardware.map((item) => (
-                        <div key={item.id} className="snap-start shrink-0 w-[230px] sm:w-[250px]">
-                          <AccessoryCard
-                            name={item.name}
-                            rrp={item.rrp}
-                            image={item.image}
-                            active={selectedHardware.has(item.id)}
-                            onClick={() => toggleHardware(item.id)}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <ScrollCarousel>
+                    {filteredHardware.map((item) => (
+                      <div key={item.id} className="snap-start shrink-0 w-[230px] sm:w-[250px]">
+                        <AccessoryCard
+                          name={item.name}
+                          rrp={item.rrp}
+                          image={item.image}
+                          active={selectedHardware.has(item.id)}
+                          onClick={() => toggleHardware(item.id)}
+                        />
+                      </div>
+                    ))}
+                  </ScrollCarousel>
                 </div>
               )}
+
+
 
 
 
