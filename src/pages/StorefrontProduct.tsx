@@ -1325,7 +1325,7 @@ export default function StorefrontProduct() {
                   </div>
 
                   <div
-                    className="rounded-2xl px-6 py-7 space-y-8"
+                    className="rounded-2xl px-7 sm:px-9 py-9 space-y-12"
                     style={{
                       background: "linear-gradient(180deg, rgba(207,187,150,0.06) 0%, rgba(207,187,150,0.01) 100%)",
                       border: "1px solid rgba(207,187,150,0.1)",
