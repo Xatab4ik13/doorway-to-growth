@@ -14,6 +14,21 @@ export type Database = {
   }
   public: {
     Tables: {
+      _furnitura_map: {
+        Row: {
+          src_cat_id: number
+          src_name: string
+        }
+        Insert: {
+          src_cat_id: number
+          src_name: string
+        }
+        Update: {
+          src_cat_id?: number
+          src_name?: string
+        }
+        Relationships: []
+      }
       announcements: {
         Row: {
           content: string
