@@ -1468,15 +1468,23 @@ export default function StorefrontProduct() {
                 return (
                   <div className="mt-10 pt-8 border-t border-white/8 flex items-center justify-between gap-4 flex-wrap">
                     <div className="min-w-0">
-                      <div className="text-[9px] uppercase tracking-[0.25em] text-storefront-text/40 mb-1">
-                        {hasExtras ? "Итого" : "Стоимость от"}
-                      </div>
-                      <div
-                        className="text-[30px] leading-none text-storefront-gold tabular-nums"
-                        style={{ fontFamily: "'Manrope', system-ui, sans-serif", fontWeight: 700, letterSpacing: "-0.02em" }}
-                      >
-                        {totalPrice.toLocaleString("ru-RU")} ₽
-                      </div>
+                      {totalPrice > 0 ? (
+                        <>
+                          <div className="text-[9px] uppercase tracking-[0.25em] text-storefront-text/40 mb-1">
+                            {hasExtras ? "Итого" : "Стоимость от"}
+                          </div>
+                          <div
+                            className="text-[30px] leading-none text-storefront-gold tabular-nums"
+                            style={{ fontFamily: "'Manrope', system-ui, sans-serif", fontWeight: 700, letterSpacing: "-0.02em" }}
+                          >
+                            {totalPrice.toLocaleString("ru-RU")} ₽
+                          </div>
+                        </>
+                      ) : (
+                        <div className="text-[12px] uppercase tracking-[0.22em] text-storefront-text/55 font-semibold">
+                          Цена по запросу
+                        </div>
+                      )}
                     </div>
                     <button
                       onClick={handleAddAllToCart}
