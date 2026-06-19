@@ -687,10 +687,18 @@ export default function StorefrontProduct() {
     const mock = MOCK_GLAZING.find((g) => g.name.toLowerCase() === name.toLowerCase());
     return { name, preview: mock?.preview ?? "#2a2a2a" };
   });
-  // Show glazing only when images carry glazing_key. Spec-only items create
-  // controls that don't switch the picture — that confuses customers.
-  const glazingItems = imageGlazings;
+  // Show union of image-bound + spec-declared glazings so the customer sees
+  // the full assortment from brandoors.ru even when no photo is loaded.
+  const glazingItems = useMemo(() => {
+    const seen = new Set(imageGlazings.map((g) => g.name.toLowerCase()));
+    const extra = specGlazingItems.filter((g) => !seen.has(g.name.toLowerCase()));
+    return [...imageGlazings, ...extra];
+  }, [imageGlazings, specGlazingItems]);
   const hasImageBoundGlazings = imageGlazings.length > 0;
+  const imageGlazingSet = useMemo(
+    () => new Set(imageGlazings.map((g) => g.name.toLowerCase())),
+    [imageGlazings],
+  );
 
   // Build (color, glazing) availability matrix from images.
   const glazingsByColor = useMemo(() => {
@@ -729,9 +737,21 @@ export default function StorefrontProduct() {
     }
     return out;
   }, [images]);
-  // Same rule: only render edges that actually switch the photo.
-  const edgeItems = imageEdges;
+  // Same union pattern for edges: image-bound items first, spec-only appended.
+  const specEdgeItems = collectFromSpecs("edge_colors", null, "edge", ["edge"]).map((name) => {
+    const mock = MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
+    return { name, hex: mock?.hex ?? "#9C9994" };
+  });
+  const edgeItems = useMemo(() => {
+    const seen = new Set(imageEdges.map((e) => e.name.toLowerCase()));
+    const extra = specEdgeItems.filter((e) => !seen.has(e.name.toLowerCase()));
+    return [...imageEdges, ...extra];
+  }, [imageEdges, specEdgeItems]);
   const hasImageBoundEdges = imageEdges.length > 0;
+  const imageEdgeSet = useMemo(
+    () => new Set(imageEdges.map((e) => e.name.toLowerCase())),
+    [imageEdges],
+  );
   const edgesByColor = useMemo(() => {
     const map = new Map<string, Set<string>>();
     for (const img of images as any[]) {
@@ -755,7 +775,7 @@ export default function StorefrontProduct() {
     return map;
   }, [images]);
 
-  // Moldings — only image-bound (avoid dead spec-only swatches for HEAVY/MAZE).
+  // Moldings: image-bound + spec-declared union.
   const imageMoldings = useMemo(() => {
     const seen = new Set<string>();
     const out: { name: string; hex: string }[] = [];
@@ -769,8 +789,21 @@ export default function StorefrontProduct() {
     }
     return out;
   }, [images]);
-  const moldingItems = imageMoldings;
+  const specMoldingItems = collectFromSpecs("molding_colors", null, "molding", ["casing", "panel"]).map((name) => {
+    const mock = MOCK_MOLDING_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase())
+      || MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
+    return { name, hex: mock?.hex ?? "#9C9994" };
+  });
+  const moldingItems = useMemo(() => {
+    const seen = new Set(imageMoldings.map((m) => m.name.toLowerCase()));
+    const extra = specMoldingItems.filter((m) => !seen.has(m.name.toLowerCase()));
+    return [...imageMoldings, ...extra];
+  }, [imageMoldings, specMoldingItems]);
   const hasImageBoundMoldings = imageMoldings.length > 0;
+  const imageMoldingSet = useMemo(
+    () => new Set(imageMoldings.map((m) => m.name.toLowerCase())),
+    [imageMoldings],
+  );
   const moldingsByColor = useMemo(() => {
     const map = new Map<string, Set<string>>();
     for (const img of images as any[]) {
@@ -859,7 +892,8 @@ export default function StorefrontProduct() {
     setSelectedColor(colorName);
     if (!hasImageBoundColors) return;
     let glazing = selectedGlazing;
-    if (hasImageBoundGlazings) {
+    // Only auto-switch image-bound selections; spec-only choices stay as-is.
+    if (hasImageBoundGlazings && (!glazing || imageGlazingSet.has(glazing.toLowerCase()))) {
       const avail = glazingsByColor.get(colorName);
       if (avail && avail.size > 0 && (!glazing || !avail.has(glazing))) {
         glazing = Array.from(avail)[0];
@@ -867,7 +901,7 @@ export default function StorefrontProduct() {
       }
     }
     let edge = selectedEdge;
-    if (hasImageBoundEdges) {
+    if (hasImageBoundEdges && (!edge || imageEdgeSet.has(edge.toLowerCase()))) {
       const avail = edgesByColor.get(colorName);
       if (avail && avail.size > 0 && (!edge || !avail.has(edge))) {
         edge = Array.from(avail)[0];
@@ -875,7 +909,7 @@ export default function StorefrontProduct() {
       }
     }
     let molding = selectedMolding;
-    if (hasImageBoundMoldings) {
+    if (hasImageBoundMoldings && (!molding || imageMoldingSet.has(molding.toLowerCase()))) {
       const avail = moldingsByColor.get(colorName);
       if (avail && avail.size > 0 && (!molding || !avail.has(molding))) {
         molding = Array.from(avail)[0];
@@ -891,6 +925,8 @@ export default function StorefrontProduct() {
 
   const handleSelectGlazing = (glazingName: string) => {
     setSelectedGlazing(glazingName);
+    // Spec-only variant (no photo) — keep current image.
+    if (!imageGlazingSet.has(glazingName.toLowerCase())) return;
     let color = selectedColor;
     if (hasImageBoundColors) {
       const avail = colorsByGlazing.get(glazingName);
@@ -916,6 +952,8 @@ export default function StorefrontProduct() {
       if (i >= 0) { setCurrentImage(i); syncFromImage(img); }
       return;
     }
+    // Spec-only edge — keep current image.
+    if (!imageEdgeSet.has(next.toLowerCase())) return;
     let color = selectedColor;
     if (hasImageBoundColors) {
       const avail = colorsByEdge.get(next);
@@ -935,6 +973,8 @@ export default function StorefrontProduct() {
     const next = selectedMolding === moldingName ? null : moldingName;
     setSelectedMolding(next);
     if (!hasImageBoundMoldings || next == null) return;
+    // Spec-only molding — keep current image.
+    if (!imageMoldingSet.has(next.toLowerCase())) return;
     const { i, img } = findImage(selectedColor, selectedGlazing, selectedEdge, next, "molding");
     if (i >= 0) {
       setCurrentImage(i);
@@ -1287,9 +1327,10 @@ export default function StorefrontProduct() {
                           const mat = pickGlazingMaterial(g.name, g.preview);
                           const hex = mat === "lacobel" && g.preview.startsWith("#") ? g.preview : undefined;
                           const disabled =
-                            hasImageBoundGlazings &&
+                            imageGlazingSet.has(g.name.toLowerCase()) &&
                             hasImageBoundColors &&
                             !!selectedColor &&
+                            imageGlazingSet.size > 0 &&
                             !(glazingsByColor.get(selectedColor)?.has(g.name) ?? true);
                           return (
                             <MaterialSwatch
@@ -1317,7 +1358,7 @@ export default function StorefrontProduct() {
                       <div className="flex flex-wrap gap-3">
                         {edgeItems.map((c) => {
                           const disabled =
-                            hasImageBoundEdges &&
+                            imageEdgeSet.has(c.name.toLowerCase()) &&
                             hasImageBoundColors &&
                             !!selectedColor &&
                             !(edgesByColor.get(selectedColor)?.has(c.name) ?? true);
