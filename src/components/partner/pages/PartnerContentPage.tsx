@@ -108,7 +108,7 @@ export function PartnerContentPage({ onNavigate }: { onNavigate: (s: string) => 
               <div key={b.id} className="rounded-2xl border border-border bg-card overflow-hidden group">
                 <div className="h-36 bg-muted flex items-center justify-center overflow-hidden">
                   {b.image_url ? (
-                    <img src={b.image_url} alt={b.title || ""} className="w-full h-full object-cover" />
+                    <img src={resolveStorageUrl(b.image_url)} alt={b.title || ""} className="w-full h-full object-cover" />
                   ) : (
                     <Image className="h-8 w-8 text-muted-foreground/30" />
                   )}
