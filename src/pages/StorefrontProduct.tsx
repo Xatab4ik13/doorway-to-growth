@@ -201,11 +201,9 @@ type AccessoryItem = { id: string; name: string; rrp: number | null; image: stri
 
 // Hardware subcategory tabs derived from product name keywords.
 const HARDWARE_TABS: { key: string; label: string; match: (n: string) => boolean }[] = [
-  { key: "all", label: "Все", match: () => true },
   { key: "handles", label: "Ручки", match: (n) => /ручк|скоб|кноп/i.test(n) },
   { key: "locks", label: "Защёлки и замки", match: (n) => /защ[её]лк|замк|замок|корпус/i.test(n) },
   { key: "hinges", label: "Петли", match: (n) => /петл/i.test(n) },
-  { key: "systems", label: "Системы", match: (n) => /invisible|compack|magic|пенал|купе|sky/i.test(n) },
 ];
 
 // Premium photo card for trim / hardware accessory selection.
