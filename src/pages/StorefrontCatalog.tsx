@@ -766,10 +766,12 @@ const ProductCard = memo(function ProductCard({
           <h3 className="text-xs font-semibold text-storefront-text uppercase tracking-wider leading-snug mb-1 line-clamp-2">
             {product.name}
           </h3>
-          {product.rrp && (
+          {product.rrp && Number(product.rrp) > 0 ? (
             <p className="text-sm font-medium text-storefront-text tabular-nums">
               {Number(product.rrp).toLocaleString("ru-RU")} ₽
             </p>
+          ) : (
+            <p className="text-sm font-medium text-storefront-muted/70">Цена по запросу</p>
           )}
         </div>
       </Link>
