@@ -1,5 +1,4 @@
 import { memo, useState, useRef, useEffect } from "react";
-import { DoorOpen } from "lucide-react";
 
 type System = {
   id: string;
@@ -66,12 +65,13 @@ const OpeningSystems = memo(function OpeningSystems() {
 
   return (
     <div className="mb-10">
-      <div className="flex items-center gap-2 mb-5">
-        <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
-          <DoorOpen className="w-4 h-4 text-storefront-gold" />
-        </div>
-        <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
+      {/* Section header — gold rule + label, no icon */}
+      <div className="flex items-baseline justify-between gap-2 mb-5 pb-3 border-b border-white/5">
+        <h2 className="text-[13px] uppercase tracking-[0.22em] font-light text-storefront-text/85">
           Системы открывания
+        </h2>
+        <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-text/35 tabular-nums">
+          {SYSTEMS.length} реш.
         </span>
       </div>
 
@@ -112,8 +112,8 @@ const OpeningSystems = memo(function OpeningSystems() {
                   {current.tag}
                 </div>
                 <div
-                  className="text-[26px] leading-none font-extralight text-storefront-text"
-                  style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: "0.02em" }}
+                  className="text-[28px] leading-none font-light text-storefront-text"
+                  style={{ fontFamily: "'Cormorant Garamond', serif", letterSpacing: "0.04em" }}
                 >
                   {current.name}
                 </div>
@@ -125,37 +125,53 @@ const OpeningSystems = memo(function OpeningSystems() {
           </div>
         </div>
 
-        {/* System selector — large separate cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 p-4 bg-[#0a0c12]/60 border-t border-storefront-gold/10">
-          {SYSTEMS.map((s) => {
-            const isActive = s.id === active;
-            return (
-              <button
-                key={s.id}
-                onClick={() => setActive(s.id)}
-                className={`group relative flex flex-col items-start gap-1.5 px-4 py-3.5 rounded-xl border transition-all duration-200 text-left ${
-                  isActive
-                    ? "bg-storefront-gold text-[#07090d] border-storefront-gold shadow-[0_8px_24px_-10px_rgba(207,187,150,0.55)]"
-                    : "bg-white/[0.03] border-white/10 hover:border-storefront-gold/50 hover:bg-white/[0.06]"
-                }`}
-              >
-                <span
-                  className={`text-[9px] uppercase tracking-[0.25em] font-semibold ${
-                    isActive ? "text-[#07090d]/65" : "text-storefront-gold/70"
-                  }`}
-                >
-                  {s.tag}
-                </span>
-                <span
-                  className={`text-[13px] uppercase tracking-[0.12em] font-semibold ${
-                    isActive ? "text-[#07090d]" : "text-storefront-text/85"
-                  }`}
-                >
-                  {s.name}
-                </span>
-              </button>
-            );
-          })}
+        {/* System selector — large premium cards, horizontal scroll on mobile */}
+        <div className="bg-[#0a0c12]/60 border-t border-storefront-gold/10 p-4">
+          <div className="-mx-1 px-1 overflow-x-auto scrollbar-hide snap-x sm:overflow-visible">
+            <div className="flex sm:grid sm:grid-cols-3 gap-3 min-w-min sm:min-w-0">
+              {SYSTEMS.map((s, idx) => {
+                const isActive = s.id === active;
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => setActive(s.id)}
+                    className={`group relative flex flex-col items-start justify-between gap-3 shrink-0 sm:shrink snap-start w-[180px] sm:w-auto min-h-[112px] px-5 py-4 rounded-2xl border text-left transition-all duration-300 overflow-hidden ${
+                      isActive
+                        ? "bg-gradient-to-br from-storefront-gold to-[#b89860] text-[#07090d] border-storefront-gold shadow-[0_14px_36px_-14px_rgba(207,187,150,0.7)]"
+                        : "bg-white/[0.025] border-white/10 hover:border-storefront-gold/50 hover:bg-white/[0.05] hover:-translate-y-0.5"
+                    }`}
+                  >
+                    {/* Decorative gold number — top-right */}
+                    <span
+                      className={`absolute top-3 right-4 text-[26px] leading-none font-light tabular-nums transition-opacity ${
+                        isActive ? "text-[#07090d]/30" : "text-storefront-gold/25"
+                      }`}
+                      style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                    >
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
+
+                    <span
+                      className={`text-[10px] uppercase tracking-[0.28em] font-semibold ${
+                        isActive ? "text-[#07090d]/70" : "text-storefront-gold/75"
+                      }`}
+                    >
+                      {s.tag}
+                    </span>
+
+                    <span
+                      className={`text-[17px] leading-tight font-medium ${
+                        isActive ? "text-[#07090d]" : "text-storefront-text"
+                      }`}
+                      style={{ fontFamily: "'Cormorant Garamond', serif", letterSpacing: "0.02em" }}
+                    >
+                      {s.name}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     </div>
