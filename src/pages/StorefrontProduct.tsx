@@ -368,6 +368,29 @@ export default function StorefrontProduct() {
 
   const specs = product?.specifications as Record<string, any> | null;
 
+  // Per-collection axis labels (e.g. MAZE: molding="Наличник", HEAVY: edge="Кромка")
+  // Source: specs.axes scraped from brandoors.ru
+  const axes = (specs?.axes ?? {}) as Record<string, { name: string; values: string[] }>;
+  const axisLabel = (uiAxis: "color" | "glazing" | "edge" | "molding"): string => {
+    if (uiAxis === "color") return axes.color?.name || "Цвет покрытия";
+    if (uiAxis === "glazing") return axes.glass?.name || axes.panelouter?.name || "Остекление";
+    if (uiAxis === "edge") return axes.edge?.name || "Кромка";
+    if (uiAxis === "molding") return axes.casing?.name || axes.panel?.name || "Молдинг";
+    return uiAxis;
+  };
+
+  const widths: number[] = Array.isArray(specs?.widths) ? (specs!.widths as number[]) : [];
+  const heights: number[] = Array.isArray(specs?.heights) ? (specs!.heights as number[]) : [];
+  const characteristics = (specs?.characteristics ?? null) as Record<string, string> | null;
+  const charLabels: Record<string, string> = {
+    type: "Тип",
+    style: "Стиль",
+    material: "Материал",
+    finishing: "Покрытие",
+    thickness: "Толщина полотна",
+  };
+
+
   // ── Extract real configurator options from product data ──
   // Show a section only when the product actually declares its options
   // (via specs.{colors|glazing_options|edge_colors|molding_colors},
