@@ -1093,38 +1093,62 @@ export default function StorefrontProduct() {
 
 
 
-              {sizes && sizes.length > 0 && (
+              {(widths.length > 0 || heights.length > 0) && (
                 <div className="mb-8">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
                       <Ruler className="w-4 h-4 text-storefront-gold" />
                     </div>
                     <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
-                      Доступные размеры
+                      Размер
                     </span>
                   </div>
 
                   <div className="rounded-2xl overflow-hidden" style={{ background: "linear-gradient(180deg, rgba(207,187,150,0.06) 0%, rgba(207,187,150,0.01) 100%)", border: "1px solid rgba(207,187,150,0.1)" }}>
-                    {heightSizes && heightSizes.length > 0 && (
+                    {widths.length > 0 && (
                       <div className="px-5 py-4 border-b border-white/5">
-                        <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-muted block mb-3">Высота, мм</span>
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-muted">Ширина, мм</span>
+                          <span className="text-[12px] text-storefront-gold/80">{selectedWidth ?? "—"}</span>
+                        </div>
                         <div className="flex flex-wrap gap-2">
-                          {heightSizes.map((s, i) => (
-                            <span key={`h-${i}`} className="px-4 py-2 bg-white/[0.04] border border-white/[0.06] rounded-xl text-[14px] font-medium text-storefront-text hover:border-storefront-gold/30 transition-colors">
-                              {s.h_from}—{s.h_to}
-                            </span>
+                          {widths.map((w) => (
+                            <button
+                              key={`w-${w}`}
+                              type="button"
+                              onClick={() => setSelectedWidth(w)}
+                              className={`px-4 py-2 rounded-xl text-[13px] font-medium tabular-nums border transition-colors ${
+                                selectedWidth === w
+                                  ? "border-storefront-gold text-storefront-gold bg-storefront-gold/10"
+                                  : "border-white/[0.06] bg-white/[0.04] text-storefront-text hover:border-storefront-gold/30"
+                              }`}
+                            >
+                              {w}
+                            </button>
                           ))}
                         </div>
                       </div>
                     )}
-                    {widthSizes && widthSizes.length > 0 && (
+                    {heights.length > 0 && (
                       <div className="px-5 py-4">
-                        <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-muted block mb-3">Ширина, мм</span>
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-muted">Высота, мм</span>
+                          <span className="text-[12px] text-storefront-gold/80">{selectedHeight ?? "—"}</span>
+                        </div>
                         <div className="flex flex-wrap gap-2">
-                          {widthSizes.map((s, i) => (
-                            <span key={`w-${i}`} className="px-4 py-2 bg-white/[0.04] border border-white/[0.06] rounded-xl text-[14px] font-medium text-storefront-text hover:border-storefront-gold/30 transition-colors">
-                              {s.w_from}—{s.w_to}
-                            </span>
+                          {heights.map((h) => (
+                            <button
+                              key={`h-${h}`}
+                              type="button"
+                              onClick={() => setSelectedHeight(h)}
+                              className={`px-4 py-2 rounded-xl text-[13px] font-medium tabular-nums border transition-colors ${
+                                selectedHeight === h
+                                  ? "border-storefront-gold text-storefront-gold bg-storefront-gold/10"
+                                  : "border-white/[0.06] bg-white/[0.04] text-storefront-text hover:border-storefront-gold/30"
+                              }`}
+                            >
+                              {h}
+                            </button>
                           ))}
                         </div>
                       </div>
@@ -1132,6 +1156,7 @@ export default function StorefrontProduct() {
                   </div>
                 </div>
               )}
+
 
               {/* ===== INFO ACCORDION ===== */}
               <div className="mb-8">
