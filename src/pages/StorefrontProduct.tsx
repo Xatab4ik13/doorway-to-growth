@@ -792,7 +792,7 @@ export default function StorefrontProduct() {
     return map;
   }, [images]);
 
-  // Set initial selected color/glazing/molding from specs or first image
+  // Set initial selected color/glazing/edge/molding from specs or first image
   useMemo(() => {
     if (specs?.color && !selectedColor) setSelectedColor(specs.color);
     if (specs?.glazing && !selectedGlazing) setSelectedGlazing(specs.glazing);
@@ -800,17 +800,19 @@ export default function StorefrontProduct() {
     if (firstImg) {
       if (!selectedColor && firstImg.variant_key) setSelectedColor(firstImg.variant_key);
       if (!selectedGlazing && firstImg.glazing_key) setSelectedGlazing(firstImg.glazing_key);
+      if (!selectedEdge && firstImg.edge_key) setSelectedEdge(firstImg.edge_key);
       if (!selectedMolding && firstImg.molding_key) setSelectedMolding(firstImg.molding_key);
     }
   }, [specs, images]);
 
-  // Find image matching (color, glazing, molding) with graceful fallbacks.
+  // Find image matching (color, glazing, edge, molding) with graceful fallbacks.
   // `priority` controls which axis must match when an exact combo is missing.
   const findImage = (
     color: string | null,
     glazing: string | null,
+    edge: string | null,
     molding: string | null,
-    priority: "color" | "glazing" | "molding" = "color",
+    priority: "color" | "glazing" | "edge" | "molding" = "color",
   ) => {
     const imgs = images as any[];
     const eq = (a: any, b: any) =>
@@ -819,18 +821,31 @@ export default function StorefrontProduct() {
       axes.every(([k, v]) => v == null || eq(img[k], v));
     const colorAxis: [string, string | null] = ["variant_key", color];
     const glazingAxis: [string, string | null] = ["glazing_key", glazing];
+    const edgeAxis: [string, string | null] = ["edge_key", edge];
     const moldingAxis: [string, string | null] = ["molding_key", molding];
-    // Most-specific first, then fallbacks ordered by the requested priority axis.
-    const priorityChain: Array<Array<[string, string | null]>> =
-      priority === "glazing"
-        ? [[glazingAxis, colorAxis], [glazingAxis, moldingAxis], [glazingAxis], [colorAxis], [moldingAxis]]
-        : priority === "molding"
-        ? [[moldingAxis, colorAxis], [moldingAxis, glazingAxis], [moldingAxis], [colorAxis], [glazingAxis]]
-        : [[colorAxis, glazingAxis], [colorAxis, moldingAxis], [colorAxis], [glazingAxis], [moldingAxis]];
-    const candidates: Array<Array<[string, string | null]>> = [
-      [colorAxis, glazingAxis, moldingAxis],
-      ...priorityChain,
-    ];
+
+    // Most specific → progressively relaxed.
+    const all: Array<[string, string | null]> = [colorAxis, glazingAxis, edgeAxis, moldingAxis];
+    // Build candidates: full combo first, then drop axes one at a time,
+    // keeping the priority axis pinned as long as possible.
+    const axisByPriority: Array<[string, string | null]> =
+      priority === "glazing" ? [glazingAxis, colorAxis, edgeAxis, moldingAxis]
+      : priority === "edge"  ? [edgeAxis, colorAxis, glazingAxis, moldingAxis]
+      : priority === "molding" ? [moldingAxis, colorAxis, edgeAxis, glazingAxis]
+      : [colorAxis, edgeAxis, glazingAxis, moldingAxis];
+
+    const candidates: Array<Array<[string, string | null]>> = [all];
+    // Pinned priority + each other axis individually
+    for (let i = 1; i < axisByPriority.length; i++) {
+      candidates.push([axisByPriority[0], axisByPriority[i]]);
+    }
+    // Pinned priority alone
+    candidates.push([axisByPriority[0]]);
+    // Then each remaining axis on its own (fallback by importance)
+    for (let i = 1; i < axisByPriority.length; i++) {
+      candidates.push([axisByPriority[i]]);
+    }
+
     for (const axes of candidates) {
       if (axes.every(([_k, v]) => v == null)) continue;
       const i = imgs.findIndex((img) => matchAxes(img, axes));
@@ -842,13 +857,13 @@ export default function StorefrontProduct() {
   const syncFromImage = (img: any) => {
     if (img?.variant_key && img.variant_key !== selectedColor) setSelectedColor(img.variant_key);
     if (img?.glazing_key && img.glazing_key !== selectedGlazing) setSelectedGlazing(img.glazing_key);
+    if (img?.edge_key && img.edge_key !== selectedEdge) setSelectedEdge(img.edge_key);
     if (img?.molding_key && img.molding_key !== selectedMolding) setSelectedMolding(img.molding_key);
   };
 
   const handleSelectColor = (colorName: string) => {
     setSelectedColor(colorName);
     if (!hasImageBoundColors) return;
-    // If the currently selected glazing isn't available for this color, switch to one that is.
     let glazing = selectedGlazing;
     if (hasImageBoundGlazings) {
       const avail = glazingsByColor.get(colorName);
@@ -857,7 +872,23 @@ export default function StorefrontProduct() {
         setSelectedGlazing(glazing);
       }
     }
-    const { i, img } = findImage(colorName, glazing, selectedMolding, "color");
+    let edge = selectedEdge;
+    if (hasImageBoundEdges) {
+      const avail = edgesByColor.get(colorName);
+      if (avail && avail.size > 0 && (!edge || !avail.has(edge))) {
+        edge = Array.from(avail)[0];
+        setSelectedEdge(edge);
+      }
+    }
+    let molding = selectedMolding;
+    if (hasImageBoundMoldings) {
+      const avail = moldingsByColor.get(colorName);
+      if (avail && avail.size > 0 && (!molding || !avail.has(molding))) {
+        molding = Array.from(avail)[0];
+        setSelectedMolding(molding);
+      }
+    }
+    const { i, img } = findImage(colorName, glazing, edge, molding, "color");
     if (i >= 0) {
       setCurrentImage(i);
       syncFromImage(img);
@@ -866,7 +897,6 @@ export default function StorefrontProduct() {
 
   const handleSelectGlazing = (glazingName: string) => {
     setSelectedGlazing(glazingName);
-    // If current color isn't available for this glazing, switch to one that is.
     let color = selectedColor;
     if (hasImageBoundColors) {
       const avail = colorsByGlazing.get(glazingName);
@@ -875,7 +905,32 @@ export default function StorefrontProduct() {
         setSelectedColor(color);
       }
     }
-    const { i, img } = findImage(color, glazingName, selectedMolding, "glazing");
+    const { i, img } = findImage(color, glazingName, selectedEdge, selectedMolding, "glazing");
+    if (i >= 0) {
+      setCurrentImage(i);
+      syncFromImage(img);
+    }
+  };
+
+  const handleSelectEdge = (edgeName: string) => {
+    // Toggle off when re-clicking the same edge.
+    const next = selectedEdge === edgeName ? null : edgeName;
+    setSelectedEdge(next);
+    if (!hasImageBoundEdges || next == null) {
+      // Fall back to current image search without edge constraint.
+      const { i, img } = findImage(selectedColor, selectedGlazing, next, selectedMolding, "color");
+      if (i >= 0) { setCurrentImage(i); syncFromImage(img); }
+      return;
+    }
+    let color = selectedColor;
+    if (hasImageBoundColors) {
+      const avail = colorsByEdge.get(next);
+      if (avail && avail.size > 0 && (!color || !avail.has(color))) {
+        color = Array.from(avail)[0];
+        setSelectedColor(color);
+      }
+    }
+    const { i, img } = findImage(color, selectedGlazing, next, selectedMolding, "edge");
     if (i >= 0) {
       setCurrentImage(i);
       syncFromImage(img);
@@ -883,9 +938,10 @@ export default function StorefrontProduct() {
   };
 
   const handleSelectMolding = (moldingName: string) => {
-    setSelectedMolding(moldingName);
-    if (!hasImageBoundMoldings) return;
-    const { i, img } = findImage(selectedColor, selectedGlazing, moldingName, "molding");
+    const next = selectedMolding === moldingName ? null : moldingName;
+    setSelectedMolding(next);
+    if (!hasImageBoundMoldings || next == null) return;
+    const { i, img } = findImage(selectedColor, selectedGlazing, selectedEdge, next, "molding");
     if (i >= 0) {
       setCurrentImage(i);
       syncFromImage(img);
