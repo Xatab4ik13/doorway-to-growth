@@ -13,7 +13,6 @@ export function isStorefrontHost(): boolean {
     h.includes("lovableproject.com")
   ) return false;
   if (h === "crm.brandoors.su") return false;
-  if (h === "brandoors.su" || h === "www.brandoors.su") return false;
   return true;
 }
 
