@@ -286,6 +286,72 @@ function AccessoryCard({
   );
 }
 
+// Horizontal scroll wrapper with chevron arrows on desktop.
+function ScrollCarousel({ children }: { children: ReactNode }) {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(false);
+
+  const update = () => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    setCanPrev(el.scrollLeft > 4);
+    setCanNext(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  };
+
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    update();
+    el.addEventListener("scroll", update, { passive: true });
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener("scroll", update);
+      ro.disconnect();
+    };
+  }, []);
+
+  const scrollBy = (dir: 1 | -1) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * Math.round(el.clientWidth * 0.85), behavior: "smooth" });
+  };
+
+  return (
+    <div className="relative group/scroller">
+      <div
+        ref={scrollerRef}
+        className="-mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto scrollbar-hide snap-x"
+      >
+        <div className="flex gap-3 pb-2">{children}</div>
+      </div>
+
+      {canPrev && (
+        <button
+          type="button"
+          aria-label="Назад"
+          onClick={() => scrollBy(-1)}
+          className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#07090d]/90 border border-storefront-gold/30 text-storefront-gold items-center justify-center backdrop-blur-md shadow-[0_10px_30px_-8px_rgba(0,0,0,0.8)] opacity-0 group-hover/scroller:opacity-100 transition-opacity duration-200 hover:bg-storefront-gold hover:text-[#07090d]"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+      )}
+      {canNext && (
+        <button
+          type="button"
+          aria-label="Вперёд"
+          onClick={() => scrollBy(1)}
+          className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#07090d]/90 border border-storefront-gold/30 text-storefront-gold items-center justify-center backdrop-blur-md shadow-[0_10px_30px_-8px_rgba(0,0,0,0.8)] opacity-0 group-hover/scroller:opacity-100 transition-opacity duration-200 hover:bg-storefront-gold hover:text-[#07090d]"
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
+      )}
+    </div>
+  );
+}
+
+
 export default function StorefrontProduct() {
   const { slug: urlSlug, productSlug } = useParams<{ slug: string; productSlug: string }>();
   const slug = useSiteSlug(urlSlug);
