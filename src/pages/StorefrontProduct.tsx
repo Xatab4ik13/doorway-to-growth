@@ -54,27 +54,33 @@ function MaterialSwatch({
   material,
   selected,
   onClick,
+  disabled,
 }: {
   name: string;
   hex?: string;
   material: MaterialKey;
   selected: boolean;
   onClick: () => void;
+  disabled?: boolean;
 }) {
   const isNone = material === "none";
   // Mirror/frosted/lacobel glass renders the texture as-is (no tint) — they already look like the material.
   const isGlassRaw = material === "mirror" || material === "frosted";
   return (
     <button
-      onClick={onClick}
-      title={name}
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
+      title={disabled ? `${name} — нет такой комбинации` : name}
       aria-pressed={selected}
+      aria-disabled={disabled}
       className={`group relative w-16 h-16 rounded-full transition-all duration-300 ease-out will-change-transform ${
-        selected
+        disabled
+          ? "opacity-30 cursor-not-allowed grayscale"
+          : selected
           ? "scale-[1.08] shadow-[0_0_0_2px_rgba(207,187,150,0.9),0_8px_24px_-4px_rgba(207,187,150,0.45)]"
           : "shadow-[0_6px_18px_-6px_rgba(0,0,0,0.7)] hover:scale-[1.06] hover:shadow-[0_10px_24px_-6px_rgba(0,0,0,0.8)]"
       }`}
-      style={{ transform: selected ? "translateZ(0) scale(1.08)" : undefined }}
+      style={{ transform: selected && !disabled ? "translateZ(0) scale(1.08)" : undefined }}
     >
       <span className="absolute inset-0 rounded-full overflow-hidden">
         {isNone ? (
