@@ -8,7 +8,8 @@ export function useStorefrontProducts(siteId: string | undefined) {
       // Fetch all active products in chunks to bypass PostgREST default 1000-row limit
       const PAGE = 1000;
       const select =
-        "id, slug, name, rrp, sort_order, category_id, specifications, categories(name, slug), product_images(url, is_primary, sort_order, variant_key, glazing_key, molding_key)";
+        "id, slug, name, rrp, sort_order, category_id, specifications, description, categories(name, slug), product_images(url, is_primary, sort_order, variant_key, glazing_key, molding_key)";
+
       const all: any[] = [];
       for (let from = 0; ; from += PAGE) {
         const { data, error } = await supabase
