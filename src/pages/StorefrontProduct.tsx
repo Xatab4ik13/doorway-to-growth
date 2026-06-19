@@ -305,12 +305,20 @@ function DimensionSlider({
 
   return (
     <div>
-      {/* Header: just the label */}
-      <div className="flex items-center justify-between mb-8">
+      {/* Header: label + big current value */}
+      <div className="flex items-baseline justify-between mb-8">
         <span className="text-[12px] uppercase tracking-[0.28em] text-storefront-text/55 font-semibold">
           {label}
         </span>
-        <span className="text-[12px] uppercase tracking-[0.22em] text-storefront-text/45 font-semibold">мм</span>
+        <span className="flex items-baseline gap-1.5">
+          <span
+            className="text-[56px] leading-[0.85] font-bold text-storefront-gold tabular-nums tracking-tight"
+            style={{ fontFamily: "'Manrope', system-ui, sans-serif" }}
+          >
+            {selected ?? values[0]}
+          </span>
+          <span className="text-[14px] font-semibold text-storefront-text/40 tracking-wide">мм</span>
+        </span>
       </div>
 
 
