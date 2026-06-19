@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ChevronRight, ArrowRight } from "lucide-react";
+import { storeHref } from "@/lib/storeHref";
 
 interface Product {
   id: string;
@@ -38,7 +39,7 @@ export function CatalogSection({ products, categories, siteSlug }: Props) {
             </h2>
           </div>
           <Link
-            to={`/store/${siteSlug}/catalog`}
+            to={storeHref(siteSlug, "catalog")}
             className="text-xs uppercase tracking-wider text-storefront-gold border border-storefront-gold/30 px-5 py-2.5 hover:bg-storefront-gold hover:text-storefront-bg transition-all"
           >
             Смотреть все
@@ -69,7 +70,7 @@ export function CatalogSection({ products, categories, siteSlug }: Props) {
             return (
               <Link
                 key={product.id}
-                to={`/store/${siteSlug}/product/${product.slug}`}
+                to={storeHref(siteSlug, `product/${product.slug}`)}
                 className="group relative aspect-[3/4] bg-storefront-card overflow-hidden cursor-pointer block"
               >
                 {img ? (

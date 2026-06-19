@@ -5,6 +5,7 @@ import { Phone, X } from "lucide-react";
 import { CartButton } from "./CartButton";
 import { motion, AnimatePresence } from "framer-motion";
 import brandoorsLogo from "@/assets/logo.png";
+import { storeHref } from "@/lib/storeHref";
 
 interface Props {
   site: StorefrontSite;
@@ -31,7 +32,7 @@ export function StorefrontHeader({ site }: Props) {
   const location = useLocation();
 
   const isActive = useCallback((item: typeof NAV_ITEMS[0]) => {
-    const basePath = `/store/${site.slug}`;
+    const basePath = storeHref(site.slug);
     if (item.isRoute) {
       const fullPath = item.href ? `${basePath}/${item.href}` : basePath;
       if (item.href === "catalog") {
@@ -45,16 +46,16 @@ export function StorefrontHeader({ site }: Props) {
   const handleNavClick = useCallback((item: typeof NAV_ITEMS[0]) => {
     setMobileOpen(false);
     if (item.isRoute) {
-      navigate(`/store/${site.slug}/${item.href}`);
+      navigate(storeHref(site.slug, `${item.href}`));
     } else {
-      const isStorefrontMain = window.location.pathname === `/store/${site.slug}` || window.location.pathname === `/store/${site.slug}/`;
+      const isStorefrontMain = window.location.pathname === storeHref(site.slug) || window.location.pathname === storeHref(site.slug, "");
       if (isStorefrontMain) {
         const el = document.querySelector(item.href);
         if (el) {
           el.scrollIntoView({ behavior: "smooth" });
         }
       } else {
-        navigate(`/store/${site.slug}`);
+        navigate(storeHref(site.slug));
         setTimeout(() => {
           const el = document.querySelector(item.href);
           if (el) {
@@ -82,7 +83,7 @@ export function StorefrontHeader({ site }: Props) {
             <span className="block w-7 h-[2px] bg-storefront-gold rounded-full" />
           </button>
 
-          <Link to={`/store/${site.slug}`} className="flex items-center">
+          <Link to={storeHref(site.slug)} className="flex items-center">
             <img
               src={brandoorsLogo}
               alt="Brandoors"

@@ -16,6 +16,7 @@ import frameDetail from "@/assets/brand/doors-5.jpg";      // Короб INVISIB
 import doorsCrossSection from "@/assets/brand/doors-6.jpg"; // Разрез двери — LVL-брус
 import lvlDetail from "@/assets/brand/lvl-detail.jpg";     // LVL деталь крупно
 import magneticLock from "@/assets/brand/magnetic-lock.jpg"; // Угол конструкции
+import { storeHref } from "@/lib/storeHref";
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -132,7 +133,7 @@ export default function StorefrontBrand() {
             </p>
             <div className="flex flex-wrap items-center gap-4">
               <Link
-                to={`/store/${site.slug}`}
+                to={storeHref(site.slug)}
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold uppercase tracking-[0.2em] text-[13px] transition-all duration-300 hover:scale-105 border"
                 style={{
                   borderColor: "rgba(207,187,150,0.4)",
@@ -143,7 +144,7 @@ export default function StorefrontBrand() {
                 ← На главную
               </Link>
               <Link
-                to={`/store/${site.slug}/catalog`}
+                to={storeHref(site.slug, "catalog")}
                 className="inline-flex items-center gap-3 px-8 py-4 rounded-xl font-semibold uppercase tracking-[0.2em] text-[13px] transition-all duration-300 hover:scale-105"
                 style={{
                   background: "linear-gradient(135deg, #cfbb96 0%, #b5a07a 50%, #a08a60 100%)",

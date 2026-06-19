@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+import { storeHref } from "@/lib/storeHref";
   ShoppingBag,
   Minus,
   Plus,
@@ -90,14 +91,14 @@ export default function StorefrontCart() {
           {/* Breadcrumbs */}
           <div className="flex items-center gap-2 mb-8 text-xs">
             <Link
-              to={`/store/${slug}`}
+              to={storeHref(slug)}
               className="uppercase tracking-[0.15em] text-storefront-muted hover:text-storefront-gold transition-colors"
             >
               Главная
             </Link>
             <span className="text-storefront-muted/40">/</span>
             <Link
-              to={`/store/${slug}/catalog`}
+              to={storeHref(slug, "catalog")}
               className="uppercase tracking-[0.15em] text-storefront-muted hover:text-storefront-gold transition-colors"
             >
               Каталог
@@ -149,7 +150,7 @@ export default function StorefrontCart() {
                 и расчёта точной стоимости.
               </p>
               <Link
-                to={`/store/${slug}/catalog`}
+                to={storeHref(slug, "catalog")}
                 className="inline-flex items-center gap-2 text-[12px] uppercase tracking-[0.15em] text-storefront-gold hover:brightness-125 transition-all"
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -175,7 +176,7 @@ export default function StorefrontCart() {
                 Добавьте двери из каталога, чтобы оформить заказ
               </p>
               <Link
-                to={`/store/${slug}/catalog`}
+                to={storeHref(slug, "catalog")}
                 className="inline-flex items-center gap-2 bg-storefront-gold text-[#07090d] font-bold text-[12px] uppercase tracking-[0.15em] px-8 py-3.5 rounded-xl hover:brightness-110 transition-all"
               >
                 Перейти в каталог
@@ -213,7 +214,7 @@ export default function StorefrontCart() {
                       <div className="flex gap-5 p-5 relative z-10">
                         {/* Image */}
                         <Link
-                          to={`/store/${slug}/product/${item.slug}`}
+                          to={storeHref(slug, `product/${item.slug}`)}
                           className="w-[100px] sm:w-[120px] h-[130px] sm:h-[160px] bg-[#0c0e14] rounded-xl overflow-hidden shrink-0 flex items-center justify-center hover:opacity-80 transition-opacity"
                         >
                           {item.imageUrl ? (
@@ -231,7 +232,7 @@ export default function StorefrontCart() {
                         <div className="flex-1 min-w-0 flex flex-col justify-between">
                           <div>
                             <Link
-                              to={`/store/${slug}/product/${item.slug}`}
+                              to={storeHref(slug, `product/${item.slug}`)}
                               className="text-[14px] sm:text-[15px] font-semibold text-storefront-text uppercase tracking-wider leading-tight line-clamp-2 mb-2 hover:text-storefront-gold transition-colors"
                             >
                               {item.name}
@@ -285,7 +286,7 @@ export default function StorefrontCart() {
                 {/* Clear cart */}
                 <div className="flex justify-between items-center pt-2">
                   <Link
-                    to={`/store/${slug}/catalog`}
+                    to={storeHref(slug, "catalog")}
                     className="inline-flex items-center gap-2 text-[11px] uppercase tracking-wider text-storefront-muted hover:text-storefront-gold transition-colors"
                   >
                     <ArrowLeft className="w-4 h-4" />

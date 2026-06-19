@@ -9,6 +9,7 @@ import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { ChevronRight, ChevronDown, ShoppingCart, Check, SlidersHorizontal, X } from "lucide-react";
 import brandoorsLogo from "@/assets/logo.png";
 import { useCartStore } from "@/stores/useCartStore";
+import { storeHref } from "@/lib/storeHref";
 
 const ITEMS_PER_PAGE = 16;
 
@@ -101,7 +102,7 @@ export default function StorefrontCatalog() {
     [categoryParam, parentCategories]
   );
   const displayedParents = lockedParent ? [lockedParent] : parentCategories;
-  const categoriesBackHref = `/store/${slug}/catalog`;
+  const categoriesBackHref = storeHref(slug, "catalog");
 
   // Don't count lockedParent (page context from ?category=) as a user-applied filter.
   const activeFiltersCount =
@@ -334,7 +335,7 @@ export default function StorefrontCatalog() {
 
           {/* Breadcrumbs */}
           <div className="flex items-center gap-2 mb-6 text-xs flex-wrap">
-            <Link to={`/store/${slug}`} className="uppercase tracking-[0.15em] text-storefront-muted hover:text-storefront-gold transition-colors">
+            <Link to={storeHref(slug)} className="uppercase tracking-[0.15em] text-storefront-muted hover:text-storefront-gold transition-colors">
               Главная
             </Link>
             <span className="text-storefront-muted/40">/</span>
@@ -738,7 +739,7 @@ const ProductCard = memo(function ProductCard({
 }) {
   return (
     <div className="group">
-      <Link to={`/store/${slug}/product/${product.slug}`} className="block">
+      <Link to={storeHref(slug, `product/${product.slug}`)} className="block">
         <div className="relative overflow-hidden bg-[#0c0e14] flex items-center justify-center aspect-[4/5] rounded-2xl">
           {img ? (
             <img
