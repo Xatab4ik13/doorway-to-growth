@@ -28,7 +28,11 @@ Deno.serve(async (req) => {
       // We split on ";\n" while keeping statements intact (no semicolons inside string literals contain newlines after them in our generated SQL).
       const stmts = sql.split(/;\s*\n/).map((s: string) => s.trim()).filter((s: string) => s.length > 0);
       for (const s of stmts) {
-        await tx.queryArray(s);
+        try {
+          await tx.queryArray(s);
+        } catch (err) {
+          throw new Error(`stmt #${count}: ${String(err)}\n--SQL--\n${s.slice(0, 400)}`);
+        }
         count++;
       }
       await tx.commit();
