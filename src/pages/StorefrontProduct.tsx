@@ -1019,7 +1019,7 @@ export default function StorefrontProduct() {
                   <span className="text-[10px] font-light uppercase tracking-[0.25em] text-storefront-text/40">Стоимость от</span>
                   <span
                     className="text-[44px] leading-none text-storefront-gold tabular-nums"
-                    style={{ fontFamily: "'Raleway', system-ui, sans-serif", fontWeight: 300, letterSpacing: "-0.01em" }}
+                    style={{ fontFamily: "'Manrope', system-ui, sans-serif", fontWeight: 700, letterSpacing: "-0.02em" }}
                   >
                     {Number(product.rrp).toLocaleString("ru-RU")} ₽
                   </span>
