@@ -1132,7 +1132,7 @@ export default function StorefrontProduct() {
                 {images.length > 0 ? (
                   <img
                     key={currentImage}
-                    src={images[currentImage]?.url}
+                    src={resolveStorageUrl(images[currentImage]?.url)}
                     alt={images[currentImage]?.alt || product.name}
                     className="w-full h-full object-contain p-8 animate-fade-in"
                   />
