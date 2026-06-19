@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ChevronRight, ArrowRight } from "lucide-react";
 import { storeHref } from "@/lib/storeHref";
+import { resolveStorageUrl } from "@/lib/storageUrl";
 
 interface Product {
   id: string;
