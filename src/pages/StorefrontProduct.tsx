@@ -650,9 +650,8 @@ export default function StorefrontProduct() {
     );
   }
 
-  const sizes = specs?.sizes as Array<{ h_from?: number; h_to?: number; w_from?: number; w_to?: number }> | undefined;
-  const heightSizes = sizes?.filter(s => s.h_from !== undefined);
-  const widthSizes = sizes?.filter(s => s.w_from !== undefined);
+
+
 
   return (
     <StorefrontLayout site={site}>
