@@ -116,19 +116,25 @@ const OpeningSystems = memo(function OpeningSystems() {
           </div>
         </div>
 
-        {/* Bigger, bolder pill selector */}
-        <div className="bg-[#0a0c12]/60 border-t border-storefront-gold/10 p-5 sm:p-6">
-          <div className="flex flex-wrap gap-2.5 sm:gap-3 justify-center">
+        {/* 3×2 selector grid — calculator-style background */}
+        <div
+          className="border-t border-storefront-gold/10 p-5 sm:p-6"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(207,187,150,0.06) 0%, rgba(207,187,150,0.01) 100%)",
+          }}
+        >
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {SYSTEMS.map((s) => {
               const isActive = s.id === active;
               return (
                 <button
                   key={s.id}
                   onClick={() => setActive(s.id)}
-                  className={`px-7 py-4 rounded-full text-[15px] sm:text-[16px] tracking-[0.04em] whitespace-nowrap transition-all duration-300 border-2 ${
+                  className={`w-full px-5 py-4 rounded-2xl text-[15px] sm:text-[16px] tracking-[0.04em] whitespace-nowrap transition-all duration-300 border ${
                     isActive
-                      ? "bg-storefront-gold text-[#07090d] border-storefront-gold shadow-[0_10px_28px_-10px_rgba(207,187,150,0.75)]"
-                      : "bg-transparent text-storefront-text/80 border-white/15 hover:border-storefront-gold/60 hover:text-storefront-text"
+                      ? "bg-storefront-gold/15 text-storefront-gold border-storefront-gold/60 shadow-[0_10px_28px_-12px_rgba(207,187,150,0.55)]"
+                      : "bg-transparent text-storefront-text/80 border-storefront-gold/10 hover:border-storefront-gold/40 hover:text-storefront-text"
                   }`}
                   style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600 }}
                 >

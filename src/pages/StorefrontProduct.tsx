@@ -201,11 +201,9 @@ type AccessoryItem = { id: string; name: string; rrp: number | null; image: stri
 
 // Hardware subcategory tabs derived from product name keywords.
 const HARDWARE_TABS: { key: string; label: string; match: (n: string) => boolean }[] = [
-  { key: "all", label: "Все", match: () => true },
   { key: "handles", label: "Ручки", match: (n) => /ручк|скоб|кноп/i.test(n) },
   { key: "locks", label: "Защёлки и замки", match: (n) => /защ[её]лк|замк|замок|корпус/i.test(n) },
   { key: "hinges", label: "Петли", match: (n) => /петл/i.test(n) },
-  { key: "systems", label: "Системы", match: (n) => /invisible|compack|magic|пенал|купе|sky/i.test(n) },
 ];
 
 // Premium photo card for trim / hardware accessory selection.
@@ -321,17 +319,17 @@ function DimensionSlider({
       </div>
 
       {/* Slider area — generous height, big ticks, big labels */}
-      <div className="relative h-20 px-3">
+      <div className="relative h-24 px-5">
         {/* Track */}
-        <div className="absolute left-3 right-3 top-1/2 -translate-y-1/2 h-[3px] bg-white/[0.07] rounded-full" />
+        <div className="absolute left-5 right-5 top-[34px] h-[3px] bg-white/[0.07] rounded-full" />
         {/* Filled portion */}
         <div
-          className="absolute left-3 top-1/2 -translate-y-1/2 h-[3px] bg-gradient-to-r from-storefront-gold/60 to-storefront-gold rounded-full transition-[width] duration-200"
-          style={{ width: `calc((100% - 24px) * ${pct / 100})` }}
+          className="absolute left-5 top-[34px] h-[3px] bg-gradient-to-r from-storefront-gold/60 to-storefront-gold rounded-full transition-[width] duration-200"
+          style={{ width: `calc((100% - 40px) * ${pct / 100})` }}
         />
 
         {/* Tick marks */}
-        <div className="absolute left-3 right-3 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none">
+        <div className="absolute left-5 right-5 top-[34px] flex justify-between pointer-events-none">
           {values.map((v, i) => {
             const active = i <= idx;
             const isCurrent = i === idx;
@@ -354,24 +352,40 @@ function DimensionSlider({
           })}
         </div>
 
-        {/* Tick labels — bigger, Manrope */}
-        <div className="absolute left-3 right-3 top-[calc(50%+22px)] flex justify-between pointer-events-none">
-          {values.map((v, i) => (
-            <span
-              key={`lbl-${v}`}
-              className={`text-[12px] tabular-nums transition-colors ${
-                i === idx ? "text-storefront-gold" : "text-storefront-text/35"
-              }`}
-              style={{
-                fontFamily: "'Manrope', system-ui, sans-serif",
-                fontWeight: i === idx ? 700 : 500,
-                transform: "translateX(-50%)",
-              }}
-            >
-              {v}
-            </span>
-          ))}
-        </div>
+        {/* Tick labels — thin out automatically; always show first, last, active */}
+        {(() => {
+          const n = values.length;
+          // target ~48px per label; show every Nth
+          const step = Math.max(1, Math.ceil(n / 6));
+          return (
+            <div className="absolute left-5 right-5 top-[58px] flex justify-between pointer-events-none">
+              {values.map((v, i) => {
+                const show = i === 0 || i === n - 1 || i === idx || i % step === 0;
+                const isFirst = i === 0;
+                const isLast = i === n - 1;
+                const isCurrent = i === idx;
+                return (
+                  <span key={`lbl-${v}`} className="relative flex-1 first:flex-none last:flex-none">
+                    <span
+                      className={`absolute top-0 text-[12px] tabular-nums whitespace-nowrap transition-colors ${
+                        isCurrent ? "text-storefront-gold" : "text-storefront-text/35"
+                      } ${show ? "opacity-100" : "opacity-0"}`}
+                      style={{
+                        fontFamily: "'Manrope', system-ui, sans-serif",
+                        fontWeight: isCurrent ? 700 : 500,
+                        left: isFirst ? 0 : isLast ? "auto" : "50%",
+                        right: isLast ? 0 : "auto",
+                        transform: isFirst || isLast ? "none" : "translateX(-50%)",
+                      }}
+                    >
+                      {v}
+                    </span>
+                  </span>
+                );
+              })}
+            </div>
+          );
+        })()}
 
         {/* Native range overlay — big thumb */}
         <input
@@ -382,7 +396,7 @@ function DimensionSlider({
           value={idx}
           onChange={(e) => onChange(values[Number(e.target.value)])}
           aria-label={label}
-          className="absolute inset-x-0 top-0 w-full h-20 appearance-none bg-transparent cursor-pointer
+          className="absolute left-5 right-5 top-[20px] w-[calc(100%-40px)] h-7 appearance-none bg-transparent cursor-pointer
             [&::-webkit-slider-thumb]:appearance-none
             [&::-webkit-slider-thumb]:w-7 [&::-webkit-slider-thumb]:h-7
             [&::-webkit-slider-thumb]:rounded-full
@@ -506,7 +520,7 @@ export default function StorefrontProduct() {
   const [selectedHeight, setSelectedHeight] = useState<number | null>(null);
   const [selectedTrim, setSelectedTrim] = useState<Set<string>>(new Set());
   const [selectedHardware, setSelectedHardware] = useState<Set<string>>(new Set());
-  const [hardwareTab, setHardwareTab] = useState<string>("all");
+  const [hardwareTab, setHardwareTab] = useState<string>("handles");
 
 
 
@@ -556,7 +570,6 @@ export default function StorefrontProduct() {
 
   const filteredHardware = useMemo<AccessoryItem[]>(() => {
     const tab = HARDWARE_TABS.find((t) => t.key === hardwareTab) || HARDWARE_TABS[0];
-    if (tab.key === "all") return realHardware;
     return realHardware.filter((h) => tab.match(h.name));
   }, [realHardware, hardwareTab]);
 
@@ -1262,11 +1275,7 @@ export default function StorefrontProduct() {
               {/* ===== HARDWARE (ФУРНИТУРА) ===== */}
               {!isEntranceDoor && realHardware.length > 0 && (
                 <div className="mb-10">
-                  <div className="mb-5 pb-3 border-b border-white/5">
-                    <h2 className="text-[13px] uppercase tracking-[0.22em] font-light text-storefront-text/85">
-                      Фурнитура
-                    </h2>
-                  </div>
+
 
                   {/* Subcategory tabs */}
                   <div className="flex flex-wrap gap-2.5 mb-6">
@@ -1459,15 +1468,23 @@ export default function StorefrontProduct() {
                 return (
                   <div className="mt-10 pt-8 border-t border-white/8 flex items-center justify-between gap-4 flex-wrap">
                     <div className="min-w-0">
-                      <div className="text-[9px] uppercase tracking-[0.25em] text-storefront-text/40 mb-1">
-                        {hasExtras ? "Итого" : "Стоимость от"}
-                      </div>
-                      <div
-                        className="text-[30px] leading-none text-storefront-gold tabular-nums"
-                        style={{ fontFamily: "'Manrope', system-ui, sans-serif", fontWeight: 700, letterSpacing: "-0.02em" }}
-                      >
-                        {totalPrice.toLocaleString("ru-RU")} ₽
-                      </div>
+                      {totalPrice > 0 ? (
+                        <>
+                          <div className="text-[9px] uppercase tracking-[0.25em] text-storefront-text/40 mb-1">
+                            {hasExtras ? "Итого" : "Стоимость от"}
+                          </div>
+                          <div
+                            className="text-[30px] leading-none text-storefront-gold tabular-nums"
+                            style={{ fontFamily: "'Manrope', system-ui, sans-serif", fontWeight: 700, letterSpacing: "-0.02em" }}
+                          >
+                            {totalPrice.toLocaleString("ru-RU")} ₽
+                          </div>
+                        </>
+                      ) : (
+                        <div className="text-[12px] uppercase tracking-[0.22em] text-storefront-text/55 font-semibold">
+                          Цена по запросу
+                        </div>
+                      )}
                     </div>
                     <button
                       onClick={handleAddAllToCart}
