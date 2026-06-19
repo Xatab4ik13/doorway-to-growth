@@ -290,33 +290,29 @@ function DimensionSlider({
   values,
   selected,
   onChange,
+  labelValues,
 }: {
   label: string;
   values: number[];
   selected: number | null;
   onChange: (v: number) => void;
+  labelValues?: number[];
 }) {
   const idx = selected != null ? Math.max(0, values.indexOf(selected)) : 0;
   const max = Math.max(values.length - 1, 1);
   const pct = (idx / max) * 100;
+  const labelSet = labelValues ? new Set(labelValues) : null;
 
   return (
     <div>
-      {/* Header: label + huge bold value */}
-      <div className="flex items-end justify-between mb-8">
-        <span className="text-[12px] uppercase tracking-[0.28em] text-storefront-text/55 font-semibold pb-2">
+      {/* Header: just the label */}
+      <div className="flex items-center justify-between mb-8">
+        <span className="text-[12px] uppercase tracking-[0.28em] text-storefront-text/55 font-semibold">
           {label}
         </span>
-        <div className="flex items-baseline gap-2">
-          <span
-            className="text-[56px] leading-none text-storefront-gold tabular-nums"
-            style={{ fontFamily: "'Manrope', system-ui, sans-serif", fontWeight: 700, letterSpacing: "-0.035em" }}
-          >
-            {selected ?? values[0]}
-          </span>
-          <span className="text-[12px] uppercase tracking-[0.22em] text-storefront-text/45 font-semibold">мм</span>
-        </div>
+        <span className="text-[12px] uppercase tracking-[0.22em] text-storefront-text/45 font-semibold">мм</span>
       </div>
+
 
       {/* Slider area — generous height, big ticks, big labels */}
       <div className="relative h-24 px-5">
