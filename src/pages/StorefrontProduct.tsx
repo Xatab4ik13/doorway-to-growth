@@ -1118,29 +1118,24 @@ export default function StorefrontProduct() {
               {/* ===== TRIM (ПОГОНАЖ) ===== */}
               {!isEntranceDoor && realTrim.length > 0 && (
                 <div className="mb-10">
-                  <div className="flex items-baseline justify-between gap-2 mb-5 pb-3 border-b border-white/5">
+                  <div className="mb-5 pb-3 border-b border-white/5">
                     <h2 className="text-[13px] uppercase tracking-[0.22em] font-light text-storefront-text/85">
                       Погонаж коллекции
                     </h2>
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-text/35 tabular-nums">
-                      {realTrim.length} поз.
-                    </span>
                   </div>
-                  <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto scrollbar-hide snap-x">
-                    <div className="flex gap-3 pb-2">
-                      {realTrim.map((item) => (
-                        <div key={item.id} className="snap-start shrink-0 w-[230px] sm:w-[250px]">
-                          <AccessoryCard
-                            name={item.name}
-                            rrp={item.rrp}
-                            image={item.image}
-                            active={selectedTrim.has(item.id)}
-                            onClick={() => toggleTrim(item.id)}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <ScrollCarousel>
+                    {realTrim.map((item) => (
+                      <div key={item.id} className="snap-start shrink-0 w-[230px] sm:w-[250px]">
+                        <AccessoryCard
+                          name={item.name}
+                          rrp={item.rrp}
+                          image={item.image}
+                          active={selectedTrim.has(item.id)}
+                          onClick={() => toggleTrim(item.id)}
+                        />
+                      </div>
+                    ))}
+                  </ScrollCarousel>
                 </div>
               )}
 
@@ -1148,16 +1143,13 @@ export default function StorefrontProduct() {
               {/* ===== HARDWARE (ФУРНИТУРА) ===== */}
               {!isEntranceDoor && realHardware.length > 0 && (
                 <div className="mb-10">
-                  <div className="flex items-baseline justify-between gap-2 mb-5 pb-3 border-b border-white/5">
+                  <div className="mb-5 pb-3 border-b border-white/5">
                     <h2 className="text-[13px] uppercase tracking-[0.22em] font-light text-storefront-text/85">
                       Фурнитура
                     </h2>
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-text/35 tabular-nums">
-                      {filteredHardware.length} из {realHardware.length}
-                    </span>
                   </div>
 
-                  {/* Subcategory tabs — large separate pill buttons */}
+                  {/* Subcategory tabs */}
                   <div className="flex flex-wrap gap-2.5 mb-6">
                     {HARDWARE_TABS.map((t) => {
                       const count = t.key === "all" ? realHardware.length : realHardware.filter((h) => t.match(h.name)).length;
@@ -1174,29 +1166,28 @@ export default function StorefrontProduct() {
                           }`}
                         >
                           {t.label}
-                          <span className={`ml-2 text-[11px] tabular-nums ${active ? "opacity-70" : "opacity-50"}`}>{count}</span>
                         </button>
                       );
                     })}
                   </div>
 
-                  <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto scrollbar-hide snap-x">
-                    <div className="flex gap-3 pb-2">
-                      {filteredHardware.map((item) => (
-                        <div key={item.id} className="snap-start shrink-0 w-[230px] sm:w-[250px]">
-                          <AccessoryCard
-                            name={item.name}
-                            rrp={item.rrp}
-                            image={item.image}
-                            active={selectedHardware.has(item.id)}
-                            onClick={() => toggleHardware(item.id)}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <ScrollCarousel>
+                    {filteredHardware.map((item) => (
+                      <div key={item.id} className="snap-start shrink-0 w-[230px] sm:w-[250px]">
+                        <AccessoryCard
+                          name={item.name}
+                          rrp={item.rrp}
+                          image={item.image}
+                          active={selectedHardware.has(item.id)}
+                          onClick={() => toggleHardware(item.id)}
+                        />
+                      </div>
+                    ))}
+                  </ScrollCarousel>
                 </div>
               )}
+
+
 
 
 
