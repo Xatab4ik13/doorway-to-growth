@@ -1254,6 +1254,47 @@ export default function StorefrontProduct() {
                 </div>
               )}
 
+              {/* ===== SIZE CALCULATOR ===== */}
+              {(widths.length > 0 || heights.length > 0) && (
+                <div className="mb-10">
+                  <div className="mb-5 pb-3 border-b border-white/5">
+                    <h2 className="text-[13px] uppercase tracking-[0.22em] font-light text-storefront-text/85">
+                      Размер
+                    </h2>
+                  </div>
+
+                  <div
+                    className="rounded-2xl px-7 sm:px-9 py-9 space-y-12"
+                    style={{
+                      background: "linear-gradient(180deg, rgba(207,187,150,0.06) 0%, rgba(207,187,150,0.01) 100%)",
+                      border: "1px solid rgba(207,187,150,0.1)",
+                    }}
+                  >
+                    {widths.length > 0 && (
+                      <DimensionSlider
+                        label="Ширина"
+                        values={widths}
+                        selected={selectedWidth}
+                        onChange={setSelectedWidth}
+                        labelValues={[400, 600, 800, 1000]}
+                      />
+                    )}
+                    {heights.length > 0 && (
+                      <DimensionSlider
+                        label="Высота"
+                        values={heights.filter((h) => h !== 2400)}
+                        selected={selectedHeight && selectedHeight !== 2400 ? selectedHeight : null}
+                        onChange={setSelectedHeight}
+                        labelValues={[1600, 1900, 2200, 2500]}
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* ===== OPENING SYSTEMS — only for interior doors ===== */}
+              {isDoorProduct && !isEntranceDoor && <OpeningSystems />}
+
               {/* ===== TRIM (ПОГОНАЖ) ===== */}
               {!isEntranceDoor && realTrim.length > 0 && (
                 <div className="mb-10">
@@ -1319,53 +1360,6 @@ export default function StorefrontProduct() {
                       </div>
                     ))}
                   </ScrollCarousel>
-                </div>
-              )}
-
-
-
-
-
-
-              {/* ===== OPENING SYSTEMS — only for interior doors ===== */}
-              {isDoorProduct && !isEntranceDoor && <OpeningSystems />}
-
-
-
-              {(widths.length > 0 || heights.length > 0) && (
-                <div className="mb-10">
-                  <div className="mb-5 pb-3 border-b border-white/5">
-                    <h2 className="text-[13px] uppercase tracking-[0.22em] font-light text-storefront-text/85">
-                      Размер
-                    </h2>
-                  </div>
-
-                  <div
-                    className="rounded-2xl px-7 sm:px-9 py-9 space-y-12"
-                    style={{
-                      background: "linear-gradient(180deg, rgba(207,187,150,0.06) 0%, rgba(207,187,150,0.01) 100%)",
-                      border: "1px solid rgba(207,187,150,0.1)",
-                    }}
-                  >
-                    {widths.length > 0 && (
-                      <DimensionSlider
-                        label="Ширина"
-                        values={widths}
-                        selected={selectedWidth}
-                        onChange={setSelectedWidth}
-                        labelValues={[400, 600, 800, 1000]}
-                      />
-                    )}
-                    {heights.length > 0 && (
-                      <DimensionSlider
-                        label="Высота"
-                        values={heights.filter((h) => h !== 2400)}
-                        selected={selectedHeight && selectedHeight !== 2400 ? selectedHeight : null}
-                        onChange={setSelectedHeight}
-                        labelValues={[1600, 1900, 2200, 2500]}
-                      />
-                    )}
-                  </div>
                 </div>
               )}
 
