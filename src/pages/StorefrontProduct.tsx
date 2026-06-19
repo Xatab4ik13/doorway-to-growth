@@ -580,7 +580,16 @@ export default function StorefrontProduct() {
   const handleSelectColor = (colorName: string) => {
     setSelectedColor(colorName);
     if (!hasImageBoundColors) return;
-    const { i, img } = findImage(colorName, selectedGlazing, selectedMolding, "color");
+    // If the currently selected glazing isn't available for this color, switch to one that is.
+    let glazing = selectedGlazing;
+    if (hasImageBoundGlazings) {
+      const avail = glazingsByColor.get(colorName);
+      if (avail && avail.size > 0 && (!glazing || !avail.has(glazing))) {
+        glazing = Array.from(avail)[0];
+        setSelectedGlazing(glazing);
+      }
+    }
+    const { i, img } = findImage(colorName, glazing, selectedMolding, "color");
     if (i >= 0) {
       setCurrentImage(i);
       syncFromImage(img);
@@ -589,7 +598,16 @@ export default function StorefrontProduct() {
 
   const handleSelectGlazing = (glazingName: string) => {
     setSelectedGlazing(glazingName);
-    const { i, img } = findImage(selectedColor, glazingName, selectedMolding, "glazing");
+    // If current color isn't available for this glazing, switch to one that is.
+    let color = selectedColor;
+    if (hasImageBoundColors) {
+      const avail = colorsByGlazing.get(glazingName);
+      if (avail && avail.size > 0 && (!color || !avail.has(color))) {
+        color = Array.from(avail)[0];
+        setSelectedColor(color);
+      }
+    }
+    const { i, img } = findImage(color, glazingName, selectedMolding, "glazing");
     if (i >= 0) {
       setCurrentImage(i);
       syncFromImage(img);
