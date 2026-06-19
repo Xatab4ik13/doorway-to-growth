@@ -286,6 +286,108 @@ function AccessoryCard({
   );
 }
 
+// Dimension slider — gold tick marks under a continuous track, snaps to discrete values.
+function DimensionSlider({
+  label,
+  values,
+  selected,
+  onChange,
+}: {
+  label: string;
+  values: number[];
+  selected: number | null;
+  onChange: (v: number) => void;
+}) {
+  const idx = selected != null ? Math.max(0, values.indexOf(selected)) : 0;
+  const max = Math.max(values.length - 1, 1);
+  const pct = (idx / max) * 100;
+
+  return (
+    <div>
+      <div className="flex items-baseline justify-between mb-5">
+        <span className="text-[11px] uppercase tracking-[0.25em] text-storefront-text/55 font-medium">
+          {label}
+        </span>
+        <div className="flex items-baseline gap-1.5">
+          <span
+            className="text-[34px] leading-none text-storefront-gold tabular-nums"
+            style={{ fontFamily: "'Raleway', system-ui, sans-serif", fontWeight: 300, letterSpacing: "-0.01em" }}
+          >
+            {selected ?? values[0]}
+          </span>
+          <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-text/40">мм</span>
+        </div>
+      </div>
+
+      <div className="relative h-12">
+        {/* Track */}
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[2px] bg-white/8 rounded-full" />
+        {/* Filled portion */}
+        <div
+          className="absolute left-0 top-1/2 -translate-y-1/2 h-[2px] bg-storefront-gold/70 rounded-full transition-[width] duration-150"
+          style={{ width: `${pct}%` }}
+        />
+        {/* Tick marks */}
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none">
+          {values.map((v, i) => {
+            const active = i <= idx;
+            return (
+              <div key={v} className="flex flex-col items-center">
+                <span
+                  className={`block w-px transition-colors ${active ? "bg-storefront-gold/80" : "bg-white/20"}`}
+                  style={{ height: i === idx ? 14 : 8, marginTop: i === idx ? -6 : -3 }}
+                />
+              </div>
+            );
+          })}
+        </div>
+        {/* Tick labels */}
+        <div className="absolute inset-x-0 top-[calc(50%+14px)] flex justify-between pointer-events-none">
+          {values.map((v, i) => (
+            <span
+              key={v}
+              className={`text-[10px] tabular-nums transition-colors ${
+                i === idx ? "text-storefront-gold" : "text-storefront-text/30"
+              }`}
+              style={{ transform: "translateX(-50%)", marginLeft: i === 0 ? 0 : undefined }}
+            >
+              {v}
+            </span>
+          ))}
+        </div>
+
+        {/* Native range overlay */}
+        <input
+          type="range"
+          min={0}
+          max={max}
+          step={1}
+          value={idx}
+          onChange={(e) => onChange(values[Number(e.target.value)])}
+          aria-label={label}
+          className="absolute inset-x-0 top-0 w-full h-12 appearance-none bg-transparent cursor-pointer
+            [&::-webkit-slider-thumb]:appearance-none
+            [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6
+            [&::-webkit-slider-thumb]:rounded-full
+            [&::-webkit-slider-thumb]:bg-storefront-gold
+            [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-[#07090d]
+            [&::-webkit-slider-thumb]:shadow-[0_0_0_2px_rgba(207,187,150,0.5),0_8px_20px_-4px_rgba(207,187,150,0.5)]
+            [&::-webkit-slider-thumb]:transition-transform
+            [&::-webkit-slider-thumb]:cursor-grab
+            active:[&::-webkit-slider-thumb]:scale-110
+            [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6
+            [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-storefront-gold
+            [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-[#07090d]
+            [&::-moz-range-thumb]:cursor-grab
+            [&::-webkit-slider-runnable-track]:bg-transparent
+            [&::-moz-range-track]:bg-transparent"
+        />
+      </div>
+    </div>
+  );
+}
+
+
 // Horizontal scroll wrapper with chevron arrows on desktop.
 function ScrollCarousel({ children }: { children: ReactNode }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -1199,65 +1301,40 @@ export default function StorefrontProduct() {
 
               {(widths.length > 0 || heights.length > 0) && (
                 <div className="mb-10">
-                  <div className="flex items-baseline justify-between gap-2 mb-5 pb-3 border-b border-white/5">
+                  <div className="mb-5 pb-3 border-b border-white/5">
                     <h2 className="text-[13px] uppercase tracking-[0.22em] font-light text-storefront-text/85">
                       Размер
                     </h2>
                   </div>
 
-
-                  <div className="rounded-2xl overflow-hidden" style={{ background: "linear-gradient(180deg, rgba(207,187,150,0.06) 0%, rgba(207,187,150,0.01) 100%)", border: "1px solid rgba(207,187,150,0.1)" }}>
+                  <div
+                    className="rounded-2xl px-6 py-7 space-y-8"
+                    style={{
+                      background: "linear-gradient(180deg, rgba(207,187,150,0.06) 0%, rgba(207,187,150,0.01) 100%)",
+                      border: "1px solid rgba(207,187,150,0.1)",
+                    }}
+                  >
                     {widths.length > 0 && (
-                      <div className="px-5 py-4 border-b border-white/5">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-muted">Ширина, мм</span>
-                          <span className="text-[12px] text-storefront-gold/80">{selectedWidth ?? "—"}</span>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {widths.map((w) => (
-                            <button
-                              key={`w-${w}`}
-                              type="button"
-                              onClick={() => setSelectedWidth(w)}
-                              className={`px-4 py-2 rounded-xl text-[13px] font-medium tabular-nums border transition-colors ${
-                                selectedWidth === w
-                                  ? "border-storefront-gold text-storefront-gold bg-storefront-gold/10"
-                                  : "border-white/[0.06] bg-white/[0.04] text-storefront-text hover:border-storefront-gold/30"
-                              }`}
-                            >
-                              {w}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+                      <DimensionSlider
+                        label="Ширина"
+                        values={widths}
+                        selected={selectedWidth}
+                        onChange={setSelectedWidth}
+                      />
                     )}
                     {heights.length > 0 && (
-                      <div className="px-5 py-4">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-muted">Высота, мм</span>
-                          <span className="text-[12px] text-storefront-gold/80">{selectedHeight ?? "—"}</span>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {heights.map((h) => (
-                            <button
-                              key={`h-${h}`}
-                              type="button"
-                              onClick={() => setSelectedHeight(h)}
-                              className={`px-4 py-2 rounded-xl text-[13px] font-medium tabular-nums border transition-colors ${
-                                selectedHeight === h
-                                  ? "border-storefront-gold text-storefront-gold bg-storefront-gold/10"
-                                  : "border-white/[0.06] bg-white/[0.04] text-storefront-text hover:border-storefront-gold/30"
-                              }`}
-                            >
-                              {h}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+                      <DimensionSlider
+                        label="Высота"
+                        values={heights}
+                        selected={selectedHeight}
+                        onChange={setSelectedHeight}
+                      />
                     )}
                   </div>
                 </div>
               )}
+
+
 
 
               {/* ===== INFO ACCORDION ===== */}
