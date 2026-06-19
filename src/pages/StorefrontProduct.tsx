@@ -822,7 +822,10 @@ export default function StorefrontProduct() {
 
 
               {/* Title */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extralight tracking-tight text-storefront-text leading-[1.05] mb-6">
+              <h1
+                className="text-5xl sm:text-6xl lg:text-7xl text-storefront-text leading-[1.0] mb-6 uppercase"
+                style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 500, letterSpacing: "0.06em" }}
+              >
                 {product.name}
               </h1>
 
@@ -857,7 +860,7 @@ export default function StorefrontProduct() {
                 <div className="space-y-5 mb-8">
                   <div>
                     <div className="flex items-center gap-2 mb-4">
-                      <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Панель:</span>
+                      <span className="text-[13px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Панель:</span>
                       <span className="text-[12px] text-storefront-gold/80">{selectedPanel || "—"}</span>
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -888,7 +891,7 @@ export default function StorefrontProduct() {
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-4">
-                      <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет внутренней панели:</span>
+                      <span className="text-[13px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет внутренней панели:</span>
                       <span className="text-[12px] text-storefront-gold/80">{selectedColor || "—"}</span>
                     </div>
                     <div className="flex flex-wrap gap-3">
@@ -926,7 +929,7 @@ export default function StorefrontProduct() {
                   {colorSwatches.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-4">
-                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("color")}:</span>
+                        <span className="text-[13px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("color")}:</span>
                         <span className="text-[12px] text-storefront-gold/80">{selectedColor || "—"}</span>
                       </div>
                       <div className="flex flex-wrap gap-3">
@@ -956,7 +959,7 @@ export default function StorefrontProduct() {
                   {glazingItems.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-4">
-                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("glazing")}:</span>
+                        <span className="text-[13px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("glazing")}:</span>
                         <span className="text-[12px] text-storefront-gold/80">{selectedGlazing || "—"}</span>
                       </div>
                       <div className="flex flex-wrap gap-3">
@@ -988,7 +991,7 @@ export default function StorefrontProduct() {
                   {edgeItems.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-4">
-                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("edge")}:</span>
+                        <span className="text-[13px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("edge")}:</span>
                         <span className="text-[12px] text-storefront-gold/80">{selectedEdge || "—"}</span>
                       </div>
                       <div className="flex flex-wrap gap-3">
@@ -999,7 +1002,7 @@ export default function StorefrontProduct() {
                             hex={c.hex}
                             material="metal"
                             selected={selectedEdge === c.name}
-                            onClick={() => setSelectedEdge(c.name)}
+                            onClick={() => setSelectedEdge(selectedEdge === c.name ? null : c.name)}
                           />
                         ))}
                       </div>
@@ -1010,7 +1013,7 @@ export default function StorefrontProduct() {
                   {moldingItems.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-4">
-                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("molding")}:</span>
+                        <span className="text-[13px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("molding")}:</span>
                         <span className="text-[12px] text-storefront-gold/80">{selectedMolding || "—"}</span>
                       </div>
                       <div className="flex flex-wrap gap-3">
@@ -1072,8 +1075,8 @@ export default function StorefrontProduct() {
                     </span>
                   </div>
 
-                  {/* Subcategory tabs — minimal underline */}
-                  <div className="flex gap-5 mb-5 overflow-x-auto scrollbar-hide -mx-2 px-2 border-b border-white/[0.06]">
+                  {/* Subcategory tabs — large separate pill buttons */}
+                  <div className="flex flex-wrap gap-2.5 mb-6">
                     {HARDWARE_TABS.map((t) => {
                       const count = t.key === "all" ? realHardware.length : realHardware.filter((h) => t.match(h.name)).length;
                       if (count === 0) return null;
@@ -1082,17 +1085,14 @@ export default function StorefrontProduct() {
                         <button
                           key={t.key}
                           onClick={() => setHardwareTab(t.key)}
-                          className={`shrink-0 relative pb-2.5 text-[11px] uppercase tracking-[0.2em] transition-colors duration-200 ${
+                          className={`shrink-0 px-5 py-3 rounded-full text-[12px] uppercase tracking-[0.18em] font-medium transition-all duration-200 border ${
                             active
-                              ? "text-storefront-gold"
-                              : "text-storefront-text/45 hover:text-storefront-text/80"
+                              ? "bg-storefront-gold text-[#07090d] border-storefront-gold shadow-[0_6px_20px_-8px_rgba(207,187,150,0.6)]"
+                              : "bg-white/[0.03] text-storefront-text/65 border-white/10 hover:border-storefront-gold/50 hover:text-storefront-text"
                           }`}
                         >
                           {t.label}
-                          <span className={`ml-1.5 text-[10px] tabular-nums ${active ? "opacity-70" : "opacity-50"}`}>{count}</span>
-                          {active && (
-                            <span className="absolute left-0 right-0 -bottom-px h-px bg-storefront-gold" />
-                          )}
+                          <span className={`ml-2 text-[11px] tabular-nums ${active ? "opacity-70" : "opacity-50"}`}>{count}</span>
                         </button>
                       );
                     })}
