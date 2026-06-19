@@ -467,10 +467,11 @@ export default function StorefrontProduct() {
     }
     return out;
   }, [images]);
-  const specMoldingNames = collectFromSpecs("moldings", null, "molding");
+  const specMoldingNames = collectFromSpecs("moldings", null, "molding", ["casing", "panel"]);
   const moldingItems = imageMoldings.length > 0
     ? imageMoldings
-    : (specMoldingNames.length > 0 ? specMoldingNames : collectFromSpecs("molding_colors", null, "molding")).map((name) => {
+    : (specMoldingNames.length > 0 ? specMoldingNames : collectFromSpecs("molding_colors", null, "molding", ["casing", "panel"])).map((name) => {
+
         const mock = MOCK_MOLDING_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase())
           || MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
         return { name, hex: mock?.hex ?? "#9C9994" };
