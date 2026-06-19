@@ -227,43 +227,59 @@ function AccessoryCard({
     <button
       onClick={onClick}
       aria-pressed={active}
-      className={`group relative flex flex-col rounded-2xl overflow-hidden text-left transition-all duration-300 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-storefront-gold/60 ${
+      className={`group relative flex flex-col rounded-2xl overflow-hidden text-left transition-[border-color,transform] duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-storefront-gold/60 border ${
         active
-          ? "ring-2 ring-storefront-gold shadow-[0_10px_30px_-8px_rgba(207,187,150,0.35)]"
-          : "ring-1 ring-white/10 hover:ring-storefront-gold/40 shadow-[0_6px_18px_-8px_rgba(0,0,0,0.7)]"
+          ? "border-storefront-gold bg-[#0e1118]"
+          : "border-white/[0.08] bg-[#0b0d12] hover:border-storefront-gold/45"
       }`}
     >
-      {/* Photo */}
-      <div className="relative aspect-[5/4] bg-[#0c0e14] overflow-hidden">
+      {/* Photo plate — warm cream so dark hardware reads clearly */}
+      <div
+        className="relative aspect-square overflow-hidden"
+        style={{
+          background:
+            "radial-gradient(120% 90% at 50% 30%, #f1ece2 0%, #ddd5c6 75%, #c9c0ad 100%)",
+        }}
+      >
         {image ? (
           <img
             src={image}
             alt={name}
             loading="lazy"
             draggable={false}
-            className="absolute inset-0 w-full h-full object-contain p-4 transition-transform duration-500 ease-out group-hover:scale-[1.06]"
+            className="absolute inset-0 w-full h-full object-contain p-6 transition-transform duration-500 ease-out group-hover:scale-[1.04]"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-storefront-muted/20 text-4xl font-bold">B</div>
+          <div className="absolute inset-0 flex items-center justify-center text-[#0c0e14]/15 text-5xl font-bold">B</div>
         )}
-        {/* Add / Check badge */}
+
+        {/* Active indicator — clean gold dot, no glow */}
+        {active && (
+          <span className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#07090d]/85 backdrop-blur-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-storefront-gold" />
+            <span className="text-[9px] uppercase tracking-[0.2em] font-semibold text-storefront-gold">Выбрано</span>
+          </span>
+        )}
+
+        {/* Add / Check action */}
         <span
-          className={`absolute top-2.5 right-2.5 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${
+          className={`absolute bottom-3 right-3 w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-200 ${
             active
               ? "bg-storefront-gold text-[#07090d]"
-              : "bg-[#07090d]/92 text-storefront-text/80 group-hover:bg-storefront-gold group-hover:text-[#07090d]"
+              : "bg-[#07090d]/85 text-[#f1ece2] group-hover:bg-storefront-gold group-hover:text-[#07090d]"
           }`}
         >
-          {active ? <Check className="w-3.5 h-3.5" strokeWidth={3} /> : <Plus className="w-3.5 h-3.5" />}
+          {active ? <Check className="w-4 h-4" strokeWidth={3} /> : <Plus className="w-4 h-4" strokeWidth={2.4} />}
         </span>
       </div>
+
       {/* Footer */}
-      <div className={`px-3 py-2.5 transition-colors ${active ? "bg-storefront-gold/[0.08]" : "bg-white/[0.02]"}`}>
-        <div className={`text-[12px] font-medium leading-tight line-clamp-2 ${active ? "text-storefront-text" : "text-storefront-text/85"}`}>
+      <div className="px-4 pt-3.5 pb-4">
+        <div className="text-[13px] font-medium leading-snug text-storefront-text/90 line-clamp-2 min-h-[2.6em]">
           {name}
         </div>
-        <div className="text-[11px] text-storefront-gold/80 mt-1 tracking-wide">
-          {rrp && rrp > 0 ? `+${rrp.toLocaleString("ru-RU")} ₽` : "По запросу"}
+        <div className="mt-2 text-[11px] uppercase tracking-[0.18em] text-storefront-gold/90 font-semibold tabular-nums">
+          {rrp && rrp > 0 ? `+ ${rrp.toLocaleString("ru-RU")} ₽` : "По запросу"}
         </div>
       </div>
     </button>
@@ -1047,7 +1063,7 @@ export default function StorefrontProduct() {
                   <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto scrollbar-hide snap-x">
                     <div className="flex gap-3 pb-2">
                       {realTrim.map((item) => (
-                        <div key={item.id} className="snap-start shrink-0 w-[160px] sm:w-[180px]">
+                        <div key={item.id} className="snap-start shrink-0 w-[230px] sm:w-[250px]">
                           <AccessoryCard
                             name={item.name}
                             rrp={item.rrp}
@@ -1101,7 +1117,7 @@ export default function StorefrontProduct() {
                   <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto scrollbar-hide snap-x">
                     <div className="flex gap-3 pb-2">
                       {filteredHardware.map((item) => (
-                        <div key={item.id} className="snap-start shrink-0 w-[160px] sm:w-[180px]">
+                        <div key={item.id} className="snap-start shrink-0 w-[230px] sm:w-[250px]">
                           <AccessoryCard
                             name={item.name}
                             rrp={item.rrp}
