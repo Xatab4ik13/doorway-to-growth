@@ -4,6 +4,7 @@ import { Image, Users, Star, MapPin, Phone, Clock, Upload, Pencil, Plus, Trash2 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { resolveStorageUrl } from "@/lib/storageUrl";
 
 const tabs = [
   { id: "banners", label: "Баннеры", icon: Image },
@@ -107,7 +108,7 @@ export function PartnerContentPage({ onNavigate }: { onNavigate: (s: string) => 
               <div key={b.id} className="rounded-2xl border border-border bg-card overflow-hidden group">
                 <div className="h-36 bg-muted flex items-center justify-center overflow-hidden">
                   {b.image_url ? (
-                    <img src={b.image_url} alt={b.title || ""} className="w-full h-full object-cover" />
+                    <img src={resolveStorageUrl(b.image_url)} alt={b.title || ""} className="w-full h-full object-cover" />
                   ) : (
                     <Image className="h-8 w-8 text-muted-foreground/30" />
                   )}

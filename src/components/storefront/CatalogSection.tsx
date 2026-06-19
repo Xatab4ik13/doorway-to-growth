@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ChevronRight, ArrowRight } from "lucide-react";
 import { storeHref } from "@/lib/storeHref";
+import { resolveStorageUrl } from "@/lib/storageUrl";
 
 interface Product {
   id: string;
@@ -21,7 +22,7 @@ interface Props {
 export function CatalogSection({ products, categories, siteSlug }: Props) {
   const getPrimaryImage = (p: Product) => {
     const primary = p.product_images?.find((i) => i.is_primary);
-    return primary?.url || p.product_images?.[0]?.url;
+    return resolveStorageUrl(primary?.url || p.product_images?.[0]?.url);
   };
 
   return (

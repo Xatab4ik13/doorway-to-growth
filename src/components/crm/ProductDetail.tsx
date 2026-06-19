@@ -3,6 +3,7 @@ import { X, Save, Plus, Trash2, Upload, ImageIcon, Link2, Image as ImageLucide }
 import { useUpdateProduct, type Product } from "@/hooks/useProducts";
 import { useProductImages } from "@/hooks/useProductImages";
 import { toast } from "@/hooks/use-toast";
+import { resolveStorageUrl } from "@/lib/storageUrl";
 
 interface ProductDetailProps {
   product: Product;
@@ -178,7 +179,7 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
               onDrop={handleDrop}
             >
               {currentImage ? (
-                <img src={currentImage.url} alt={product.name} className="w-full h-full object-contain" />
+                <img src={resolveStorageUrl(currentImage.url)} alt={product.name} className="w-full h-full object-contain" />
               ) : (
                 <div className="flex flex-col items-center gap-2 text-muted-foreground">
                   <ImageIcon className="h-10 w-10" />
@@ -229,7 +230,7 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
                         onClick={() => setActiveImage(i)}
                         className={`block w-full aspect-square rounded-xl overflow-hidden transition-all active:scale-95 bg-muted ${activeImage === i ? "ring-2 ring-foreground" : "ring-1 ring-border hover:ring-foreground/40"}`}
                       >
-                        <img src={img.url} alt="" className="w-full h-full object-cover" />
+                        <img src={resolveStorageUrl(img.url)} alt="" className="w-full h-full object-cover" />
                       </button>
                       {vk && (
                         <span
@@ -404,7 +405,7 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
                   {variants.map((v: any, i: number) => (
                     <div key={i} className="flex items-center gap-2 rounded-xl border border-border bg-muted/40 p-2">
                       {v.image_url ? (
-                        <img src={v.image_url} alt={v.color} loading="lazy" className="h-12 w-12 rounded-lg object-cover shrink-0 bg-background" />
+                        <img src={resolveStorageUrl(v.image_url)} alt={v.color} loading="lazy" className="h-12 w-12 rounded-lg object-cover shrink-0 bg-background" />
                       ) : (
                         <div className="h-12 w-12 rounded-lg bg-background shrink-0 flex items-center justify-center text-muted-foreground">
                           <ImageIcon className="h-4 w-4" />

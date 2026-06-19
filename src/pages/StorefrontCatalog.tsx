@@ -8,6 +8,7 @@ import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { ChevronRight, ChevronDown, ShoppingCart, Check, SlidersHorizontal, X } from "lucide-react";
 import brandoorsLogo from "@/assets/logo.png";
+import { resolveStorageUrl } from "@/lib/storageUrl";
 import { useCartStore } from "@/stores/useCartStore";
 import { storeHref } from "@/lib/storeHref";
 
@@ -300,10 +301,10 @@ export default function StorefrontCatalog() {
       const match = p.product_images?.find(
         (i: any) => i?.variant_key && !i.variant_key.includes("|") && selectedColors.has(i.variant_key)
       );
-      if (match?.url) return match.url;
+      if (match?.url) return resolveStorageUrl(match.url);
     }
     const primary = p.product_images?.find((i: any) => i.is_primary);
-    return primary?.url || p.product_images?.[0]?.url;
+    return resolveStorageUrl(primary?.url || p.product_images?.[0]?.url);
   };
 
   // Find category name for product

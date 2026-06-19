@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { resolveStorageUrl } from "@/lib/storageUrl";
 
 export type Product = {
   id: string;
@@ -30,7 +31,7 @@ export function useProducts() {
       return (data ?? []).map((p: any) => ({
         ...p,
         category: p.categories,
-        primary_image: p.product_images?.find((i: any) => i.is_primary)?.url ?? p.product_images?.[0]?.url ?? null,
+        primary_image: resolveStorageUrl(p.product_images?.find((i: any) => i.is_primary)?.url ?? p.product_images?.[0]?.url ?? null),
       })) as Product[];
     },
   });

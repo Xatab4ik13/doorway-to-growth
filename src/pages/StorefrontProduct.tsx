@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect, ReactNode } from "react";
 import { useParams, Link } from "react-router-dom";
+import { resolveStorageUrl } from "@/lib/storageUrl";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
@@ -555,7 +556,7 @@ export default function StorefrontProduct() {
 
   const toAccessoryItem = (p: any): AccessoryItem => {
     const primary = p.product_images?.find((i: any) => i.is_primary);
-    const img = primary?.url || p.product_images?.[0]?.url || null;
+    const img = resolveStorageUrl(primary?.url || p.product_images?.[0]?.url || null);
     return {
       id: p.id,
       name: p.name,
@@ -1131,7 +1132,7 @@ export default function StorefrontProduct() {
                 {images.length > 0 ? (
                   <img
                     key={currentImage}
-                    src={images[currentImage]?.url}
+                    src={resolveStorageUrl(images[currentImage]?.url)}
                     alt={images[currentImage]?.alt || product.name}
                     className="w-full h-full object-contain p-8 animate-fade-in"
                   />
@@ -1170,7 +1171,7 @@ export default function StorefrontProduct() {
                           : "opacity-50 hover:opacity-80"
                       }`}
                     >
-                      <img src={img.url} alt="" loading="lazy" className="w-full h-full object-cover" />
+                      <img src={resolveStorageUrl(img.url)} alt="" loading="lazy" className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>
