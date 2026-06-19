@@ -775,7 +775,7 @@ export default function StorefrontProduct() {
     return map;
   }, [images]);
 
-  // Moldings — only image-bound (avoid dead spec-only swatches for HEAVY/MAZE).
+  // Moldings: image-bound + spec-declared union.
   const imageMoldings = useMemo(() => {
     const seen = new Set<string>();
     const out: { name: string; hex: string }[] = [];
@@ -789,8 +789,21 @@ export default function StorefrontProduct() {
     }
     return out;
   }, [images]);
-  const moldingItems = imageMoldings;
+  const specMoldingItems = collectFromSpecs("molding_colors", null, "molding", ["casing", "panel"]).map((name) => {
+    const mock = MOCK_MOLDING_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase())
+      || MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
+    return { name, hex: mock?.hex ?? "#9C9994" };
+  });
+  const moldingItems = useMemo(() => {
+    const seen = new Set(imageMoldings.map((m) => m.name.toLowerCase()));
+    const extra = specMoldingItems.filter((m) => !seen.has(m.name.toLowerCase()));
+    return [...imageMoldings, ...extra];
+  }, [imageMoldings, specMoldingItems]);
   const hasImageBoundMoldings = imageMoldings.length > 0;
+  const imageMoldingSet = useMemo(
+    () => new Set(imageMoldings.map((m) => m.name.toLowerCase())),
+    [imageMoldings],
+  );
   const moldingsByColor = useMemo(() => {
     const map = new Map<string, Set<string>>();
     for (const img of images as any[]) {
