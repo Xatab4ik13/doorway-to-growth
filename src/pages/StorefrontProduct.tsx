@@ -491,22 +491,31 @@ export default function StorefrontProduct() {
   }, [specs, images]);
 
   // Find image matching (color, glazing, molding) with graceful fallbacks.
-  // Returns both the index and the image so callers can sync other axes.
-  const findImage = (color: string | null, glazing: string | null, molding: string | null) => {
+  // `priority` controls which axis must match when an exact combo is missing.
+  const findImage = (
+    color: string | null,
+    glazing: string | null,
+    molding: string | null,
+    priority: "color" | "glazing" | "molding" = "color",
+  ) => {
     const imgs = images as any[];
     const eq = (a: any, b: any) =>
       typeof a === "string" && typeof b === "string" && a.toLowerCase() === b.toLowerCase();
     const matchAxes = (img: any, axes: Array<[string, string | null]>) =>
       axes.every(([k, v]) => v == null || eq(img[k], v));
-    // Try most specific first, then drop one axis at a time.
+    const colorAxis: [string, string | null] = ["variant_key", color];
+    const glazingAxis: [string, string | null] = ["glazing_key", glazing];
+    const moldingAxis: [string, string | null] = ["molding_key", molding];
+    // Most-specific first, then fallbacks ordered by the requested priority axis.
+    const priorityChain: Array<Array<[string, string | null]>> =
+      priority === "glazing"
+        ? [[glazingAxis, colorAxis], [glazingAxis, moldingAxis], [glazingAxis], [colorAxis], [moldingAxis]]
+        : priority === "molding"
+        ? [[moldingAxis, colorAxis], [moldingAxis, glazingAxis], [moldingAxis], [colorAxis], [glazingAxis]]
+        : [[colorAxis, glazingAxis], [colorAxis, moldingAxis], [colorAxis], [glazingAxis], [moldingAxis]];
     const candidates: Array<Array<[string, string | null]>> = [
-      [["variant_key", color], ["glazing_key", glazing], ["molding_key", molding]],
-      [["variant_key", color], ["glazing_key", glazing]],
-      [["variant_key", color], ["molding_key", molding]],
-      [["glazing_key", glazing], ["molding_key", molding]],
-      [["variant_key", color]],
-      [["glazing_key", glazing]],
-      [["molding_key", molding]],
+      [colorAxis, glazingAxis, moldingAxis],
+      ...priorityChain,
     ];
     for (const axes of candidates) {
       if (axes.every(([_k, v]) => v == null)) continue;
@@ -525,7 +534,7 @@ export default function StorefrontProduct() {
   const handleSelectColor = (colorName: string) => {
     setSelectedColor(colorName);
     if (!hasImageBoundColors) return;
-    const { i, img } = findImage(colorName, selectedGlazing, selectedMolding);
+    const { i, img } = findImage(colorName, selectedGlazing, selectedMolding, "color");
     if (i >= 0) {
       setCurrentImage(i);
       syncFromImage(img);
@@ -534,7 +543,7 @@ export default function StorefrontProduct() {
 
   const handleSelectGlazing = (glazingName: string) => {
     setSelectedGlazing(glazingName);
-    const { i, img } = findImage(selectedColor, glazingName, selectedMolding);
+    const { i, img } = findImage(selectedColor, glazingName, selectedMolding, "glazing");
     if (i >= 0) {
       setCurrentImage(i);
       syncFromImage(img);
@@ -544,12 +553,13 @@ export default function StorefrontProduct() {
   const handleSelectMolding = (moldingName: string) => {
     setSelectedMolding(moldingName);
     if (!hasImageBoundMoldings) return;
-    const { i, img } = findImage(selectedColor, selectedGlazing, moldingName);
+    const { i, img } = findImage(selectedColor, selectedGlazing, moldingName, "molding");
     if (i >= 0) {
       setCurrentImage(i);
       syncFromImage(img);
     }
   };
+
 
   const similar = useMemo(() => {
     if (!product) return [];
