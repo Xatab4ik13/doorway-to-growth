@@ -19,11 +19,23 @@ Deno.serve(async (req) => {
     const dbUrl = Deno.env.get("SUPABASE_DB_URL")!;
     const client = new Client(dbUrl);
     await client.connect();
+    let count = 0;
     try {
-      await client.queryArray(sql);
+      const tx = client.createTransaction("admin_run_sql");
+      await tx.begin();
+      // Split on lines that are exactly ");" or end with ";" and aren't inside a string.
+      // The generator separates statements with "\n" and each statement ends with ";".
+      // We split on ";\n" while keeping statements intact (no semicolons inside string literals contain newlines after them in our generated SQL).
+      const stmts = sql.split(/;\s*\n/).map((s: string) => s.trim()).filter((s: string) => s.length > 0);
+      for (const s of stmts) {
+        await tx.queryArray(s);
+        count++;
+      }
+      await tx.commit();
     } finally {
       await client.end();
     }
+    return new Response(JSON.stringify({ ok: true, statements: count }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     return new Response(JSON.stringify({ ok: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ error: String(e) }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
