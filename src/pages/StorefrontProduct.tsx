@@ -1294,7 +1294,12 @@ export default function StorefrontProduct() {
               )}
 
               {/* ===== OPENING SYSTEMS — only for interior doors ===== */}
-              {isDoorProduct && !isEntranceDoor && <OpeningSystems />}
+              {isDoorProduct && !isEntranceDoor && (
+                <OpeningSystems
+                  value={selectedOpeningSystem}
+                  onChange={setSelectedOpeningSystem}
+                />
+              )}
 
               {/* ===== TRIM (ПОГОНАЖ) ===== */}
               {!isEntranceDoor && realTrim.length > 0 && (
