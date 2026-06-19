@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-import { storeHref } from "@/lib/storeHref";
+
   ShoppingBag,
   Minus,
   Plus,
