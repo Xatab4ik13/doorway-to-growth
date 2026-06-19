@@ -444,11 +444,12 @@ export default function StorefrontProduct() {
       });
   const hasImageBoundColors = imageColors.length > 0;
 
-  const glazingItems = collectFromSpecs("glazing_options", "glazing", "glazing").map((name) => {
+  const glazingItems = collectFromSpecs("glazing_options", "glazing", "glazing", ["glass", "panelouter"]).map((name) => {
     const mock = MOCK_GLAZING.find((g) => g.name.toLowerCase() === name.toLowerCase());
     return { name, preview: mock?.preview ?? "#2a2a2a" };
   });
-  const edgeItems = collectFromSpecs("edge_colors", null, "edge").map((name) => {
+  const edgeItems = collectFromSpecs("edge_colors", null, "edge", ["edge"]).map((name) => {
+
     const mock = MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
     return { name, hex: mock?.hex ?? "#2a2a2a" };
   });
