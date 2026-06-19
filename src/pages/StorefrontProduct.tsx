@@ -1041,17 +1041,20 @@ export default function StorefrontProduct() {
                       {realTrim.length} поз.
                     </span>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {realTrim.map((item) => (
-                      <AccessoryCard
-                        key={item.id}
-                        name={item.name}
-                        rrp={item.rrp}
-                        image={item.image}
-                        active={selectedTrim.has(item.id)}
-                        onClick={() => toggleTrim(item.id)}
-                      />
-                    ))}
+                  <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto scrollbar-hide snap-x">
+                    <div className="flex gap-3 pb-2">
+                      {realTrim.map((item) => (
+                        <div key={item.id} className="snap-start shrink-0 w-[160px] sm:w-[180px]">
+                          <AccessoryCard
+                            name={item.name}
+                            rrp={item.rrp}
+                            image={item.image}
+                            active={selectedTrim.has(item.id)}
+                            onClick={() => toggleTrim(item.id)}
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
@@ -1069,8 +1072,8 @@ export default function StorefrontProduct() {
                     </span>
                   </div>
 
-                  {/* Subcategory tabs */}
-                  <div className="flex gap-1.5 mb-4 overflow-x-auto scrollbar-hide -mx-2 px-2">
+                  {/* Subcategory tabs — minimal underline */}
+                  <div className="flex gap-5 mb-5 overflow-x-auto scrollbar-hide -mx-2 px-2 border-b border-white/[0.06]">
                     {HARDWARE_TABS.map((t) => {
                       const count = t.key === "all" ? realHardware.length : realHardware.filter((h) => t.match(h.name)).length;
                       if (count === 0) return null;
@@ -1079,33 +1082,41 @@ export default function StorefrontProduct() {
                         <button
                           key={t.key}
                           onClick={() => setHardwareTab(t.key)}
-                          className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] uppercase tracking-[0.15em] transition-colors duration-150 ${
+                          className={`shrink-0 relative pb-2.5 text-[11px] uppercase tracking-[0.2em] transition-colors duration-200 ${
                             active
-                              ? "bg-storefront-gold text-[#07090d]"
-                              : "bg-white/[0.04] text-storefront-text/70 hover:bg-white/[0.08]"
+                              ? "text-storefront-gold"
+                              : "text-storefront-text/45 hover:text-storefront-text/80"
                           }`}
                         >
                           {t.label}
-                          <span className={`ml-1.5 text-[10px] ${active ? "opacity-70" : "opacity-50"}`}>{count}</span>
+                          <span className={`ml-1.5 text-[10px] tabular-nums ${active ? "opacity-70" : "opacity-50"}`}>{count}</span>
+                          {active && (
+                            <span className="absolute left-0 right-0 -bottom-px h-px bg-storefront-gold" />
+                          )}
                         </button>
                       );
                     })}
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {filteredHardware.map((item) => (
-                      <AccessoryCard
-                        key={item.id}
-                        name={item.name}
-                        rrp={item.rrp}
-                        image={item.image}
-                        active={selectedHardware.has(item.id)}
-                        onClick={() => toggleHardware(item.id)}
-                      />
-                    ))}
+                  <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto scrollbar-hide snap-x">
+                    <div className="flex gap-3 pb-2">
+                      {filteredHardware.map((item) => (
+                        <div key={item.id} className="snap-start shrink-0 w-[160px] sm:w-[180px]">
+                          <AccessoryCard
+                            name={item.name}
+                            rrp={item.rrp}
+                            image={item.image}
+                            active={selectedHardware.has(item.id)}
+                            onClick={() => toggleHardware(item.id)}
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
+
+
 
 
               {/* ===== OPENING SYSTEMS — only for interior doors ===== */}
