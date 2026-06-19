@@ -924,6 +924,8 @@ export default function StorefrontProduct() {
 
   const handleSelectGlazing = (glazingName: string) => {
     setSelectedGlazing(glazingName);
+    // Spec-only variant (no photo) — keep current image.
+    if (!imageGlazingSet.has(glazingName.toLowerCase())) return;
     let color = selectedColor;
     if (hasImageBoundColors) {
       const avail = colorsByGlazing.get(glazingName);
@@ -949,6 +951,8 @@ export default function StorefrontProduct() {
       if (i >= 0) { setCurrentImage(i); syncFromImage(img); }
       return;
     }
+    // Spec-only edge — keep current image.
+    if (!imageEdgeSet.has(next.toLowerCase())) return;
     let color = selectedColor;
     if (hasImageBoundColors) {
       const avail = colorsByEdge.get(next);
@@ -968,6 +972,8 @@ export default function StorefrontProduct() {
     const next = selectedMolding === moldingName ? null : moldingName;
     setSelectedMolding(next);
     if (!hasImageBoundMoldings || next == null) return;
+    // Spec-only molding — keep current image.
+    if (!imageMoldingSet.has(next.toLowerCase())) return;
     const { i, img } = findImage(selectedColor, selectedGlazing, selectedEdge, next, "molding");
     if (i >= 0) {
       setCurrentImage(i);
