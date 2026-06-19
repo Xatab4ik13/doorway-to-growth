@@ -570,7 +570,16 @@ export default function StorefrontProduct() {
       imageUrl: imgUrl,
       siteId: site.id,
       type: "door",
+      options: {
+        ...(selectedWidth ? { width: selectedWidth } : {}),
+        ...(selectedHeight ? { height: selectedHeight } : {}),
+        ...(selectedColor ? { color: selectedColor } : {}),
+        ...(selectedGlazing ? { glazing: selectedGlazing } : {}),
+        ...(selectedEdge ? { edge: selectedEdge } : {}),
+        ...(selectedMolding ? { molding: selectedMolding } : {}),
+      },
     });
+
   };
 
   const toggleTrim = (id: string) => {
