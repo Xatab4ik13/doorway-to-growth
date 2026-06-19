@@ -79,13 +79,13 @@ const OpeningSystems = memo(function OpeningSystems() {
             "linear-gradient(140deg, rgba(207,187,150,0.06) 0%, rgba(12,14,20,0.4) 50%, rgba(207,187,150,0.04) 100%)",
         }}
       >
-        {/* Stage with video */}
-        <div className="relative aspect-[16/9] bg-[#0a0c12] overflow-hidden">
-          <div className="pointer-events-none absolute inset-3 z-10">
-            <div className="absolute top-0 left-0 w-6 h-6 border-l border-t border-storefront-gold/40" />
-            <div className="absolute top-0 right-0 w-6 h-6 border-r border-t border-storefront-gold/40" />
-            <div className="absolute bottom-0 left-0 w-6 h-6 border-l border-b border-storefront-gold/40" />
-            <div className="absolute bottom-0 right-0 w-6 h-6 border-r border-b border-storefront-gold/40" />
+        {/* Stage with video — taller */}
+        <div className="relative aspect-[4/3] sm:aspect-[16/10] bg-[#0a0c12] overflow-hidden">
+          <div className="pointer-events-none absolute inset-4 z-10">
+            <div className="absolute top-0 left-0 w-8 h-8 border-l border-t border-storefront-gold/40" />
+            <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-storefront-gold/40" />
+            <div className="absolute bottom-0 left-0 w-8 h-8 border-l border-b border-storefront-gold/40" />
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-r border-b border-storefront-gold/40" />
           </div>
 
           <video
@@ -100,37 +100,37 @@ const OpeningSystems = memo(function OpeningSystems() {
             className="absolute inset-0 w-full h-full object-contain"
           />
 
-          {/* Bottom caption — system name + description */}
-          <div className="absolute bottom-0 left-0 right-0 p-6 z-20 bg-gradient-to-t from-[#0a0c12] via-[#0a0c12]/85 to-transparent">
+          {/* Bottom caption */}
+          <div className="absolute bottom-0 left-0 right-0 p-7 z-20 bg-gradient-to-t from-[#0a0c12] via-[#0a0c12]/85 to-transparent">
             <div className="flex items-end justify-between gap-4 flex-wrap">
               <div
-                className="text-[26px] leading-none font-light text-storefront-text"
+                className="text-[34px] leading-none font-medium text-storefront-text"
                 style={{ fontFamily: "'Cormorant Garamond', serif", letterSpacing: "0.04em" }}
               >
                 {current.tag}
               </div>
-              <p className="text-[12.5px] leading-relaxed text-storefront-text/65 font-light max-w-md">
+              <p className="text-[13px] leading-relaxed text-storefront-text/70 font-light max-w-md">
                 {current.description}
               </p>
             </div>
           </div>
         </div>
 
-        {/* Thin elegant pill selector */}
-        <div className="bg-[#0a0c12]/60 border-t border-storefront-gold/10 p-4">
-          <div className="flex flex-wrap gap-2 justify-center">
+        {/* Bigger, bolder pill selector */}
+        <div className="bg-[#0a0c12]/60 border-t border-storefront-gold/10 p-5 sm:p-6">
+          <div className="flex flex-wrap gap-2.5 sm:gap-3 justify-center">
             {SYSTEMS.map((s) => {
               const isActive = s.id === active;
               return (
                 <button
                   key={s.id}
                   onClick={() => setActive(s.id)}
-                  className={`px-5 py-2.5 rounded-full text-[12px] tracking-[0.06em] whitespace-nowrap transition-all duration-300 border ${
+                  className={`px-7 py-4 rounded-full text-[15px] sm:text-[16px] tracking-[0.04em] whitespace-nowrap transition-all duration-300 border-2 ${
                     isActive
-                      ? "bg-storefront-gold text-[#07090d] border-storefront-gold shadow-[0_8px_22px_-10px_rgba(207,187,150,0.7)]"
-                      : "bg-transparent text-storefront-text/70 border-white/12 hover:border-storefront-gold/50 hover:text-storefront-text"
+                      ? "bg-storefront-gold text-[#07090d] border-storefront-gold shadow-[0_10px_28px_-10px_rgba(207,187,150,0.75)]"
+                      : "bg-transparent text-storefront-text/80 border-white/15 hover:border-storefront-gold/60 hover:text-storefront-text"
                   }`}
-                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: isActive ? 500 : 400 }}
+                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600 }}
                 >
                   {s.tag}
                 </button>
