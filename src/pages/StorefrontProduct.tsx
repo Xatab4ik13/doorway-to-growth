@@ -1162,25 +1162,35 @@ export default function StorefrontProduct() {
               <div className="mb-8">
                 <Accordion type="single" collapsible className="border-y border-white/5">
                   {(() => {
+                    // Structured characteristics from brandoors.ru (type/style/material/finishing/thickness)
+                    const charEntries = characteristics
+                      ? Object.entries(characteristics).filter(([_, v]) => typeof v === "string" && v.trim() !== "")
+                      : [];
+                    // Plus any extra primitive specs we should expose
                     const reserved = new Set([
-                      "color", "glazing", "sizes", "collection",
+                      "color", "glazing", "sizes", "collection", "axes", "characteristics",
+                      "widths", "heights",
                       "markup_height", "markup_width", "markup_h", "markup_w",
                       "sizes_order_note", "sizes_stock_note",
                     ]);
-                    const specEntries = specs
+                    const extraEntries = specs
                       ? Object.entries(specs).filter(([k, v]) => !reserved.has(k) && v != null && typeof v !== "object")
                       : [];
-                    return specEntries.length > 0 ? (
+                    const allEntries: [string, string][] = [
+                      ...charEntries.map(([k, v]) => [charLabels[k] || k, String(v)] as [string, string]),
+                      ...extraEntries.map(([k, v]) => [k, String(v)] as [string, string]),
+                    ];
+                    return allEntries.length > 0 ? (
                       <AccordionItem value="specs" className="border-b border-white/5">
                         <AccordionTrigger className="text-[12px] uppercase tracking-[0.2em] text-storefront-text/80 hover:no-underline font-medium">
                           Характеристики
                         </AccordionTrigger>
                         <AccordionContent>
                           <dl className="grid grid-cols-1 gap-y-2.5 text-[13px] font-light">
-                            {specEntries.map(([k, v]) => (
+                            {allEntries.map(([k, v]) => (
                               <div key={k} className="flex justify-between gap-4 border-b border-white/[0.04] pb-2 last:border-0">
                                 <dt className="text-storefront-text/50 capitalize">{k}</dt>
-                                <dd className="text-storefront-text/90 text-right">{String(v)}</dd>
+                                <dd className="text-storefront-text/90 text-right">{v}</dd>
                               </div>
                             ))}
                           </dl>
@@ -1188,6 +1198,7 @@ export default function StorefrontProduct() {
                       </AccordionItem>
                     ) : null;
                   })()}
+
 
                   <AccordionItem value="construction" className="border-b border-white/5">
                     <AccordionTrigger className="text-[12px] uppercase tracking-[0.2em] text-storefront-text/80 hover:no-underline font-medium">
