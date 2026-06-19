@@ -371,7 +371,8 @@ export default function StorefrontCatalog() {
                   </span>
                 )}
               </button>
-              {/* Sort */}
+              {/* Sort hidden per request */}
+              {false && (
               <div className="relative flex-1 sm:flex-initial">
                 <select
                   value={sortBy}
@@ -385,6 +386,7 @@ export default function StorefrontCatalog() {
                 </select>
                 <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-storefront-muted pointer-events-none" />
               </div>
+              )}
             </div>
           </div>
 
@@ -456,9 +458,6 @@ export default function StorefrontCatalog() {
               <div className="flex items-baseline justify-between gap-3 mb-4 text-[13px]">
                 <span className="text-storefront-text/80">
                   Найдено: <span className="font-semibold text-storefront-text">{filtered.length}</span>
-                </span>
-                <span className="text-storefront-muted tabular-nums">
-                  Стр. {page} / {totalPages || 1}
                 </span>
               </div>
 
