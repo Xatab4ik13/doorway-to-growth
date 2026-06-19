@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect, ReactNode } from "react";
 import { useParams, Link } from "react-router-dom";
+import { resolveStorageUrl } from "@/lib/storageUrl";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
