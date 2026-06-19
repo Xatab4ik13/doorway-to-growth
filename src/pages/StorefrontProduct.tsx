@@ -1486,6 +1486,18 @@ export default function StorefrontProduct() {
                     label: "Размер",
                     value: `${selectedWidth ?? "—"} × ${selectedHeight ?? "—"} мм`,
                   });
+                if (selectedOpeningSystem) {
+                  const osName =
+                    {
+                      invisible: "Invisible (скрытая)",
+                      compact: "Compact 180° (распашная)",
+                      magic: "Magic (реверсивная)",
+                      penal: "Пенал (откатная)",
+                      "cupe-one": "Купе (одностворчатая)",
+                      "cupe-two": "Купе 2 (двустворчатая)",
+                    }[selectedOpeningSystem] ?? selectedOpeningSystem;
+                  rows.push({ label: "Система открывания", value: osName });
+                }
                 if (trimItems.length > 0)
                   rows.push({ label: "Погонаж", value: `${trimItems.length} поз.` });
                 if (hwItems.length > 0)
