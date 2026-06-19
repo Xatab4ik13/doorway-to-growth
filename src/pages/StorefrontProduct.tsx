@@ -286,6 +286,108 @@ function AccessoryCard({
   );
 }
 
+// Dimension slider — gold tick marks under a continuous track, snaps to discrete values.
+function DimensionSlider({
+  label,
+  values,
+  selected,
+  onChange,
+}: {
+  label: string;
+  values: number[];
+  selected: number | null;
+  onChange: (v: number) => void;
+}) {
+  const idx = selected != null ? Math.max(0, values.indexOf(selected)) : 0;
+  const max = Math.max(values.length - 1, 1);
+  const pct = (idx / max) * 100;
+
+  return (
+    <div>
+      <div className="flex items-baseline justify-between mb-5">
+        <span className="text-[11px] uppercase tracking-[0.25em] text-storefront-text/55 font-medium">
+          {label}
+        </span>
+        <div className="flex items-baseline gap-1.5">
+          <span
+            className="text-[34px] leading-none text-storefront-gold tabular-nums"
+            style={{ fontFamily: "'Raleway', system-ui, sans-serif", fontWeight: 300, letterSpacing: "-0.01em" }}
+          >
+            {selected ?? values[0]}
+          </span>
+          <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-text/40">мм</span>
+        </div>
+      </div>
+
+      <div className="relative h-12">
+        {/* Track */}
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[2px] bg-white/8 rounded-full" />
+        {/* Filled portion */}
+        <div
+          className="absolute left-0 top-1/2 -translate-y-1/2 h-[2px] bg-storefront-gold/70 rounded-full transition-[width] duration-150"
+          style={{ width: `${pct}%` }}
+        />
+        {/* Tick marks */}
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none">
+          {values.map((v, i) => {
+            const active = i <= idx;
+            return (
+              <div key={v} className="flex flex-col items-center">
+                <span
+                  className={`block w-px transition-colors ${active ? "bg-storefront-gold/80" : "bg-white/20"}`}
+                  style={{ height: i === idx ? 14 : 8, marginTop: i === idx ? -6 : -3 }}
+                />
+              </div>
+            );
+          })}
+        </div>
+        {/* Tick labels */}
+        <div className="absolute inset-x-0 top-[calc(50%+14px)] flex justify-between pointer-events-none">
+          {values.map((v, i) => (
+            <span
+              key={v}
+              className={`text-[10px] tabular-nums transition-colors ${
+                i === idx ? "text-storefront-gold" : "text-storefront-text/30"
+              }`}
+              style={{ transform: "translateX(-50%)", marginLeft: i === 0 ? 0 : undefined }}
+            >
+              {v}
+            </span>
+          ))}
+        </div>
+
+        {/* Native range overlay */}
+        <input
+          type="range"
+          min={0}
+          max={max}
+          step={1}
+          value={idx}
+          onChange={(e) => onChange(values[Number(e.target.value)])}
+          aria-label={label}
+          className="absolute inset-x-0 top-0 w-full h-12 appearance-none bg-transparent cursor-pointer
+            [&::-webkit-slider-thumb]:appearance-none
+            [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6
+            [&::-webkit-slider-thumb]:rounded-full
+            [&::-webkit-slider-thumb]:bg-storefront-gold
+            [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-[#07090d]
+            [&::-webkit-slider-thumb]:shadow-[0_0_0_2px_rgba(207,187,150,0.5),0_8px_20px_-4px_rgba(207,187,150,0.5)]
+            [&::-webkit-slider-thumb]:transition-transform
+            [&::-webkit-slider-thumb]:cursor-grab
+            active:[&::-webkit-slider-thumb]:scale-110
+            [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6
+            [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-storefront-gold
+            [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-[#07090d]
+            [&::-moz-range-thumb]:cursor-grab
+            [&::-webkit-slider-runnable-track]:bg-transparent
+            [&::-moz-range-track]:bg-transparent"
+        />
+      </div>
+    </div>
+  );
+}
+
+
 // Horizontal scroll wrapper with chevron arrows on desktop.
 function ScrollCarousel({ children }: { children: ReactNode }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
