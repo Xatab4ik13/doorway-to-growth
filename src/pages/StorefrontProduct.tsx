@@ -504,7 +504,7 @@ export default function StorefrontProduct() {
   const [selectedHeight, setSelectedHeight] = useState<number | null>(null);
   const [selectedTrim, setSelectedTrim] = useState<Set<string>>(new Set());
   const [selectedHardware, setSelectedHardware] = useState<Set<string>>(new Set());
-  const [hardwareTab, setHardwareTab] = useState<string>("all");
+  const [hardwareTab, setHardwareTab] = useState<string>("handles");
 
 
 
