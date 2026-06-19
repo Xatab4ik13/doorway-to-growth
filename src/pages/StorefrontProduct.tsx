@@ -323,17 +323,17 @@ function DimensionSlider({
 
 
       {/* Slider area — generous height, big ticks, big labels */}
-      <div className="relative h-24 px-5">
+      <div className="relative h-28 px-5">
         {/* Track */}
-        <div className="absolute left-5 right-5 top-[34px] h-[3px] bg-white/[0.07] rounded-full" />
+        <div className="absolute left-5 right-5 top-[38px] h-[3px] bg-white/[0.07] rounded-full" />
         {/* Filled portion */}
         <div
-          className="absolute left-5 top-[34px] h-[3px] bg-gradient-to-r from-storefront-gold/60 to-storefront-gold rounded-full transition-[width] duration-200"
+          className="absolute left-5 top-[38px] h-[3px] bg-gradient-to-r from-storefront-gold/60 to-storefront-gold rounded-full transition-[width] duration-200"
           style={{ width: `calc((100% - 40px) * ${pct / 100})` }}
         />
 
         {/* Tick marks */}
-        <div className="absolute left-5 right-5 top-[34px] flex justify-between pointer-events-none">
+        <div className="absolute left-5 right-5 top-[38px] flex justify-between pointer-events-none">
           {values.map((v, i) => {
             const active = i <= idx;
             const isCurrent = i === idx;
@@ -348,35 +348,34 @@ function DimensionSlider({
                     : "bg-white/20"
                 }`}
                 style={{
-                  height: isCurrent ? 22 : 12,
-                  marginTop: isCurrent ? -11 : -6,
+                  height: isCurrent ? 24 : 14,
+                  marginTop: isCurrent ? -12 : -7,
                 }}
               />
             );
           })}
         </div>
 
-        {/* Tick labels — only on anchor values; no active highlight overlay */}
+        {/* Tick labels — only on anchor values; bigger and bolder */}
         {(() => {
           const n = values.length;
-          const step = Math.max(1, Math.ceil(n / 6));
           return (
-            <div className="absolute left-5 right-5 top-[58px] flex justify-between pointer-events-none">
+            <div className="absolute left-5 right-5 top-[66px] flex justify-between pointer-events-none">
               {values.map((v, i) => {
                 const isFirst = i === 0;
                 const isLast = i === n - 1;
                 const show = labelSet
                   ? labelSet.has(v)
-                  : isFirst || isLast || i % step === 0;
+                  : isFirst || isLast;
                 return (
                   <span key={`lbl-${v}`} className="relative flex-1 first:flex-none last:flex-none">
                     <span
-                      className={`absolute top-0 text-[12px] tabular-nums whitespace-nowrap text-storefront-text/45 ${
+                      className={`absolute top-0 text-[14px] tabular-nums whitespace-nowrap text-storefront-text/70 ${
                         show ? "opacity-100" : "opacity-0"
                       }`}
                       style={{
                         fontFamily: "'Manrope', system-ui, sans-serif",
-                        fontWeight: 600,
+                        fontWeight: 700,
                         left: isFirst ? 0 : isLast ? "auto" : "50%",
                         right: isLast ? 0 : "auto",
                         transform: isFirst || isLast ? "none" : "translateX(-50%)",
@@ -391,7 +390,6 @@ function DimensionSlider({
           );
         })()}
 
-
         {/* Native range overlay — big thumb */}
         <input
           type="range"
@@ -401,9 +399,9 @@ function DimensionSlider({
           value={idx}
           onChange={(e) => onChange(values[Number(e.target.value)])}
           aria-label={label}
-          className="absolute left-5 right-5 top-[20px] w-[calc(100%-40px)] h-7 appearance-none bg-transparent cursor-pointer
+          className="absolute left-5 right-5 top-[24px] w-[calc(100%-40px)] h-8 appearance-none bg-transparent cursor-pointer
             [&::-webkit-slider-thumb]:appearance-none
-            [&::-webkit-slider-thumb]:w-7 [&::-webkit-slider-thumb]:h-7
+            [&::-webkit-slider-thumb]:w-8 [&::-webkit-slider-thumb]:h-8
             [&::-webkit-slider-thumb]:rounded-full
             [&::-webkit-slider-thumb]:bg-storefront-gold
             [&::-webkit-slider-thumb]:border-[4px] [&::-webkit-slider-thumb]:border-[#07090d]
@@ -411,7 +409,7 @@ function DimensionSlider({
             [&::-webkit-slider-thumb]:transition-transform
             [&::-webkit-slider-thumb]:cursor-grab
             active:[&::-webkit-slider-thumb]:scale-110
-            [&::-moz-range-thumb]:w-7 [&::-moz-range-thumb]:h-7
+            [&::-moz-range-thumb]:w-8 [&::-moz-range-thumb]:h-8
             [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-storefront-gold
             [&::-moz-range-thumb]:border-[4px] [&::-moz-range-thumb]:border-[#07090d]
             [&::-moz-range-thumb]:cursor-grab
