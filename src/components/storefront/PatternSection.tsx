@@ -10,6 +10,7 @@ import colEsteticaEmale from "@/assets/collections/estetica-emale.webp";
 import colMaze from "@/assets/collections/maze.webp";
 import colKvartirnye from "@/assets/collections/kvartirnye.webp";
 import colUlichnye from "@/assets/collections/ulichnye.webp";
+import { storeHref } from "@/lib/storeHref";
 
 type CollectionItem = { src: string; name: string };
 
@@ -167,9 +168,9 @@ export function PatternSection() {
 
   const handleSelect = (name: string) => {
     if (activeTab === "entrance") {
-      navigate(`/store/${slug}/catalog/list?category=entrance-doors`);
+      navigate(storeHref(slug, "catalog/list?category=entrance-doors"));
     } else {
-      navigate(`/store/${slug}/catalog/list?category=mezhkomnatnye-dveri&collection=${encodeURIComponent(name)}`);
+      navigate(storeHref(slug, `catalog/list?category=mezhkomnatnye-dveri&collection=${encodeURIComponent(name)}`));
     }
   };
 

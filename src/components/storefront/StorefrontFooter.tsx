@@ -2,6 +2,7 @@ import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import brandoorsLogo from "@/assets/logo.png";
+import { storeHref } from "@/lib/storeHref";
 
 interface Props {
   site: StorefrontSite;
@@ -84,7 +85,7 @@ export function StorefrontFooter({ site }: Props) {
               Навигация
             </h4>
             {[
-              { label: "Каталог", href: `/store/${site.slug}/catalog`, isRoute: true },
+              { label: "Каталог", href: storeHref(site.slug, "catalog"), isRoute: true },
               { label: "Отзывы", href: "#about", isRoute: false },
               { label: "О салоне", href: "#about", isRoute: false },
               { label: "Контакты", href: "#contacts", isRoute: false },

@@ -7,6 +7,7 @@ import interiorImg from "@/assets/categories/interior-doors.png";
 import entranceImg from "@/assets/categories/entrance-doors.png";
 import pogonazhImg from "@/assets/categories/pogonazh.png";
 import furnituraImg from "@/assets/categories/furnitura.png";
+import { storeHref } from "@/lib/storeHref";
 
 type CategoryCard = {
   slug: string;
@@ -50,7 +51,7 @@ export default function StorefrontCategorySelect() {
     );
   }
 
-  const baseHref = `/store/${slug}/catalog/list`;
+  const baseHref = storeHref(slug, "catalog/list");
 
   return (
     <StorefrontLayout site={site}>
@@ -59,7 +60,7 @@ export default function StorefrontCategorySelect() {
           {/* Breadcrumbs */}
           <div className="flex items-center gap-2 mb-6 text-xs">
             <Link
-              to={`/store/${slug}`}
+              to={storeHref(slug)}
               className="uppercase tracking-[0.15em] text-storefront-muted hover:text-storefront-gold transition-colors"
             >
               Главная

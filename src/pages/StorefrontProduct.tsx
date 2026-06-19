@@ -16,6 +16,7 @@ import glassFrosted from "@/assets/materials/glass-frosted.jpg";
 import glassMirror from "@/assets/materials/glass-mirror.jpg";
 import glassLacobel from "@/assets/materials/glass-lacobel.jpg";
 import OpeningSystems from "@/components/storefront/OpeningSystems";
+import { storeHref } from "@/lib/storeHref";
 
 // ── Material textures map ──
 type MaterialKey = "wood" | "softtouch" | "metal" | "enamel" | "frosted" | "mirror" | "lacobel" | "none";
@@ -1092,7 +1093,7 @@ export default function StorefrontProduct() {
       <div className="min-h-screen bg-[#07090d] flex items-center justify-center text-storefront-text">
         <div className="text-center">
           <h1 className="text-2xl mb-4">Товар не найден</h1>
-          <Link to={`/store/${slug}/catalog`} className="text-storefront-gold hover:opacity-80 transition-opacity">
+          <Link to={storeHref(slug, "catalog")} className="text-storefront-gold hover:opacity-80 transition-opacity">
             Вернуться в каталог
           </Link>
         </div>
@@ -1110,11 +1111,11 @@ export default function StorefrontProduct() {
 
           {/* Breadcrumbs */}
           <div className="flex items-center gap-4 mb-10 text-[10px] uppercase tracking-[0.2em] font-light">
-            <Link to={`/store/${slug}`} className="text-storefront-text/30 hover:text-storefront-gold transition-colors">
+            <Link to={storeHref(slug)} className="text-storefront-text/30 hover:text-storefront-gold transition-colors">
               Каталог
             </Link>
             <span className="w-1 h-1 rounded-full bg-white/20" />
-            <Link to={`/store/${slug}/catalog`} className="text-storefront-text/30 hover:text-storefront-gold transition-colors">
+            <Link to={storeHref(slug, "catalog")} className="text-storefront-text/30 hover:text-storefront-gold transition-colors">
               Двери
             </Link>
             <span className="w-1 h-1 rounded-full bg-white/20" />
@@ -1756,7 +1757,7 @@ export default function StorefrontProduct() {
                   return (
                     <Link
                       key={p.id}
-                      to={`/store/${slug}/product/${p.slug}`}
+                      to={storeHref(slug, `product/${p.slug}`)}
                       className="group block"
                       onClick={() => { setCurrentImage(0); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                     >
@@ -1782,7 +1783,7 @@ export default function StorefrontProduct() {
 
           {/* Back to catalog */}
           <div className="mt-14">
-            <Link to={`/store/${slug}/catalog`} className="inline-flex items-center gap-2 text-[11px] uppercase tracking-wider text-storefront-muted hover:text-storefront-gold transition-colors">
+            <Link to={storeHref(slug, "catalog")} className="inline-flex items-center gap-2 text-[11px] uppercase tracking-wider text-storefront-muted hover:text-storefront-gold transition-colors">
               <ArrowLeft className="w-4 h-4" />
               Вернуться в каталог
             </Link>

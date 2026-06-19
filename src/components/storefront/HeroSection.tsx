@@ -6,6 +6,7 @@ import { CartButton } from "./CartButton";
 import brandoorsLogo from "@/assets/logo.png";
 import heroBanner from "@/assets/hero-banner.jpg";
 import { getSiteMedia } from "@/config/siteMedia";
+import { storeHref } from "@/lib/storeHref";
 
 interface Props {
   site: StorefrontSite;
@@ -104,7 +105,7 @@ export function HeroSection({ site, banners }: Props) {
             item.isRoute ? (
               <Link
                 key={item.label}
-                to={`/store/${site.slug}/${item.href}`}
+                to={storeHref(site.slug, `${item.href}`)}
                 className="text-[15px] font-bold uppercase tracking-[0.25em] transition-colors duration-300"
                 style={{ fontFamily: "'Raleway', sans-serif", color: "rgba(26,20,8,0.85)" }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,1)"; }}

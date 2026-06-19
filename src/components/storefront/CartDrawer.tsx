@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Minus, Plus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
 import { useCartStore } from "@/stores/useCartStore";
 import { useNavigate } from "react-router-dom";
+import { storeHref } from "@/lib/storeHref";
 
 const BACKDROP_VARIANTS = {
   hidden: { opacity: 0 },
@@ -45,7 +46,7 @@ export function CartDrawer() {
     // Find slug from current URL
     const match = window.location.pathname.match(/\/store\/([^/]+)/);
     const slug = match?.[1] || "";
-    if (slug) navigate(`/store/${slug}/cart`);
+    if (slug) navigate(storeHref(slug, "cart"));
   };
 
   return (
