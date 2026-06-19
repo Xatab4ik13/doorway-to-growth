@@ -525,6 +525,7 @@ export default function StorefrontProduct() {
   const [selectedMolding, setSelectedMolding] = useState<string | null>(null);
   const [selectedWidth, setSelectedWidth] = useState<number | null>(null);
   const [selectedHeight, setSelectedHeight] = useState<number | null>(null);
+  const [selectedOpeningSystem, setSelectedOpeningSystem] = useState<string | null>(null);
   const [selectedTrim, setSelectedTrim] = useState<Set<string>>(new Set());
   const [selectedHardware, setSelectedHardware] = useState<Set<string>>(new Set());
   const [hardwareTab, setHardwareTab] = useState<string>("handles");
@@ -1293,7 +1294,12 @@ export default function StorefrontProduct() {
               )}
 
               {/* ===== OPENING SYSTEMS — only for interior doors ===== */}
-              {isDoorProduct && !isEntranceDoor && <OpeningSystems />}
+              {isDoorProduct && !isEntranceDoor && (
+                <OpeningSystems
+                  value={selectedOpeningSystem}
+                  onChange={setSelectedOpeningSystem}
+                />
+              )}
 
               {/* ===== TRIM (ПОГОНАЖ) ===== */}
               {!isEntranceDoor && realTrim.length > 0 && (
@@ -1480,6 +1486,18 @@ export default function StorefrontProduct() {
                     label: "Размер",
                     value: `${selectedWidth ?? "—"} × ${selectedHeight ?? "—"} мм`,
                   });
+                if (selectedOpeningSystem) {
+                  const osName =
+                    {
+                      invisible: "Invisible (скрытая)",
+                      compact: "Compact 180° (распашная)",
+                      magic: "Magic (реверсивная)",
+                      penal: "Пенал (откатная)",
+                      "cupe-one": "Купе (одностворчатая)",
+                      "cupe-two": "Купе 2 (двустворчатая)",
+                    }[selectedOpeningSystem] ?? selectedOpeningSystem;
+                  rows.push({ label: "Система открывания", value: osName });
+                }
                 if (trimItems.length > 0)
                   rows.push({ label: "Погонаж", value: `${trimItems.length} поз.` });
                 if (hwItems.length > 0)

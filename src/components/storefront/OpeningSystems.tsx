@@ -53,10 +53,25 @@ const SYSTEMS: System[] = [
   },
 ];
 
-const OpeningSystems = memo(function OpeningSystems() {
-  const [active, setActive] = useState(SYSTEMS[0].id);
+interface OpeningSystemsProps {
+  value: string | null;
+  onChange: (id: string | null) => void;
+}
+
+const OpeningSystems = memo(function OpeningSystems({ value, onChange }: OpeningSystemsProps) {
+  const [active, setActive] = useState(value ?? SYSTEMS[0].id);
   const videoRef = useRef<HTMLVideoElement>(null);
   const current = SYSTEMS.find((s) => s.id === active)!;
+
+  useEffect(() => {
+    if (value && value !== active) {
+      setActive(value);
+    }
+  }, [value]);
+
+  useEffect(() => {
+    onChange(active);
+  }, [active, onChange]);
 
   useEffect(() => {
     videoRef.current?.load();
@@ -143,4 +158,3 @@ const OpeningSystems = memo(function OpeningSystems() {
 });
 
 export default OpeningSystems;
-
