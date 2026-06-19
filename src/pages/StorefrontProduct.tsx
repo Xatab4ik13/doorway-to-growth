@@ -782,14 +782,6 @@ export default function StorefrontProduct() {
                   </div>
                 )}
 
-                {/* Floating collection badge */}
-                {product.categories && (
-                  <div className="absolute top-8 left-8">
-                    <span className="px-4 py-1.5 rounded-full border border-storefront-gold/30 bg-[#07090d]/85 text-storefront-gold text-[10px] tracking-[0.2em] uppercase">
-                      {(product.categories as any)?.name}
-                    </span>
-                  </div>
-                )}
 
                 {images.length > 1 && (
                   <>
