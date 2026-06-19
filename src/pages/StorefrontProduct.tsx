@@ -556,7 +556,7 @@ export default function StorefrontProduct() {
 
   const toAccessoryItem = (p: any): AccessoryItem => {
     const primary = p.product_images?.find((i: any) => i.is_primary);
-    const img = primary?.url || p.product_images?.[0]?.url || null;
+    const img = resolveStorageUrl(primary?.url || p.product_images?.[0]?.url || null);
     return {
       id: p.id,
       name: p.name,
