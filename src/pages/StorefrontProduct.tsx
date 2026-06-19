@@ -1343,14 +1343,16 @@ export default function StorefrontProduct() {
                         values={widths}
                         selected={selectedWidth}
                         onChange={setSelectedWidth}
+                        labelValues={[400, 600, 800, 1000]}
                       />
                     )}
                     {heights.length > 0 && (
                       <DimensionSlider
                         label="Высота"
-                        values={heights}
-                        selected={selectedHeight}
+                        values={heights.filter((h) => h !== 2400)}
+                        selected={selectedHeight && selectedHeight !== 2400 ? selectedHeight : null}
                         onChange={setSelectedHeight}
+                        labelValues={[1600, 1800, 2200, 2500]}
                       />
                     )}
                   </div>
