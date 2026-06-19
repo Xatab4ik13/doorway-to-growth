@@ -892,7 +892,8 @@ export default function StorefrontProduct() {
     setSelectedColor(colorName);
     if (!hasImageBoundColors) return;
     let glazing = selectedGlazing;
-    if (hasImageBoundGlazings) {
+    // Only auto-switch image-bound selections; spec-only choices stay as-is.
+    if (hasImageBoundGlazings && (!glazing || imageGlazingSet.has(glazing.toLowerCase()))) {
       const avail = glazingsByColor.get(colorName);
       if (avail && avail.size > 0 && (!glazing || !avail.has(glazing))) {
         glazing = Array.from(avail)[0];
@@ -900,7 +901,7 @@ export default function StorefrontProduct() {
       }
     }
     let edge = selectedEdge;
-    if (hasImageBoundEdges) {
+    if (hasImageBoundEdges && (!edge || imageEdgeSet.has(edge.toLowerCase()))) {
       const avail = edgesByColor.get(colorName);
       if (avail && avail.size > 0 && (!edge || !avail.has(edge))) {
         edge = Array.from(avail)[0];
@@ -908,7 +909,7 @@ export default function StorefrontProduct() {
       }
     }
     let molding = selectedMolding;
-    if (hasImageBoundMoldings) {
+    if (hasImageBoundMoldings && (!molding || imageMoldingSet.has(molding.toLowerCase()))) {
       const avail = moldingsByColor.get(colorName);
       if (avail && avail.size > 0 && (!molding || !avail.has(molding))) {
         molding = Array.from(avail)[0];
