@@ -1075,8 +1075,8 @@ export default function StorefrontProduct() {
                     </span>
                   </div>
 
-                  {/* Subcategory tabs — minimal underline */}
-                  <div className="flex gap-5 mb-5 overflow-x-auto scrollbar-hide -mx-2 px-2 border-b border-white/[0.06]">
+                  {/* Subcategory tabs — large separate pill buttons */}
+                  <div className="flex flex-wrap gap-2.5 mb-6">
                     {HARDWARE_TABS.map((t) => {
                       const count = t.key === "all" ? realHardware.length : realHardware.filter((h) => t.match(h.name)).length;
                       if (count === 0) return null;
@@ -1085,17 +1085,14 @@ export default function StorefrontProduct() {
                         <button
                           key={t.key}
                           onClick={() => setHardwareTab(t.key)}
-                          className={`shrink-0 relative pb-2.5 text-[11px] uppercase tracking-[0.2em] transition-colors duration-200 ${
+                          className={`shrink-0 px-5 py-3 rounded-full text-[12px] uppercase tracking-[0.18em] font-medium transition-all duration-200 border ${
                             active
-                              ? "text-storefront-gold"
-                              : "text-storefront-text/45 hover:text-storefront-text/80"
+                              ? "bg-storefront-gold text-[#07090d] border-storefront-gold shadow-[0_6px_20px_-8px_rgba(207,187,150,0.6)]"
+                              : "bg-white/[0.03] text-storefront-text/65 border-white/10 hover:border-storefront-gold/50 hover:text-storefront-text"
                           }`}
                         >
                           {t.label}
-                          <span className={`ml-1.5 text-[10px] tabular-nums ${active ? "opacity-70" : "opacity-50"}`}>{count}</span>
-                          {active && (
-                            <span className="absolute left-0 right-0 -bottom-px h-px bg-storefront-gold" />
-                          )}
+                          <span className={`ml-2 text-[11px] tabular-nums ${active ? "opacity-70" : "opacity-50"}`}>{count}</span>
                         </button>
                       );
                     })}
