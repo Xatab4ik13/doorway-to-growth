@@ -1358,7 +1358,7 @@ export default function StorefrontProduct() {
                       <div className="flex flex-wrap gap-3">
                         {edgeItems.map((c) => {
                           const disabled =
-                            hasImageBoundEdges &&
+                            imageEdgeSet.has(c.name.toLowerCase()) &&
                             hasImageBoundColors &&
                             !!selectedColor &&
                             !(edgesByColor.get(selectedColor)?.has(c.name) ?? true);
