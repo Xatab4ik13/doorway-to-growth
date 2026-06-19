@@ -1199,65 +1199,40 @@ export default function StorefrontProduct() {
 
               {(widths.length > 0 || heights.length > 0) && (
                 <div className="mb-10">
-                  <div className="flex items-baseline justify-between gap-2 mb-5 pb-3 border-b border-white/5">
+                  <div className="mb-5 pb-3 border-b border-white/5">
                     <h2 className="text-[13px] uppercase tracking-[0.22em] font-light text-storefront-text/85">
                       Размер
                     </h2>
                   </div>
 
-
-                  <div className="rounded-2xl overflow-hidden" style={{ background: "linear-gradient(180deg, rgba(207,187,150,0.06) 0%, rgba(207,187,150,0.01) 100%)", border: "1px solid rgba(207,187,150,0.1)" }}>
+                  <div
+                    className="rounded-2xl px-6 py-7 space-y-8"
+                    style={{
+                      background: "linear-gradient(180deg, rgba(207,187,150,0.06) 0%, rgba(207,187,150,0.01) 100%)",
+                      border: "1px solid rgba(207,187,150,0.1)",
+                    }}
+                  >
                     {widths.length > 0 && (
-                      <div className="px-5 py-4 border-b border-white/5">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-muted">Ширина, мм</span>
-                          <span className="text-[12px] text-storefront-gold/80">{selectedWidth ?? "—"}</span>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {widths.map((w) => (
-                            <button
-                              key={`w-${w}`}
-                              type="button"
-                              onClick={() => setSelectedWidth(w)}
-                              className={`px-4 py-2 rounded-xl text-[13px] font-medium tabular-nums border transition-colors ${
-                                selectedWidth === w
-                                  ? "border-storefront-gold text-storefront-gold bg-storefront-gold/10"
-                                  : "border-white/[0.06] bg-white/[0.04] text-storefront-text hover:border-storefront-gold/30"
-                              }`}
-                            >
-                              {w}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+                      <DimensionSlider
+                        label="Ширина"
+                        values={widths}
+                        selected={selectedWidth}
+                        onChange={setSelectedWidth}
+                      />
                     )}
                     {heights.length > 0 && (
-                      <div className="px-5 py-4">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-muted">Высота, мм</span>
-                          <span className="text-[12px] text-storefront-gold/80">{selectedHeight ?? "—"}</span>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {heights.map((h) => (
-                            <button
-                              key={`h-${h}`}
-                              type="button"
-                              onClick={() => setSelectedHeight(h)}
-                              className={`px-4 py-2 rounded-xl text-[13px] font-medium tabular-nums border transition-colors ${
-                                selectedHeight === h
-                                  ? "border-storefront-gold text-storefront-gold bg-storefront-gold/10"
-                                  : "border-white/[0.06] bg-white/[0.04] text-storefront-text hover:border-storefront-gold/30"
-                              }`}
-                            >
-                              {h}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+                      <DimensionSlider
+                        label="Высота"
+                        values={heights}
+                        selected={selectedHeight}
+                        onChange={setSelectedHeight}
+                      />
                     )}
                   </div>
                 </div>
               )}
+
+
 
 
               {/* ===== INFO ACCORDION ===== */}
