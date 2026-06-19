@@ -822,7 +822,10 @@ export default function StorefrontProduct() {
 
 
               {/* Title */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extralight tracking-tight text-storefront-text leading-[1.05] mb-6">
+              <h1
+                className="text-5xl sm:text-6xl lg:text-7xl text-storefront-text leading-[1.0] mb-6 uppercase"
+                style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 500, letterSpacing: "0.06em" }}
+              >
                 {product.name}
               </h1>
 
