@@ -1034,55 +1034,30 @@ export default function StorefrontProduct() {
 
               {/* ===== TRIM (ПОГОНАЖ) ===== */}
               {!isEntranceDoor && realTrim.length > 0 && (
-                <div className="mb-8">
-                  <div className="flex items-center justify-between gap-2 mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
-                        <DoorOpen className="w-4 h-4 text-storefront-gold" />
-                      </div>
-                      <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
-                        Погонаж коллекции
-                      </span>
-                    </div>
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-text/40">
+                <div className="mb-10">
+                  <div className="flex items-baseline justify-between gap-2 mb-5 pb-3 border-b border-white/5">
+                    <h2 className="text-[13px] uppercase tracking-[0.22em] font-light text-storefront-text/85">
+                      Погонаж коллекции
+                    </h2>
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-text/35 tabular-nums">
                       {realTrim.length} поз.
                     </span>
                   </div>
-                  <div className="relative">
-                    <button
-                      onClick={() => trimScrollRef.current?.scrollBy({ left: -340, behavior: "smooth" })}
-                      className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-[#07090d]/90 border border-white/10 flex items-center justify-center hover:bg-storefront-gold hover:text-[#07090d] hover:border-storefront-gold transition-colors"
-                      style={{ color: "rgba(245,245,240,0.5)" }}
-                      aria-label="Назад"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    <div ref={trimScrollRef} className="-mx-2 px-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
-                      <div className="flex gap-3 pb-2">
-                        {realTrim.map((item) => (
-                          <div key={item.id} className="snap-start shrink-0 w-[160px]">
-                            <AccessoryCard
-                              name={item.name}
-                              rrp={item.rrp}
-                              image={item.image}
-                              active={selectedTrim.has(item.id)}
-                              onClick={() => toggleTrim(item.id)}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => trimScrollRef.current?.scrollBy({ left: 340, behavior: "smooth" })}
-                      className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-[#07090d]/90 border border-white/10 flex items-center justify-center hover:bg-storefront-gold hover:text-[#07090d] hover:border-storefront-gold transition-colors"
-                      style={{ color: "rgba(245,245,240,0.5)" }}
-                      aria-label="Вперёд"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {realTrim.map((item) => (
+                      <AccessoryCard
+                        key={item.id}
+                        name={item.name}
+                        rrp={item.rrp}
+                        image={item.image}
+                        active={selectedTrim.has(item.id)}
+                        onClick={() => toggleTrim(item.id)}
+                      />
+                    ))}
                   </div>
                 </div>
               )}
+
 
               {/* ===== HARDWARE (ФУРНИТУРА) ===== */}
               {!isEntranceDoor && realHardware.length > 0 && (
