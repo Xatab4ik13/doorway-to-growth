@@ -1460,49 +1460,116 @@ export default function StorefrontProduct() {
                 </Accordion>
               </div>
 
-              {/* ===== INLINE ADD TO CART ===== */}
+              {/* ===== ORDER SUMMARY (calculator-style) ===== */}
               {(() => {
                 const doorPrice = product.rrp ? Number(product.rrp) : 0;
-                const trimTotal = realTrim.filter((t) => selectedTrim.has(t.id)).reduce((s, t) => s + (t.rrp ?? 0), 0);
-                const hwTotal = realHardware.filter((h) => selectedHardware.has(h.id)).reduce((s, h) => s + (h.rrp ?? 0), 0);
+                const trimItems = realTrim.filter((t) => selectedTrim.has(t.id));
+                const hwItems = realHardware.filter((h) => selectedHardware.has(h.id));
+                const trimTotal = trimItems.reduce((s, t) => s + (t.rrp ?? 0), 0);
+                const hwTotal = hwItems.reduce((s, h) => s + (h.rrp ?? 0), 0);
                 const totalPrice = doorPrice + trimTotal + hwTotal;
                 const hasExtras = selectedTrim.size > 0 || selectedHardware.size > 0;
 
+                const rows: { label: string; value: string }[] = [];
+                if (selectedColor) rows.push({ label: "Цвет", value: selectedColor });
+                if (selectedGlazing) rows.push({ label: "Остекление", value: selectedGlazing });
+                if (selectedEdge) rows.push({ label: "Кромка", value: selectedEdge });
+                if (selectedMolding) rows.push({ label: "Наличник", value: selectedMolding });
+                if (selectedWidth || selectedHeight)
+                  rows.push({
+                    label: "Размер",
+                    value: `${selectedWidth ?? "—"} × ${selectedHeight ?? "—"} мм`,
+                  });
+                if (trimItems.length > 0)
+                  rows.push({ label: "Погонаж", value: `${trimItems.length} поз.` });
+                if (hwItems.length > 0)
+                  rows.push({ label: "Фурнитура", value: `${hwItems.length} поз.` });
+
                 return (
-                  <div className="mt-10 pt-8 border-t border-white/8 flex items-center justify-between gap-4 flex-wrap">
-                    <div className="min-w-0">
-                      {totalPrice > 0 ? (
-                        <>
-                          <div className="text-[9px] uppercase tracking-[0.25em] text-storefront-text/40 mb-1">
-                            {hasExtras ? "Итого" : "Стоимость от"}
-                          </div>
-                          <div
-                            className="text-[30px] leading-none text-storefront-gold tabular-nums"
-                            style={{ fontFamily: "'Manrope', system-ui, sans-serif", fontWeight: 700, letterSpacing: "-0.02em" }}
-                          >
-                            {totalPrice.toLocaleString("ru-RU")} ₽
-                          </div>
-                        </>
-                      ) : (
-                        <div className="text-[12px] uppercase tracking-[0.22em] text-storefront-text/55 font-semibold">
-                          Цена по запросу
-                        </div>
-                      )}
+                  <div className="mt-10">
+                    <div className="mb-5 pb-3 border-b border-white/5">
+                      <h2 className="text-[13px] uppercase tracking-[0.22em] font-light text-storefront-text/85">
+                        Ваша конфигурация
+                      </h2>
                     </div>
-                    <button
-                      onClick={handleAddAllToCart}
-                      className={`shrink-0 px-8 py-4 rounded-full text-[11px] font-medium uppercase tracking-[0.25em] transition-[transform,filter] duration-200 active:scale-[0.985] flex items-center justify-center gap-2 ${
-                        isInCart
-                          ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                          : "bg-storefront-gold text-[#07090d] hover:brightness-110 shadow-[0_12px_30px_-8px_rgba(212,175,55,0.4)]"
-                      }`}
+
+                    <div
+                      className="rounded-2xl px-7 sm:px-9 py-7"
+                      style={{
+                        background:
+                          "linear-gradient(180deg, rgba(207,187,150,0.06) 0%, rgba(207,187,150,0.01) 100%)",
+                        border: "1px solid rgba(207,187,150,0.1)",
+                      }}
                     >
-                      {isInCart ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
-                      <span>{isInCart ? "В корзине" : hasExtras ? "Добавить комплект" : "В корзину"}</span>
-                    </button>
+                      {rows.length > 0 ? (
+                        <dl className="grid grid-cols-1 gap-y-3 mb-7">
+                          {rows.map((r) => (
+                            <div
+                              key={r.label}
+                              className="flex justify-between gap-4 border-b border-white/[0.05] pb-2.5 last:border-0"
+                            >
+                              <dt
+                                className="text-[13px] uppercase tracking-[0.18em] text-storefront-text/55"
+                                style={{ fontFamily: "'Manrope', system-ui, sans-serif", fontWeight: 500 }}
+                              >
+                                {r.label}
+                              </dt>
+                              <dd
+                                className="text-[15px] text-storefront-text text-right tabular-nums"
+                                style={{ fontFamily: "'Manrope', system-ui, sans-serif", fontWeight: 600 }}
+                              >
+                                {r.value}
+                              </dd>
+                            </div>
+                          ))}
+                        </dl>
+                      ) : (
+                        <p className="text-[13px] text-storefront-text/50 font-light mb-7">
+                          Выберите параметры выше — итог появится здесь.
+                        </p>
+                      )}
+
+                      <div className="flex items-end justify-between gap-4 flex-wrap pt-2">
+                        <div className="min-w-0">
+                          {totalPrice > 0 ? (
+                            <>
+                              <div className="text-[10px] uppercase tracking-[0.25em] text-storefront-text/45 mb-1.5">
+                                {hasExtras ? "Итого" : "Стоимость"}
+                              </div>
+                              <div
+                                className="text-[34px] leading-none text-storefront-gold tabular-nums"
+                                style={{
+                                  fontFamily: "'Manrope', system-ui, sans-serif",
+                                  fontWeight: 700,
+                                  letterSpacing: "-0.02em",
+                                }}
+                              >
+                                {totalPrice.toLocaleString("ru-RU")} ₽
+                              </div>
+                            </>
+                          ) : (
+                            <div className="text-[12px] uppercase tracking-[0.22em] text-storefront-text/55 font-semibold">
+                              Цена по запросу
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          onClick={handleAddAllToCart}
+                          className={`shrink-0 px-9 py-4 rounded-full text-[11px] font-medium uppercase tracking-[0.25em] transition-[transform,filter] duration-200 active:scale-[0.985] flex items-center justify-center gap-2 ${
+                            isInCart
+                              ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                              : "bg-storefront-gold text-[#07090d] hover:brightness-110 shadow-[0_12px_30px_-8px_rgba(212,175,55,0.4)]"
+                          }`}
+                        >
+                          {isInCart ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
+                          <span>{isInCart ? "В корзине" : "В корзину"}</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 );
               })()}
+
             </div>
 
           </div>
