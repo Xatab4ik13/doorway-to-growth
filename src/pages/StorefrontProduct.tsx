@@ -290,33 +290,29 @@ function DimensionSlider({
   values,
   selected,
   onChange,
+  labelValues,
 }: {
   label: string;
   values: number[];
   selected: number | null;
   onChange: (v: number) => void;
+  labelValues?: number[];
 }) {
   const idx = selected != null ? Math.max(0, values.indexOf(selected)) : 0;
   const max = Math.max(values.length - 1, 1);
   const pct = (idx / max) * 100;
+  const labelSet = labelValues ? new Set(labelValues) : null;
 
   return (
     <div>
-      {/* Header: label + huge bold value */}
-      <div className="flex items-end justify-between mb-8">
-        <span className="text-[12px] uppercase tracking-[0.28em] text-storefront-text/55 font-semibold pb-2">
+      {/* Header: just the label */}
+      <div className="flex items-center justify-between mb-8">
+        <span className="text-[12px] uppercase tracking-[0.28em] text-storefront-text/55 font-semibold">
           {label}
         </span>
-        <div className="flex items-baseline gap-2">
-          <span
-            className="text-[56px] leading-none text-storefront-gold tabular-nums"
-            style={{ fontFamily: "'Manrope', system-ui, sans-serif", fontWeight: 700, letterSpacing: "-0.035em" }}
-          >
-            {selected ?? values[0]}
-          </span>
-          <span className="text-[12px] uppercase tracking-[0.22em] text-storefront-text/45 font-semibold">мм</span>
-        </div>
+        <span className="text-[12px] uppercase tracking-[0.22em] text-storefront-text/45 font-semibold">мм</span>
       </div>
+
 
       {/* Slider area — generous height, big ticks, big labels */}
       <div className="relative h-24 px-5">
@@ -352,27 +348,27 @@ function DimensionSlider({
           })}
         </div>
 
-        {/* Tick labels — thin out automatically; always show first, last, active */}
+        {/* Tick labels — only on anchor values; no active highlight overlay */}
         {(() => {
           const n = values.length;
-          // target ~48px per label; show every Nth
           const step = Math.max(1, Math.ceil(n / 6));
           return (
             <div className="absolute left-5 right-5 top-[58px] flex justify-between pointer-events-none">
               {values.map((v, i) => {
-                const show = i === 0 || i === n - 1 || i === idx || i % step === 0;
                 const isFirst = i === 0;
                 const isLast = i === n - 1;
-                const isCurrent = i === idx;
+                const show = labelSet
+                  ? labelSet.has(v)
+                  : isFirst || isLast || i % step === 0;
                 return (
                   <span key={`lbl-${v}`} className="relative flex-1 first:flex-none last:flex-none">
                     <span
-                      className={`absolute top-0 text-[12px] tabular-nums whitespace-nowrap transition-colors ${
-                        isCurrent ? "text-storefront-gold" : "text-storefront-text/35"
-                      } ${show ? "opacity-100" : "opacity-0"}`}
+                      className={`absolute top-0 text-[12px] tabular-nums whitespace-nowrap text-storefront-text/45 ${
+                        show ? "opacity-100" : "opacity-0"
+                      }`}
                       style={{
                         fontFamily: "'Manrope', system-ui, sans-serif",
-                        fontWeight: isCurrent ? 700 : 500,
+                        fontWeight: 600,
                         left: isFirst ? 0 : isLast ? "auto" : "50%",
                         right: isLast ? 0 : "auto",
                         transform: isFirst || isLast ? "none" : "translateX(-50%)",
@@ -386,6 +382,7 @@ function DimensionSlider({
             </div>
           );
         })()}
+
 
         {/* Native range overlay — big thumb */}
         <input
@@ -1346,14 +1343,16 @@ export default function StorefrontProduct() {
                         values={widths}
                         selected={selectedWidth}
                         onChange={setSelectedWidth}
+                        labelValues={[400, 600, 800, 1000]}
                       />
                     )}
                     {heights.length > 0 && (
                       <DimensionSlider
                         label="Высота"
-                        values={heights}
-                        selected={selectedHeight}
+                        values={heights.filter((h) => h !== 2400)}
+                        selected={selectedHeight && selectedHeight !== 2400 ? selectedHeight : null}
                         onChange={setSelectedHeight}
+                        labelValues={[1600, 1800, 2200, 2500]}
                       />
                     )}
                   </div>

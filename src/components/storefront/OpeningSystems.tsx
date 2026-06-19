@@ -81,13 +81,6 @@ const OpeningSystems = memo(function OpeningSystems() {
       >
         {/* Stage with video — taller */}
         <div className="relative aspect-[4/3] sm:aspect-[16/10] bg-[#0a0c12] overflow-hidden">
-          <div className="pointer-events-none absolute inset-4 z-10">
-            <div className="absolute top-0 left-0 w-8 h-8 border-l border-t border-storefront-gold/40" />
-            <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-storefront-gold/40" />
-            <div className="absolute bottom-0 left-0 w-8 h-8 border-l border-b border-storefront-gold/40" />
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-r border-b border-storefront-gold/40" />
-          </div>
-
           <video
             ref={videoRef}
             key={current.id}
@@ -97,7 +90,7 @@ const OpeningSystems = memo(function OpeningSystems() {
             loop
             playsInline
             preload="metadata"
-            className="absolute inset-0 w-full h-full object-contain"
+            className="absolute inset-0 w-full h-full object-cover"
           />
 
           {/* Bottom caption */}
@@ -131,9 +124,9 @@ const OpeningSystems = memo(function OpeningSystems() {
                 <button
                   key={s.id}
                   onClick={() => setActive(s.id)}
-                  className={`w-full px-5 py-4 rounded-2xl text-[15px] sm:text-[16px] tracking-[0.04em] whitespace-nowrap transition-all duration-300 border ${
+                  className={`w-full px-5 py-4 rounded-2xl text-[15px] sm:text-[16px] tracking-[0.04em] whitespace-nowrap transition-colors duration-300 border ${
                     isActive
-                      ? "bg-storefront-gold/15 text-storefront-gold border-storefront-gold/60 shadow-[0_10px_28px_-12px_rgba(207,187,150,0.55)]"
+                      ? "bg-storefront-gold/15 text-storefront-gold border-storefront-gold/60"
                       : "bg-transparent text-storefront-text/80 border-storefront-gold/10 hover:border-storefront-gold/40 hover:text-storefront-text"
                   }`}
                   style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600 }}
