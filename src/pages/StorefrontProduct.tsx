@@ -319,17 +319,17 @@ function DimensionSlider({
       </div>
 
       {/* Slider area — generous height, big ticks, big labels */}
-      <div className="relative h-20 px-3">
+      <div className="relative h-24 px-5">
         {/* Track */}
-        <div className="absolute left-3 right-3 top-1/2 -translate-y-1/2 h-[3px] bg-white/[0.07] rounded-full" />
+        <div className="absolute left-5 right-5 top-[34px] h-[3px] bg-white/[0.07] rounded-full" />
         {/* Filled portion */}
         <div
-          className="absolute left-3 top-1/2 -translate-y-1/2 h-[3px] bg-gradient-to-r from-storefront-gold/60 to-storefront-gold rounded-full transition-[width] duration-200"
-          style={{ width: `calc((100% - 24px) * ${pct / 100})` }}
+          className="absolute left-5 top-[34px] h-[3px] bg-gradient-to-r from-storefront-gold/60 to-storefront-gold rounded-full transition-[width] duration-200"
+          style={{ width: `calc((100% - 40px) * ${pct / 100})` }}
         />
 
         {/* Tick marks */}
-        <div className="absolute left-3 right-3 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none">
+        <div className="absolute left-5 right-5 top-[34px] flex justify-between pointer-events-none">
           {values.map((v, i) => {
             const active = i <= idx;
             const isCurrent = i === idx;
@@ -352,24 +352,40 @@ function DimensionSlider({
           })}
         </div>
 
-        {/* Tick labels — bigger, Manrope */}
-        <div className="absolute left-3 right-3 top-[calc(50%+22px)] flex justify-between pointer-events-none">
-          {values.map((v, i) => (
-            <span
-              key={`lbl-${v}`}
-              className={`text-[12px] tabular-nums transition-colors ${
-                i === idx ? "text-storefront-gold" : "text-storefront-text/35"
-              }`}
-              style={{
-                fontFamily: "'Manrope', system-ui, sans-serif",
-                fontWeight: i === idx ? 700 : 500,
-                transform: "translateX(-50%)",
-              }}
-            >
-              {v}
-            </span>
-          ))}
-        </div>
+        {/* Tick labels — thin out automatically; always show first, last, active */}
+        {(() => {
+          const n = values.length;
+          // target ~48px per label; show every Nth
+          const step = Math.max(1, Math.ceil(n / 6));
+          return (
+            <div className="absolute left-5 right-5 top-[58px] flex justify-between pointer-events-none">
+              {values.map((v, i) => {
+                const show = i === 0 || i === n - 1 || i === idx || i % step === 0;
+                const isFirst = i === 0;
+                const isLast = i === n - 1;
+                const isCurrent = i === idx;
+                return (
+                  <span key={`lbl-${v}`} className="relative flex-1 first:flex-none last:flex-none">
+                    <span
+                      className={`absolute top-0 text-[12px] tabular-nums whitespace-nowrap transition-colors ${
+                        isCurrent ? "text-storefront-gold" : "text-storefront-text/35"
+                      } ${show ? "opacity-100" : "opacity-0"}`}
+                      style={{
+                        fontFamily: "'Manrope', system-ui, sans-serif",
+                        fontWeight: isCurrent ? 700 : 500,
+                        left: isFirst ? 0 : isLast ? "auto" : "50%",
+                        right: isLast ? 0 : "auto",
+                        transform: isFirst || isLast ? "none" : "translateX(-50%)",
+                      }}
+                    >
+                      {v}
+                    </span>
+                  </span>
+                );
+              })}
+            </div>
+          );
+        })()}
 
         {/* Native range overlay — big thumb */}
         <input
