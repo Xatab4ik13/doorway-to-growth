@@ -1321,16 +1321,24 @@ export default function StorefrontProduct() {
                         <span className="text-[12px] text-storefront-gold/80">{selectedEdge || "—"}</span>
                       </div>
                       <div className="flex flex-wrap gap-3">
-                        {edgeItems.map((c) => (
-                          <MaterialSwatch
-                            key={c.name}
-                            name={c.name}
-                            hex={c.hex}
-                            material="metal"
-                            selected={selectedEdge === c.name}
-                            onClick={() => setSelectedEdge(selectedEdge === c.name ? null : c.name)}
-                          />
-                        ))}
+                        {edgeItems.map((c) => {
+                          const disabled =
+                            hasImageBoundEdges &&
+                            hasImageBoundColors &&
+                            !!selectedColor &&
+                            !(edgesByColor.get(selectedColor)?.has(c.name) ?? true);
+                          return (
+                            <MaterialSwatch
+                              key={c.name}
+                              name={c.name}
+                              hex={c.hex}
+                              material="metal"
+                              selected={selectedEdge === c.name}
+                              onClick={() => handleSelectEdge(c.name)}
+                              disabled={disabled}
+                            />
+                          );
+                        })}
                       </div>
                     </div>
                   )}
