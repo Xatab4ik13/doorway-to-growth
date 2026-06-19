@@ -405,7 +405,7 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
                   {variants.map((v: any, i: number) => (
                     <div key={i} className="flex items-center gap-2 rounded-xl border border-border bg-muted/40 p-2">
                       {v.image_url ? (
-                        <img src={v.image_url} alt={v.color} loading="lazy" className="h-12 w-12 rounded-lg object-cover shrink-0 bg-background" />
+                        <img src={resolveStorageUrl(v.image_url)} alt={v.color} loading="lazy" className="h-12 w-12 rounded-lg object-cover shrink-0 bg-background" />
                       ) : (
                         <div className="h-12 w-12 rounded-lg bg-background shrink-0 flex items-center justify-center text-muted-foreground">
                           <ImageIcon className="h-4 w-4" />
