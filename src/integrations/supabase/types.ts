@@ -481,6 +481,7 @@ export type Database = {
         Row: {
           alt: string | null
           created_at: string
+          edge_key: string | null
           glazing_key: string | null
           id: string
           is_primary: boolean | null
@@ -493,6 +494,7 @@ export type Database = {
         Insert: {
           alt?: string | null
           created_at?: string
+          edge_key?: string | null
           glazing_key?: string | null
           id?: string
           is_primary?: boolean | null
@@ -505,6 +507,7 @@ export type Database = {
         Update: {
           alt?: string | null
           created_at?: string
+          edge_key?: string | null
           glazing_key?: string | null
           id?: string
           is_primary?: boolean | null
