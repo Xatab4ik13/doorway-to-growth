@@ -3,6 +3,7 @@ import { X, Save, Plus, Trash2, Upload, ImageIcon, Link2, Image as ImageLucide }
 import { useUpdateProduct, type Product } from "@/hooks/useProducts";
 import { useProductImages } from "@/hooks/useProductImages";
 import { toast } from "@/hooks/use-toast";
+import { resolveStorageUrl } from "@/lib/storageUrl";
 
 interface ProductDetailProps {
   product: Product;
