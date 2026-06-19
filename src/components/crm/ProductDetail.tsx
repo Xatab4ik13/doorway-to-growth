@@ -179,7 +179,7 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
               onDrop={handleDrop}
             >
               {currentImage ? (
-                <img src={currentImage.url} alt={product.name} className="w-full h-full object-contain" />
+                <img src={resolveStorageUrl(currentImage.url)} alt={product.name} className="w-full h-full object-contain" />
               ) : (
                 <div className="flex flex-col items-center gap-2 text-muted-foreground">
                   <ImageIcon className="h-10 w-10" />
