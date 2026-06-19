@@ -1327,9 +1327,10 @@ export default function StorefrontProduct() {
                           const mat = pickGlazingMaterial(g.name, g.preview);
                           const hex = mat === "lacobel" && g.preview.startsWith("#") ? g.preview : undefined;
                           const disabled =
-                            hasImageBoundGlazings &&
+                            imageGlazingSet.has(g.name.toLowerCase()) &&
                             hasImageBoundColors &&
                             !!selectedColor &&
+                            imageGlazingSet.size > 0 &&
                             !(glazingsByColor.get(selectedColor)?.has(g.name) ?? true);
                           return (
                             <MaterialSwatch
