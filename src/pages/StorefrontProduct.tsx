@@ -308,8 +308,6 @@ export default function StorefrontProduct() {
   const [hardwareTab, setHardwareTab] = useState<string>("all");
 
 
-  const trimScrollRef = useRef<HTMLDivElement>(null);
-  const hardwareScrollRef = useRef<HTMLDivElement>(null);
 
   // ── Build real Погонаж / Фурнитура lists from DB ──
   // Walk parent_id chain to find each product's root category, then pick those
