@@ -295,9 +295,12 @@ export default function StorefrontProduct() {
   const [selectedGlazing, setSelectedGlazing] = useState<string | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<string | null>(null);
   const [selectedMolding, setSelectedMolding] = useState<string | null>(null);
+  const [selectedWidth, setSelectedWidth] = useState<number | null>(null);
+  const [selectedHeight, setSelectedHeight] = useState<number | null>(null);
   const [selectedTrim, setSelectedTrim] = useState<Set<string>>(new Set());
   const [selectedHardware, setSelectedHardware] = useState<Set<string>>(new Set());
   const [hardwareTab, setHardwareTab] = useState<string>("all");
+
 
   const trimScrollRef = useRef<HTMLDivElement>(null);
   const hardwareScrollRef = useRef<HTMLDivElement>(null);
@@ -365,6 +368,29 @@ export default function StorefrontProduct() {
 
   const specs = product?.specifications as Record<string, any> | null;
 
+  // Per-collection axis labels (e.g. MAZE: molding="Наличник", HEAVY: edge="Кромка")
+  // Source: specs.axes scraped from brandoors.ru
+  const axes = (specs?.axes ?? {}) as Record<string, { name: string; values: string[] }>;
+  const axisLabel = (uiAxis: "color" | "glazing" | "edge" | "molding"): string => {
+    if (uiAxis === "color") return axes.color?.name || "Цвет покрытия";
+    if (uiAxis === "glazing") return axes.glass?.name || axes.panelouter?.name || "Остекление";
+    if (uiAxis === "edge") return axes.edge?.name || "Кромка";
+    if (uiAxis === "molding") return axes.casing?.name || axes.panel?.name || "Молдинг";
+    return uiAxis;
+  };
+
+  const widths: number[] = Array.isArray(specs?.widths) ? (specs!.widths as number[]) : [];
+  const heights: number[] = Array.isArray(specs?.heights) ? (specs!.heights as number[]) : [];
+  const characteristics = (specs?.characteristics ?? null) as Record<string, string> | null;
+  const charLabels: Record<string, string> = {
+    type: "Тип",
+    style: "Стиль",
+    material: "Материал",
+    finishing: "Покрытие",
+    thickness: "Толщина полотна",
+  };
+
+
   // ── Extract real configurator options from product data ──
   // Show a section only when the product actually declares its options
   // (via specs.{colors|glazing_options|edge_colors|molding_colors},
@@ -374,6 +400,7 @@ export default function StorefrontProduct() {
     arrKey: string,
     scalarKey: string | null,
     variantKey: string,
+    axisKeys: string[] = [],
   ): string[] => {
     const seen = new Set<string>();
     const push = (v: any) => {
@@ -385,8 +412,14 @@ export default function StorefrontProduct() {
     if (Array.isArray(arr)) arr.forEach(push);
     if (scalarKey && specs?.[scalarKey]) push(specs[scalarKey]);
     variants.forEach((v) => push(v?.[variantKey]));
+    // Fallback: per-collection axis values scraped from brandoors.ru
+    for (const ak of axisKeys) {
+      const vals = axes[ak]?.values;
+      if (Array.isArray(vals)) vals.forEach(push);
+    }
     return Array.from(seen);
   };
+
 
   // Colors derived from images that have a variant_key — these are real, image-bound colors.
   const imageColors = useMemo(() => {
@@ -402,7 +435,7 @@ export default function StorefrontProduct() {
     return out;
   }, [images]);
 
-  const specColorNames = collectFromSpecs("colors", "color", "color");
+  const specColorNames = collectFromSpecs("colors", "color", "color", ["color"]);
   const colorSwatches: { name: string; hex: string }[] = imageColors.length > 0
     ? imageColors
     : specColorNames.map((name) => {
@@ -411,11 +444,12 @@ export default function StorefrontProduct() {
       });
   const hasImageBoundColors = imageColors.length > 0;
 
-  const glazingItems = collectFromSpecs("glazing_options", "glazing", "glazing").map((name) => {
+  const glazingItems = collectFromSpecs("glazing_options", "glazing", "glazing", ["glass", "panelouter"]).map((name) => {
     const mock = MOCK_GLAZING.find((g) => g.name.toLowerCase() === name.toLowerCase());
     return { name, preview: mock?.preview ?? "#2a2a2a" };
   });
-  const edgeItems = collectFromSpecs("edge_colors", null, "edge").map((name) => {
+  const edgeItems = collectFromSpecs("edge_colors", null, "edge", ["edge"]).map((name) => {
+
     const mock = MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
     return { name, hex: mock?.hex ?? "#2a2a2a" };
   });
@@ -433,10 +467,11 @@ export default function StorefrontProduct() {
     }
     return out;
   }, [images]);
-  const specMoldingNames = collectFromSpecs("moldings", null, "molding");
+  const specMoldingNames = collectFromSpecs("moldings", null, "molding", ["casing", "panel"]);
   const moldingItems = imageMoldings.length > 0
     ? imageMoldings
-    : (specMoldingNames.length > 0 ? specMoldingNames : collectFromSpecs("molding_colors", null, "molding")).map((name) => {
+    : (specMoldingNames.length > 0 ? specMoldingNames : collectFromSpecs("molding_colors", null, "molding", ["casing", "panel"])).map((name) => {
+
         const mock = MOCK_MOLDING_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase())
           || MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
         return { name, hex: mock?.hex ?? "#9C9994" };
@@ -544,7 +579,16 @@ export default function StorefrontProduct() {
       imageUrl: imgUrl,
       siteId: site.id,
       type: "door",
+      options: {
+        ...(selectedWidth ? { width: selectedWidth } : {}),
+        ...(selectedHeight ? { height: selectedHeight } : {}),
+        ...(selectedColor ? { color: selectedColor } : {}),
+        ...(selectedGlazing ? { glazing: selectedGlazing } : {}),
+        ...(selectedEdge ? { edge: selectedEdge } : {}),
+        ...(selectedMolding ? { molding: selectedMolding } : {}),
+      },
     });
+
   };
 
   const toggleTrim = (id: string) => {
@@ -624,9 +668,8 @@ export default function StorefrontProduct() {
     );
   }
 
-  const sizes = specs?.sizes as Array<{ h_from?: number; h_to?: number; w_from?: number; w_to?: number }> | undefined;
-  const heightSizes = sizes?.filter(s => s.h_from !== undefined);
-  const widthSizes = sizes?.filter(s => s.w_from !== undefined);
+
+
 
   return (
     <StorefrontLayout site={site}>
@@ -844,7 +887,7 @@ export default function StorefrontProduct() {
                   {colorSwatches.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-4">
-                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет покрытия:</span>
+                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("color")}:</span>
                         <span className="text-[12px] text-storefront-gold/80">{selectedColor || "—"}</span>
                       </div>
                       <div className="flex flex-wrap gap-3">
@@ -866,7 +909,7 @@ export default function StorefrontProduct() {
                   {glazingItems.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-4">
-                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Остекление:</span>
+                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("glazing")}:</span>
                         <span className="text-[12px] text-storefront-gold/80">{selectedGlazing || "—"}</span>
                       </div>
                       <div className="flex flex-wrap gap-3">
@@ -892,7 +935,7 @@ export default function StorefrontProduct() {
                   {edgeItems.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-4">
-                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет кромки:</span>
+                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("edge")}:</span>
                         <span className="text-[12px] text-storefront-gold/80">{selectedEdge || "—"}</span>
                       </div>
                       <div className="flex flex-wrap gap-3">
@@ -914,7 +957,7 @@ export default function StorefrontProduct() {
                   {moldingItems.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-4">
-                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет молдингов:</span>
+                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("molding")}:</span>
                         <span className="text-[12px] text-storefront-gold/80">{selectedMolding || "—"}</span>
                       </div>
                       <div className="flex flex-wrap gap-3">
@@ -1067,38 +1110,62 @@ export default function StorefrontProduct() {
 
 
 
-              {sizes && sizes.length > 0 && (
+              {(widths.length > 0 || heights.length > 0) && (
                 <div className="mb-8">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
                       <Ruler className="w-4 h-4 text-storefront-gold" />
                     </div>
                     <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
-                      Доступные размеры
+                      Размер
                     </span>
                   </div>
 
                   <div className="rounded-2xl overflow-hidden" style={{ background: "linear-gradient(180deg, rgba(207,187,150,0.06) 0%, rgba(207,187,150,0.01) 100%)", border: "1px solid rgba(207,187,150,0.1)" }}>
-                    {heightSizes && heightSizes.length > 0 && (
+                    {widths.length > 0 && (
                       <div className="px-5 py-4 border-b border-white/5">
-                        <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-muted block mb-3">Высота, мм</span>
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-muted">Ширина, мм</span>
+                          <span className="text-[12px] text-storefront-gold/80">{selectedWidth ?? "—"}</span>
+                        </div>
                         <div className="flex flex-wrap gap-2">
-                          {heightSizes.map((s, i) => (
-                            <span key={`h-${i}`} className="px-4 py-2 bg-white/[0.04] border border-white/[0.06] rounded-xl text-[14px] font-medium text-storefront-text hover:border-storefront-gold/30 transition-colors">
-                              {s.h_from}—{s.h_to}
-                            </span>
+                          {widths.map((w) => (
+                            <button
+                              key={`w-${w}`}
+                              type="button"
+                              onClick={() => setSelectedWidth(w)}
+                              className={`px-4 py-2 rounded-xl text-[13px] font-medium tabular-nums border transition-colors ${
+                                selectedWidth === w
+                                  ? "border-storefront-gold text-storefront-gold bg-storefront-gold/10"
+                                  : "border-white/[0.06] bg-white/[0.04] text-storefront-text hover:border-storefront-gold/30"
+                              }`}
+                            >
+                              {w}
+                            </button>
                           ))}
                         </div>
                       </div>
                     )}
-                    {widthSizes && widthSizes.length > 0 && (
+                    {heights.length > 0 && (
                       <div className="px-5 py-4">
-                        <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-muted block mb-3">Ширина, мм</span>
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-muted">Высота, мм</span>
+                          <span className="text-[12px] text-storefront-gold/80">{selectedHeight ?? "—"}</span>
+                        </div>
                         <div className="flex flex-wrap gap-2">
-                          {widthSizes.map((s, i) => (
-                            <span key={`w-${i}`} className="px-4 py-2 bg-white/[0.04] border border-white/[0.06] rounded-xl text-[14px] font-medium text-storefront-text hover:border-storefront-gold/30 transition-colors">
-                              {s.w_from}—{s.w_to}
-                            </span>
+                          {heights.map((h) => (
+                            <button
+                              key={`h-${h}`}
+                              type="button"
+                              onClick={() => setSelectedHeight(h)}
+                              className={`px-4 py-2 rounded-xl text-[13px] font-medium tabular-nums border transition-colors ${
+                                selectedHeight === h
+                                  ? "border-storefront-gold text-storefront-gold bg-storefront-gold/10"
+                                  : "border-white/[0.06] bg-white/[0.04] text-storefront-text hover:border-storefront-gold/30"
+                              }`}
+                            >
+                              {h}
+                            </button>
                           ))}
                         </div>
                       </div>
@@ -1107,29 +1174,40 @@ export default function StorefrontProduct() {
                 </div>
               )}
 
+
               {/* ===== INFO ACCORDION ===== */}
               <div className="mb-8">
                 <Accordion type="single" collapsible className="border-y border-white/5">
                   {(() => {
+                    // Structured characteristics from brandoors.ru (type/style/material/finishing/thickness)
+                    const charEntries = characteristics
+                      ? Object.entries(characteristics).filter(([_, v]) => typeof v === "string" && v.trim() !== "")
+                      : [];
+                    // Plus any extra primitive specs we should expose
                     const reserved = new Set([
-                      "color", "glazing", "sizes", "collection",
+                      "color", "glazing", "sizes", "collection", "axes", "characteristics",
+                      "widths", "heights",
                       "markup_height", "markup_width", "markup_h", "markup_w",
                       "sizes_order_note", "sizes_stock_note",
                     ]);
-                    const specEntries = specs
+                    const extraEntries = specs
                       ? Object.entries(specs).filter(([k, v]) => !reserved.has(k) && v != null && typeof v !== "object")
                       : [];
-                    return specEntries.length > 0 ? (
+                    const allEntries: [string, string][] = [
+                      ...charEntries.map(([k, v]) => [charLabels[k] || k, String(v)] as [string, string]),
+                      ...extraEntries.map(([k, v]) => [k, String(v)] as [string, string]),
+                    ];
+                    return allEntries.length > 0 ? (
                       <AccordionItem value="specs" className="border-b border-white/5">
                         <AccordionTrigger className="text-[12px] uppercase tracking-[0.2em] text-storefront-text/80 hover:no-underline font-medium">
                           Характеристики
                         </AccordionTrigger>
                         <AccordionContent>
                           <dl className="grid grid-cols-1 gap-y-2.5 text-[13px] font-light">
-                            {specEntries.map(([k, v]) => (
+                            {allEntries.map(([k, v]) => (
                               <div key={k} className="flex justify-between gap-4 border-b border-white/[0.04] pb-2 last:border-0">
                                 <dt className="text-storefront-text/50 capitalize">{k}</dt>
-                                <dd className="text-storefront-text/90 text-right">{String(v)}</dd>
+                                <dd className="text-storefront-text/90 text-right">{v}</dd>
                               </div>
                             ))}
                           </dl>
@@ -1137,6 +1215,7 @@ export default function StorefrontProduct() {
                       </AccordionItem>
                     ) : null;
                   })()}
+
 
                   <AccordionItem value="construction" className="border-b border-white/5">
                     <AccordionTrigger className="text-[12px] uppercase tracking-[0.2em] text-storefront-text/80 hover:no-underline font-medium">

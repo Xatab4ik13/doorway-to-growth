@@ -3,6 +3,15 @@ import { persist } from "zustand/middleware";
 
 export type CartItemType = "door" | "trim" | "hardware";
 
+export type CartItemOptions = {
+  width?: number;
+  height?: number;
+  color?: string;
+  glazing?: string;
+  edge?: string;
+  molding?: string;
+};
+
 export type CartItem = {
   id: string;
   name: string;
@@ -13,7 +22,9 @@ export type CartItem = {
   siteId: string;
   type: CartItemType;
   parentProductId?: string; // links trim/hardware to the door
+  options?: CartItemOptions;
 };
+
 
 type CartStore = {
   items: CartItem[];
