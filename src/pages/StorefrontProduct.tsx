@@ -348,27 +348,27 @@ function DimensionSlider({
           })}
         </div>
 
-        {/* Tick labels — thin out automatically; always show first, last, active */}
+        {/* Tick labels — only on anchor values; no active highlight overlay */}
         {(() => {
           const n = values.length;
-          // target ~48px per label; show every Nth
           const step = Math.max(1, Math.ceil(n / 6));
           return (
             <div className="absolute left-5 right-5 top-[58px] flex justify-between pointer-events-none">
               {values.map((v, i) => {
-                const show = i === 0 || i === n - 1 || i === idx || i % step === 0;
                 const isFirst = i === 0;
                 const isLast = i === n - 1;
-                const isCurrent = i === idx;
+                const show = labelSet
+                  ? labelSet.has(v)
+                  : isFirst || isLast || i % step === 0;
                 return (
                   <span key={`lbl-${v}`} className="relative flex-1 first:flex-none last:flex-none">
                     <span
-                      className={`absolute top-0 text-[12px] tabular-nums whitespace-nowrap transition-colors ${
-                        isCurrent ? "text-storefront-gold" : "text-storefront-text/35"
-                      } ${show ? "opacity-100" : "opacity-0"}`}
+                      className={`absolute top-0 text-[12px] tabular-nums whitespace-nowrap text-storefront-text/45 ${
+                        show ? "opacity-100" : "opacity-0"
+                      }`}
                       style={{
                         fontFamily: "'Manrope', system-ui, sans-serif",
-                        fontWeight: isCurrent ? 700 : 500,
+                        fontWeight: 600,
                         left: isFirst ? 0 : isLast ? "auto" : "50%",
                         right: isLast ? 0 : "auto",
                         transform: isFirst || isLast ? "none" : "translateX(-50%)",
@@ -382,6 +382,7 @@ function DimensionSlider({
             </div>
           );
         })()}
+
 
         {/* Native range overlay — big thumb */}
         <input
