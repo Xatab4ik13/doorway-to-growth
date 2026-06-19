@@ -419,10 +419,29 @@ export default function StorefrontProduct() {
     const mock = MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
     return { name, hex: mock?.hex ?? "#2a2a2a" };
   });
-  const moldingItems = collectFromSpecs("molding_colors", null, "molding").map((name) => {
-    const mock = MOCK_MOLDING_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
-    return { name, hex: mock?.hex ?? "#2a2a2a" };
-  });
+  // Moldings — prefer image-bound molding_key, then specs.moldings, fall back to molding_colors.
+  const imageMoldings = useMemo(() => {
+    const seen = new Set<string>();
+    const out: { name: string; hex: string }[] = [];
+    for (const img of images as any[]) {
+      const key = img.molding_key?.trim();
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      const mock = MOCK_MOLDING_COLORS.find((c) => c.name.toLowerCase() === key.toLowerCase())
+        || MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === key.toLowerCase());
+      out.push({ name: key, hex: mock?.hex ?? "#9C9994" });
+    }
+    return out;
+  }, [images]);
+  const specMoldingNames = collectFromSpecs("moldings", null, "molding");
+  const moldingItems = imageMoldings.length > 0
+    ? imageMoldings
+    : (specMoldingNames.length > 0 ? specMoldingNames : collectFromSpecs("molding_colors", null, "molding")).map((name) => {
+        const mock = MOCK_MOLDING_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase())
+          || MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
+        return { name, hex: mock?.hex ?? "#9C9994" };
+      });
+  const hasImageBoundMoldings = imageMoldings.length > 0;
 
   // Set initial selected color/glazing from specs
   useMemo(() => {
