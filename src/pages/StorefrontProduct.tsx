@@ -687,10 +687,18 @@ export default function StorefrontProduct() {
     const mock = MOCK_GLAZING.find((g) => g.name.toLowerCase() === name.toLowerCase());
     return { name, preview: mock?.preview ?? "#2a2a2a" };
   });
-  // Show glazing only when images carry glazing_key. Spec-only items create
-  // controls that don't switch the picture — that confuses customers.
-  const glazingItems = imageGlazings;
+  // Show union of image-bound + spec-declared glazings so the customer sees
+  // the full assortment from brandoors.ru even when no photo is loaded.
+  const glazingItems = useMemo(() => {
+    const seen = new Set(imageGlazings.map((g) => g.name.toLowerCase()));
+    const extra = specGlazingItems.filter((g) => !seen.has(g.name.toLowerCase()));
+    return [...imageGlazings, ...extra];
+  }, [imageGlazings, specGlazingItems]);
   const hasImageBoundGlazings = imageGlazings.length > 0;
+  const imageGlazingSet = useMemo(
+    () => new Set(imageGlazings.map((g) => g.name.toLowerCase())),
+    [imageGlazings],
+  );
 
   // Build (color, glazing) availability matrix from images.
   const glazingsByColor = useMemo(() => {
