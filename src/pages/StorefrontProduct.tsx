@@ -304,59 +304,76 @@ function DimensionSlider({
 
   return (
     <div>
-      <div className="flex items-baseline justify-between mb-5">
-        <span className="text-[11px] uppercase tracking-[0.25em] text-storefront-text/55 font-medium">
+      {/* Header: label + huge bold value */}
+      <div className="flex items-end justify-between mb-8">
+        <span className="text-[12px] uppercase tracking-[0.28em] text-storefront-text/55 font-semibold pb-2">
           {label}
         </span>
-        <div className="flex items-baseline gap-1.5">
+        <div className="flex items-baseline gap-2">
           <span
-            className="text-[34px] leading-none text-storefront-gold tabular-nums"
-            style={{ fontFamily: "'Raleway', system-ui, sans-serif", fontWeight: 300, letterSpacing: "-0.01em" }}
+            className="text-[56px] leading-none text-storefront-gold tabular-nums"
+            style={{ fontFamily: "'Manrope', system-ui, sans-serif", fontWeight: 700, letterSpacing: "-0.035em" }}
           >
             {selected ?? values[0]}
           </span>
-          <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-text/40">мм</span>
+          <span className="text-[12px] uppercase tracking-[0.22em] text-storefront-text/45 font-semibold">мм</span>
         </div>
       </div>
 
-      <div className="relative h-12">
+      {/* Slider area — generous height, big ticks, big labels */}
+      <div className="relative h-20 px-3">
         {/* Track */}
-        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[2px] bg-white/8 rounded-full" />
+        <div className="absolute left-3 right-3 top-1/2 -translate-y-1/2 h-[3px] bg-white/[0.07] rounded-full" />
         {/* Filled portion */}
         <div
-          className="absolute left-0 top-1/2 -translate-y-1/2 h-[2px] bg-storefront-gold/70 rounded-full transition-[width] duration-150"
-          style={{ width: `${pct}%` }}
+          className="absolute left-3 top-1/2 -translate-y-1/2 h-[3px] bg-gradient-to-r from-storefront-gold/60 to-storefront-gold rounded-full transition-[width] duration-200"
+          style={{ width: `calc((100% - 24px) * ${pct / 100})` }}
         />
+
         {/* Tick marks */}
-        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none">
+        <div className="absolute left-3 right-3 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none">
           {values.map((v, i) => {
             const active = i <= idx;
+            const isCurrent = i === idx;
             return (
-              <div key={v} className="flex flex-col items-center">
-                <span
-                  className={`block w-px transition-colors ${active ? "bg-storefront-gold/80" : "bg-white/20"}`}
-                  style={{ height: i === idx ? 14 : 8, marginTop: i === idx ? -6 : -3 }}
-                />
-              </div>
+              <span
+                key={`tick-${v}`}
+                className={`block w-[2px] rounded-full transition-all duration-200 ${
+                  isCurrent
+                    ? "bg-storefront-gold"
+                    : active
+                    ? "bg-storefront-gold/60"
+                    : "bg-white/20"
+                }`}
+                style={{
+                  height: isCurrent ? 22 : 12,
+                  marginTop: isCurrent ? -11 : -6,
+                }}
+              />
             );
           })}
         </div>
-        {/* Tick labels */}
-        <div className="absolute inset-x-0 top-[calc(50%+14px)] flex justify-between pointer-events-none">
+
+        {/* Tick labels — bigger, Manrope */}
+        <div className="absolute left-3 right-3 top-[calc(50%+22px)] flex justify-between pointer-events-none">
           {values.map((v, i) => (
             <span
-              key={v}
-              className={`text-[10px] tabular-nums transition-colors ${
-                i === idx ? "text-storefront-gold" : "text-storefront-text/30"
+              key={`lbl-${v}`}
+              className={`text-[12px] tabular-nums transition-colors ${
+                i === idx ? "text-storefront-gold" : "text-storefront-text/35"
               }`}
-              style={{ transform: "translateX(-50%)", marginLeft: i === 0 ? 0 : undefined }}
+              style={{
+                fontFamily: "'Manrope', system-ui, sans-serif",
+                fontWeight: i === idx ? 700 : 500,
+                transform: "translateX(-50%)",
+              }}
             >
               {v}
             </span>
           ))}
         </div>
 
-        {/* Native range overlay */}
+        {/* Native range overlay — big thumb */}
         <input
           type="range"
           min={0}
@@ -365,19 +382,19 @@ function DimensionSlider({
           value={idx}
           onChange={(e) => onChange(values[Number(e.target.value)])}
           aria-label={label}
-          className="absolute inset-x-0 top-0 w-full h-12 appearance-none bg-transparent cursor-pointer
+          className="absolute inset-x-0 top-0 w-full h-20 appearance-none bg-transparent cursor-pointer
             [&::-webkit-slider-thumb]:appearance-none
-            [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6
+            [&::-webkit-slider-thumb]:w-7 [&::-webkit-slider-thumb]:h-7
             [&::-webkit-slider-thumb]:rounded-full
             [&::-webkit-slider-thumb]:bg-storefront-gold
-            [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-[#07090d]
-            [&::-webkit-slider-thumb]:shadow-[0_0_0_2px_rgba(207,187,150,0.5),0_8px_20px_-4px_rgba(207,187,150,0.5)]
+            [&::-webkit-slider-thumb]:border-[4px] [&::-webkit-slider-thumb]:border-[#07090d]
+            [&::-webkit-slider-thumb]:shadow-[0_0_0_2px_rgba(207,187,150,0.55),0_10px_24px_-4px_rgba(207,187,150,0.65)]
             [&::-webkit-slider-thumb]:transition-transform
             [&::-webkit-slider-thumb]:cursor-grab
             active:[&::-webkit-slider-thumb]:scale-110
-            [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6
+            [&::-moz-range-thumb]:w-7 [&::-moz-range-thumb]:h-7
             [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-storefront-gold
-            [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-[#07090d]
+            [&::-moz-range-thumb]:border-[4px] [&::-moz-range-thumb]:border-[#07090d]
             [&::-moz-range-thumb]:cursor-grab
             [&::-webkit-slider-runnable-track]:bg-transparent
             [&::-moz-range-track]:bg-transparent"
@@ -1019,7 +1036,7 @@ export default function StorefrontProduct() {
                   <span className="text-[10px] font-light uppercase tracking-[0.25em] text-storefront-text/40">Стоимость от</span>
                   <span
                     className="text-[44px] leading-none text-storefront-gold tabular-nums"
-                    style={{ fontFamily: "'Raleway', system-ui, sans-serif", fontWeight: 300, letterSpacing: "-0.01em" }}
+                    style={{ fontFamily: "'Manrope', system-ui, sans-serif", fontWeight: 700, letterSpacing: "-0.02em" }}
                   >
                     {Number(product.rrp).toLocaleString("ru-RU")} ₽
                   </span>
@@ -1308,7 +1325,7 @@ export default function StorefrontProduct() {
                   </div>
 
                   <div
-                    className="rounded-2xl px-6 py-7 space-y-8"
+                    className="rounded-2xl px-7 sm:px-9 py-9 space-y-12"
                     style={{
                       background: "linear-gradient(180deg, rgba(207,187,150,0.06) 0%, rgba(207,187,150,0.01) 100%)",
                       border: "1px solid rgba(207,187,150,0.1)",
@@ -1447,7 +1464,7 @@ export default function StorefrontProduct() {
                       </div>
                       <div
                         className="text-[30px] leading-none text-storefront-gold tabular-nums"
-                        style={{ fontFamily: "'Raleway', system-ui, sans-serif", fontWeight: 300, letterSpacing: "-0.01em" }}
+                        style={{ fontFamily: "'Manrope', system-ui, sans-serif", fontWeight: 700, letterSpacing: "-0.02em" }}
                       >
                         {totalPrice.toLocaleString("ru-RU")} ₽
                       </div>
