@@ -1,5 +1,4 @@
 import { memo, useState, useRef, useEffect } from "react";
-import { DoorOpen } from "lucide-react";
 
 type System = {
   id: string;
