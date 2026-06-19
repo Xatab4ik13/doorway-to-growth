@@ -400,6 +400,7 @@ export default function StorefrontProduct() {
     arrKey: string,
     scalarKey: string | null,
     variantKey: string,
+    axisKeys: string[] = [],
   ): string[] => {
     const seen = new Set<string>();
     const push = (v: any) => {
@@ -411,8 +412,14 @@ export default function StorefrontProduct() {
     if (Array.isArray(arr)) arr.forEach(push);
     if (scalarKey && specs?.[scalarKey]) push(specs[scalarKey]);
     variants.forEach((v) => push(v?.[variantKey]));
+    // Fallback: per-collection axis values scraped from brandoors.ru
+    for (const ak of axisKeys) {
+      const vals = axes[ak]?.values;
+      if (Array.isArray(vals)) vals.forEach(push);
+    }
     return Array.from(seen);
   };
+
 
   // Colors derived from images that have a variant_key — these are real, image-bound colors.
   const imageColors = useMemo(() => {
