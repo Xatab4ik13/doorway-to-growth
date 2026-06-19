@@ -1171,7 +1171,7 @@ export default function StorefrontProduct() {
                           : "opacity-50 hover:opacity-80"
                       }`}
                     >
-                      <img src={img.url} alt="" loading="lazy" className="w-full h-full object-cover" />
+                      <img src={resolveStorageUrl(img.url)} alt="" loading="lazy" className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>
