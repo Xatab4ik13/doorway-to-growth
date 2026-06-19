@@ -38,13 +38,11 @@ export default function StorefrontCart() {
     setSubmitting(true);
     try {
       const productList = items
-        .map(
-          (i) =>
-            `${i.name} × ${i.quantity}${i.rrp ? ` (${(i.rrp * i.quantity).toLocaleString("ru-RU")} ₽)` : ""}`
-        )
+        .map((i) => `${i.name} × ${i.quantity}`)
         .join("\n");
 
-      const message = `🛒 Заказ:\n${productList}\n\nИтого: ${totalPrice().toLocaleString("ru-RU")} ₽${form.comment ? `\n\nКомментарий: ${form.comment}` : ""}`;
+      const message = `🛒 Заказ:\n${productList}${form.comment ? `\n\nКомментарий: ${form.comment}` : ""}`;
+
 
       const { error } = await supabase.from("leads").insert({
         name: form.name,
@@ -238,12 +236,11 @@ export default function StorefrontCart() {
                             >
                               {item.name}
                             </Link>
-                            {item.rrp && (
-                              <p className="text-[13px] text-storefront-muted">
-                                {item.rrp.toLocaleString("ru-RU")} ₽ за шт.
-                              </p>
-                            )}
+                            <p className="text-[13px] text-storefront-muted">
+                              Цена по запросу
+                            </p>
                           </div>
+
 
                           <div className="flex items-center justify-between mt-4">
                             {/* Quantity */}
@@ -267,19 +264,8 @@ export default function StorefrontCart() {
                               </motion.button>
                             </div>
 
-                            {/* Price + delete */}
+                            {/* Delete */}
                             <div className="flex items-center gap-4">
-                              {item.rrp && (
-                                <motion.span
-                                  key={item.quantity}
-                                  initial={{ opacity: 0, y: -5 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  className="text-[17px] font-bold text-storefront-text"
-                                >
-                                  {(item.rrp * item.quantity).toLocaleString("ru-RU")}{" "}
-                                  <span className="text-storefront-gold text-[14px]">₽</span>
-                                </motion.span>
-                              )}
                               <motion.button
                                 whileTap={{ scale: 0.85 }}
                                 onClick={() => removeItem(item.id)}
@@ -288,6 +274,7 @@ export default function StorefrontCart() {
                                 <Trash2 className="w-4 h-4" />
                               </motion.button>
                             </div>
+
                           </div>
                         </div>
                       </div>
@@ -328,37 +315,17 @@ export default function StorefrontCart() {
                 >
                   {/* Summary */}
                   <div className="p-6 border-b border-white/[0.06]">
-                    <h3 className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text mb-5">
-                      Итого
+                    <h3 className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text mb-3">
+                      Ваш заказ
                     </h3>
-
-                    <div className="space-y-3 mb-5">
-                      <div className="flex justify-between text-[13px]">
-                        <span className="text-storefront-muted">Товары ({totalItems()})</span>
-                        <span className="text-storefront-text font-medium">
-                          {totalPrice().toLocaleString("ru-RU")} ₽
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="border-t border-white/[0.06] pt-4 flex justify-between items-baseline">
-                      <span className="text-[14px] font-semibold text-storefront-text">
-                        К оплате
-                      </span>
-                      <div className="flex items-baseline gap-1">
-                        <motion.span
-                          key={totalPrice()}
-                          initial={{ opacity: 0, y: -8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="text-2xl font-bold text-storefront-text"
-                          style={{ fontFamily: "'Cormorant Garamond', serif" }}
-                        >
-                          {totalPrice().toLocaleString("ru-RU")}
-                        </motion.span>
-                        <span className="text-lg text-storefront-gold">₽</span>
-                      </div>
-                    </div>
+                    <p className="text-[13px] text-storefront-muted">
+                      Товаров: <span className="text-storefront-text font-medium">{totalItems()}</span>
+                    </p>
+                    <p className="text-[12px] text-storefront-muted/70 mt-2">
+                      Стоимость рассчитает менеджер после согласования конфигурации
+                    </p>
                   </div>
+
 
                   {/* Checkout form */}
                   <form onSubmit={handleCheckout} className="p-6 space-y-4">

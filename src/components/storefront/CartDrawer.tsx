@@ -169,11 +169,10 @@ export function CartDrawer() {
                               <h3 className="text-[12px] font-semibold text-storefront-text uppercase tracking-wider leading-tight line-clamp-2 mb-1">
                                 {item.name}
                               </h3>
-                              {item.rrp && (
-                                <span className="text-[14px] font-bold text-storefront-text">
-                                  {(item.rrp * item.quantity).toLocaleString("ru-RU")} <span className="text-storefront-gold text-[12px]">₽</span>
-                                </span>
-                              )}
+                              <span className="text-[11px] text-storefront-muted">
+                                Цена по запросу
+                              </span>
+
                             </div>
 
                             <div className="flex items-center justify-between mt-2">
@@ -222,21 +221,10 @@ export function CartDrawer() {
                 transition={{ delay: 0.3 }}
                 className="border-t border-white/[0.06] p-6 space-y-4"
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-[13px] text-storefront-muted">Итого</span>
-                  <div className="flex items-baseline gap-1">
-                    <motion.span
-                      key={totalPrice()}
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-2xl font-bold text-storefront-text"
-                      style={{ fontFamily: "'Cormorant Garamond', serif" }}
-                    >
-                      {totalPrice().toLocaleString("ru-RU")}
-                    </motion.span>
-                    <span className="text-lg text-storefront-gold">₽</span>
-                  </div>
+                <div className="text-[12px] text-storefront-muted/70 leading-relaxed">
+                  Стоимость рассчитает менеджер после согласования конфигурации
                 </div>
+
 
                 <motion.button
                   whileHover={{ scale: 1.02 }}
