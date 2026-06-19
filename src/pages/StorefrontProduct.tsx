@@ -450,10 +450,50 @@ export default function StorefrontProduct() {
       });
   const hasImageBoundColors = imageColors.length > 0;
 
-  const glazingItems = collectFromSpecs("glazing_options", "glazing", "glazing", ["glass", "panelouter"]).map((name) => {
+  // Glazings derived from images that have a glazing_key — these are real, image-bound glazings.
+  const imageGlazings = useMemo(() => {
+    const seen = new Set<string>();
+    const out: { name: string; preview: string }[] = [];
+    for (const img of images as any[]) {
+      const key = img.glazing_key?.trim();
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      const mock = MOCK_GLAZING.find((g) => g.name.toLowerCase() === key.toLowerCase());
+      out.push({ name: key, preview: mock?.preview ?? "#2a2a2a" });
+    }
+    return out;
+  }, [images]);
+  const specGlazingItems = collectFromSpecs("glazing_options", "glazing", "glazing", ["glass", "panelouter"]).map((name) => {
     const mock = MOCK_GLAZING.find((g) => g.name.toLowerCase() === name.toLowerCase());
     return { name, preview: mock?.preview ?? "#2a2a2a" };
   });
+  const glazingItems = imageGlazings.length > 0 ? imageGlazings : specGlazingItems;
+  const hasImageBoundGlazings = imageGlazings.length > 0;
+
+  // Build (color, glazing) availability matrix from images.
+  const glazingsByColor = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    for (const img of images as any[]) {
+      const c = img.variant_key?.trim();
+      const g = img.glazing_key?.trim();
+      if (!c) continue;
+      if (!map.has(c)) map.set(c, new Set());
+      if (g) map.get(c)!.add(g);
+    }
+    return map;
+  }, [images]);
+  const colorsByGlazing = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    for (const img of images as any[]) {
+      const c = img.variant_key?.trim();
+      const g = img.glazing_key?.trim();
+      if (!g) continue;
+      if (!map.has(g)) map.set(g, new Set());
+      if (c) map.get(g)!.add(c);
+    }
+    return map;
+  }, [images]);
+
   const edgeItems = collectFromSpecs("edge_colors", null, "edge", ["edge"]).map((name) => {
 
     const mock = MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
