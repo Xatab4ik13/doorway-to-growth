@@ -24,15 +24,23 @@ export function useSiteSlug(urlSlug?: string): string | undefined {
       return null;
     }
 
+    // Strip leading www. for matching
+    const normalized = hostname.replace(/^www\./i, "");
+
+    // brandoors.su itself → resolve via DB by domain (store m2)
+    if (normalized === "brandoors.su") {
+      return `__domain:brandoors.su`;
+    }
+
     // {slug}.brandoors.su → extract slug from subdomain
-    const match = hostname.match(/^([a-z0-9-]+)\.brandoors\.su$/i);
-    if (match && match[1] !== "crm" && match[1] !== "www") {
+    const match = normalized.match(/^([a-z0-9-]+)\.brandoors\.su$/i);
+    if (match && match[1] !== "crm") {
       return match[1];
     }
 
     // Custom domain → we need to query DB
-    if (!hostname.endsWith("brandoors.su")) {
-      return `__domain:${hostname}`;
+    if (!normalized.endsWith("brandoors.su")) {
+      return `__domain:${normalized}`;
     }
 
     return null;
