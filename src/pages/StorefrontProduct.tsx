@@ -737,9 +737,21 @@ export default function StorefrontProduct() {
     }
     return out;
   }, [images]);
-  // Same rule: only render edges that actually switch the photo.
-  const edgeItems = imageEdges;
+  // Same union pattern for edges: image-bound items first, spec-only appended.
+  const specEdgeItems = collectFromSpecs("edge_colors", null, "edge", ["edge"]).map((name) => {
+    const mock = MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
+    return { name, hex: mock?.hex ?? "#9C9994" };
+  });
+  const edgeItems = useMemo(() => {
+    const seen = new Set(imageEdges.map((e) => e.name.toLowerCase()));
+    const extra = specEdgeItems.filter((e) => !seen.has(e.name.toLowerCase()));
+    return [...imageEdges, ...extra];
+  }, [imageEdges, specEdgeItems]);
   const hasImageBoundEdges = imageEdges.length > 0;
+  const imageEdgeSet = useMemo(
+    () => new Set(imageEdges.map((e) => e.name.toLowerCase())),
+    [imageEdges],
+  );
   const edgesByColor = useMemo(() => {
     const map = new Map<string, Set<string>>();
     for (const img of images as any[]) {
