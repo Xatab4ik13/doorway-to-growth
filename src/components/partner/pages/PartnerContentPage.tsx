@@ -4,6 +4,7 @@ import { Image, Users, Star, MapPin, Phone, Clock, Upload, Pencil, Plus, Trash2 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { resolveStorageUrl } from "@/lib/storageUrl";
 
 const tabs = [
   { id: "banners", label: "Баннеры", icon: Image },
