@@ -554,7 +554,6 @@ export default function StorefrontProduct() {
 
   const filteredHardware = useMemo<AccessoryItem[]>(() => {
     const tab = HARDWARE_TABS.find((t) => t.key === hardwareTab) || HARDWARE_TABS[0];
-    if (tab.key === "all") return realHardware;
     return realHardware.filter((h) => tab.match(h.name));
   }, [realHardware, hardwareTab]);
 
