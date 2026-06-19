@@ -435,7 +435,7 @@ export default function StorefrontProduct() {
     return out;
   }, [images]);
 
-  const specColorNames = collectFromSpecs("colors", "color", "color");
+  const specColorNames = collectFromSpecs("colors", "color", "color", ["color"]);
   const colorSwatches: { name: string; hex: string }[] = imageColors.length > 0
     ? imageColors
     : specColorNames.map((name) => {
