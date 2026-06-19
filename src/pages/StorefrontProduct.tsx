@@ -918,7 +918,7 @@ export default function StorefrontProduct() {
                   {edgeItems.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-4">
-                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет кромки:</span>
+                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("edge")}:</span>
                         <span className="text-[12px] text-storefront-gold/80">{selectedEdge || "—"}</span>
                       </div>
                       <div className="flex flex-wrap gap-3">
