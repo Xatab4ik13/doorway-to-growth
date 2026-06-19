@@ -965,16 +965,24 @@ export default function StorefrontProduct() {
                         <span className="text-[12px] text-storefront-gold/80">{selectedColor || "—"}</span>
                       </div>
                       <div className="flex flex-wrap gap-3">
-                        {colorSwatches.map((c) => (
-                          <MaterialSwatch
-                            key={c.name}
-                            name={c.name}
-                            hex={c.hex}
-                            material={pickCoatingMaterial(c.name, c.hex)}
-                            selected={selectedColor === c.name}
-                            onClick={() => handleSelectColor(c.name)}
-                          />
-                        ))}
+                        {colorSwatches.map((c) => {
+                          const disabled =
+                            hasImageBoundColors &&
+                            hasImageBoundGlazings &&
+                            !!selectedGlazing &&
+                            !(colorsByGlazing.get(selectedGlazing)?.has(c.name) ?? true);
+                          return (
+                            <MaterialSwatch
+                              key={c.name}
+                              name={c.name}
+                              hex={c.hex}
+                              material={pickCoatingMaterial(c.name, c.hex)}
+                              selected={selectedColor === c.name}
+                              onClick={() => handleSelectColor(c.name)}
+                              disabled={disabled}
+                            />
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -990,6 +998,11 @@ export default function StorefrontProduct() {
                         {glazingItems.map((g) => {
                           const mat = pickGlazingMaterial(g.name, g.preview);
                           const hex = mat === "lacobel" && g.preview.startsWith("#") ? g.preview : undefined;
+                          const disabled =
+                            hasImageBoundGlazings &&
+                            hasImageBoundColors &&
+                            !!selectedColor &&
+                            !(glazingsByColor.get(selectedColor)?.has(g.name) ?? true);
                           return (
                             <MaterialSwatch
                               key={g.name}
@@ -998,6 +1011,7 @@ export default function StorefrontProduct() {
                               material={mat}
                               selected={selectedGlazing === g.name}
                               onClick={() => handleSelectGlazing(g.name)}
+                              disabled={disabled}
                             />
                           );
                         })}
