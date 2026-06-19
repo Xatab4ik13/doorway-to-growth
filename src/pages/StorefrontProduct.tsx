@@ -833,7 +833,7 @@ export default function StorefrontProduct() {
             </div>
 
             {/* Product Info — 5/12 columns */}
-            <div className="lg:col-span-5 flex flex-col pb-32 lg:pb-0">
+            <div className="lg:col-span-5 min-w-0 flex flex-col pb-12 lg:pb-0">
 
 
 
