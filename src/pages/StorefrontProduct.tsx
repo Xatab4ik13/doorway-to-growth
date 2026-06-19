@@ -787,7 +787,9 @@ export default function StorefrontProduct() {
   // Set initial selected color/glazing/edge/molding from specs or first image
   useMemo(() => {
     if (specs?.color && !selectedColor) setSelectedColor(specs.color);
-    if (specs?.glazing && !selectedGlazing) setSelectedGlazing(specs.glazing);
+    // Only seed glazing from specs when the product really has image-bound glazings,
+    // otherwise the stale value blocks later image matches (e.g. ESTETICA 04 edges).
+    if (specs?.glazing && !selectedGlazing && imageGlazings.length > 0) setSelectedGlazing(specs.glazing);
     const firstImg = (images as any[])[0];
     if (firstImg) {
       if (!selectedColor && firstImg.variant_key) setSelectedColor(firstImg.variant_key);
