@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
@@ -6,7 +6,7 @@ import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { ArrowLeft, ChevronLeft, ChevronRight, Ruler, ShoppingCart, Check, Plus, DoorOpen, Lock, CircleDot } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ShoppingCart, Check, Plus } from "lucide-react";
 import { useCartStore } from "@/stores/useCartStore";
 import coatingWood from "@/assets/materials/coating-wood.jpg";
 import coatingSoftTouch from "@/assets/materials/coating-softtouch.jpg";
@@ -308,8 +308,6 @@ export default function StorefrontProduct() {
   const [hardwareTab, setHardwareTab] = useState<string>("all");
 
 
-  const trimScrollRef = useRef<HTMLDivElement>(null);
-  const hardwareScrollRef = useRef<HTMLDivElement>(null);
 
   // ── Build real Погонаж / Фурнитура lists from DB ──
   // Walk parent_id chain to find each product's root category, then pick those
@@ -819,34 +817,9 @@ export default function StorefrontProduct() {
             </div>
 
             {/* Product Info — 5/12 columns */}
-            <div className="lg:col-span-5 flex flex-col">
-              {/* Sticky selection summary — appears once user picks anything */}
-              {(() => {
-                const pills: { label: string; value: string }[] = [];
-                if (selectedColor) pills.push({ label: "Покрытие", value: selectedColor });
-                if (selectedGlazing) pills.push({ label: "Стекло", value: selectedGlazing });
-                if (selectedEdge) pills.push({ label: "Кромка", value: selectedEdge });
-                if (selectedMolding) pills.push({ label: "Молдинг", value: selectedMolding });
-                if (selectedTrim.size > 0) pills.push({ label: "Погонаж", value: `${selectedTrim.size} поз.` });
-                if (selectedHardware.size > 0) pills.push({ label: "Фурнитура", value: `${selectedHardware.size} поз.` });
-                if (pills.length === 0) return null;
-                return (
-                  <div className="lg:sticky lg:top-4 z-20 mb-6 -mx-2 px-2 py-2.5 rounded-2xl bg-[#0c0e14]/95 border border-storefront-gold/15 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.8)]">
-                    <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-                      <span className="shrink-0 text-[9px] uppercase tracking-[0.2em] text-storefront-text/40 pl-1">Ваш выбор</span>
-                      {pills.map((p) => (
-                        <span
-                          key={p.label}
-                          className="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.06] text-[11px]"
-                        >
-                          <span className="text-storefront-text/40">{p.label}:</span>
-                          <span className="text-storefront-text/90">{p.value}</span>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })()}
+            <div className="lg:col-span-5 flex flex-col pb-32 lg:pb-0">
+
+
 
               {/* Title */}
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extralight tracking-tight text-storefront-text leading-[1.05] mb-6">
@@ -1059,75 +1032,45 @@ export default function StorefrontProduct() {
 
               {/* ===== TRIM (ПОГОНАЖ) ===== */}
               {!isEntranceDoor && realTrim.length > 0 && (
-                <div className="mb-8">
-                  <div className="flex items-center justify-between gap-2 mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
-                        <DoorOpen className="w-4 h-4 text-storefront-gold" />
-                      </div>
-                      <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
-                        Погонаж коллекции
-                      </span>
-                    </div>
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-text/40">
+                <div className="mb-10">
+                  <div className="flex items-baseline justify-between gap-2 mb-5 pb-3 border-b border-white/5">
+                    <h2 className="text-[13px] uppercase tracking-[0.22em] font-light text-storefront-text/85">
+                      Погонаж коллекции
+                    </h2>
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-text/35 tabular-nums">
                       {realTrim.length} поз.
                     </span>
                   </div>
-                  <div className="relative">
-                    <button
-                      onClick={() => trimScrollRef.current?.scrollBy({ left: -340, behavior: "smooth" })}
-                      className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-[#07090d]/90 border border-white/10 flex items-center justify-center hover:bg-storefront-gold hover:text-[#07090d] hover:border-storefront-gold transition-colors"
-                      style={{ color: "rgba(245,245,240,0.5)" }}
-                      aria-label="Назад"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    <div ref={trimScrollRef} className="-mx-2 px-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
-                      <div className="flex gap-3 pb-2">
-                        {realTrim.map((item) => (
-                          <div key={item.id} className="snap-start shrink-0 w-[160px]">
-                            <AccessoryCard
-                              name={item.name}
-                              rrp={item.rrp}
-                              image={item.image}
-                              active={selectedTrim.has(item.id)}
-                              onClick={() => toggleTrim(item.id)}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => trimScrollRef.current?.scrollBy({ left: 340, behavior: "smooth" })}
-                      className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-[#07090d]/90 border border-white/10 flex items-center justify-center hover:bg-storefront-gold hover:text-[#07090d] hover:border-storefront-gold transition-colors"
-                      style={{ color: "rgba(245,245,240,0.5)" }}
-                      aria-label="Вперёд"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {realTrim.map((item) => (
+                      <AccessoryCard
+                        key={item.id}
+                        name={item.name}
+                        rrp={item.rrp}
+                        image={item.image}
+                        active={selectedTrim.has(item.id)}
+                        onClick={() => toggleTrim(item.id)}
+                      />
+                    ))}
                   </div>
                 </div>
               )}
 
+
               {/* ===== HARDWARE (ФУРНИТУРА) ===== */}
               {!isEntranceDoor && realHardware.length > 0 && (
-                <div className="mb-8">
-                  <div className="flex items-center justify-between gap-2 mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
-                        <Lock className="w-4 h-4 text-storefront-gold" />
-                      </div>
-                      <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
-                        Фурнитура
-                      </span>
-                    </div>
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-text/40">
+                <div className="mb-10">
+                  <div className="flex items-baseline justify-between gap-2 mb-5 pb-3 border-b border-white/5">
+                    <h2 className="text-[13px] uppercase tracking-[0.22em] font-light text-storefront-text/85">
+                      Фурнитура
+                    </h2>
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-text/35 tabular-nums">
                       {filteredHardware.length} из {realHardware.length}
                     </span>
                   </div>
 
                   {/* Subcategory tabs */}
-                  <div className="flex gap-1.5 mb-3 overflow-x-auto scrollbar-hide -mx-2 px-2">
+                  <div className="flex gap-1.5 mb-4 overflow-x-auto scrollbar-hide -mx-2 px-2">
                     {HARDWARE_TABS.map((t) => {
                       const count = t.key === "all" ? realHardware.length : realHardware.filter((h) => t.match(h.name)).length;
                       if (count === 0) return null;
@@ -1149,41 +1092,21 @@ export default function StorefrontProduct() {
                     })}
                   </div>
 
-                  <div className="relative">
-                    <button
-                      onClick={() => hardwareScrollRef.current?.scrollBy({ left: -340, behavior: "smooth" })}
-                      className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-[#07090d]/90 border border-white/10 flex items-center justify-center hover:bg-storefront-gold hover:text-[#07090d] hover:border-storefront-gold transition-colors"
-                      style={{ color: "rgba(245,245,240,0.5)" }}
-                      aria-label="Назад"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    <div ref={hardwareScrollRef} className="-mx-2 px-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
-                      <div className="flex gap-3 pb-2">
-                        {filteredHardware.map((item) => (
-                          <div key={item.id} className="snap-start shrink-0 w-[160px]">
-                            <AccessoryCard
-                              name={item.name}
-                              rrp={item.rrp}
-                              image={item.image}
-                              active={selectedHardware.has(item.id)}
-                              onClick={() => toggleHardware(item.id)}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => hardwareScrollRef.current?.scrollBy({ left: 340, behavior: "smooth" })}
-                      className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-[#07090d]/90 border border-white/10 flex items-center justify-center hover:bg-storefront-gold hover:text-[#07090d] hover:border-storefront-gold transition-colors"
-                      style={{ color: "rgba(245,245,240,0.5)" }}
-                      aria-label="Вперёд"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {filteredHardware.map((item) => (
+                      <AccessoryCard
+                        key={item.id}
+                        name={item.name}
+                        rrp={item.rrp}
+                        image={item.image}
+                        active={selectedHardware.has(item.id)}
+                        onClick={() => toggleHardware(item.id)}
+                      />
+                    ))}
                   </div>
                 </div>
               )}
+
 
               {/* ===== OPENING SYSTEMS — only for interior doors ===== */}
               {isDoorProduct && !isEntranceDoor && <OpeningSystems />}
@@ -1191,15 +1114,13 @@ export default function StorefrontProduct() {
 
 
               {(widths.length > 0 || heights.length > 0) && (
-                <div className="mb-8">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
-                      <Ruler className="w-4 h-4 text-storefront-gold" />
-                    </div>
-                    <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
+                <div className="mb-10">
+                  <div className="flex items-baseline justify-between gap-2 mb-5 pb-3 border-b border-white/5">
+                    <h2 className="text-[13px] uppercase tracking-[0.22em] font-light text-storefront-text/85">
                       Размер
-                    </span>
+                    </h2>
                   </div>
+
 
                   <div className="rounded-2xl overflow-hidden" style={{ background: "linear-gradient(180deg, rgba(207,187,150,0.06) 0%, rgba(207,187,150,0.01) 100%)", border: "1px solid rgba(207,187,150,0.1)" }}>
                     {widths.length > 0 && (
@@ -1349,54 +1270,80 @@ export default function StorefrontProduct() {
                 </Accordion>
               </div>
 
-              {/* ===== PRICE SUMMARY (extras only) + CTA ===== */}
-              <div className="mt-auto pt-8 border-t border-white/5">
-                {(() => {
-                  const doorPrice = product.rrp ? Number(product.rrp) : 0;
-                  const trimTotal = realTrim.filter((t) => selectedTrim.has(t.id)).reduce((s, t) => s + (t.rrp ?? 0), 0);
-                  const hwTotal = realHardware.filter((h) => selectedHardware.has(h.id)).reduce((s, h) => s + (h.rrp ?? 0), 0);
-                  const totalPrice = doorPrice + trimTotal + hwTotal;
-                  const hasExtras = selectedTrim.size > 0 || selectedHardware.size > 0;
+              {/* ===== STICKY CONFIGURATION TRAY + CTA ===== */}
+              {(() => {
+                const doorPrice = product.rrp ? Number(product.rrp) : 0;
+                const trimTotal = realTrim.filter((t) => selectedTrim.has(t.id)).reduce((s, t) => s + (t.rrp ?? 0), 0);
+                const hwTotal = realHardware.filter((h) => selectedHardware.has(h.id)).reduce((s, h) => s + (h.rrp ?? 0), 0);
+                const totalPrice = doorPrice + trimTotal + hwTotal;
+                const hasExtras = selectedTrim.size > 0 || selectedHardware.size > 0;
 
-                  if (!hasExtras || totalPrice <= 0) return null;
+                const pills: { label: string; value: string }[] = [];
+                if (selectedColor) pills.push({ label: "Покрытие", value: selectedColor });
+                if (selectedGlazing) pills.push({ label: "Стекло", value: selectedGlazing });
+                if (selectedEdge) pills.push({ label: "Кромка", value: selectedEdge });
+                if (selectedMolding) pills.push({ label: "Молдинг", value: selectedMolding });
+                if (selectedWidth || selectedHeight) pills.push({ label: "Размер", value: `${selectedWidth ?? "—"}×${selectedHeight ?? "—"}` });
+                if (selectedHardware.size > 0) pills.push({ label: "Фурнитура", value: `${selectedHardware.size}` });
+                if (selectedTrim.size > 0) pills.push({ label: "Погонаж", value: `${selectedTrim.size}` });
 
-                  return (
-                    <div className="mb-6 flex items-baseline justify-between gap-4">
-                      <div className="text-[10px] text-storefront-text/40 font-light leading-relaxed">
-                        Дверь {doorPrice.toLocaleString("ru-RU")} ₽
-                        {trimTotal > 0 && <> + погонаж {trimTotal.toLocaleString("ru-RU")} ₽</>}
-                        {hwTotal > 0 && <> + фурнитура {hwTotal.toLocaleString("ru-RU")} ₽</>}
-                      </div>
-                      <div className="flex items-baseline gap-2 shrink-0">
-                        <span className="text-[10px] uppercase tracking-[0.25em] text-storefront-text/40">Итого</span>
-                        <span
-                          className="text-[30px] leading-none text-storefront-gold tabular-nums"
-                          style={{ fontFamily: "'Raleway', system-ui, sans-serif", fontWeight: 300, letterSpacing: "-0.01em" }}
-                        >
-                          {totalPrice.toLocaleString("ru-RU")} ₽
-                        </span>
+                return (
+                  <div className="fixed inset-x-0 bottom-0 z-40 lg:static lg:z-auto lg:sticky lg:bottom-4 lg:mt-8">
+                    <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-0">
+                      <div className="rounded-t-2xl lg:rounded-2xl bg-[#0c0e14]/95 lg:bg-[#0c0e14]/92 backdrop-blur-md border-t lg:border border-storefront-gold/15 shadow-[0_-12px_40px_-12px_rgba(0,0,0,0.9)] lg:shadow-[0_20px_60px_-20px_rgba(0,0,0,0.9)] px-4 py-3 lg:p-5">
+                        {pills.length > 0 && (
+                          <div className="hidden lg:flex items-center gap-1.5 mb-4 pb-4 border-b border-white/5 flex-wrap">
+                            {pills.map((p) => (
+                              <span key={p.label} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.06] text-[11px]">
+                                <span className="text-storefront-text/40">{p.label}:</span>
+                                <span className="text-storefront-text/90">{p.value}</span>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between gap-4 mb-3 lg:mb-4">
+                          <div className="min-w-0">
+                            <div className="text-[9px] uppercase tracking-[0.25em] text-storefront-text/40 mb-0.5">
+                              {hasExtras ? "Итого" : "Стоимость от"}
+                            </div>
+                            <div
+                              className="text-[22px] lg:text-[28px] leading-none text-storefront-gold tabular-nums truncate"
+                              style={{ fontFamily: "'Raleway', system-ui, sans-serif", fontWeight: 300, letterSpacing: "-0.01em" }}
+                            >
+                              {totalPrice.toLocaleString("ru-RU")} ₽
+                            </div>
+                            {hasExtras && (
+                              <div className="hidden lg:block mt-1 text-[10px] text-storefront-text/40 font-light truncate">
+                                Дверь {doorPrice.toLocaleString("ru-RU")} ₽
+                                {trimTotal > 0 && <> · погонаж {trimTotal.toLocaleString("ru-RU")} ₽</>}
+                                {hwTotal > 0 && <> · фурнитура {hwTotal.toLocaleString("ru-RU")} ₽</>}
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            onClick={handleAddAllToCart}
+                            className={`shrink-0 px-6 sm:px-8 py-3.5 lg:py-4 rounded-full text-[11px] font-medium uppercase tracking-[0.25em] transition-[transform,filter] duration-200 active:scale-[0.985] flex items-center justify-center gap-2 ${
+                              isInCart
+                                ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                                : "bg-storefront-gold text-[#07090d] hover:brightness-110 shadow-[0_12px_30px_-8px_rgba(212,175,55,0.4)]"
+                            }`}
+                          >
+                            {isInCart ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
+                            <span className="hidden sm:inline">
+                              {isInCart ? "В корзине" : hasExtras ? "Добавить комплект" : "В корзину"}
+                            </span>
+                          </button>
+                        </div>
+                        <p className="hidden lg:block text-[10px] text-storefront-text/30 uppercase tracking-[0.25em] font-light">
+                          Замер — платная услуга · Срок изготовления 25 рабочих дней
+                        </p>
                       </div>
                     </div>
-                  );
-                })()}
-
-                <button
-                  onClick={handleAddAllToCart}
-                  className={`w-full py-5 rounded-full text-xs font-medium uppercase tracking-[0.3em] transition-[transform,filter] duration-200 active:scale-[0.985] flex items-center justify-center gap-3 ${
-                    isInCart
-                      ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                      : "bg-storefront-gold text-[#07090d] hover:brightness-110 shadow-[0_20px_50px_-10px_rgba(212,175,55,0.3)]"
-                  }`}
-                >
-                  {isInCart ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
-                  {isInCart ? "В корзине" : (selectedTrim.size > 0 || selectedHardware.size > 0) ? "Добавить комплект" : "Добавить в корзину"}
-                </button>
-                <p className="mt-5 text-center text-[10px] text-storefront-text/30 uppercase tracking-[0.3em] font-light">
-                  Замер — платная услуга · Срок изготовления 25 рабочих дней
-                </p>
-
-              </div>
+                  </div>
+                );
+              })()}
             </div>
+
           </div>
 
 
