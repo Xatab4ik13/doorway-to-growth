@@ -74,13 +74,22 @@ async function ensureUploaded(bucket, path, sourceUrl) {
 
 async function processTable({ table, col }) {
   console.log(`\n=== ${table}.${col} ===`);
-  const { data: rows, error } = await prod
-    .from(table)
-    .select(`id, ${col}`)
-    .like(col, `%${STAGING_HOST}%`);
-  if (error) {
-    console.error(`  пропуск (${error.message})`);
-    return;
+  // Пагинация — Supabase отдаёт максимум 1000 за раз
+  const rows = [];
+  const PAGE = 1000;
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await prod
+      .from(table)
+      .select(`id, ${col}`)
+      .like(col, `%${STAGING_HOST}%`)
+      .range(from, from + PAGE - 1);
+    if (error) {
+      console.error(`  пропуск (${error.message})`);
+      return;
+    }
+    if (!data || data.length === 0) break;
+    rows.push(...data);
+    if (data.length < PAGE) break;
   }
   console.log(`  записей со staging-URL: ${rows.length}`);
 
