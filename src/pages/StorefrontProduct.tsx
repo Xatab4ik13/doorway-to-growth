@@ -1061,23 +1061,18 @@ export default function StorefrontProduct() {
 
               {/* ===== HARDWARE (ФУРНИТУРА) ===== */}
               {!isEntranceDoor && realHardware.length > 0 && (
-                <div className="mb-8">
-                  <div className="flex items-center justify-between gap-2 mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
-                        <Lock className="w-4 h-4 text-storefront-gold" />
-                      </div>
-                      <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
-                        Фурнитура
-                      </span>
-                    </div>
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-text/40">
+                <div className="mb-10">
+                  <div className="flex items-baseline justify-between gap-2 mb-5 pb-3 border-b border-white/5">
+                    <h2 className="text-[13px] uppercase tracking-[0.22em] font-light text-storefront-text/85">
+                      Фурнитура
+                    </h2>
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-storefront-text/35 tabular-nums">
                       {filteredHardware.length} из {realHardware.length}
                     </span>
                   </div>
 
                   {/* Subcategory tabs */}
-                  <div className="flex gap-1.5 mb-3 overflow-x-auto scrollbar-hide -mx-2 px-2">
+                  <div className="flex gap-1.5 mb-4 overflow-x-auto scrollbar-hide -mx-2 px-2">
                     {HARDWARE_TABS.map((t) => {
                       const count = t.key === "all" ? realHardware.length : realHardware.filter((h) => t.match(h.name)).length;
                       if (count === 0) return null;
@@ -1099,41 +1094,21 @@ export default function StorefrontProduct() {
                     })}
                   </div>
 
-                  <div className="relative">
-                    <button
-                      onClick={() => hardwareScrollRef.current?.scrollBy({ left: -340, behavior: "smooth" })}
-                      className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-[#07090d]/90 border border-white/10 flex items-center justify-center hover:bg-storefront-gold hover:text-[#07090d] hover:border-storefront-gold transition-colors"
-                      style={{ color: "rgba(245,245,240,0.5)" }}
-                      aria-label="Назад"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    <div ref={hardwareScrollRef} className="-mx-2 px-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
-                      <div className="flex gap-3 pb-2">
-                        {filteredHardware.map((item) => (
-                          <div key={item.id} className="snap-start shrink-0 w-[160px]">
-                            <AccessoryCard
-                              name={item.name}
-                              rrp={item.rrp}
-                              image={item.image}
-                              active={selectedHardware.has(item.id)}
-                              onClick={() => toggleHardware(item.id)}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => hardwareScrollRef.current?.scrollBy({ left: 340, behavior: "smooth" })}
-                      className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-[#07090d]/90 border border-white/10 flex items-center justify-center hover:bg-storefront-gold hover:text-[#07090d] hover:border-storefront-gold transition-colors"
-                      style={{ color: "rgba(245,245,240,0.5)" }}
-                      aria-label="Вперёд"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {filteredHardware.map((item) => (
+                      <AccessoryCard
+                        key={item.id}
+                        name={item.name}
+                        rrp={item.rrp}
+                        image={item.image}
+                        active={selectedHardware.has(item.id)}
+                        onClick={() => toggleHardware(item.id)}
+                      />
+                    ))}
                   </div>
                 </div>
               )}
+
 
               {/* ===== OPENING SYSTEMS — only for interior doors ===== */}
               {isDoorProduct && !isEntranceDoor && <OpeningSystems />}
