@@ -125,31 +125,34 @@ const OpeningSystems = memo(function OpeningSystems() {
           </div>
         </div>
 
-        {/* System selector strip */}
-        <div className="grid grid-cols-3 md:grid-cols-6 border-t border-storefront-gold/10">
+        {/* System selector — large separate cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 p-4 bg-[#0a0c12]/60 border-t border-storefront-gold/10">
           {SYSTEMS.map((s) => {
             const isActive = s.id === active;
             return (
               <button
                 key={s.id}
                 onClick={() => setActive(s.id)}
-                onMouseEnter={() => setActive(s.id)}
-                className="group relative flex flex-col items-center justify-center px-2 py-4 border-r last:border-r-0 border-storefront-gold/10 transition-colors"
-                style={{
-                  background: isActive
-                    ? "linear-gradient(180deg, rgba(207,187,150,0.12) 0%, rgba(207,187,150,0.04) 100%)"
-                    : "transparent",
-                }}
+                className={`group relative flex flex-col items-start gap-1.5 px-4 py-3.5 rounded-xl border transition-all duration-200 text-left ${
+                  isActive
+                    ? "bg-storefront-gold text-[#07090d] border-storefront-gold shadow-[0_8px_24px_-10px_rgba(207,187,150,0.55)]"
+                    : "bg-white/[0.03] border-white/10 hover:border-storefront-gold/50 hover:bg-white/[0.06]"
+                }`}
               >
                 <span
-                  className="text-[11px] uppercase font-semibold tracking-[0.15em] transition-colors text-center"
-                  style={{ color: isActive ? "hsl(var(--storefront-gold))" : "rgba(230,225,215,0.55)" }}
+                  className={`text-[9px] uppercase tracking-[0.25em] font-semibold ${
+                    isActive ? "text-[#07090d]/65" : "text-storefront-gold/70"
+                  }`}
+                >
+                  {s.tag}
+                </span>
+                <span
+                  className={`text-[13px] uppercase tracking-[0.12em] font-semibold ${
+                    isActive ? "text-[#07090d]" : "text-storefront-text/85"
+                  }`}
                 >
                   {s.name}
                 </span>
-                {isActive && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2px] bg-storefront-gold" />
-                )}
               </button>
             );
           })}
