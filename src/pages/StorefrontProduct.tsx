@@ -1297,7 +1297,7 @@ export default function StorefrontProduct() {
                 </Accordion>
               </div>
 
-              {/* ===== STICKY CONFIGURATION TRAY + CTA ===== */}
+              {/* ===== INLINE ADD TO CART ===== */}
               {(() => {
                 const doorPrice = product.rrp ? Number(product.rrp) : 0;
                 const trimTotal = realTrim.filter((t) => selectedTrim.has(t.id)).reduce((s, t) => s + (t.rrp ?? 0), 0);
@@ -1305,67 +1305,30 @@ export default function StorefrontProduct() {
                 const totalPrice = doorPrice + trimTotal + hwTotal;
                 const hasExtras = selectedTrim.size > 0 || selectedHardware.size > 0;
 
-                const pills: { label: string; value: string }[] = [];
-                if (selectedColor) pills.push({ label: "Покрытие", value: selectedColor });
-                if (selectedGlazing) pills.push({ label: "Стекло", value: selectedGlazing });
-                if (selectedEdge) pills.push({ label: "Кромка", value: selectedEdge });
-                if (selectedMolding) pills.push({ label: "Молдинг", value: selectedMolding });
-                if (selectedWidth || selectedHeight) pills.push({ label: "Размер", value: `${selectedWidth ?? "—"}×${selectedHeight ?? "—"}` });
-                if (selectedHardware.size > 0) pills.push({ label: "Фурнитура", value: `${selectedHardware.size}` });
-                if (selectedTrim.size > 0) pills.push({ label: "Погонаж", value: `${selectedTrim.size}` });
-
                 return (
-                  <div className="fixed inset-x-0 bottom-0 z-40 lg:static lg:z-auto lg:sticky lg:bottom-4 lg:mt-8">
-                    <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-0">
-                      <div className="rounded-t-2xl lg:rounded-2xl bg-[#0c0e14]/95 lg:bg-[#0c0e14]/92 backdrop-blur-md border-t lg:border border-storefront-gold/15 shadow-[0_-12px_40px_-12px_rgba(0,0,0,0.9)] lg:shadow-[0_20px_60px_-20px_rgba(0,0,0,0.9)] px-4 py-3 lg:p-5">
-                        {pills.length > 0 && (
-                          <div className="hidden lg:flex items-center gap-1.5 mb-4 pb-4 border-b border-white/5 flex-wrap">
-                            {pills.map((p) => (
-                              <span key={p.label} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.06] text-[11px]">
-                                <span className="text-storefront-text/40">{p.label}:</span>
-                                <span className="text-storefront-text/90">{p.value}</span>
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                        <div className="flex items-center justify-between gap-4 mb-3 lg:mb-4">
-                          <div className="min-w-0">
-                            <div className="text-[9px] uppercase tracking-[0.25em] text-storefront-text/40 mb-0.5">
-                              {hasExtras ? "Итого" : "Стоимость от"}
-                            </div>
-                            <div
-                              className="text-[22px] lg:text-[28px] leading-none text-storefront-gold tabular-nums truncate"
-                              style={{ fontFamily: "'Raleway', system-ui, sans-serif", fontWeight: 300, letterSpacing: "-0.01em" }}
-                            >
-                              {totalPrice.toLocaleString("ru-RU")} ₽
-                            </div>
-                            {hasExtras && (
-                              <div className="hidden lg:block mt-1 text-[10px] text-storefront-text/40 font-light truncate">
-                                Дверь {doorPrice.toLocaleString("ru-RU")} ₽
-                                {trimTotal > 0 && <> · погонаж {trimTotal.toLocaleString("ru-RU")} ₽</>}
-                                {hwTotal > 0 && <> · фурнитура {hwTotal.toLocaleString("ru-RU")} ₽</>}
-                              </div>
-                            )}
-                          </div>
-                          <button
-                            onClick={handleAddAllToCart}
-                            className={`shrink-0 px-6 sm:px-8 py-3.5 lg:py-4 rounded-full text-[11px] font-medium uppercase tracking-[0.25em] transition-[transform,filter] duration-200 active:scale-[0.985] flex items-center justify-center gap-2 ${
-                              isInCart
-                                ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                                : "bg-storefront-gold text-[#07090d] hover:brightness-110 shadow-[0_12px_30px_-8px_rgba(212,175,55,0.4)]"
-                            }`}
-                          >
-                            {isInCart ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
-                            <span className="hidden sm:inline">
-                              {isInCart ? "В корзине" : hasExtras ? "Добавить комплект" : "В корзину"}
-                            </span>
-                          </button>
-                        </div>
-                        <p className="hidden lg:block text-[10px] text-storefront-text/30 uppercase tracking-[0.25em] font-light">
-                          Замер — платная услуга · Срок изготовления 25 рабочих дней
-                        </p>
+                  <div className="mt-10 pt-8 border-t border-white/8 flex items-center justify-between gap-4 flex-wrap">
+                    <div className="min-w-0">
+                      <div className="text-[9px] uppercase tracking-[0.25em] text-storefront-text/40 mb-1">
+                        {hasExtras ? "Итого" : "Стоимость от"}
+                      </div>
+                      <div
+                        className="text-[30px] leading-none text-storefront-gold tabular-nums"
+                        style={{ fontFamily: "'Raleway', system-ui, sans-serif", fontWeight: 300, letterSpacing: "-0.01em" }}
+                      >
+                        {totalPrice.toLocaleString("ru-RU")} ₽
                       </div>
                     </div>
+                    <button
+                      onClick={handleAddAllToCart}
+                      className={`shrink-0 px-8 py-4 rounded-full text-[11px] font-medium uppercase tracking-[0.25em] transition-[transform,filter] duration-200 active:scale-[0.985] flex items-center justify-center gap-2 ${
+                        isInCart
+                          ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                          : "bg-storefront-gold text-[#07090d] hover:brightness-110 shadow-[0_12px_30px_-8px_rgba(212,175,55,0.4)]"
+                      }`}
+                    >
+                      {isInCart ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
+                      <span>{isInCart ? "В корзине" : hasExtras ? "Добавить комплект" : "В корзину"}</span>
+                    </button>
                   </div>
                 );
               })()}
