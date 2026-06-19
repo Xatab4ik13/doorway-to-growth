@@ -714,11 +714,48 @@ export default function StorefrontProduct() {
     return map;
   }, [images]);
 
-  const edgeItems = collectFromSpecs("edge_colors", null, "edge", ["edge"]).map((name) => {
-
+  // Edges derived from images that have an edge_key — image-bound edge colors.
+  const imageEdges = useMemo(() => {
+    const seen = new Set<string>();
+    const out: { name: string; hex: string }[] = [];
+    for (const img of images as any[]) {
+      const key = img.edge_key?.trim();
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      const mock = MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === key.toLowerCase());
+      out.push({ name: key, hex: mock?.hex ?? "#9C9994" });
+    }
+    return out;
+  }, [images]);
+  const specEdgeItems = collectFromSpecs("edge_colors", null, "edge", ["edge"]).map((name) => {
     const mock = MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
     return { name, hex: mock?.hex ?? "#2a2a2a" };
   });
+  const edgeItems = imageEdges.length > 0 ? imageEdges : specEdgeItems;
+  const hasImageBoundEdges = imageEdges.length > 0;
+  const edgesByColor = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    for (const img of images as any[]) {
+      const c = img.variant_key?.trim();
+      const e = img.edge_key?.trim();
+      if (!c) continue;
+      if (!map.has(c)) map.set(c, new Set());
+      if (e) map.get(c)!.add(e);
+    }
+    return map;
+  }, [images]);
+  const colorsByEdge = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    for (const img of images as any[]) {
+      const c = img.variant_key?.trim();
+      const e = img.edge_key?.trim();
+      if (!e) continue;
+      if (!map.has(e)) map.set(e, new Set());
+      if (c) map.get(e)!.add(c);
+    }
+    return map;
+  }, [images]);
+
   // Moldings — prefer image-bound molding_key, then specs.moldings, fall back to molding_colors.
   const imageMoldings = useMemo(() => {
     const seen = new Set<string>();
@@ -743,6 +780,17 @@ export default function StorefrontProduct() {
         return { name, hex: mock?.hex ?? "#9C9994" };
       });
   const hasImageBoundMoldings = imageMoldings.length > 0;
+  const moldingsByColor = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    for (const img of images as any[]) {
+      const c = img.variant_key?.trim();
+      const m = img.molding_key?.trim();
+      if (!c) continue;
+      if (!map.has(c)) map.set(c, new Set());
+      if (m) map.get(c)!.add(m);
+    }
+    return map;
+  }, [images]);
 
   // Set initial selected color/glazing/molding from specs or first image
   useMemo(() => {
