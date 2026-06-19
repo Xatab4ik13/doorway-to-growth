@@ -912,7 +912,7 @@ export default function StorefrontProduct() {
               </h1>
 
               {/* Hero price under title */}
-              {product.rrp && Number(product.rrp) > 0 && (
+              {Number(product.rrp) > 0 && (
                 <div className="flex items-baseline gap-4 mb-6">
                   <span className="text-[10px] font-light uppercase tracking-[0.25em] text-storefront-text/40">Стоимость от</span>
                   <span
