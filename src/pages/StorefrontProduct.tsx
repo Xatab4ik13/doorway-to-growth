@@ -303,10 +303,15 @@ function DimensionSlider({
   const pct = (idx / max) * 100;
   const labelSet = labelValues ? new Set(labelValues) : null;
 
+  // Inner track padding equals the thumb radius so tick at 0% and 100%
+  // sit exactly under the thumb, and labels at the edges don't clip.
+  const THUMB = 28; // px, custom thumb diameter
+  const PAD = THUMB / 2; // left/right inset for the track
+
   return (
     <div>
       {/* Header: label + big current value */}
-      <div className="flex items-baseline justify-between mb-8">
+      <div className="flex items-baseline justify-between mb-10">
         <span className="text-[12px] uppercase tracking-[0.28em] text-storefront-text/55 font-semibold">
           {label}
         </span>
@@ -321,26 +326,27 @@ function DimensionSlider({
         </span>
       </div>
 
+      {/* Slider area — all marks positioned by percent so ticks, thumb and labels share one axis */}
+      <div className="relative h-32" style={{ paddingLeft: PAD, paddingRight: PAD }}>
+        {/* Inner positioning context: ticks/thumb/labels are positioned by % within this box */}
+        <div className="relative h-full">
+          {/* Track */}
+          <div className="absolute left-0 right-0 top-[42px] h-[3px] bg-white/[0.07] rounded-full" />
+          {/* Filled portion */}
+          <div
+            className="absolute left-0 top-[42px] h-[3px] bg-gradient-to-r from-storefront-gold/60 to-storefront-gold rounded-full transition-[width] duration-200"
+            style={{ width: `${pct}%` }}
+          />
 
-      {/* Slider area — generous height, big ticks, big labels */}
-      <div className="relative h-28 px-5">
-        {/* Track */}
-        <div className="absolute left-5 right-5 top-[38px] h-[3px] bg-white/[0.07] rounded-full" />
-        {/* Filled portion */}
-        <div
-          className="absolute left-5 top-[38px] h-[3px] bg-gradient-to-r from-storefront-gold/60 to-storefront-gold rounded-full transition-[width] duration-200"
-          style={{ width: `calc((100% - 40px) * ${pct / 100})` }}
-        />
-
-        {/* Tick marks */}
-        <div className="absolute left-5 right-5 top-[38px] flex justify-between pointer-events-none">
+          {/* Tick marks — each positioned at its exact percent */}
           {values.map((v, i) => {
+            const tickPct = (i / max) * 100;
             const active = i <= idx;
             const isCurrent = i === idx;
             return (
               <span
                 key={`tick-${v}`}
-                className={`block w-[2px] rounded-full transition-all duration-200 ${
+                className={`absolute w-[2px] rounded-full transition-all duration-200 pointer-events-none ${
                   isCurrent
                     ? "bg-storefront-gold"
                     : active
@@ -348,74 +354,72 @@ function DimensionSlider({
                     : "bg-white/20"
                 }`}
                 style={{
+                  left: `${tickPct}%`,
+                  top: 43.5 - (isCurrent ? 12 : 7),
                   height: isCurrent ? 24 : 14,
-                  marginTop: isCurrent ? -12 : -7,
+                  transform: "translateX(-50%)",
                 }}
               />
             );
           })}
+
+          {/* Custom thumb — perfectly centered over the active tick */}
+          <span
+            aria-hidden
+            className="absolute rounded-full bg-storefront-gold border-[4px] border-[#07090d] pointer-events-none transition-[left] duration-200"
+            style={{
+              width: THUMB,
+              height: THUMB,
+              left: `${pct}%`,
+              top: 43.5 - THUMB / 2,
+              transform: "translateX(-50%)",
+              boxShadow:
+                "0 0 0 2px rgba(207,187,150,0.55), 0 10px 24px -4px rgba(207,187,150,0.65)",
+            }}
+          />
+
+          {/* Tick labels — only on anchor values, positioned at their exact percent */}
+          {values.map((v, i) => {
+            if (labelSet && !labelSet.has(v)) return null;
+            const lblPct = (i / max) * 100;
+            // Keep first/last labels fully inside the box
+            const isFirst = lblPct <= 0.01;
+            const isLast = lblPct >= 99.99;
+            return (
+              <span
+                key={`lbl-${v}`}
+                className="absolute top-[74px] text-[14px] tabular-nums whitespace-nowrap text-storefront-text/70 pointer-events-none"
+                style={{
+                  fontFamily: "'Manrope', system-ui, sans-serif",
+                  fontWeight: 700,
+                  left: `${lblPct}%`,
+                  transform: isFirst
+                    ? "translateX(0)"
+                    : isLast
+                    ? "translateX(-100%)"
+                    : "translateX(-50%)",
+                }}
+              >
+                {v}
+              </span>
+            );
+          })}
+
+          {/* Native range overlay — invisible, handles drag/keyboard */}
+          <input
+            type="range"
+            min={0}
+            max={max}
+            step={1}
+            value={idx}
+            onChange={(e) => onChange(values[Number(e.target.value)])}
+            aria-label={label}
+            className="absolute left-0 right-0 top-[30px] w-full h-8 appearance-none bg-transparent cursor-pointer opacity-0
+              [&::-webkit-slider-thumb]:appearance-none
+              [&::-webkit-slider-thumb]:w-8 [&::-webkit-slider-thumb]:h-8
+              [&::-moz-range-thumb]:w-8 [&::-moz-range-thumb]:h-8 [&::-moz-range-thumb]:border-0"
+          />
         </div>
-
-        {/* Tick labels — only on anchor values; bigger and bolder */}
-        {(() => {
-          const n = values.length;
-          return (
-            <div className="absolute left-5 right-5 top-[66px] flex justify-between pointer-events-none">
-              {values.map((v, i) => {
-                const isFirst = i === 0;
-                const isLast = i === n - 1;
-                const show = labelSet
-                  ? labelSet.has(v)
-                  : isFirst || isLast;
-                return (
-                  <span key={`lbl-${v}`} className="relative flex-1 first:flex-none last:flex-none">
-                    <span
-                      className={`absolute top-0 text-[14px] tabular-nums whitespace-nowrap text-storefront-text/70 ${
-                        show ? "opacity-100" : "opacity-0"
-                      }`}
-                      style={{
-                        fontFamily: "'Manrope', system-ui, sans-serif",
-                        fontWeight: 700,
-                        left: isFirst ? 0 : isLast ? "auto" : "50%",
-                        right: isLast ? 0 : "auto",
-                        transform: isFirst || isLast ? "none" : "translateX(-50%)",
-                      }}
-                    >
-                      {v}
-                    </span>
-                  </span>
-                );
-              })}
-            </div>
-          );
-        })()}
-
-        {/* Native range overlay — big thumb */}
-        <input
-          type="range"
-          min={0}
-          max={max}
-          step={1}
-          value={idx}
-          onChange={(e) => onChange(values[Number(e.target.value)])}
-          aria-label={label}
-          className="absolute left-5 right-5 top-[24px] w-[calc(100%-40px)] h-8 appearance-none bg-transparent cursor-pointer
-            [&::-webkit-slider-thumb]:appearance-none
-            [&::-webkit-slider-thumb]:w-8 [&::-webkit-slider-thumb]:h-8
-            [&::-webkit-slider-thumb]:rounded-full
-            [&::-webkit-slider-thumb]:bg-storefront-gold
-            [&::-webkit-slider-thumb]:border-[4px] [&::-webkit-slider-thumb]:border-[#07090d]
-            [&::-webkit-slider-thumb]:shadow-[0_0_0_2px_rgba(207,187,150,0.55),0_10px_24px_-4px_rgba(207,187,150,0.65)]
-            [&::-webkit-slider-thumb]:transition-transform
-            [&::-webkit-slider-thumb]:cursor-grab
-            active:[&::-webkit-slider-thumb]:scale-110
-            [&::-moz-range-thumb]:w-8 [&::-moz-range-thumb]:h-8
-            [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-storefront-gold
-            [&::-moz-range-thumb]:border-[4px] [&::-moz-range-thumb]:border-[#07090d]
-            [&::-moz-range-thumb]:cursor-grab
-            [&::-webkit-slider-runnable-track]:bg-transparent
-            [&::-moz-range-track]:bg-transparent"
-        />
       </div>
     </div>
   );
@@ -1358,7 +1362,7 @@ export default function StorefrontProduct() {
                         values={heights.filter((h) => h !== 2400)}
                         selected={selectedHeight && selectedHeight !== 2400 ? selectedHeight : null}
                         onChange={setSelectedHeight}
-                        labelValues={[1600, 1800, 2200, 2500]}
+                        labelValues={[1600, 1900, 2200, 2500]}
                       />
                     )}
                   </div>
