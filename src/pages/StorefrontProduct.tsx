@@ -419,72 +419,100 @@ export default function StorefrontProduct() {
     const mock = MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
     return { name, hex: mock?.hex ?? "#2a2a2a" };
   });
-  const moldingItems = collectFromSpecs("molding_colors", null, "molding").map((name) => {
-    const mock = MOCK_MOLDING_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
-    return { name, hex: mock?.hex ?? "#2a2a2a" };
-  });
+  // Moldings — prefer image-bound molding_key, then specs.moldings, fall back to molding_colors.
+  const imageMoldings = useMemo(() => {
+    const seen = new Set<string>();
+    const out: { name: string; hex: string }[] = [];
+    for (const img of images as any[]) {
+      const key = img.molding_key?.trim();
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      const mock = MOCK_MOLDING_COLORS.find((c) => c.name.toLowerCase() === key.toLowerCase())
+        || MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === key.toLowerCase());
+      out.push({ name: key, hex: mock?.hex ?? "#9C9994" });
+    }
+    return out;
+  }, [images]);
+  const specMoldingNames = collectFromSpecs("moldings", null, "molding");
+  const moldingItems = imageMoldings.length > 0
+    ? imageMoldings
+    : (specMoldingNames.length > 0 ? specMoldingNames : collectFromSpecs("molding_colors", null, "molding")).map((name) => {
+        const mock = MOCK_MOLDING_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase())
+          || MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
+        return { name, hex: mock?.hex ?? "#9C9994" };
+      });
+  const hasImageBoundMoldings = imageMoldings.length > 0;
 
-  // Set initial selected color/glazing from specs
+  // Set initial selected color/glazing/molding from specs or first image
   useMemo(() => {
     if (specs?.color && !selectedColor) setSelectedColor(specs.color);
     if (specs?.glazing && !selectedGlazing) setSelectedGlazing(specs.glazing);
-  }, [specs]);
+    const firstImg = (images as any[])[0];
+    if (firstImg) {
+      if (!selectedColor && firstImg.variant_key) setSelectedColor(firstImg.variant_key);
+      if (!selectedGlazing && firstImg.glazing_key) setSelectedGlazing(firstImg.glazing_key);
+      if (!selectedMolding && firstImg.molding_key) setSelectedMolding(firstImg.molding_key);
+    }
+  }, [specs, images]);
 
-  // Find image matching a (color, glazing) combination, with graceful fallbacks.
-  // Returns both the index and the image so callers can sync the other axis.
-  const findImage = (color: string | null, glazing: string | null) => {
+  // Find image matching (color, glazing, molding) with graceful fallbacks.
+  // Returns both the index and the image so callers can sync other axes.
+  const findImage = (color: string | null, glazing: string | null, molding: string | null) => {
     const imgs = images as any[];
     const eq = (a: any, b: any) =>
       typeof a === "string" && typeof b === "string" && a.toLowerCase() === b.toLowerCase();
-    if (color && glazing) {
-      const i = imgs.findIndex((img) => eq(img.variant_key, color) && eq(img.glazing_key, glazing));
-      if (i >= 0) return { i, img: imgs[i] };
-    }
-    if (color) {
-      const i = imgs.findIndex((img) => eq(img.variant_key, color));
-      if (i >= 0) return { i, img: imgs[i] };
-    }
-    if (glazing) {
-      const i = imgs.findIndex((img) => eq(img.glazing_key, glazing));
+    const matchAxes = (img: any, axes: Array<[string, string | null]>) =>
+      axes.every(([k, v]) => v == null || eq(img[k], v));
+    // Try most specific first, then drop one axis at a time.
+    const candidates: Array<Array<[string, string | null]>> = [
+      [["variant_key", color], ["glazing_key", glazing], ["molding_key", molding]],
+      [["variant_key", color], ["glazing_key", glazing]],
+      [["variant_key", color], ["molding_key", molding]],
+      [["glazing_key", glazing], ["molding_key", molding]],
+      [["variant_key", color]],
+      [["glazing_key", glazing]],
+      [["molding_key", molding]],
+    ];
+    for (const axes of candidates) {
+      if (axes.every(([_k, v]) => v == null)) continue;
+      const i = imgs.findIndex((img) => matchAxes(img, axes));
       if (i >= 0) return { i, img: imgs[i] };
     }
     return { i: -1, img: null as any };
   };
 
-  // When user picks a color: show its photo, and sync glazing if the photo has one.
+  const syncFromImage = (img: any) => {
+    if (img?.variant_key && img.variant_key !== selectedColor) setSelectedColor(img.variant_key);
+    if (img?.glazing_key && img.glazing_key !== selectedGlazing) setSelectedGlazing(img.glazing_key);
+    if (img?.molding_key && img.molding_key !== selectedMolding) setSelectedMolding(img.molding_key);
+  };
+
   const handleSelectColor = (colorName: string) => {
     setSelectedColor(colorName);
     if (!hasImageBoundColors) return;
-    const { i, img } = findImage(colorName, selectedGlazing);
+    const { i, img } = findImage(colorName, selectedGlazing, selectedMolding);
     if (i >= 0) {
       setCurrentImage(i);
-      if (img?.glazing_key && img.glazing_key !== selectedGlazing) {
-        setSelectedGlazing(img.glazing_key);
-      }
+      syncFromImage(img);
     }
   };
 
-  // When user picks a glazing: prefer exact (color+glazing) match, then any photo with
-  // that glazing (switching color to match). Mirrors brandoors.ru behavior where each
-  // photo is a unique combo.
   const handleSelectGlazing = (glazingName: string) => {
     setSelectedGlazing(glazingName);
-    const imgs = images as any[];
-    const eq = (a: any, b: any) =>
-      typeof a === "string" && typeof b === "string" && a.toLowerCase() === b.toLowerCase();
-    let i = -1;
-    if (selectedColor) {
-      i = imgs.findIndex((img) => eq(img.variant_key, selectedColor) && eq(img.glazing_key, glazingName));
-    }
-    if (i < 0) {
-      i = imgs.findIndex((img) => eq(img.glazing_key, glazingName));
-    }
+    const { i, img } = findImage(selectedColor, glazingName, selectedMolding);
     if (i >= 0) {
       setCurrentImage(i);
-      const img = imgs[i];
-      if (img?.variant_key && img.variant_key !== selectedColor) {
-        setSelectedColor(img.variant_key);
-      }
+      syncFromImage(img);
+    }
+  };
+
+  const handleSelectMolding = (moldingName: string) => {
+    setSelectedMolding(moldingName);
+    if (!hasImageBoundMoldings) return;
+    const { i, img } = findImage(selectedColor, selectedGlazing, moldingName);
+    if (i >= 0) {
+      setCurrentImage(i);
+      syncFromImage(img);
     }
   };
 
@@ -897,7 +925,7 @@ export default function StorefrontProduct() {
                             hex={c.hex}
                             material={pickCoatingMaterial(c.name, c.hex) === "wood" ? "wood" : "metal"}
                             selected={selectedMolding === c.name}
-                            onClick={() => setSelectedMolding(c.name)}
+                            onClick={() => handleSelectMolding(c.name)}
                           />
                         ))}
                       </div>

@@ -484,6 +484,7 @@ export type Database = {
           glazing_key: string | null
           id: string
           is_primary: boolean | null
+          molding_key: string | null
           product_id: string
           sort_order: number | null
           url: string
@@ -495,6 +496,7 @@ export type Database = {
           glazing_key?: string | null
           id?: string
           is_primary?: boolean | null
+          molding_key?: string | null
           product_id: string
           sort_order?: number | null
           url: string
@@ -506,6 +508,7 @@ export type Database = {
           glazing_key?: string | null
           id?: string
           is_primary?: boolean | null
+          molding_key?: string | null
           product_id?: string
           sort_order?: number | null
           url?: string
