@@ -1063,7 +1063,7 @@ export default function StorefrontProduct() {
                   <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto scrollbar-hide snap-x">
                     <div className="flex gap-3 pb-2">
                       {realTrim.map((item) => (
-                        <div key={item.id} className="snap-start shrink-0 w-[160px] sm:w-[180px]">
+                        <div key={item.id} className="snap-start shrink-0 w-[230px] sm:w-[250px]">
                           <AccessoryCard
                             name={item.name}
                             rrp={item.rrp}
@@ -1117,7 +1117,7 @@ export default function StorefrontProduct() {
                   <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto scrollbar-hide snap-x">
                     <div className="flex gap-3 pb-2">
                       {filteredHardware.map((item) => (
-                        <div key={item.id} className="snap-start shrink-0 w-[160px] sm:w-[180px]">
+                        <div key={item.id} className="snap-start shrink-0 w-[230px] sm:w-[250px]">
                           <AccessoryCard
                             name={item.name}
                             rrp={item.rrp}
