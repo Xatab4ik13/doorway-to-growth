@@ -1116,15 +1116,13 @@ export default function StorefrontProduct() {
 
 
               {(widths.length > 0 || heights.length > 0) && (
-                <div className="mb-8">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 rounded-lg bg-storefront-gold/10 flex items-center justify-center">
-                      <Ruler className="w-4 h-4 text-storefront-gold" />
-                    </div>
-                    <span className="text-[13px] uppercase tracking-[0.15em] font-semibold text-storefront-text">
+                <div className="mb-10">
+                  <div className="flex items-baseline justify-between gap-2 mb-5 pb-3 border-b border-white/5">
+                    <h2 className="text-[13px] uppercase tracking-[0.22em] font-light text-storefront-text/85">
                       Размер
-                    </span>
+                    </h2>
                   </div>
+
 
                   <div className="rounded-2xl overflow-hidden" style={{ background: "linear-gradient(180deg, rgba(207,187,150,0.06) 0%, rgba(207,187,150,0.01) 100%)", border: "1px solid rgba(207,187,150,0.1)" }}>
                     {widths.length > 0 && (
