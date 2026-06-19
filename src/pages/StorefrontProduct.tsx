@@ -687,7 +687,9 @@ export default function StorefrontProduct() {
     const mock = MOCK_GLAZING.find((g) => g.name.toLowerCase() === name.toLowerCase());
     return { name, preview: mock?.preview ?? "#2a2a2a" };
   });
-  const glazingItems = imageGlazings.length > 0 ? imageGlazings : specGlazingItems;
+  // Show glazing only when images carry glazing_key. Spec-only items create
+  // controls that don't switch the picture — that confuses customers.
+  const glazingItems = imageGlazings;
   const hasImageBoundGlazings = imageGlazings.length > 0;
 
   // Build (color, glazing) availability matrix from images.
@@ -727,11 +729,8 @@ export default function StorefrontProduct() {
     }
     return out;
   }, [images]);
-  const specEdgeItems = collectFromSpecs("edge_colors", null, "edge", ["edge"]).map((name) => {
-    const mock = MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
-    return { name, hex: mock?.hex ?? "#2a2a2a" };
-  });
-  const edgeItems = imageEdges.length > 0 ? imageEdges : specEdgeItems;
+  // Same rule: only render edges that actually switch the photo.
+  const edgeItems = imageEdges;
   const hasImageBoundEdges = imageEdges.length > 0;
   const edgesByColor = useMemo(() => {
     const map = new Map<string, Set<string>>();
@@ -756,7 +755,7 @@ export default function StorefrontProduct() {
     return map;
   }, [images]);
 
-  // Moldings — prefer image-bound molding_key, then specs.moldings, fall back to molding_colors.
+  // Moldings — only image-bound (avoid dead spec-only swatches for HEAVY/MAZE).
   const imageMoldings = useMemo(() => {
     const seen = new Set<string>();
     const out: { name: string; hex: string }[] = [];
@@ -770,15 +769,7 @@ export default function StorefrontProduct() {
     }
     return out;
   }, [images]);
-  const specMoldingNames = collectFromSpecs("moldings", null, "molding", ["casing", "panel"]);
-  const moldingItems = imageMoldings.length > 0
-    ? imageMoldings
-    : (specMoldingNames.length > 0 ? specMoldingNames : collectFromSpecs("molding_colors", null, "molding", ["casing", "panel"])).map((name) => {
-
-        const mock = MOCK_MOLDING_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase())
-          || MOCK_EDGE_COLORS.find((c) => c.name.toLowerCase() === name.toLowerCase());
-        return { name, hex: mock?.hex ?? "#9C9994" };
-      });
+  const moldingItems = imageMoldings;
   const hasImageBoundMoldings = imageMoldings.length > 0;
   const moldingsByColor = useMemo(() => {
     const map = new Map<string, Set<string>>();
@@ -792,10 +783,13 @@ export default function StorefrontProduct() {
     return map;
   }, [images]);
 
+
   // Set initial selected color/glazing/edge/molding from specs or first image
   useMemo(() => {
     if (specs?.color && !selectedColor) setSelectedColor(specs.color);
-    if (specs?.glazing && !selectedGlazing) setSelectedGlazing(specs.glazing);
+    // Only seed glazing from specs when the product really has image-bound glazings,
+    // otherwise the stale value blocks later image matches (e.g. ESTETICA 04 edges).
+    if (specs?.glazing && !selectedGlazing && imageGlazings.length > 0) setSelectedGlazing(specs.glazing);
     const firstImg = (images as any[])[0];
     if (firstImg) {
       if (!selectedColor && firstImg.variant_key) setSelectedColor(firstImg.variant_key);
