@@ -8,6 +8,7 @@ import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { ChevronRight, ChevronDown, ShoppingCart, Check, SlidersHorizontal, X } from "lucide-react";
 import brandoorsLogo from "@/assets/logo.png";
+import { resolveStorageUrl } from "@/lib/storageUrl";
 import { useCartStore } from "@/stores/useCartStore";
 import { storeHref } from "@/lib/storeHref";
 
