@@ -1425,7 +1425,7 @@ export default function StorefrontProduct() {
                       </div>
                       <div className="pt-3">
                         <h3 className="text-xs font-semibold text-storefront-text uppercase tracking-wider leading-snug mb-1 line-clamp-2">{p.name}</h3>
-                        {p.rrp && <p className="text-sm font-medium text-storefront-text tabular-nums">{Number(p.rrp).toLocaleString("ru-RU")} ₽</p>}
+                        {Number(p.rrp) > 0 && <p className="text-sm font-medium text-storefront-text tabular-nums">{Number(p.rrp).toLocaleString("ru-RU")} ₽</p>}
                       </div>
                     </Link>
                   );
