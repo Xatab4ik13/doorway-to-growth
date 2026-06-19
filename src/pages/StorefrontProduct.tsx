@@ -1447,7 +1447,7 @@ export default function StorefrontProduct() {
                       </div>
                       <div
                         className="text-[30px] leading-none text-storefront-gold tabular-nums"
-                        style={{ fontFamily: "'Raleway', system-ui, sans-serif", fontWeight: 300, letterSpacing: "-0.01em" }}
+                        style={{ fontFamily: "'Manrope', system-ui, sans-serif", fontWeight: 700, letterSpacing: "-0.02em" }}
                       >
                         {totalPrice.toLocaleString("ru-RU")} ₽
                       </div>
