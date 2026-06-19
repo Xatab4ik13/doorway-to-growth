@@ -295,9 +295,12 @@ export default function StorefrontProduct() {
   const [selectedGlazing, setSelectedGlazing] = useState<string | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<string | null>(null);
   const [selectedMolding, setSelectedMolding] = useState<string | null>(null);
+  const [selectedWidth, setSelectedWidth] = useState<number | null>(null);
+  const [selectedHeight, setSelectedHeight] = useState<number | null>(null);
   const [selectedTrim, setSelectedTrim] = useState<Set<string>>(new Set());
   const [selectedHardware, setSelectedHardware] = useState<Set<string>>(new Set());
   const [hardwareTab, setHardwareTab] = useState<string>("all");
+
 
   const trimScrollRef = useRef<HTMLDivElement>(null);
   const hardwareScrollRef = useRef<HTMLDivElement>(null);
