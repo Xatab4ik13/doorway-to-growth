@@ -860,7 +860,7 @@ export default function StorefrontProduct() {
                 <div className="space-y-5 mb-8">
                   <div>
                     <div className="flex items-center gap-2 mb-4">
-                      <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Панель:</span>
+                      <span className="text-[13px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Панель:</span>
                       <span className="text-[12px] text-storefront-gold/80">{selectedPanel || "—"}</span>
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -891,7 +891,7 @@ export default function StorefrontProduct() {
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-4">
-                      <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет внутренней панели:</span>
+                      <span className="text-[13px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">Цвет внутренней панели:</span>
                       <span className="text-[12px] text-storefront-gold/80">{selectedColor || "—"}</span>
                     </div>
                     <div className="flex flex-wrap gap-3">
@@ -929,7 +929,7 @@ export default function StorefrontProduct() {
                   {colorSwatches.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-4">
-                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("color")}:</span>
+                        <span className="text-[13px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("color")}:</span>
                         <span className="text-[12px] text-storefront-gold/80">{selectedColor || "—"}</span>
                       </div>
                       <div className="flex flex-wrap gap-3">
@@ -959,7 +959,7 @@ export default function StorefrontProduct() {
                   {glazingItems.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-4">
-                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("glazing")}:</span>
+                        <span className="text-[13px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("glazing")}:</span>
                         <span className="text-[12px] text-storefront-gold/80">{selectedGlazing || "—"}</span>
                       </div>
                       <div className="flex flex-wrap gap-3">
@@ -991,7 +991,7 @@ export default function StorefrontProduct() {
                   {edgeItems.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-4">
-                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("edge")}:</span>
+                        <span className="text-[13px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("edge")}:</span>
                         <span className="text-[12px] text-storefront-gold/80">{selectedEdge || "—"}</span>
                       </div>
                       <div className="flex flex-wrap gap-3">
@@ -1013,7 +1013,7 @@ export default function StorefrontProduct() {
                   {moldingItems.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-4">
-                        <span className="text-[11px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("molding")}:</span>
+                        <span className="text-[13px] uppercase tracking-[0.2em] text-storefront-muted font-semibold">{axisLabel("molding")}:</span>
                         <span className="text-[12px] text-storefront-gold/80">{selectedMolding || "—"}</span>
                       </div>
                       <div className="flex flex-wrap gap-3">
