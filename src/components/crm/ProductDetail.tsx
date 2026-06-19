@@ -230,7 +230,7 @@ export function ProductDetail({ product, onClose }: ProductDetailProps) {
                         onClick={() => setActiveImage(i)}
                         className={`block w-full aspect-square rounded-xl overflow-hidden transition-all active:scale-95 bg-muted ${activeImage === i ? "ring-2 ring-foreground" : "ring-1 ring-border hover:ring-foreground/40"}`}
                       >
-                        <img src={img.url} alt="" className="w-full h-full object-cover" />
+                        <img src={resolveStorageUrl(img.url)} alt="" className="w-full h-full object-cover" />
                       </button>
                       {vk && (
                         <span
