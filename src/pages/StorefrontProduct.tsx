@@ -1259,11 +1259,7 @@ export default function StorefrontProduct() {
               {/* ===== HARDWARE (ФУРНИТУРА) ===== */}
               {!isEntranceDoor && realHardware.length > 0 && (
                 <div className="mb-10">
-                  <div className="mb-5 pb-3 border-b border-white/5">
-                    <h2 className="text-[13px] uppercase tracking-[0.22em] font-light text-storefront-text/85">
-                      Фурнитура
-                    </h2>
-                  </div>
+
 
                   {/* Subcategory tabs */}
                   <div className="flex flex-wrap gap-2.5 mb-6">
