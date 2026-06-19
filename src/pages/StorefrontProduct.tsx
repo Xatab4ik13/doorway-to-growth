@@ -1362,7 +1362,7 @@ export default function StorefrontProduct() {
                         values={heights.filter((h) => h !== 2400)}
                         selected={selectedHeight && selectedHeight !== 2400 ? selectedHeight : null}
                         onChange={setSelectedHeight}
-                        labelValues={[1600, 1800, 2200, 2500]}
+                        labelValues={[1600, 1900, 2200, 2500]}
                       />
                     )}
                   </div>
