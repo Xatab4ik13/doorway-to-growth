@@ -1002,7 +1002,7 @@ export default function StorefrontProduct() {
                             hex={c.hex}
                             material="metal"
                             selected={selectedEdge === c.name}
-                            onClick={() => setSelectedEdge(c.name)}
+                            onClick={() => setSelectedEdge(selectedEdge === c.name ? null : c.name)}
                           />
                         ))}
                       </div>
