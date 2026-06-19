@@ -525,6 +525,7 @@ export default function StorefrontProduct() {
   const [selectedMolding, setSelectedMolding] = useState<string | null>(null);
   const [selectedWidth, setSelectedWidth] = useState<number | null>(null);
   const [selectedHeight, setSelectedHeight] = useState<number | null>(null);
+  const [selectedOpeningSystem, setSelectedOpeningSystem] = useState<string | null>(null);
   const [selectedTrim, setSelectedTrim] = useState<Set<string>>(new Set());
   const [selectedHardware, setSelectedHardware] = useState<Set<string>>(new Set());
   const [hardwareTab, setHardwareTab] = useState<string>("handles");
