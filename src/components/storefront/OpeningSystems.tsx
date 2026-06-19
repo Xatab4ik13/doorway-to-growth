@@ -81,13 +81,6 @@ const OpeningSystems = memo(function OpeningSystems() {
       >
         {/* Stage with video — taller */}
         <div className="relative aspect-[4/3] sm:aspect-[16/10] bg-[#0a0c12] overflow-hidden">
-          <div className="pointer-events-none absolute inset-4 z-10">
-            <div className="absolute top-0 left-0 w-8 h-8 border-l border-t border-storefront-gold/40" />
-            <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-storefront-gold/40" />
-            <div className="absolute bottom-0 left-0 w-8 h-8 border-l border-b border-storefront-gold/40" />
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-r border-b border-storefront-gold/40" />
-          </div>
-
           <video
             ref={videoRef}
             key={current.id}
@@ -97,7 +90,7 @@ const OpeningSystems = memo(function OpeningSystems() {
             loop
             playsInline
             preload="metadata"
-            className="absolute inset-0 w-full h-full object-contain"
+            className="absolute inset-0 w-full h-full object-cover"
           />
 
           {/* Bottom caption */}
