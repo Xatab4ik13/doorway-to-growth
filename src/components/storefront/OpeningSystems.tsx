@@ -124,9 +124,9 @@ const OpeningSystems = memo(function OpeningSystems() {
                 <button
                   key={s.id}
                   onClick={() => setActive(s.id)}
-                  className={`w-full px-5 py-4 rounded-2xl text-[15px] sm:text-[16px] tracking-[0.04em] whitespace-nowrap transition-all duration-300 border ${
+                  className={`w-full px-5 py-4 rounded-2xl text-[15px] sm:text-[16px] tracking-[0.04em] whitespace-nowrap transition-colors duration-300 border ${
                     isActive
-                      ? "bg-storefront-gold/15 text-storefront-gold border-storefront-gold/60 shadow-[0_10px_28px_-12px_rgba(207,187,150,0.55)]"
+                      ? "bg-storefront-gold/15 text-storefront-gold border-storefront-gold/60"
                       : "bg-transparent text-storefront-text/80 border-storefront-gold/10 hover:border-storefront-gold/40 hover:text-storefront-text"
                   }`}
                   style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600 }}
