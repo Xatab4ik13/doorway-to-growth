@@ -3,38 +3,40 @@ import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
-import interiorImg from "@/assets/categories/interior-doors.png";
-import entranceImg from "@/assets/categories/entrance-doors.png";
-import pogonazhImg from "@/assets/categories/pogonazh.png";
-import furnituraImg from "@/assets/categories/furnitura.png";
 import { storeHref } from "@/lib/storeHref";
 
-type CategoryCard = {
-  slug: string;
-  title: string;
+import colPrime from "@/assets/collections/prime.webp";
+import colEstetica from "@/assets/collections/estetica.webp";
+import colGhost from "@/assets/collections/ghost.webp";
+import colHeavy from "@/assets/collections/heavy.webp";
+import colEsteticaEmale from "@/assets/collections/estetica-emale.webp";
+import colMaze from "@/assets/collections/maze.webp";
+
+type CollectionCard = {
+  name: string;
   subtitle: string;
   image: string;
 };
 
-type CategoryItem = CategoryCard & { intermediate?: "collections" };
-
-const CATEGORIES: CategoryItem[] = [
-  { slug: "mezhkomnatnye-dveri", title: "Межкомнатные двери", subtitle: "Коллекции для интерьера", image: interiorImg, intermediate: "collections" },
-  { slug: "entrance-doors", title: "Входные двери", subtitle: "Защита и характер фасада", image: entranceImg },
-  { slug: "pogonazh", title: "Погонаж", subtitle: "Наличники, доборы, плинтус", image: pogonazhImg },
-  { slug: "furnitura", title: "Фурнитура", subtitle: "Ручки, петли, замки", image: furnituraImg },
+const COLLECTIONS: CollectionCard[] = [
+  { name: "PRIME", subtitle: "Классика премиум-сегмента", image: colPrime },
+  { name: "ESTETICA", subtitle: "Эстетика чистых линий", image: colEstetica },
+  { name: "GHOST", subtitle: "Скрытый монтаж", image: colGhost },
+  { name: "HEAVY", subtitle: "Массивные формы", image: colHeavy },
+  { name: "ESTETICA EMALE", subtitle: "Эмаль ручной работы", image: colEsteticaEmale },
+  { name: "MAZE", subtitle: "Геометрия и фактура", image: colMaze },
 ];
 
-export default function StorefrontCategorySelect() {
+export default function StorefrontCollectionSelect() {
   const { slug: urlSlug } = useParams<{ slug: string }>();
   const slug = useSiteSlug(urlSlug);
   const { data: site, isLoading } = useSiteBySlug(slug);
 
   useDocumentMeta({
-    title: site ? `Каталог — ${site.name}` : "Каталог — Brandoors",
+    title: site ? `Межкомнатные двери — ${site.name}` : "Межкомнатные двери — Brandoors",
     description: site
-      ? `Выберите категорию: межкомнатные и входные двери, погонаж, фурнитура — салон ${site.name}, ${site.city}`
-      : "Каталог Brandoors: межкомнатные и входные двери, погонаж, фурнитура",
+      ? `Выберите коллекцию межкомнатных дверей: PRIME, ESTETICA, GHOST, HEAVY, MAZE — салон ${site.name}, ${site.city}`
+      : "Коллекции межкомнатных дверей Brandoors: PRIME, ESTETICA, GHOST, HEAVY, MAZE",
   });
 
   if (isLoading) {
@@ -53,7 +55,7 @@ export default function StorefrontCategorySelect() {
     );
   }
 
-  const baseHref = storeHref(slug, "catalog/list");
+  const listHref = storeHref(slug, "catalog/list");
 
   return (
     <StorefrontLayout site={site}>
@@ -68,7 +70,14 @@ export default function StorefrontCategorySelect() {
               Главная
             </Link>
             <span className="text-storefront-muted/40">/</span>
-            <span className="uppercase tracking-[0.15em] text-storefront-text">Каталог</span>
+            <Link
+              to={storeHref(slug, "catalog")}
+              className="uppercase tracking-[0.15em] text-storefront-muted hover:text-storefront-gold transition-colors"
+            >
+              Каталог
+            </Link>
+            <span className="text-storefront-muted/40">/</span>
+            <span className="uppercase tracking-[0.15em] text-storefront-text">Межкомнатные двери</span>
           </div>
 
           {/* Header */}
@@ -77,25 +86,25 @@ export default function StorefrontCategorySelect() {
               className="text-3xl md:text-5xl font-extralight text-storefront-text tracking-wide"
               style={{ fontFamily: "'Raleway', sans-serif" }}
             >
-              Выберите категорию
+              Выберите коллекцию
             </h1>
             <p
               className="mt-3 text-sm md:text-base text-storefront-muted tracking-[0.15em] uppercase"
               style={{ fontFamily: "'Raleway', sans-serif" }}
             >
-              4 раздела каталога
+              {COLLECTIONS.length} коллекций межкомнатных дверей
             </p>
           </div>
 
           {/* Cards grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            {CATEGORIES.map((cat) => (
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+            {COLLECTIONS.map((col) => (
               <Link
-                key={cat.slug}
-                to={`${baseHref}?category=${cat.slug}`}
+                key={col.name}
+                to={`${listHref}?category=mezhkomnatnye-dveri&collection=${encodeURIComponent(col.name)}`}
                 className="group relative flex flex-col items-center text-center"
               >
-                {/* Image container — door silhouette acts as the visual frame */}
+                {/* Image container — floating door silhouette */}
                 <div className="relative w-full aspect-[2/3] flex items-end justify-center overflow-hidden">
                   {/* Soft golden glow behind on hover */}
                   <div
@@ -103,10 +112,8 @@ export default function StorefrontCategorySelect() {
                     style={{ background: "radial-gradient(ellipse at center, rgba(207,187,150,0.18), transparent 70%)" }}
                   />
                   <img
-                    src={cat.image}
-                    alt={cat.title}
-                    width={640}
-                    height={960}
+                    src={col.image}
+                    alt={col.name}
                     loading="lazy"
                     className="relative max-h-full w-auto object-contain transition-transform duration-500 ease-out group-hover:scale-[1.03] drop-shadow-[0_30px_40px_rgba(0,0,0,0.5)]"
                   />
@@ -118,13 +125,13 @@ export default function StorefrontCategorySelect() {
                     className="text-base md:text-lg text-storefront-text tracking-[0.18em] uppercase font-light transition-colors duration-300 group-hover:text-storefront-gold"
                     style={{ fontFamily: "'Raleway', sans-serif" }}
                   >
-                    {cat.title}
+                    {col.name}
                   </h2>
                   <p
                     className="mt-1 text-xs md:text-sm text-storefront-muted tracking-[0.1em]"
                     style={{ fontFamily: "'Raleway', sans-serif" }}
                   >
-                    {cat.subtitle}
+                    {col.subtitle}
                   </p>
                 </div>
               </Link>
