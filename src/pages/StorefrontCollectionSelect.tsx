@@ -1,36 +1,106 @@
 import { Link, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { storeHref } from "@/lib/storeHref";
-
-import colPrime from "@/assets/collections/prime.webp";
-import colEstetica from "@/assets/collections/estetica.webp";
-import colGhost from "@/assets/collections/ghost.webp";
-import colHeavy from "@/assets/collections/heavy.webp";
-import colEsteticaEmale from "@/assets/collections/estetica-emale.webp";
-import colMaze from "@/assets/collections/maze.webp";
+import { supabase } from "@/integrations/supabase/client";
+import { resolveStorageUrl } from "@/lib/storageUrl";
 
 type CollectionCard = {
   name: string;
   subtitle: string;
-  image: string;
+  image: string | null;
 };
 
-const COLLECTIONS: CollectionCard[] = [
-  { name: "PRIME", subtitle: "Классика премиум-сегмента", image: colPrime },
-  { name: "ESTETICA", subtitle: "Эстетика чистых линий", image: colEstetica },
-  { name: "GHOST", subtitle: "Скрытый монтаж", image: colGhost },
-  { name: "HEAVY", subtitle: "Массивные формы", image: colHeavy },
-  { name: "ESTETICA EMALE", subtitle: "Эмаль ручной работы", image: colEsteticaEmale },
-  { name: "MAZE", subtitle: "Геометрия и фактура", image: colMaze },
-];
+const SUBTITLES: Record<string, string> = {
+  PRIME: "Классика премиум-сегмента",
+  ESTETICA: "Эстетика чистых линий",
+  GHOST: "Скрытый монтаж",
+  HEAVY: "Массивные формы",
+  MAZE: "Геометрия и фактура",
+  REFLECT: "Зеркальные поверхности",
+};
+
+const ORDER = ["PRIME", "ESTETICA", "GHOST", "HEAVY", "MAZE", "REFLECT"];
+
+function useCollections() {
+  return useQuery({
+    queryKey: ["interior-collections"],
+    staleTime: 5 * 60 * 1000,
+    queryFn: async (): Promise<CollectionCard[]> => {
+      const { data: products, error } = await supabase
+        .from("products")
+        .select("id, specifications, sort_order")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true });
+      if (error) throw error;
+
+      // Pick the first product per collection
+      const firstByCollection = new Map<string, string>(); // collection -> productId
+      for (const p of products ?? []) {
+        const spec = (p as any).specifications as Record<string, unknown> | null;
+        const col = spec && typeof spec.collection === "string" ? (spec.collection as string) : null;
+        if (!col) continue;
+        if (!firstByCollection.has(col)) firstByCollection.set(col, (p as any).id);
+      }
+
+      const productIds = Array.from(firstByCollection.values());
+      if (productIds.length === 0) return [];
+
+      const { data: images, error: imgErr } = await supabase
+        .from("product_images")
+        .select("product_id, url, is_primary, sort_order")
+        .in("product_id", productIds);
+      if (imgErr) throw imgErr;
+
+      // Pick the primary image (or lowest sort_order) per product
+      const imageByProduct = new Map<string, string>();
+      for (const img of images ?? []) {
+        const existing = imageByProduct.get((img as any).product_id);
+        if (!existing) {
+          imageByProduct.set((img as any).product_id, (img as any).url);
+        }
+      }
+      // Second pass to prefer is_primary
+      for (const img of images ?? []) {
+        if ((img as any).is_primary) {
+          imageByProduct.set((img as any).product_id, (img as any).url);
+        }
+      }
+
+      const cards: CollectionCard[] = [];
+      for (const name of ORDER) {
+        const pid = firstByCollection.get(name);
+        if (!pid) continue;
+        const url = imageByProduct.get(pid) ?? null;
+        cards.push({
+          name,
+          subtitle: SUBTITLES[name] ?? "",
+          image: url ? resolveStorageUrl(url) : null,
+        });
+      }
+      // Append any collections not in ORDER
+      for (const [name, pid] of firstByCollection.entries()) {
+        if (ORDER.includes(name)) continue;
+        const url = imageByProduct.get(pid) ?? null;
+        cards.push({
+          name,
+          subtitle: SUBTITLES[name] ?? "",
+          image: url ? resolveStorageUrl(url) : null,
+        });
+      }
+      return cards;
+    },
+  });
+}
 
 export default function StorefrontCollectionSelect() {
   const { slug: urlSlug } = useParams<{ slug: string }>();
   const slug = useSiteSlug(urlSlug);
   const { data: site, isLoading } = useSiteBySlug(slug);
+  const { data: collections = [], isLoading: collectionsLoading } = useCollections();
 
   useDocumentMeta({
     title: site ? `Межкомнатные двери — ${site.name}` : "Межкомнатные двери — Brandoors",
@@ -92,31 +162,35 @@ export default function StorefrontCollectionSelect() {
               className="mt-3 text-sm md:text-base text-storefront-muted tracking-[0.15em] uppercase"
               style={{ fontFamily: "'Raleway', sans-serif" }}
             >
-              {COLLECTIONS.length} коллекций межкомнатных дверей
+              {collectionsLoading ? "Загрузка…" : `${collections.length} коллекций межкомнатных дверей`}
             </p>
           </div>
 
           {/* Cards grid */}
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-            {COLLECTIONS.map((col) => (
+            {collections.map((col) => (
               <Link
                 key={col.name}
                 to={`${listHref}?category=mezhkomnatnye-dveri&collection=${encodeURIComponent(col.name)}`}
                 className="group relative flex flex-col items-center text-center"
               >
-                {/* Image container — floating door silhouette */}
+                {/* Image container — floating door silhouette from the catalog */}
                 <div className="relative w-full aspect-[2/3] flex items-end justify-center overflow-hidden">
                   {/* Soft golden glow behind on hover */}
                   <div
                     className="absolute inset-x-4 inset-y-8 rounded-full opacity-0 group-hover:opacity-100 blur-3xl transition-opacity duration-500"
                     style={{ background: "radial-gradient(ellipse at center, rgba(207,187,150,0.18), transparent 70%)" }}
                   />
-                  <img
-                    src={col.image}
-                    alt={col.name}
-                    loading="lazy"
-                    className="relative max-h-full w-auto object-contain transition-transform duration-500 ease-out group-hover:scale-[1.03] drop-shadow-[0_30px_40px_rgba(0,0,0,0.5)]"
-                  />
+                  {col.image ? (
+                    <img
+                      src={col.image}
+                      alt={col.name}
+                      loading="lazy"
+                      className="relative max-h-full w-auto object-contain transition-transform duration-500 ease-out group-hover:scale-[1.03] drop-shadow-[0_30px_40px_rgba(0,0,0,0.5)]"
+                    />
+                  ) : (
+                    <div className="relative w-1/2 h-3/4 border border-storefront-gold/10 rounded-sm" />
+                  )}
                 </div>
 
                 {/* Caption */}
