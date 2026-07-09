@@ -213,7 +213,7 @@ export function AnalyticsPage() {
               { label: "Новые", stage: "new" },
               { label: "Консультация", stage: "consultation" },
               { label: "КП", stage: "quote" },
-              { label: "Договор", stage: "contract" },
+              { label: "Оплачено", stage: "paid" },
               { label: "Завершена", stage: "completed" },
             ].map((s, i) => {
               const count = leads.filter((l) => l.stage === s.stage).length;
