@@ -64,18 +64,22 @@ export function PartnersPage() {
   };
 
   const resetForm = () => {
-    setFormContactName(""); setFormName(""); setFormSiteId(""); setFormCity("Москва"); setFormDistrict(""); setFormAddress(""); setFormPhone(""); setFormEmail(""); setCreateAccount(true);
+    setFormContactName(""); setFormName(""); setFormSiteId(""); setFormCity("Москва"); setFormDistrict(""); setFormPhone(""); setFormEmail(""); setFormPassword(""); setCreateAccount(true);
   };
 
   const handleAdd = async () => {
     if (!formContactName.trim() || !formName.trim() || !formEmail.trim() || !formSiteId) return;
+    if (createAccount && formPassword.trim().length < 6) {
+      toast({ title: "Пароль должен быть не короче 6 символов", variant: "destructive" });
+      return;
+    }
     setCreating(true);
 
     try {
       let userId: string | undefined;
 
       if (createAccount) {
-        const password = generatePassword();
+        const password = formPassword.trim();
         const { data, error } = await supabase.functions.invoke("create-user", {
           body: {
             email: formEmail.trim(),
@@ -97,7 +101,6 @@ export function PartnersPage() {
         slug: slugify(formName),
         city: formCity.trim() || "Москва",
         district: formDistrict.trim() || undefined,
-        address: formAddress.trim() || undefined,
         phone: formPhone.trim() || undefined,
         email: formEmail.trim() || undefined,
         user_id: userId,
