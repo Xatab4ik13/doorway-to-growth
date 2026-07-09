@@ -335,9 +335,37 @@ export default function StorefrontCart() {
                     <p className="text-[13px] text-storefront-muted">
                       Товаров: <span className="text-storefront-text font-medium">{totalItems()}</span>
                     </p>
-                    <p className="text-[12px] text-storefront-muted/70 mt-2">
-                      Стоимость рассчитает менеджер после согласования конфигурации
-                    </p>
+                    {(() => {
+                      const pricedSum = items.reduce(
+                        (s, i) => s + (i.rrp && i.rrp > 0 ? i.rrp * i.quantity : 0),
+                        0
+                      );
+                      const hasUnpriced = items.some((i) => !i.rrp || i.rrp <= 0);
+                      if (pricedSum === 0) {
+                        return (
+                          <p className="text-[12px] text-storefront-muted/70 mt-2">
+                            Стоимость рассчитает менеджер после согласования конфигурации
+                          </p>
+                        );
+                      }
+                      return (
+                        <>
+                          <div className="flex items-baseline justify-between mt-4 pt-3 border-t border-white/[0.06]">
+                            <span className="text-[11px] uppercase tracking-[0.15em] text-storefront-muted/70">
+                              {hasUnpriced ? "Предварительно" : "Итого"}
+                            </span>
+                            <span className="text-[22px] font-bold text-storefront-gold tabular-nums">
+                              {pricedSum.toLocaleString("ru-RU")} ₽
+                            </span>
+                          </div>
+                          {hasUnpriced && (
+                            <p className="text-[11px] text-storefront-muted/60 mt-2">
+                              Часть позиций — по запросу, менеджер уточнит итоговую сумму
+                            </p>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
 
 
