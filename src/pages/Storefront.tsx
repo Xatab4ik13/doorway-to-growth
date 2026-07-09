@@ -28,7 +28,9 @@ export default function Storefront() {
     ogUrl: site ? `https://${site.slug}.brandoors.su` : undefined,
   });
 
-  if (isLoading) {
+  // Show loader while: query is loading, OR slug hasn't resolved yet (custom domain lookup),
+  // OR the query is disabled because slug is still undefined. Only show "not found" on real errors.
+  if (isLoading || (!site && !error)) {
     return (
       <div className="min-h-screen bg-[#111111] flex items-center justify-center">
         <div className="h-8 w-8 border-2 border-[#c5a572]/20 border-t-[#c5a572] rounded-full animate-spin" />
