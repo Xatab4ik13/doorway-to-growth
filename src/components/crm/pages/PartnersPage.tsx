@@ -360,8 +360,8 @@ export function PartnersPage() {
             <input value={formDistrict} onChange={(e) => setFormDistrict(e.target.value)} placeholder="ЮВАО" className={inputCls} />
           </div>
           <div className="col-span-2">
-            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Адрес</label>
-            <input value={formAddress} onChange={(e) => setFormAddress(e.target.value)} placeholder="ул. Примерная, 1" className={inputCls} />
+            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Пароль {createAccount ? "*" : ""}</label>
+            <input type="text" value={formPassword} onChange={(e) => setFormPassword(e.target.value)} placeholder="Минимум 6 символов" disabled={!createAccount} className={inputCls} />
           </div>
 
           {/* Account toggle */}
