@@ -112,7 +112,7 @@ export function AnalyticsPage() {
   })();
 
   // Conversion
-  const completedLeads = leads.filter((l) => l.stage === "completed" || l.stage === "contract").length;
+  const completedLeads = leads.filter((l) => l.stage === "completed" || l.stage === "paid").length;
   const conversionRate = leads.length > 0 ? ((completedLeads / leads.length) * 100).toFixed(1) : "0";
 
   // Leads by partner
