@@ -135,7 +135,7 @@ export function AnalyticsPage() {
       if (l.product_id) {
         if (!counts[l.product_id]) counts[l.product_id] = { total: 0, completed: 0 };
         counts[l.product_id].total++;
-        if (l.stage === "completed" || l.stage === "contract") counts[l.product_id].completed++;
+        if (l.stage === "completed" || l.stage === "paid") counts[l.product_id].completed++;
       }
     });
     return Object.entries(counts)
