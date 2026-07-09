@@ -170,9 +170,20 @@ export function CartDrawer() {
                               <h3 className="text-[12px] font-semibold text-storefront-text uppercase tracking-wider leading-tight line-clamp-2 mb-1">
                                 {item.name}
                               </h3>
-                              <span className="text-[11px] text-storefront-muted">
-                                Цена по запросу
-                              </span>
+                              {item.rrp && item.rrp > 0 ? (
+                                <span className="text-[12px] font-semibold text-storefront-gold tabular-nums">
+                                  {(item.rrp * item.quantity).toLocaleString("ru-RU")} ₽
+                                  {item.quantity > 1 && (
+                                    <span className="text-[10px] text-storefront-muted/60 font-normal ml-1">
+                                      ({item.rrp.toLocaleString("ru-RU")} × {item.quantity})
+                                    </span>
+                                  )}
+                                </span>
+                              ) : (
+                                <span className="text-[11px] text-storefront-muted">
+                                  Цена по запросу
+                                </span>
+                              )}
 
                             </div>
 
