@@ -7,7 +7,7 @@ const funnelStages: Record<string, { label: string; class: string }> = {
   new: { label: "Новая", class: "bg-[hsl(210_80%_52%/0.12)] text-[hsl(210_80%_52%)]" },
   consultation: { label: "Консультация", class: "bg-[hsl(38_92%_50%/0.12)] text-warning" },
   quote: { label: "КП", class: "bg-[hsl(30_70%_50%/0.12)] text-[hsl(30_70%_50%)]" },
-  contract: { label: "Договор", class: "bg-success/12 text-success" },
+  paid: { label: "Оплачено", class: "bg-success/12 text-success" },
   completed: { label: "Завершена", class: "bg-muted text-muted-foreground" },
   cancelled: { label: "Отменена", class: "bg-destructive/12 text-destructive" },
 };
