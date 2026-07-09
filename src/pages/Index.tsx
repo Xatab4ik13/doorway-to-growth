@@ -12,11 +12,37 @@ import { NotificationsPage } from "@/components/crm/pages/NotificationsPage";
 import { ProfilePage } from "@/components/crm/pages/ProfilePage";
 import { AnnouncementsPage } from "@/components/crm/pages/AnnouncementsPage";
 
+const VALID_SECTIONS = ["dashboard","sites","partners","catalog","leads","analytics","announcements","settings","notifications","profile"];
+
+const getInitialSection = () => {
+  const hash = window.location.hash.replace("#", "");
+  if (VALID_SECTIONS.includes(hash)) return hash;
+  const stored = localStorage.getItem("crm:activeSection");
+  if (stored && VALID_SECTIONS.includes(stored)) return stored;
+  return "dashboard";
+};
+
 const Index = () => {
-  const [activeSection, setActiveSection] = useState("dashboard");
+  const [activeSection, setActiveSection] = useState(getInitialSection);
   const [transitioning, setTransitioning] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const prevSection = useRef(activeSection);
+
+  useEffect(() => {
+    localStorage.setItem("crm:activeSection", activeSection);
+    if (window.location.hash.replace("#", "") !== activeSection) {
+      window.history.replaceState(null, "", `#${activeSection}`);
+    }
+  }, [activeSection]);
+
+  useEffect(() => {
+    const onHash = () => {
+      const h = window.location.hash.replace("#", "");
+      if (VALID_SECTIONS.includes(h) && h !== activeSection) setActiveSection(h);
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, [activeSection]);
 
   const handleNavigate = (section: string) => {
     if (section === activeSection) return;
