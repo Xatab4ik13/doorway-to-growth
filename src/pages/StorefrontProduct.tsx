@@ -1630,7 +1630,7 @@ export default function StorefrontProduct() {
 
               {/* ===== ORDER SUMMARY (calculator-style) ===== */}
               {(() => {
-                const doorPrice = product.rrp ? Number(product.rrp) : 0;
+                const doorPrice = configuredPrice ?? 0;
                 const trimItems = realTrim.filter((t) => selectedTrim.has(t.id));
                 const hwItems = realHardware.filter((h) => selectedHardware.has(h.id));
                 const trimTotal = trimItems.reduce((s, t) => s + (t.rrp ?? 0), 0);
