@@ -40,9 +40,9 @@ export function PartnersPage() {
   const [formSiteId, setFormSiteId] = useState<string>("");
   const [formCity, setFormCity] = useState("Москва");
   const [formDistrict, setFormDistrict] = useState("");
-  const [formAddress, setFormAddress] = useState("");
   const [formPhone, setFormPhone] = useState("");
   const [formEmail, setFormEmail] = useState("");
+  const [formPassword, setFormPassword] = useState("");
   const [createAccount, setCreateAccount] = useState(true);
 
   // Credentials modal
@@ -58,7 +58,6 @@ export function PartnersPage() {
       if (!formName.trim()) setFormName(site.name);
       if (site.city) setFormCity(site.city);
       if (site.district) setFormDistrict(site.district);
-      if (site.address && !formAddress.trim()) setFormAddress(site.address);
       if (site.phone && !formPhone.trim()) setFormPhone(site.phone);
       if (site.email && !formEmail.trim()) setFormEmail(site.email);
     }
