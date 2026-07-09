@@ -95,7 +95,7 @@ export default function StorefrontBrand() {
   const slug = useSiteSlug(urlSlug);
   const { data: site, isLoading, error } = useSiteBySlug(slug);
 
-  if (isLoading) {
+  if (isLoading || (!site && !slug && !error)) {
     return (
       <div className="min-h-screen bg-[#111111] flex items-center justify-center">
         <div className="h-8 w-8 border-2 border-[#c5a572]/20 border-t-[#c5a572] rounded-full animate-spin" />

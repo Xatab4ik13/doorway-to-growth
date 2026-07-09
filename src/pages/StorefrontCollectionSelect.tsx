@@ -109,7 +109,7 @@ export default function StorefrontCollectionSelect() {
       : "Коллекции межкомнатных дверей Brandoors: PRIME, ESTETICA, GHOST, HEAVY, MAZE",
   });
 
-  if (isLoading) {
+  if (isLoading || (!site && !slug)) {
     return (
       <div className="min-h-screen bg-[#07090d] flex items-center justify-center">
         <div className="h-8 w-8 border-2 border-storefront-gold/20 border-t-storefront-gold rounded-full animate-spin" />
