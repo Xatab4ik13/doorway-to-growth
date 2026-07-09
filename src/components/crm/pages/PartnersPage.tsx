@@ -17,12 +17,6 @@ function slugify(text: string) {
   return text.toLowerCase().replace(/[^a-zа-яё0-9]+/gi, "-").replace(/^-|-$/g, "");
 }
 
-function generatePassword() {
-  const chars = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
-  let pw = "";
-  for (let i = 0; i < 10; i++) pw += chars[Math.floor(Math.random() * chars.length)];
-  return pw;
-}
 
 export function PartnersPage() {
   const { data: partners = [], isLoading } = usePartners();
@@ -46,9 +40,9 @@ export function PartnersPage() {
   const [formSiteId, setFormSiteId] = useState<string>("");
   const [formCity, setFormCity] = useState("Москва");
   const [formDistrict, setFormDistrict] = useState("");
-  const [formAddress, setFormAddress] = useState("");
   const [formPhone, setFormPhone] = useState("");
   const [formEmail, setFormEmail] = useState("");
+  const [formPassword, setFormPassword] = useState("");
   const [createAccount, setCreateAccount] = useState(true);
 
   // Credentials modal
@@ -64,25 +58,28 @@ export function PartnersPage() {
       if (!formName.trim()) setFormName(site.name);
       if (site.city) setFormCity(site.city);
       if (site.district) setFormDistrict(site.district);
-      if (site.address && !formAddress.trim()) setFormAddress(site.address);
       if (site.phone && !formPhone.trim()) setFormPhone(site.phone);
       if (site.email && !formEmail.trim()) setFormEmail(site.email);
     }
   };
 
   const resetForm = () => {
-    setFormContactName(""); setFormName(""); setFormSiteId(""); setFormCity("Москва"); setFormDistrict(""); setFormAddress(""); setFormPhone(""); setFormEmail(""); setCreateAccount(true);
+    setFormContactName(""); setFormName(""); setFormSiteId(""); setFormCity("Москва"); setFormDistrict(""); setFormPhone(""); setFormEmail(""); setFormPassword(""); setCreateAccount(true);
   };
 
   const handleAdd = async () => {
     if (!formContactName.trim() || !formName.trim() || !formEmail.trim() || !formSiteId) return;
+    if (createAccount && formPassword.trim().length < 6) {
+      toast({ title: "Пароль должен быть не короче 6 символов", variant: "destructive" });
+      return;
+    }
     setCreating(true);
 
     try {
       let userId: string | undefined;
 
       if (createAccount) {
-        const password = generatePassword();
+        const password = formPassword.trim();
         const { data, error } = await supabase.functions.invoke("create-user", {
           body: {
             email: formEmail.trim(),
@@ -104,7 +101,6 @@ export function PartnersPage() {
         slug: slugify(formName),
         city: formCity.trim() || "Москва",
         district: formDistrict.trim() || undefined,
-        address: formAddress.trim() || undefined,
         phone: formPhone.trim() || undefined,
         email: formEmail.trim() || undefined,
         user_id: userId,
@@ -307,7 +303,7 @@ export function PartnersPage() {
         footer={
           <>
             <button onClick={() => { setAddOpen(false); resetForm(); }} className="h-9 px-4 rounded-xl border border-border text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors">Отмена</button>
-            <button onClick={handleAdd} disabled={!formContactName.trim() || !formName.trim() || !formEmail.trim() || !formSiteId || creating} className="h-9 px-4 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-40 flex items-center gap-2">
+            <button onClick={handleAdd} disabled={!formContactName.trim() || !formName.trim() || !formEmail.trim() || !formSiteId || (createAccount && formPassword.trim().length < 6) || creating} className="h-9 px-4 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-40 flex items-center gap-2">
               {creating && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
               Добавить
             </button>
@@ -364,8 +360,8 @@ export function PartnersPage() {
             <input value={formDistrict} onChange={(e) => setFormDistrict(e.target.value)} placeholder="ЮВАО" className={inputCls} />
           </div>
           <div className="col-span-2">
-            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Адрес</label>
-            <input value={formAddress} onChange={(e) => setFormAddress(e.target.value)} placeholder="ул. Примерная, 1" className={inputCls} />
+            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Пароль {createAccount ? "*" : ""}</label>
+            <input type="text" value={formPassword} onChange={(e) => setFormPassword(e.target.value)} placeholder="Минимум 6 символов" disabled={!createAccount} className={inputCls} />
           </div>
 
           {/* Account toggle */}
@@ -374,7 +370,7 @@ export function PartnersPage() {
               <input type="checkbox" checked={createAccount} onChange={(e) => setCreateAccount(e.target.checked)} className="h-4 w-4 rounded accent-foreground" />
               <div>
                 <p className="text-xs font-medium text-foreground">Создать аккаунт для входа в CRM</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">По этому email и сгенерированному паролю партнёр войдёт в crm.brandoors.su и попадёт в свой кабинет.</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">По этому email и паролю партнёр войдёт в crm.brandoors.su и попадёт в свой кабинет.</p>
               </div>
             </label>
           </div>
