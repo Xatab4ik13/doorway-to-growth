@@ -370,7 +370,7 @@ export function PartnersPage() {
               <input type="checkbox" checked={createAccount} onChange={(e) => setCreateAccount(e.target.checked)} className="h-4 w-4 rounded accent-foreground" />
               <div>
                 <p className="text-xs font-medium text-foreground">Создать аккаунт для входа в CRM</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">По этому email и сгенерированному паролю партнёр войдёт в crm.brandoors.su и попадёт в свой кабинет.</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">По этому email и паролю партнёр войдёт в crm.brandoors.su и попадёт в свой кабинет.</p>
               </div>
             </label>
           </div>
