@@ -239,9 +239,20 @@ export default function StorefrontCart() {
                             >
                               {item.name}
                             </Link>
-                            <p className="text-[13px] text-storefront-muted">
-                              Цена по запросу
-                            </p>
+                            {item.rrp && item.rrp > 0 ? (
+                              <p className="text-[15px] font-semibold text-storefront-gold tabular-nums">
+                                {(item.rrp * item.quantity).toLocaleString("ru-RU")} ₽
+                                {item.quantity > 1 && (
+                                  <span className="text-[11px] text-storefront-muted/60 font-normal ml-2">
+                                    ({item.rrp.toLocaleString("ru-RU")} × {item.quantity})
+                                  </span>
+                                )}
+                              </p>
+                            ) : (
+                              <p className="text-[13px] text-storefront-muted">
+                                Цена по запросу
+                              </p>
+                            )}
                           </div>
 
 
