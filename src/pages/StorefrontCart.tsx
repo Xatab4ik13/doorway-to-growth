@@ -41,10 +41,26 @@ export default function StorefrontCart() {
     setSubmitting(true);
     try {
       const productList = items
-        .map((i) => `${i.name} × ${i.quantity}`)
+        .map((i) => {
+          const line = `${i.name} × ${i.quantity}`;
+          if (i.rrp && i.rrp > 0) {
+            return `${line} — ${(i.rrp * i.quantity).toLocaleString("ru-RU")} ₽`;
+          }
+          return `${line} — по запросу`;
+        })
         .join("\n");
 
-      const message = `🛒 Заказ:\n${productList}${form.comment ? `\n\nКомментарий: ${form.comment}` : ""}`;
+      const pricedSum = items.reduce(
+        (s, i) => s + (i.rrp && i.rrp > 0 ? i.rrp * i.quantity : 0),
+        0
+      );
+      const hasUnpriced = items.some((i) => !i.rrp || i.rrp <= 0);
+      const totalLine =
+        pricedSum > 0
+          ? `\n\n${hasUnpriced ? "Предварительный итог" : "Итого"}: ${pricedSum.toLocaleString("ru-RU")} ₽${hasUnpriced ? " (часть позиций — по запросу)" : ""}`
+          : "";
+
+      const message = `🛒 Заказ:\n${productList}${totalLine}${form.comment ? `\n\nКомментарий: ${form.comment}` : ""}`;
 
 
       const { error } = await supabase.from("leads").insert({
