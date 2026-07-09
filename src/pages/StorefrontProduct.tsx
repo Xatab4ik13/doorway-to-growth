@@ -1010,8 +1010,9 @@ export default function StorefrontProduct() {
         glazing: selectedGlazing ?? undefined,
         molding: selectedMolding ?? undefined,
         edge: selectedEdge ?? undefined,
+        height: selectedHeight ?? undefined,
       }),
-    [product, selectedColor, selectedGlazing, selectedMolding, selectedEdge]
+    [product, selectedColor, selectedGlazing, selectedMolding, selectedEdge, selectedHeight]
   );
 
   const handleAddToCart = () => {

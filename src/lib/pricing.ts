@@ -7,6 +7,7 @@ export type ProductPricingOptions = {
   glazing?: string;
   molding?: string;
   edge?: string;
+  height?: number | string;
 };
 
 export function computeProductPrice(
@@ -17,9 +18,9 @@ export function computeProductPrice(
   const b = Number(base) || 0;
   if (b <= 0) return null;
   let markup = 0;
-  const pick = (map: any, key?: string) => {
-    if (!key || !map || typeof map !== "object") return 0;
-    const v = map[key];
+  const pick = (map: any, key?: string | number) => {
+    if (key === undefined || key === null || key === "" || !map || typeof map !== "object") return 0;
+    const v = map[String(key)];
     const n = Number(v);
     return Number.isFinite(n) ? n : 0;
   };
@@ -27,6 +28,7 @@ export function computeProductPrice(
   markup += pick(specs?.glazing_markups, opts.glazing);
   markup += pick(specs?.molding_markups, opts.molding);
   markup += pick(specs?.edge_markups, opts.edge);
+  markup += pick(specs?.height_markups, opts.height);
   return b + markup;
 }
 
