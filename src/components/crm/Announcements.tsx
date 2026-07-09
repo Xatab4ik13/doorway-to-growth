@@ -1,29 +1,11 @@
 import { Megaphone, ArrowUpRight } from "lucide-react";
 import { useCrmNavigation } from "./CrmNavigationContext";
-
-const announcements = [
-  {
-    title: "Обновление каталога: весенняя коллекция 2026",
-    text: "В каталог добавлены 12 новых моделей межкомнатных дверей. Обновите витрину на сайтах.",
-    date: "21.03.2026",
-    urgent: true,
-  },
-  {
-    title: "Новые условия по РРЦ",
-    text: "С 01.04 вступают в силу обновлённые рекомендованные розничные цены. Подробности в разделе каталога.",
-    date: "18.03.2026",
-    urgent: false,
-  },
-  {
-    title: "Акция для партнёров: бесплатные замеры",
-    text: "Запущена федеральная акция — бесплатные замеры для всех клиентов до 30.04.",
-    date: "15.03.2026",
-    urgent: false,
-  },
-];
+import { useAnnouncements } from "@/hooks/useAnnouncements";
 
 export function Announcements() {
   const { navigate } = useCrmNavigation();
+  const { data: announcements = [], isLoading } = useAnnouncements();
+  const items = announcements.slice(0, 3);
 
   return (
     <div className="opacity-0 animate-fade-up" style={{ animationDelay: "500ms" }}>
@@ -40,25 +22,45 @@ export function Announcements() {
           <ArrowUpRight className="h-3 w-3" />
         </button>
       </div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {announcements.map((a, i) => (
-          <div
-            key={i}
-            className="rounded-2xl border border-border bg-card p-4 transition-shadow duration-200 hover:shadow-card-hover"
-          >
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <h4 className="text-sm font-medium text-foreground leading-snug">{a.title}</h4>
-              {a.urgent && (
-                <span className="shrink-0 rounded-full bg-destructive/10 px-2 py-0.5 text-[10px] font-medium text-destructive">
-                  Важно
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{a.text}</p>
-            <p className="mt-3 text-[10px] text-muted-foreground tabular-nums">{a.date}</p>
-          </div>
-        ))}
-      </div>
+
+      {isLoading ? (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="h-[110px] rounded-2xl border border-border bg-card animate-pulse" />
+          ))}
+        </div>
+      ) : items.length === 0 ? (
+        <button
+          onClick={() => navigate("announcements")}
+          className="w-full rounded-2xl border border-dashed border-border bg-card/50 p-6 text-center hover:bg-card transition-colors"
+        >
+          <p className="text-sm text-muted-foreground">Пока нет объявлений</p>
+          <p className="text-xs text-muted-foreground mt-1">Создайте первое объявление для партнёров</p>
+        </button>
+      ) : (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {items.map((a) => (
+            <button
+              key={a.id}
+              onClick={() => navigate("announcements")}
+              className="text-left rounded-2xl border border-border bg-card p-4 transition-shadow duration-200 hover:shadow-card-hover"
+            >
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <h4 className="text-sm font-medium text-foreground leading-snug">{a.title}</h4>
+                {a.is_urgent && (
+                  <span className="shrink-0 rounded-full bg-destructive/10 px-2 py-0.5 text-[10px] font-medium text-destructive">
+                    Важно
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{a.content}</p>
+              <p className="mt-3 text-[10px] text-muted-foreground tabular-nums">
+                {new Date(a.created_at).toLocaleDateString("ru-RU")}
+              </p>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
