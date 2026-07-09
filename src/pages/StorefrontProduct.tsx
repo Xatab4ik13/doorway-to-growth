@@ -1002,6 +1002,18 @@ export default function StorefrontProduct() {
   const cartItems = useCartStore((s) => s.items);
   const isInCart = cartItems.some((i) => i.id === product?.id);
 
+  // Effective unit price of the door with current configuration markups applied.
+  const configuredPrice = useMemo(
+    () =>
+      computeProductPrice(product?.rrp, product?.specifications, {
+        color: selectedColor ?? undefined,
+        glazing: selectedGlazing ?? undefined,
+        molding: selectedMolding ?? undefined,
+        edge: selectedEdge ?? undefined,
+      }),
+    [product, selectedColor, selectedGlazing, selectedMolding, selectedEdge]
+  );
+
   const handleAddToCart = () => {
     if (!product || !site) return;
     const primary = product.product_images?.find((i: any) => i.is_primary);
@@ -1010,7 +1022,7 @@ export default function StorefrontProduct() {
       id: product.id,
       name: product.name,
       slug: product.slug,
-      rrp: product.rrp ? Number(product.rrp) : null,
+      rrp: configuredPrice,
       imageUrl: imgUrl,
       siteId: site.id,
       type: "door",
