@@ -11,7 +11,7 @@ const stages = [
   { id: "new", label: "Новые", color: "bg-blue-500" },
   { id: "consultation", label: "Консультация", color: "bg-amber-500" },
   { id: "quote", label: "КП", color: "bg-cyan-500" },
-  { id: "contract", label: "Договор", color: "bg-emerald-500" },
+  { id: "paid", label: "Оплачено", color: "bg-emerald-500" },
   { id: "completed", label: "Завершена", color: "bg-green-600" },
 ];
 

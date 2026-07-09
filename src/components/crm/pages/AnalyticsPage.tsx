@@ -112,7 +112,7 @@ export function AnalyticsPage() {
   })();
 
   // Conversion
-  const completedLeads = leads.filter((l) => l.stage === "completed" || l.stage === "contract").length;
+  const completedLeads = leads.filter((l) => l.stage === "completed" || l.stage === "paid").length;
   const conversionRate = leads.length > 0 ? ((completedLeads / leads.length) * 100).toFixed(1) : "0";
 
   // Leads by partner
@@ -135,7 +135,7 @@ export function AnalyticsPage() {
       if (l.product_id) {
         if (!counts[l.product_id]) counts[l.product_id] = { total: 0, completed: 0 };
         counts[l.product_id].total++;
-        if (l.stage === "completed" || l.stage === "contract") counts[l.product_id].completed++;
+        if (l.stage === "completed" || l.stage === "paid") counts[l.product_id].completed++;
       }
     });
     return Object.entries(counts)
@@ -213,7 +213,7 @@ export function AnalyticsPage() {
               { label: "Новые", stage: "new" },
               { label: "Консультация", stage: "consultation" },
               { label: "КП", stage: "quote" },
-              { label: "Договор", stage: "contract" },
+              { label: "Оплачено", stage: "paid" },
               { label: "Завершена", stage: "completed" },
             ].map((s, i) => {
               const count = leads.filter((l) => l.stage === s.stage).length;
