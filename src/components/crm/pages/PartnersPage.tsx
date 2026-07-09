@@ -307,7 +307,7 @@ export function PartnersPage() {
         footer={
           <>
             <button onClick={() => { setAddOpen(false); resetForm(); }} className="h-9 px-4 rounded-xl border border-border text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors">Отмена</button>
-            <button onClick={handleAdd} disabled={!formName.trim() || !formDistrict.trim() || creating} className="h-9 px-4 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-40 flex items-center gap-2">
+            <button onClick={handleAdd} disabled={!formContactName.trim() || !formName.trim() || !formEmail.trim() || !formSiteId || creating} className="h-9 px-4 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-40 flex items-center gap-2">
               {creating && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
               Добавить
             </button>
@@ -315,29 +315,57 @@ export function PartnersPage() {
         }
       >
         <div className="grid grid-cols-2 gap-4">
+          {/* Site selection */}
           <div className="col-span-2">
-            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Название *</label>
-            <input value={formName} onChange={(e) => setFormName(e.target.value)} placeholder="Brandoors Район" className={inputCls} />
+            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Сайт (магазин) *</label>
+            <select
+              value={formSiteId}
+              onChange={(e) => handleSelectSite(e.target.value)}
+              className={inputCls}
+            >
+              <option value="">— Выберите сайт —</option>
+              {sites.map((s) => {
+                const taken = takenSiteIds.has(s.id);
+                return (
+                  <option key={s.id} value={s.id} disabled={taken}>
+                    {s.name}{s.domain ? ` — ${s.domain}` : ""}{taken ? " (уже привязан)" : ""}
+                  </option>
+                );
+              })}
+            </select>
+            <p className="mt-1 text-[10px] text-muted-foreground">К каждому сайту можно привязать одного партнёра-владельца.</p>
           </div>
-          <div>
-            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Город</label>
-            <input value={formCity} onChange={(e) => setFormCity(e.target.value)} className={inputCls} />
-          </div>
-          <div>
-            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Район *</label>
-            <input value={formDistrict} onChange={(e) => setFormDistrict(e.target.value)} placeholder="ЮВАО" className={inputCls} />
-          </div>
+
           <div className="col-span-2">
-            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Адрес</label>
-            <input value={formAddress} onChange={(e) => setFormAddress(e.target.value)} placeholder="ул. Примерная, 1" className={inputCls} />
+            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Имя партнёра (ФИО) *</label>
+            <input value={formContactName} onChange={(e) => setFormContactName(e.target.value)} placeholder="Иван Иванов" className={inputCls} />
+          </div>
+
+          <div className="col-span-2">
+            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Название магазина *</label>
+            <input value={formName} onChange={(e) => setFormName(e.target.value)} placeholder="BRANDOORS Район" className={inputCls} />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Email (логин) *</label>
+            <input type="email" value={formEmail} onChange={(e) => setFormEmail(e.target.value)} placeholder="partner@brandoors.su" className={inputCls} />
           </div>
           <div>
             <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Телефон</label>
             <input value={formPhone} onChange={(e) => setFormPhone(e.target.value)} placeholder="+7 (999) 123-45-67" className={inputCls} />
           </div>
+
           <div>
-            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Email</label>
-            <input value={formEmail} onChange={(e) => setFormEmail(e.target.value)} placeholder="partner@brandoors.su" className={inputCls} />
+            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Город</label>
+            <input value={formCity} onChange={(e) => setFormCity(e.target.value)} className={inputCls} />
+          </div>
+          <div>
+            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Район</label>
+            <input value={formDistrict} onChange={(e) => setFormDistrict(e.target.value)} placeholder="ЮВАО" className={inputCls} />
+          </div>
+          <div className="col-span-2">
+            <label className="block text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5">Адрес</label>
+            <input value={formAddress} onChange={(e) => setFormAddress(e.target.value)} placeholder="ул. Примерная, 1" className={inputCls} />
           </div>
 
           {/* Account toggle */}
@@ -345,8 +373,8 @@ export function PartnersPage() {
             <label className="flex items-center gap-2.5 cursor-pointer">
               <input type="checkbox" checked={createAccount} onChange={(e) => setCreateAccount(e.target.checked)} className="h-4 w-4 rounded accent-foreground" />
               <div>
-                <p className="text-xs font-medium text-foreground">Создать аккаунт для партнёра</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">Логин и пароль будут сгенерированы автоматически. Email обязателен.</p>
+                <p className="text-xs font-medium text-foreground">Создать аккаунт для входа в CRM</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">По этому email и сгенерированному паролю партнёр войдёт в crm.brandoors.su и попадёт в свой кабинет.</p>
               </div>
             </label>
           </div>
