@@ -303,7 +303,7 @@ export function PartnersPage() {
         footer={
           <>
             <button onClick={() => { setAddOpen(false); resetForm(); }} className="h-9 px-4 rounded-xl border border-border text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors">Отмена</button>
-            <button onClick={handleAdd} disabled={!formContactName.trim() || !formName.trim() || !formEmail.trim() || !formSiteId || creating} className="h-9 px-4 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-40 flex items-center gap-2">
+            <button onClick={handleAdd} disabled={!formContactName.trim() || !formName.trim() || !formEmail.trim() || !formSiteId || (createAccount && formPassword.trim().length < 6) || creating} className="h-9 px-4 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-40 flex items-center gap-2">
               {creating && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
               Добавить
             </button>
