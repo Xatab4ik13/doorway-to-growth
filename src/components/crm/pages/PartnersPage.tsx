@@ -75,20 +75,20 @@ export function PartnersPage() {
   };
 
   const handleAdd = async () => {
-    if (!formName.trim() || !formDistrict.trim()) return;
+    if (!formContactName.trim() || !formName.trim() || !formEmail.trim() || !formSiteId) return;
     setCreating(true);
 
     try {
       let userId: string | undefined;
 
-      if (createAccount && formEmail.trim()) {
+      if (createAccount) {
         const password = generatePassword();
         const { data, error } = await supabase.functions.invoke("create-user", {
           body: {
             email: formEmail.trim(),
             password,
             role: "partner",
-            full_name: formName.trim(),
+            full_name: formContactName.trim(),
           },
         });
 
@@ -102,13 +102,14 @@ export function PartnersPage() {
       createPartner.mutate({
         name: formName.trim(),
         slug: slugify(formName),
-        city: formCity.trim(),
-        district: formDistrict.trim(),
+        city: formCity.trim() || "Москва",
+        district: formDistrict.trim() || undefined,
         address: formAddress.trim() || undefined,
         phone: formPhone.trim() || undefined,
         email: formEmail.trim() || undefined,
         user_id: userId,
-      } as any);
+        site_id: formSiteId,
+      });
 
       setAddOpen(false);
       resetForm();
