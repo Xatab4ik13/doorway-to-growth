@@ -44,7 +44,7 @@ export function usePartners() {
 export function useCreatePartner() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (partner: { name: string; slug: string; city: string; district?: string; address?: string; phone?: string; email?: string }) => {
+    mutationFn: async (partner: { name: string; slug: string; city: string; district?: string; address?: string; phone?: string; email?: string; user_id?: string; site_id?: string }) => {
       const { data, error } = await supabase.from("partners").insert(partner).select().single();
       if (error) throw error;
       return data;
