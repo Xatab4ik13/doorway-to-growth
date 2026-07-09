@@ -17,12 +17,6 @@ function slugify(text: string) {
   return text.toLowerCase().replace(/[^a-zа-яё0-9]+/gi, "-").replace(/^-|-$/g, "");
 }
 
-function generatePassword() {
-  const chars = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
-  let pw = "";
-  for (let i = 0; i < 10; i++) pw += chars[Math.floor(Math.random() * chars.length)];
-  return pw;
-}
 
 export function PartnersPage() {
   const { data: partners = [], isLoading } = usePartners();
