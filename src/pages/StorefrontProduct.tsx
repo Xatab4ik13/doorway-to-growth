@@ -18,6 +18,7 @@ import glassMirror from "@/assets/materials/glass-mirror.jpg";
 import glassLacobel from "@/assets/materials/glass-lacobel.jpg";
 import OpeningSystems from "@/components/storefront/OpeningSystems";
 import { storeHref } from "@/lib/storeHref";
+import { computeProductPrice } from "@/lib/pricing";
 
 // ── Material textures map ──
 type MaterialKey = "wood" | "softtouch" | "metal" | "enamel" | "frosted" | "mirror" | "lacobel" | "none";
