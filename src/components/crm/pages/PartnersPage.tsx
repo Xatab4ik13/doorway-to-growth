@@ -8,6 +8,7 @@ import { Search, Plus, MapPin, MoreHorizontal, Users, Trash2, KeyRound, Loader2 
 import { PartnerProfile } from "@/components/crm/PartnerProfile";
 import { toast } from "@/hooks/use-toast";
 import { usePartners, useCreatePartner, useDeletePartner, useUpdatePartner, type Partner } from "@/hooks/usePartners";
+import { useSites } from "@/hooks/useSites";
 import { supabase } from "@/integrations/supabase/client";
 
 const PAGE_SIZE = 10;
