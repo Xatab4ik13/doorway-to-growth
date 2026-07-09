@@ -170,9 +170,20 @@ export function CartDrawer() {
                               <h3 className="text-[12px] font-semibold text-storefront-text uppercase tracking-wider leading-tight line-clamp-2 mb-1">
                                 {item.name}
                               </h3>
-                              <span className="text-[11px] text-storefront-muted">
-                                Цена по запросу
-                              </span>
+                              {item.rrp && item.rrp > 0 ? (
+                                <span className="text-[12px] font-semibold text-storefront-gold tabular-nums">
+                                  {(item.rrp * item.quantity).toLocaleString("ru-RU")} ₽
+                                  {item.quantity > 1 && (
+                                    <span className="text-[10px] text-storefront-muted/60 font-normal ml-1">
+                                      ({item.rrp.toLocaleString("ru-RU")} × {item.quantity})
+                                    </span>
+                                  )}
+                                </span>
+                              ) : (
+                                <span className="text-[11px] text-storefront-muted">
+                                  Цена по запросу
+                                </span>
+                              )}
 
                             </div>
 
@@ -222,9 +233,35 @@ export function CartDrawer() {
                 transition={{ delay: 0.3 }}
                 className="border-t border-white/[0.06] p-6 space-y-4"
               >
-                <div className="text-[12px] text-storefront-muted/70 leading-relaxed">
-                  Стоимость рассчитает менеджер после согласования конфигурации
-                </div>
+                {(() => {
+                  const pricedSum = items.reduce(
+                    (s, i) => s + (i.rrp && i.rrp > 0 ? i.rrp * i.quantity : 0),
+                    0
+                  );
+                  const hasUnpriced = items.some((i) => !i.rrp || i.rrp <= 0);
+                  const allUnpriced = pricedSum === 0;
+                  return (
+                    <>
+                      {!allUnpriced && (
+                        <div className="flex items-baseline justify-between">
+                          <span className="text-[11px] uppercase tracking-[0.15em] text-storefront-muted/70">
+                            {hasUnpriced ? "Предварительно" : "Итого"}
+                          </span>
+                          <span className="text-[20px] font-bold text-storefront-gold tabular-nums">
+                            {pricedSum.toLocaleString("ru-RU")} ₽
+                          </span>
+                        </div>
+                      )}
+                      <div className="text-[11px] text-storefront-muted/70 leading-relaxed">
+                        {allUnpriced
+                          ? "Стоимость рассчитает менеджер после согласования конфигурации"
+                          : hasUnpriced
+                          ? "Часть позиций — по запросу, менеджер уточнит итоговую сумму"
+                          : "Финальную сумму подтвердит менеджер после согласования"}
+                      </div>
+                    </>
+                  );
+                })()}
 
 
                 <motion.button

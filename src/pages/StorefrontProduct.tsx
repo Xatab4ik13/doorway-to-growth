@@ -18,6 +18,7 @@ import glassMirror from "@/assets/materials/glass-mirror.jpg";
 import glassLacobel from "@/assets/materials/glass-lacobel.jpg";
 import OpeningSystems from "@/components/storefront/OpeningSystems";
 import { storeHref } from "@/lib/storeHref";
+import { computeProductPrice } from "@/lib/pricing";
 
 // ── Material textures map ──
 type MaterialKey = "wood" | "softtouch" | "metal" | "enamel" | "frosted" | "mirror" | "lacobel" | "none";
@@ -1001,6 +1002,18 @@ export default function StorefrontProduct() {
   const cartItems = useCartStore((s) => s.items);
   const isInCart = cartItems.some((i) => i.id === product?.id);
 
+  // Effective unit price of the door with current configuration markups applied.
+  const configuredPrice = useMemo(
+    () =>
+      computeProductPrice(product?.rrp, product?.specifications, {
+        color: selectedColor ?? undefined,
+        glazing: selectedGlazing ?? undefined,
+        molding: selectedMolding ?? undefined,
+        edge: selectedEdge ?? undefined,
+      }),
+    [product, selectedColor, selectedGlazing, selectedMolding, selectedEdge]
+  );
+
   const handleAddToCart = () => {
     if (!product || !site) return;
     const primary = product.product_images?.find((i: any) => i.is_primary);
@@ -1009,7 +1022,7 @@ export default function StorefrontProduct() {
       id: product.id,
       name: product.name,
       slug: product.slug,
-      rrp: product.rrp ? Number(product.rrp) : null,
+      rrp: configuredPrice,
       imageUrl: imgUrl,
       siteId: site.id,
       type: "door",
@@ -1192,14 +1205,14 @@ export default function StorefrontProduct() {
               </h1>
 
               {/* Hero price under title */}
-              {Number(product.rrp) > 0 && (
+              {configuredPrice && configuredPrice > 0 && (
                 <div className="flex items-baseline gap-4 mb-6">
                   <span className="text-[10px] font-light uppercase tracking-[0.25em] text-storefront-text/40">Стоимость от</span>
                   <span
                     className="text-[44px] leading-none text-storefront-gold tabular-nums"
                     style={{ fontFamily: "'Manrope', system-ui, sans-serif", fontWeight: 700, letterSpacing: "-0.02em" }}
                   >
-                    {Number(product.rrp).toLocaleString("ru-RU")} ₽
+                    {configuredPrice.toLocaleString("ru-RU")} ₽
                   </span>
                 </div>
               )}
@@ -1617,7 +1630,7 @@ export default function StorefrontProduct() {
 
               {/* ===== ORDER SUMMARY (calculator-style) ===== */}
               {(() => {
-                const doorPrice = product.rrp ? Number(product.rrp) : 0;
+                const doorPrice = configuredPrice ?? 0;
                 const trimItems = realTrim.filter((t) => selectedTrim.has(t.id));
                 const hwItems = realHardware.filter((h) => selectedHardware.has(h.id));
                 const trimTotal = trimItems.reduce((s, t) => s + (t.rrp ?? 0), 0);

@@ -41,10 +41,26 @@ export default function StorefrontCart() {
     setSubmitting(true);
     try {
       const productList = items
-        .map((i) => `${i.name} × ${i.quantity}`)
+        .map((i) => {
+          const line = `${i.name} × ${i.quantity}`;
+          if (i.rrp && i.rrp > 0) {
+            return `${line} — ${(i.rrp * i.quantity).toLocaleString("ru-RU")} ₽`;
+          }
+          return `${line} — по запросу`;
+        })
         .join("\n");
 
-      const message = `🛒 Заказ:\n${productList}${form.comment ? `\n\nКомментарий: ${form.comment}` : ""}`;
+      const pricedSum = items.reduce(
+        (s, i) => s + (i.rrp && i.rrp > 0 ? i.rrp * i.quantity : 0),
+        0
+      );
+      const hasUnpriced = items.some((i) => !i.rrp || i.rrp <= 0);
+      const totalLine =
+        pricedSum > 0
+          ? `\n\n${hasUnpriced ? "Предварительный итог" : "Итого"}: ${pricedSum.toLocaleString("ru-RU")} ₽${hasUnpriced ? " (часть позиций — по запросу)" : ""}`
+          : "";
+
+      const message = `🛒 Заказ:\n${productList}${totalLine}${form.comment ? `\n\nКомментарий: ${form.comment}` : ""}`;
 
 
       const { error } = await supabase.from("leads").insert({
@@ -239,9 +255,20 @@ export default function StorefrontCart() {
                             >
                               {item.name}
                             </Link>
-                            <p className="text-[13px] text-storefront-muted">
-                              Цена по запросу
-                            </p>
+                            {item.rrp && item.rrp > 0 ? (
+                              <p className="text-[15px] font-semibold text-storefront-gold tabular-nums">
+                                {(item.rrp * item.quantity).toLocaleString("ru-RU")} ₽
+                                {item.quantity > 1 && (
+                                  <span className="text-[11px] text-storefront-muted/60 font-normal ml-2">
+                                    ({item.rrp.toLocaleString("ru-RU")} × {item.quantity})
+                                  </span>
+                                )}
+                              </p>
+                            ) : (
+                              <p className="text-[13px] text-storefront-muted">
+                                Цена по запросу
+                              </p>
+                            )}
                           </div>
 
 
@@ -324,9 +351,37 @@ export default function StorefrontCart() {
                     <p className="text-[13px] text-storefront-muted">
                       Товаров: <span className="text-storefront-text font-medium">{totalItems()}</span>
                     </p>
-                    <p className="text-[12px] text-storefront-muted/70 mt-2">
-                      Стоимость рассчитает менеджер после согласования конфигурации
-                    </p>
+                    {(() => {
+                      const pricedSum = items.reduce(
+                        (s, i) => s + (i.rrp && i.rrp > 0 ? i.rrp * i.quantity : 0),
+                        0
+                      );
+                      const hasUnpriced = items.some((i) => !i.rrp || i.rrp <= 0);
+                      if (pricedSum === 0) {
+                        return (
+                          <p className="text-[12px] text-storefront-muted/70 mt-2">
+                            Стоимость рассчитает менеджер после согласования конфигурации
+                          </p>
+                        );
+                      }
+                      return (
+                        <>
+                          <div className="flex items-baseline justify-between mt-4 pt-3 border-t border-white/[0.06]">
+                            <span className="text-[11px] uppercase tracking-[0.15em] text-storefront-muted/70">
+                              {hasUnpriced ? "Предварительно" : "Итого"}
+                            </span>
+                            <span className="text-[22px] font-bold text-storefront-gold tabular-nums">
+                              {pricedSum.toLocaleString("ru-RU")} ₽
+                            </span>
+                          </div>
+                          {hasUnpriced && (
+                            <p className="text-[11px] text-storefront-muted/60 mt-2">
+                              Часть позиций — по запросу, менеджер уточнит итоговую сумму
+                            </p>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
 
 
