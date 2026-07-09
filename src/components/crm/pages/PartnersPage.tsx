@@ -26,6 +26,7 @@ function generatePassword() {
 
 export function PartnersPage() {
   const { data: partners = [], isLoading } = usePartners();
+  const { data: sites = [] } = useSites();
   const createPartner = useCreatePartner();
   const deletePartnerMut = useDeletePartner();
   const updatePartner = useUpdatePartner();
@@ -40,7 +41,9 @@ export function PartnersPage() {
   const [creating, setCreating] = useState(false);
 
   // Form state
+  const [formContactName, setFormContactName] = useState("");
   const [formName, setFormName] = useState("");
+  const [formSiteId, setFormSiteId] = useState<string>("");
   const [formCity, setFormCity] = useState("Москва");
   const [formDistrict, setFormDistrict] = useState("");
   const [formAddress, setFormAddress] = useState("");
@@ -51,8 +54,24 @@ export function PartnersPage() {
   // Credentials modal
   const [credentials, setCredentials] = useState<{ email: string; password: string } | null>(null);
 
+  // IDs of sites already assigned to a partner
+  const takenSiteIds = new Set(partners.map((p) => p.site_id).filter(Boolean) as string[]);
+
+  const handleSelectSite = (siteId: string) => {
+    setFormSiteId(siteId);
+    const site = sites.find((s) => s.id === siteId);
+    if (site) {
+      if (!formName.trim()) setFormName(site.name);
+      if (site.city) setFormCity(site.city);
+      if (site.district) setFormDistrict(site.district);
+      if (site.address && !formAddress.trim()) setFormAddress(site.address);
+      if (site.phone && !formPhone.trim()) setFormPhone(site.phone);
+      if (site.email && !formEmail.trim()) setFormEmail(site.email);
+    }
+  };
+
   const resetForm = () => {
-    setFormName(""); setFormCity("Москва"); setFormDistrict(""); setFormAddress(""); setFormPhone(""); setFormEmail(""); setCreateAccount(true);
+    setFormContactName(""); setFormName(""); setFormSiteId(""); setFormCity("Москва"); setFormDistrict(""); setFormAddress(""); setFormPhone(""); setFormEmail(""); setCreateAccount(true);
   };
 
   const handleAdd = async () => {
