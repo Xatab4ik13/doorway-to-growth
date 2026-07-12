@@ -11,7 +11,12 @@ export type ProductImage = {
   sort_order: number | null;
   alt: string | null;
   variant_key: string | null;
+  glazing_key: string | null;
+  molding_key: string | null;
+  edge_key: string | null;
 };
+
+export type AxisKey = "variant_key" | "glazing_key" | "molding_key" | "edge_key";
 
 export function useProductImages(productId: string) {
   const qc = useQueryClient();
@@ -91,11 +96,11 @@ export function useProductImages(productId: string) {
     onError: (e) => toast({ title: "Ошибка", description: e.message, variant: "destructive" }),
   });
 
-  const setVariantKeyMut = useMutation({
-    mutationFn: async ({ imageId, variantKey }: { imageId: string; variantKey: string | null }) => {
+  const setImageKeysMut = useMutation({
+    mutationFn: async ({ imageId, patch }: { imageId: string; patch: Partial<Pick<ProductImage, "variant_key" | "glazing_key" | "molding_key" | "edge_key">> }) => {
       const { error } = await supabase
         .from("product_images")
-        .update({ variant_key: variantKey })
+        .update(patch)
         .eq("id", imageId);
       if (error) throw error;
     },
@@ -113,6 +118,8 @@ export function useProductImages(productId: string) {
     uploadImage,
     deleteImage: (id: string) => deleteImageMut.mutate(id),
     setVariantKey: (imageId: string, variantKey: string | null) =>
-      setVariantKeyMut.mutate({ imageId, variantKey }),
+      setImageKeysMut.mutate({ imageId, patch: { variant_key: variantKey } }),
+    setImageKey: (imageId: string, axis: AxisKey, value: string | null) =>
+      setImageKeysMut.mutate({ imageId, patch: { [axis]: value } as any }),
   };
 }

@@ -69,7 +69,7 @@ const COATING_PALETTE: { name: string; hex: string }[] = [
 export function ProductDetail({ product, onClose, onDelete, onPrev, onNext, position, total }: ProductDetailProps) {
   const [activeImage, setActiveImage] = useState(0);
   const updateProduct = useUpdateProduct();
-  const { images, uploading, uploadImage, deleteImage, setVariantKey } = useProductImages(product.id);
+  const { images, uploading, uploadImage, deleteImage, setVariantKey, setImageKey } = useProductImages(product.id);
 
   const rawSpecs = (product.specifications ?? {}) as Record<string, any>;
   const sizes: any[] = Array.isArray(rawSpecs.sizes) ? rawSpecs.sizes : [];
@@ -130,12 +130,51 @@ export function ProductDetail({ product, onClose, onDelete, onPrev, onNext, posi
   const allImages = images.length > 0 ? images : (product.primary_image ? [{ id: "legacy", url: product.primary_image, is_primary: true }] : []);
   const currentImage = allImages[activeImage] ?? allImages[0];
   const currentVariantKey: string | null = currentImage ? ((currentImage as any).variant_key ?? null) : null;
+  const currentGlazingKey: string | null = currentImage ? ((currentImage as any).glazing_key ?? null) : null;
+  const currentMoldingKey: string | null = currentImage ? ((currentImage as any).molding_key ?? null) : null;
+  const currentEdgeKey: string | null = currentImage ? ((currentImage as any).edge_key ?? null) : null;
   const currentSwatch = currentVariantKey ? COATING_PALETTE.find((c) => c.name.toLowerCase() === currentVariantKey.toLowerCase()) : null;
 
   const inputCls = "h-9 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow";
 
-  // Сколько фото уже привязаны к цветам
-  const boundCount = allImages.filter((img) => (img as any).variant_key).length;
+  // Оси вариантов из specifications товара
+  const axisValues = (val: any): string[] => {
+    if (!Array.isArray(val)) return [];
+    return val.map((v) => (typeof v === "string" ? v : v?.name ?? v?.key)).filter(Boolean) as string[];
+  };
+  const availableAxes = ([
+    { key: "variant_key" as const, label: "Цвет покрытия", values: axisValues(rawSpecs.colors), current: currentVariantKey },
+    { key: "glazing_key" as const, label: "Остекление", values: axisValues(rawSpecs.glazing_options), current: currentGlazingKey },
+    { key: "molding_key" as const, label: "Молдинг", values: axisValues(rawSpecs.moldings), current: currentMoldingKey },
+    { key: "edge_key" as const, label: "Кромка", values: axisValues(rawSpecs.edges ?? rawSpecs.axes?.edge?.values), current: currentEdgeKey },
+  ]).filter((a) => a.values.length > 0);
+
+  // Сколько фото имеют хоть одну привязку по имеющимся осям
+  const boundCount = allImages.filter((img) =>
+    availableAxes.some((a) => (img as any)[a.key])
+  ).length;
+
+  // Недостающие комбинации (только по первым двум осям, чтобы не перегружать)
+  const missingCombos: string[] = (() => {
+    if (availableAxes.length < 1) return [];
+    const [a1, a2] = availableAxes;
+    const combos: string[] = [];
+    a1.values.forEach((v1) => {
+      if (a2) {
+        a2.values.forEach((v2) => {
+          const has = allImages.some((img) =>
+            String((img as any)[a1.key] ?? "").toLowerCase() === v1.toLowerCase() &&
+            String((img as any)[a2.key] ?? "").toLowerCase() === v2.toLowerCase()
+          );
+          if (!has) combos.push(`${v1} · ${v2}`);
+        });
+      } else {
+        const has = allImages.some((img) => String((img as any)[a1.key] ?? "").toLowerCase() === v1.toLowerCase());
+        if (!has) combos.push(v1);
+      }
+    });
+    return combos;
+  })();
 
   // Клавиатурная навигация: Esc / ← / →
   useEffect(() => {
@@ -315,14 +354,14 @@ export function ProductDetail({ product, onClose, onDelete, onPrev, onNext, posi
               </div>
             </div>
 
-            {/* Привязка фото к цвету — крупная панель */}
+            {/* Привязка фото к вариантам — многоосевая панель */}
             <div className="rounded-2xl border border-foreground/15 bg-gradient-to-b from-muted/40 to-transparent p-4">
               <div className="flex items-start gap-2 mb-3">
                 <Link2 className="h-4 w-4 text-foreground mt-0.5 shrink-0" />
                 <div className="min-w-0 flex-1">
-                  <h4 className="text-sm font-semibold text-foreground">Привязка фото к цвету покрытия</h4>
+                  <h4 className="text-sm font-semibold text-foreground">Привязка фото к вариантам</h4>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Когда покупатель на витрине выберет цвет двери — ему покажется именно то фото, которое привязано к этому цвету.
+                    Одно фото описывает <span className="font-medium text-foreground">одну комбинацию</span> вариантов (цвет + молдинг + остекление + кромка). На витрине покупателю показывается фото с максимальным совпадением его выбора.
                   </p>
                 </div>
                 <span className="shrink-0 rounded-full border border-border bg-background px-2 py-0.5 text-[10px] font-semibold text-foreground tabular-nums">
@@ -338,18 +377,21 @@ export function ProductDetail({ product, onClose, onDelete, onPrev, onNext, posi
                 </li>
                 <li className="flex gap-2">
                   <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-foreground text-primary-foreground text-[9px] font-bold">2</span>
-                  <span>Ниже выберите <span className="font-medium text-foreground">цвет покрытия</span> — привязка сохранится сразу.</span>
+                  <span>Для каждой оси ниже выберите значение, которое видно на фото. Оставьте <span className="font-medium text-foreground">«— любой»</span>, если ось на фото не отображается.</span>
                 </li>
                 <li className="flex gap-2">
                   <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-foreground text-primary-foreground text-[9px] font-bold">3</span>
-                  <span>Повторите для каждого фото. Одно фото — один цвет.</span>
+                  <span>Изменения сохраняются автоматически. Внизу видно, каких комбинаций ещё не хватает — их можно доснять и загрузить.</span>
                 </li>
               </ol>
 
-
-              {!currentImage || currentImage.id === "legacy" ? (
+              {availableAxes.length === 0 ? (
+                <p className="text-[11px] text-muted-foreground italic bg-background/60 rounded-xl border border-border p-3">
+                  У этого товара пока не заданы варианты (цвета/молдинги/остекления/кромки). Добавьте их в разделе «Характеристики» — тогда здесь появятся оси для привязки.
+                </p>
+              ) : !currentImage || currentImage.id === "legacy" ? (
                 <p className="text-[11px] text-muted-foreground italic">
-                  {currentImage ? "Это устаревшее фото. Загрузите новое, чтобы привязать к цвету." : "Сначала загрузите хотя бы одно фото."}
+                  {currentImage ? "Это устаревшее фото. Загрузите новое, чтобы привязать к вариантам." : "Сначала загрузите хотя бы одно фото."}
                 </p>
               ) : (
                 <>
@@ -357,37 +399,87 @@ export function ProductDetail({ product, onClose, onDelete, onPrev, onNext, posi
                     <span className="text-[11px] uppercase tracking-wider text-muted-foreground">
                       Текущее фото #{activeImage + 1}
                     </span>
-                    {currentVariantKey && (
+                    {(currentVariantKey || currentGlazingKey || currentMoldingKey || currentEdgeKey) && (
                       <button
-                        onClick={() => setVariantKey(currentImage.id, null)}
+                        onClick={() => {
+                          availableAxes.forEach((a) => setImageKey(currentImage.id, a.key, null));
+                        }}
                         className="text-[11px] text-muted-foreground hover:text-destructive transition-colors"
                       >
-                        Снять привязку
+                        Снять все привязки
                       </button>
                     )}
                   </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {COATING_PALETTE.map((c) => {
-                      const active = (currentVariantKey ?? "").toLowerCase() === c.name.toLowerCase();
-                      return (
-                        <button
-                          key={c.name}
-                          onClick={() => setVariantKey(currentImage.id, active ? null : c.name)}
-                          className={`flex items-center gap-1.5 rounded-full border pl-1 pr-2.5 py-1 text-[11px] font-medium transition-all active:scale-95 ${
-                            active
-                              ? "border-foreground bg-foreground text-primary-foreground"
-                              : "border-border bg-background text-foreground hover:border-foreground/40"
-                          }`}
-                        >
-                          <span className="h-4 w-4 rounded-full border border-black/10 shrink-0" style={{ backgroundColor: c.hex }} />
-                          {c.name}
-                        </button>
-                      );
-                    })}
+
+                  <div className="space-y-3">
+                    {availableAxes.map((axis) => (
+                      <div key={axis.key} className="rounded-xl border border-border bg-background/60 p-3">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-[11px] font-semibold text-foreground">{axis.label}</span>
+                          <span className="text-[10px] text-muted-foreground tabular-nums">{axis.values.length} значений</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          <button
+                            onClick={() => setImageKey(currentImage.id, axis.key, null)}
+                            className={`rounded-full border px-2.5 py-1 text-[11px] font-medium transition-all active:scale-95 ${
+                              !axis.current
+                                ? "border-foreground bg-foreground text-primary-foreground"
+                                : "border-border bg-background text-muted-foreground hover:border-foreground/40"
+                            }`}
+                          >
+                            — любой
+                          </button>
+                          {axis.values.map((v) => {
+                            const active = (axis.current ?? "").toLowerCase() === v.toLowerCase();
+                            const swatch = axis.key === "variant_key" ? COATING_PALETTE.find((c) => c.name.toLowerCase() === v.toLowerCase()) : null;
+                            return (
+                              <button
+                                key={v}
+                                onClick={() => setImageKey(currentImage.id, axis.key, active ? null : v)}
+                                className={`flex items-center gap-1.5 rounded-full border pl-1 pr-2.5 py-1 text-[11px] font-medium transition-all active:scale-95 ${
+                                  active
+                                    ? "border-foreground bg-foreground text-primary-foreground"
+                                    : "border-border bg-background text-foreground hover:border-foreground/40"
+                                }`}
+                              >
+                                {swatch ? (
+                                  <span className="h-4 w-4 rounded-full border border-black/10 shrink-0" style={{ backgroundColor: swatch.hex }} />
+                                ) : (
+                                  <span className="h-4 w-4 rounded-full border border-black/10 shrink-0 bg-muted" />
+                                )}
+                                {v}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  {currentVariantKey && !currentSwatch && (
-                    <div className="mt-2 text-[11px] text-muted-foreground">
-                      Своё значение: <span className="font-medium text-foreground">{currentVariantKey}</span>
+
+                  {/* Недостающие комбинации */}
+                  {missingCombos.length > 0 && (
+                    <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[11px] font-semibold text-amber-700 dark:text-amber-400">
+                          Нет фото для комбинаций
+                        </span>
+                        <span className="text-[10px] text-amber-700/70 dark:text-amber-400/70 tabular-nums">
+                          {missingCombos.length}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mb-2">
+                        Эти сочетания <span className="font-medium">{availableAxes[0]?.label}{availableAxes[1] ? ` × ${availableAxes[1].label}` : ""}</span> пока не покрыты ни одним фото. Загрузите недостающие снимки и привяжите их.
+                      </p>
+                      <div className="flex flex-wrap gap-1">
+                        {missingCombos.slice(0, 30).map((c) => (
+                          <span key={c} className="rounded-full border border-amber-500/30 bg-background px-2 py-0.5 text-[10px] text-foreground">
+                            {c}
+                          </span>
+                        ))}
+                        {missingCombos.length > 30 && (
+                          <span className="text-[10px] text-muted-foreground self-center">и ещё {missingCombos.length - 30}…</span>
+                        )}
+                      </div>
                     </div>
                   )}
                 </>
