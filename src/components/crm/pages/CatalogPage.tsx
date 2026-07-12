@@ -173,7 +173,11 @@ export function CatalogPage() {
       if (activeCategoryKey === "__none__") {
         if (p.category?.id) return false;
       } else if (activeCategoryKey !== ALL_CATEGORY) {
-        if (p.category?.id !== activeCategoryKey) return false;
+        const pCatId = p.category?.id;
+        if (!pCatId) return false;
+        const pCat = catById.get(pCatId);
+        // Совпадение: сам ID или родитель = выбранная категория
+        if (pCatId !== activeCategoryKey && pCat?.parent_id !== activeCategoryKey) return false;
       }
       if (filterColor && s?.color !== filterColor) return false;
       if (filterGlazing && s?.glazing !== filterGlazing) return false;
@@ -183,7 +187,7 @@ export function CatalogPage() {
       if (filterStatus === "inactive" && p.is_active) return false;
       return true;
     });
-  }, [products, search, activeCategoryKey, filterColor, filterGlazing, filterPriceMin, filterPriceMax, filterStatus]);
+  }, [products, search, activeCategoryKey, catById, filterColor, filterGlazing, filterPriceMin, filterPriceMax, filterStatus]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
