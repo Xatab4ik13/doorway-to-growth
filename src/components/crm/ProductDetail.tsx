@@ -69,7 +69,7 @@ const COATING_PALETTE: { name: string; hex: string }[] = [
 export function ProductDetail({ product, onClose, onDelete, onPrev, onNext, position, total }: ProductDetailProps) {
   const [activeImage, setActiveImage] = useState(0);
   const updateProduct = useUpdateProduct();
-  const { images, uploading, uploadImage, deleteImage, setVariantKey } = useProductImages(product.id);
+  const { images, uploading, uploadImage, deleteImage, setVariantKey, setImageKey } = useProductImages(product.id);
 
   const rawSpecs = (product.specifications ?? {}) as Record<string, any>;
   const sizes: any[] = Array.isArray(rawSpecs.sizes) ? rawSpecs.sizes : [];
