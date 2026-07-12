@@ -316,16 +316,36 @@ export function ProductDetail({ product, onClose, onDelete, onPrev, onNext, posi
             </div>
 
             {/* Привязка фото к цвету — крупная панель */}
-            <div className="rounded-2xl border border-border bg-muted/30 p-4">
+            <div className="rounded-2xl border border-foreground/15 bg-gradient-to-b from-muted/40 to-transparent p-4">
               <div className="flex items-start gap-2 mb-3">
                 <Link2 className="h-4 w-4 text-foreground mt-0.5 shrink-0" />
-                <div className="min-w-0">
-                  <h4 className="text-xs font-semibold text-foreground">Привязка фото к цвету покрытия</h4>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
-                    Выберите цвет — текущее фото будет показываться на витрине, когда покупатель выберет этот оттенок. Привязано: <span className="font-semibold text-foreground">{boundCount}</span> из {allImages.length}.
+                <div className="min-w-0 flex-1">
+                  <h4 className="text-sm font-semibold text-foreground">Привязка фото к цвету покрытия</h4>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Когда покупатель на витрине выберет цвет двери — ему покажется именно то фото, которое привязано к этому цвету.
                   </p>
                 </div>
+                <span className="shrink-0 rounded-full border border-border bg-background px-2 py-0.5 text-[10px] font-semibold text-foreground tabular-nums">
+                  {boundCount} / {allImages.length}
+                </span>
               </div>
+
+              {/* Пошаговая инструкция */}
+              <ol className="mb-3 space-y-1 text-[11px] text-muted-foreground bg-background/60 rounded-xl border border-border p-3">
+                <li className="flex gap-2">
+                  <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-foreground text-primary-foreground text-[9px] font-bold">1</span>
+                  <span>Кликните нужное <span className="font-medium text-foreground">фото</span> в галерее слева.</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-foreground text-primary-foreground text-[9px] font-bold">2</span>
+                  <span>Ниже выберите <span className="font-medium text-foreground">цвет покрытия</span> — привязка сохранится сразу.</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-foreground text-primary-foreground text-[9px] font-bold">3</span>
+                  <span>Повторите для каждого фото. Одно фото — один цвет.</span>
+                </li>
+              </ol>
+
 
               {!currentImage || currentImage.id === "legacy" ? (
                 <p className="text-[11px] text-muted-foreground italic">
