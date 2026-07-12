@@ -41,12 +41,11 @@ export function CartDrawer() {
   const navigate = useNavigate();
 
   const goToCart = () => {
-    // Extract slug from first item's siteId — we need the slug from URL
     closeCart();
-    // Find slug from current URL
+    // On custom TLDs the path is clean (/cart); in dev/preview slug is in the URL.
     const match = window.location.pathname.match(/\/store\/([^/]+)/);
-    const slug = match?.[1] || "";
-    if (slug) navigate(storeHref(slug, "cart"));
+    const slug = match?.[1] || null;
+    navigate(storeHref(slug, "cart"));
   };
 
   return (
