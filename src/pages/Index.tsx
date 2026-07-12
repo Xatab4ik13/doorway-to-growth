@@ -11,9 +11,8 @@ import { SettingsPage } from "@/components/crm/pages/SettingsPage";
 import { NotificationsPage } from "@/components/crm/pages/NotificationsPage";
 import { ProfilePage } from "@/components/crm/pages/ProfilePage";
 import { AnnouncementsPage } from "@/components/crm/pages/AnnouncementsPage";
-import { VariantAuditPage } from "@/components/crm/pages/VariantAuditPage";
 
-const VALID_SECTIONS = ["dashboard","sites","partners","catalog","variant-audit","leads","analytics","announcements","settings","notifications","profile"];
+const VALID_SECTIONS = ["dashboard","sites","partners","catalog","leads","analytics","announcements","settings","notifications","profile"];
 
 const getInitialSection = () => {
   const hash = window.location.hash.replace("#", "");
@@ -65,8 +64,6 @@ const Index = () => {
         return <PartnersPage />;
       case "catalog":
         return <CatalogPage />;
-      case "variant-audit":
-        return <VariantAuditPage />;
       case "leads":
         return <LeadsPage />;
       case "analytics":
