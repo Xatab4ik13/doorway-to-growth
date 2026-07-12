@@ -77,18 +77,42 @@ export function CatalogPage() {
   ].filter(Boolean).length;
 
   // Категории с превью + счётчиком
-  const categoryTiles = useMemo(() => {
-    return categories.map((c) => {
-      const items = products.filter((p) => p.category?.id === c.id);
-      const preview = items.find((p) => p.primary_image)?.primary_image ?? null;
-      return { id: c.id, name: c.name, count: items.length, preview };
+  // Иерархия категорий: родители → дети
+  const { catById, roots, childrenByParent } = useMemo(() => {
+    const catById = new Map<string, any>();
+    categories.forEach((c: any) => catById.set(c.id, c));
+    const roots = categories.filter((c: any) => !c.parent_id);
+    const childrenByParent = new Map<string, any[]>();
+    categories.forEach((c: any) => {
+      if (c.parent_id) {
+        const arr = childrenByParent.get(c.parent_id) ?? [];
+        arr.push(c);
+        childrenByParent.set(c.parent_id, arr);
+      }
     });
-  }, [categories, products]);
+    return { catById, roots, childrenByParent };
+  }, [categories]);
 
   const uncategorizedCount = useMemo(
     () => products.filter((p) => !p.category?.id).length,
     [products]
   );
+
+  const countForCategory = useCallback((catId: string): number => {
+    const direct = products.filter((p) => p.category?.id === catId).length;
+    const kids = childrenByParent.get(catId) ?? [];
+    return direct + kids.reduce((sum, k) => sum + countForCategory(k.id), 0);
+  }, [products, childrenByParent]);
+
+  // Раскрытые узлы дерева
+  const [expanded, setExpanded] = useState<Set<string>>(() => new Set(categories.filter((c: any) => !c.parent_id).map((c: any) => c.id)));
+  const toggleExpanded = (id: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
 
   const resetForm = () => {
     setFormName(""); setFormCategoryId(""); setFormRrp(""); setFormColor(""); setFormGlazing(""); setFormDesc("");
