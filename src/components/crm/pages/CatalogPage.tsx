@@ -639,50 +639,55 @@ export function CatalogPage() {
   );
 }
 
-// ============ Плитка категории ============
-function CategoryTile({
-  active, onClick, name, count, preview, emphasis, dashed,
+// ============ Строка категории в правой панели ============
+function CategoryRow({
+  label, count, active, onClick, expandable, expanded, onToggleExpand, bold, indent, muted, emphasis,
 }: {
+  label: string;
+  count: number;
   active: boolean;
   onClick: () => void;
-  name: string;
-  count: number;
-  preview: string | null;
+  expandable?: boolean;
+  expanded?: boolean;
+  onToggleExpand?: () => void;
+  bold?: boolean;
+  indent?: boolean;
+  muted?: boolean;
   emphasis?: boolean;
-  dashed?: boolean;
 }) {
   return (
-    <button
-      onClick={onClick}
-      className={`group shrink-0 relative flex items-center gap-3 rounded-2xl border p-2 pr-4 transition-all active:scale-[0.98] ${
-        active
-          ? "border-foreground bg-foreground text-primary-foreground shadow-sm"
-          : `bg-card text-foreground hover:border-foreground/40 ${dashed ? "border-dashed border-border" : "border-border"}`
-      }`}
-      style={{ minWidth: emphasis ? 200 : 180 }}
-    >
-      <div className={`h-12 w-12 shrink-0 rounded-xl overflow-hidden flex items-center justify-center ${
-        active ? "bg-primary-foreground/10" : "bg-muted"
-      }`}>
-        {preview ? (
-          <img src={resolveStorageUrl(preview)} alt="" className="h-full w-full object-cover" loading="lazy" />
-        ) : (
-          <Package className={`h-5 w-5 ${active ? "text-primary-foreground/60" : "text-muted-foreground"}`} />
-        )}
-      </div>
-      <div className="min-w-0 text-left">
-        <div className={`text-[11px] uppercase tracking-wider font-medium ${
-          active ? "text-primary-foreground/70" : "text-muted-foreground"
-        }`}>
-          Коллекция
-        </div>
-        <div className="text-sm font-semibold truncate">{name}</div>
-        <div className={`text-[11px] tabular-nums ${
+    <div className={`group flex items-stretch mx-1.5 rounded-lg transition-colors ${
+      active ? "bg-foreground text-primary-foreground" : "hover:bg-muted/60 text-foreground"
+    }`}>
+      {expandable && (
+        <button
+          onClick={onToggleExpand}
+          className={`flex w-6 items-center justify-center shrink-0 rounded-l-lg transition-colors ${
+            active ? "text-primary-foreground/70 hover:bg-primary-foreground/10" : "text-muted-foreground hover:text-foreground"
+          }`}
+          title={expanded ? "Свернуть" : "Развернуть"}
+        >
+          {expanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+        </button>
+      )}
+      <button
+        onClick={onClick}
+        className={`flex-1 flex items-center justify-between gap-2 px-2.5 py-1.5 text-left transition-colors ${
+          indent ? "pl-6" : ""
+        } ${!expandable ? "rounded-lg" : "rounded-r-lg"}`}
+      >
+        <span className={`text-[13px] truncate ${
+          bold ? "font-semibold" : indent ? "font-normal" : emphasis ? "font-semibold" : "font-medium"
+        } ${muted && !active ? "text-muted-foreground" : ""}`}>
+          {label}
+        </span>
+        <span className={`text-[11px] tabular-nums shrink-0 ${
           active ? "text-primary-foreground/80" : "text-muted-foreground"
         }`}>
-          {count} шт.
-        </div>
-      </div>
-    </button>
+          {count}
+        </span>
+      </button>
+    </div>
   );
 }
+
