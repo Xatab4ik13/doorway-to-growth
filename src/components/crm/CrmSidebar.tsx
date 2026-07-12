@@ -14,6 +14,7 @@ import {
   X,
   ChevronsLeft,
   ChevronsRight,
+  ClipboardCheck,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -28,6 +29,7 @@ const navItems: NavItem[] = [
   { icon: Globe, id: "sites", label: "Сайты" },
   { icon: Users, id: "partners", label: "Партнёры" },
   { icon: Package, id: "catalog", label: "Каталог" },
+  { icon: ClipboardCheck, id: "variant-audit", label: "Аудит вариантов" },
   { icon: FileText, id: "leads", label: "Заявки" },
   { icon: Megaphone, id: "announcements", label: "Объявления" },
   { icon: BarChart3, id: "analytics", label: "Аналитика" },
