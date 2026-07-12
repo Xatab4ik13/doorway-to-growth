@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CrmHeader } from "@/components/crm/CrmHeader";
-import { Camera, Mail, Phone, Shield, Key, Clock } from "lucide-react";
+import { Camera, Mail, Phone, Shield, Key, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -78,6 +78,32 @@ export function ProfilePage() {
     }
   };
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const uploadAvatar = async (file: File) => {
+    if (!user) return;
+    try {
+      setUploading(true);
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `avatars/${user.id}/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("partner-assets").upload(path, file, { upsert: false });
+      if (upErr) throw upErr;
+      const { data: pub } = supabase.storage.from("partner-assets").getPublicUrl(path);
+      const { error: profErr } = await supabase
+        .from("profiles")
+        .update({ avatar_url: pub.publicUrl })
+        .eq("user_id", user.id);
+      if (profErr) throw profErr;
+      queryClient.invalidateQueries({ queryKey: ["my-profile", user.id] });
+      toast({ title: "Аватар обновлён" });
+    } catch (e: any) {
+      toast({ title: "Ошибка", description: e.message, variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <div className="px-4 sm:px-8 py-6">
       <CrmHeader title="Профиль" breadcrumbs={[{ label: "Настройки" }]} />
@@ -88,9 +114,32 @@ export function ProfilePage() {
           <div className="rounded-2xl border border-border bg-card p-6">
             <div className="flex flex-col items-center text-center">
               <div className="relative group">
-                <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-muted text-2xl font-semibold text-foreground">
-                  {initials}
+                <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-muted text-2xl font-semibold text-foreground overflow-hidden">
+                  {profile?.avatar_url ? (
+                    <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    initials
+                  )}
                 </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) uploadAvatar(f);
+                    e.target.value = "";
+                  }}
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-foreground text-primary-foreground flex items-center justify-center shadow-md hover:opacity-90 active:scale-95 disabled:opacity-60"
+                  aria-label="Загрузить аватар"
+                >
+                  {uploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Camera className="h-3.5 w-3.5" />}
+                </button>
               </div>
               <h3 className="mt-4 text-base font-semibold text-foreground">{firstName} {lastName}</h3>
               <span className="mt-1 inline-block rounded-full bg-foreground px-2.5 py-0.5 text-[10px] font-medium text-primary-foreground">
