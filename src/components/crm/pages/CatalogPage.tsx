@@ -6,7 +6,7 @@ import { Modal } from "@/components/crm/Modal";
 import { ConfirmDialog } from "@/components/crm/ConfirmDialog";
 import {
   Search, Plus, CheckSquare, Package, Trash2, SlidersHorizontal, X,
-  Copy, EyeOff, Eye, LayoutGrid, Rows3, Image as ImageIcon,
+  Copy, EyeOff, Eye, LayoutGrid, Rows3, Image as ImageIcon, ChevronDown, ChevronRight, FolderTree,
 } from "lucide-react";
 import { ProductDetail } from "@/components/crm/ProductDetail";
 import {
