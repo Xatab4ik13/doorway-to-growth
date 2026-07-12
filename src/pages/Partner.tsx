@@ -25,6 +25,8 @@ const Partner = () => {
     switch (activeSection) {
       case "leads":
         return <PartnerLeadsPage onNavigate={handleNavigate} />;
+      case "catalog":
+        return <PartnerCatalogPage />;
       case "content":
         return <PartnerContentPage onNavigate={handleNavigate} />;
       case "promotions":
