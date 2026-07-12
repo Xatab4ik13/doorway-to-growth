@@ -1,5 +1,5 @@
-import { useState, useRef, useCallback } from "react";
-import { X, Save, Plus, Trash2, Upload, ImageIcon, Link2, Image as ImageLucide } from "lucide-react";
+import { useState, useRef, useCallback, useEffect } from "react";
+import { X, Save, Plus, Trash2, Upload, ImageIcon, Link2, Image as ImageLucide, ChevronLeft, ChevronRight } from "lucide-react";
 import { useUpdateProduct, type Product } from "@/hooks/useProducts";
 import { useProductImages } from "@/hooks/useProductImages";
 import { toast } from "@/hooks/use-toast";
@@ -8,6 +8,11 @@ import { resolveStorageUrl } from "@/lib/storageUrl";
 interface ProductDetailProps {
   product: Product;
   onClose: () => void;
+  onDelete?: () => void;
+  onPrev?: () => void;
+  onNext?: () => void;
+  position?: number;
+  total?: number;
 }
 
 const SPEC_LABELS: Record<string, string> = {
