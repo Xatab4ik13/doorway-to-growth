@@ -253,40 +253,10 @@ export function CatalogPage() {
         )}
       </div>
 
-      {/* ===== Категории — визуальная полоса плиток ===== */}
-      <div className="mb-5 -mx-4 sm:-mx-8 px-4 sm:px-8">
-        <div className="flex items-center gap-2.5 overflow-x-auto pb-2 [scrollbar-width:thin]">
-          {/* "Все" */}
-          <CategoryTile
-            active={activeCategoryKey === ALL_CATEGORY}
-            onClick={() => { setActiveCategoryKey(ALL_CATEGORY); setPage(1); }}
-            name="Все товары"
-            count={products.length}
-            preview={products.find((p) => p.primary_image)?.primary_image ?? null}
-            emphasis
-          />
-          {categoryTiles.map((c) => (
-            <CategoryTile
-              key={c.id}
-              active={activeCategoryKey === c.id}
-              onClick={() => { setActiveCategoryKey(c.id); setPage(1); }}
-              name={c.name}
-              count={c.count}
-              preview={c.preview}
-            />
-          ))}
-          {uncategorizedCount > 0 && (
-            <CategoryTile
-              active={activeCategoryKey === "__none__"}
-              onClick={() => { setActiveCategoryKey("__none__"); setPage(1); }}
-              name="Без категории"
-              count={uncategorizedCount}
-              preview={null}
-              dashed
-            />
-          )}
-        </div>
-      </div>
+      <div className="flex gap-6 items-start">
+        {/* ===== Основная область ===== */}
+        <div className="flex-1 min-w-0">
+
 
       {/* Toolbar */}
       <div className="flex flex-col gap-3 mb-4">
