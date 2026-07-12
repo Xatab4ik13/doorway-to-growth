@@ -83,12 +83,6 @@ export function VariantAuditPage() {
   const runAudit = async (reset: boolean) => {
     setRunning(true);
     try {
-      const { data, error } = await supabase.functions.invoke("audit-brandoors-variants", {
-        method: "POST",
-        body: null,
-        headers: {},
-      } as any);
-      // Fallback: use direct fetch with query params since invoke doesn't do query strings well
       const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/audit-brandoors-variants?name=${encodeURIComponent(collection)}${reset ? "&reset=1" : ""}`;
       const { data: { session } } = await supabase.auth.getSession();
       const res = await fetch(url, {
