@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CrmHeader } from "@/components/crm/CrmHeader";
 import { ConfirmDialog } from "@/components/crm/ConfirmDialog";
-import { User, Shield, Bell, Palette, Globe, Lock, ChevronRight, LogOut, Moon, Sun } from "lucide-react";
+import { Modal } from "@/components/crm/Modal";
+import { User, Shield, Bell, Palette, Globe, Lock, LogOut, Moon, Sun, Plus, Trash2, Copy } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -15,6 +16,20 @@ const tabs = [
   { id: "appearance", label: "Внешний вид", icon: Palette },
   { id: "system", label: "Система", icon: Globe },
 ];
+
+type NotifPrefs = {
+  newLeads: boolean;
+  partnerStatus: boolean;
+  catalogChanges: boolean;
+  emailReports: boolean;
+};
+
+const DEFAULT_PREFS: NotifPrefs = {
+  newLeads: true,
+  partnerStatus: true,
+  catalogChanges: false,
+  emailReports: true,
+};
 
 function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -34,19 +49,15 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 }
 
 export function SettingsPage() {
-  const { user, signOut } = useAuth();
+  const { user, role, signOut } = useAuth();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("profile");
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains("dark"));
-  const [notifications, setNotifications] = useState({
-    newLeads: true,
-    partnerStatus: true,
-    catalogChanges: false,
-    emailReports: true,
-  });
 
-  // Real profile data
+  const isAdmin = role === "admin";
+
+  // Profile
   const { data: profile } = useQuery({
     queryKey: ["my-profile", user?.id],
     queryFn: async () => {
@@ -61,8 +72,8 @@ export function SettingsPage() {
     enabled: !!user?.id,
   });
 
-  // Real users list
-  const { data: users = [] } = useQuery({
+  // Users + roles + emails via admin endpoint (fallback: use roles table + profiles)
+  const { data: users = [], refetch: refetchUsers } = useQuery({
     queryKey: ["all-users"],
     queryFn: async () => {
       const { data: roles, error: rolesErr } = await supabase
@@ -79,9 +90,8 @@ export function SettingsPage() {
         const p = profiles?.find((pr) => pr.user_id === r.user_id);
         return {
           name: p?.full_name ?? "Без имени",
-          email: "",
-          role: r.role === "admin" ? "Администратор" : "Партнёр",
-          active: true,
+          phone: p?.phone ?? "",
+          role: r.role,
           user_id: r.user_id,
         };
       });
@@ -100,11 +110,45 @@ export function SettingsPage() {
     },
   });
 
+  // ============ NOTIFICATIONS PREFS ============
+  const [notifPrefs, setNotifPrefs] = useState<NotifPrefs>(DEFAULT_PREFS);
+  useEffect(() => {
+    if (profile?.notification_prefs) {
+      setNotifPrefs({ ...DEFAULT_PREFS, ...(profile.notification_prefs as any) });
+    }
+  }, [profile?.notification_prefs]);
+
+  const saveNotifPrefs = useMutation({
+    mutationFn: async (next: NotifPrefs) => {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ notification_prefs: next })
+        .eq("user_id", user!.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["my-profile", user?.id] });
+      toast({ title: "Настройки сохранены" });
+    },
+    onError: (e: Error) => toast({ title: "Ошибка", description: e.message, variant: "destructive" }),
+  });
+
+  const handleNotifToggle = (key: keyof NotifPrefs, value: boolean) => {
+    const next = { ...notifPrefs, [key]: value };
+    setNotifPrefs(next);
+    saveNotifPrefs.mutate(next);
+  };
+
+  // ============ PASSWORD ============
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleChangePassword = async () => {
     if (!newPassword) return;
+    if (newPassword.length < 6) {
+      toast({ title: "Ошибка", description: "Минимум 6 символов", variant: "destructive" });
+      return;
+    }
     if (newPassword !== confirmPassword) {
       toast({ title: "Ошибка", description: "Пароли не совпадают", variant: "destructive" });
       return;
@@ -119,6 +163,68 @@ export function SettingsPage() {
     }
   };
 
+  // ============ USER MANAGEMENT (admin only) ============
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteForm, setInviteForm] = useState({ email: "", password: "", full_name: "", role: "partner" as "admin" | "partner" });
+  const [inviteResult, setInviteResult] = useState<{ email: string; password: string } | null>(null);
+  const [deleteUser, setDeleteUser] = useState<{ user_id: string; name: string } | null>(null);
+
+  const inviteMutation = useMutation({
+    mutationFn: async () => {
+      if (!inviteForm.email.trim() || !inviteForm.password.trim()) throw new Error("Заполните email и пароль");
+      if (inviteForm.password.length < 6) throw new Error("Пароль минимум 6 символов");
+      const { data, error } = await supabase.functions.invoke("create-user", {
+        body: {
+          email: inviteForm.email.trim(),
+          password: inviteForm.password,
+          full_name: inviteForm.full_name.trim() || inviteForm.email.trim(),
+          role: inviteForm.role,
+        },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      return data;
+    },
+    onSuccess: () => {
+      setInviteResult({ email: inviteForm.email, password: inviteForm.password });
+      setInviteForm({ email: "", password: "", full_name: "", role: "partner" });
+      setInviteOpen(false);
+      queryClient.invalidateQueries({ queryKey: ["all-users"] });
+      toast({ title: "Пользователь создан" });
+    },
+    onError: (e: Error) => toast({ title: "Ошибка", description: e.message, variant: "destructive" }),
+  });
+
+  const changeRoleMutation = useMutation({
+    mutationFn: async ({ user_id, role }: { user_id: string; role: "admin" | "partner" }) => {
+      // delete existing role rows for user then insert new
+      const { error: delErr } = await supabase.from("user_roles").delete().eq("user_id", user_id);
+      if (delErr) throw delErr;
+      const { error: insErr } = await supabase.from("user_roles").insert({ user_id, role });
+      if (insErr) throw insErr;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["all-users"] });
+      toast({ title: "Роль обновлена" });
+    },
+    onError: (e: Error) => toast({ title: "Ошибка", description: e.message, variant: "destructive" }),
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: async (user_id: string) => {
+      // Remove role rows — actual auth.users row remains but user loses CRM access
+      const { error } = await supabase.from("user_roles").delete().eq("user_id", user_id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["all-users"] });
+      setDeleteUser(null);
+      toast({ title: "Доступ отозван" });
+    },
+    onError: (e: Error) => toast({ title: "Ошибка", description: e.message, variant: "destructive" }),
+  });
+
+  // ============ APPEARANCE ============
   const toggleDarkMode = (on: boolean) => {
     setDarkMode(on);
     document.documentElement.classList.toggle("dark", on);
@@ -166,8 +272,12 @@ export function SettingsPage() {
             <div className="rounded-2xl border border-border bg-card p-6 opacity-0 animate-fade-up">
               <h3 className="text-sm font-semibold text-foreground mb-6">Профиль</h3>
               <div className="flex items-center gap-5 mb-8">
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted text-lg font-semibold text-foreground">
-                  {initials}
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted text-lg font-semibold text-foreground overflow-hidden">
+                  {profile?.avatar_url ? (
+                    <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    initials
+                  )}
                 </div>
                 <div>
                   <p className="text-base font-semibold text-foreground">{fullName}</p>
@@ -207,7 +317,7 @@ export function SettingsPage() {
               <h3 className="text-sm font-semibold text-foreground mb-6">Уведомления</h3>
               <div className="space-y-4">
                 {([
-                  { key: "newLeads" as const, label: "Новые заявки", desc: "Получать уведомления о новых заявках со всех сайтов" },
+                  { key: "newLeads" as const, label: "Новые заявки", desc: "Уведомления о новых заявках со всех сайтов" },
                   { key: "partnerStatus" as const, label: "Статус партнёра", desc: "Уведомления когда партнёр меняет статус" },
                   { key: "catalogChanges" as const, label: "Изменения каталога", desc: "Уведомления при добавлении/удалении товаров" },
                   { key: "emailReports" as const, label: "Email отчёты", desc: "Еженедельная сводка по почте" },
@@ -218,8 +328,8 @@ export function SettingsPage() {
                       <p className="text-xs text-muted-foreground">{item.desc}</p>
                     </div>
                     <Toggle
-                      checked={notifications[item.key]}
-                      onChange={(v) => setNotifications((prev) => ({ ...prev, [item.key]: v }))}
+                      checked={notifPrefs[item.key]}
+                      onChange={(v) => handleNotifToggle(item.key, v)}
                     />
                   </div>
                 ))}
@@ -231,6 +341,14 @@ export function SettingsPage() {
             <div className="rounded-2xl border border-border bg-card overflow-hidden opacity-0 animate-fade-up">
               <div className="flex items-center justify-between px-6 py-4 border-b border-border">
                 <h3 className="text-sm font-semibold text-foreground">Пользователи</h3>
+                {isAdmin && (
+                  <button
+                    onClick={() => setInviteOpen(true)}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-foreground text-background text-xs font-medium hover:opacity-90 active:scale-[0.97]"
+                  >
+                    <Plus className="h-3.5 w-3.5" />Пригласить
+                  </button>
+                )}
               </div>
               <div className="divide-y divide-border">
                 {users.length === 0 ? (
@@ -242,13 +360,33 @@ export function SettingsPage() {
                         {u.name.split(" ").map(n => n[0]).join("").slice(0, 2)}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-foreground">{u.name}</p>
+                        <p className="text-sm font-medium text-foreground truncate">{u.name}</p>
+                        {u.phone && <p className="text-[11px] text-muted-foreground truncate">{u.phone}</p>}
                       </div>
-                      <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-medium ${
-                        u.role === "Администратор" ? "bg-foreground text-primary-foreground" : "bg-muted text-muted-foreground"
-                      }`}>
-                        {u.role}
-                      </span>
+                      {isAdmin && u.user_id !== user?.id ? (
+                        <>
+                          <select
+                            value={u.role}
+                            onChange={(e) => changeRoleMutation.mutate({ user_id: u.user_id, role: e.target.value as any })}
+                            className="h-8 rounded-lg border border-border bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20"
+                          >
+                            <option value="admin">Администратор</option>
+                            <option value="partner">Партнёр</option>
+                          </select>
+                          <button
+                            onClick={() => setDeleteUser({ user_id: u.user_id, name: u.name })}
+                            className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </>
+                      ) : (
+                        <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-medium ${
+                          u.role === "admin" ? "bg-foreground text-primary-foreground" : "bg-muted text-muted-foreground"
+                        }`}>
+                          {u.role === "admin" ? "Администратор" : "Партнёр"}
+                        </span>
+                      )}
                     </div>
                   ))
                 )}
@@ -294,7 +432,111 @@ export function SettingsPage() {
         </div>
       </div>
 
-      {/* Logout confirmation */}
+      {/* Invite modal */}
+      <Modal
+        open={inviteOpen}
+        onClose={() => setInviteOpen(false)}
+        title="Пригласить пользователя"
+        footer={
+          <>
+            <button onClick={() => setInviteOpen(false)} className="px-4 py-2 rounded-xl border border-border text-sm hover:bg-muted">Отмена</button>
+            <button
+              onClick={() => inviteMutation.mutate()}
+              disabled={inviteMutation.isPending}
+              className="px-4 py-2 rounded-xl bg-foreground text-background text-sm font-medium hover:opacity-90 disabled:opacity-40"
+            >
+              {inviteMutation.isPending ? "Создание..." : "Создать"}
+            </button>
+          </>
+        }
+      >
+        <div className="space-y-3">
+          <div>
+            <label className="text-[11px] text-muted-foreground font-medium">Email*</label>
+            <input
+              type="email"
+              value={inviteForm.email}
+              onChange={(e) => setInviteForm({ ...inviteForm, email: e.target.value })}
+              className="mt-1 w-full h-10 rounded-xl border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring/20"
+            />
+          </div>
+          <div>
+            <label className="text-[11px] text-muted-foreground font-medium">Пароль*</label>
+            <input
+              value={inviteForm.password}
+              onChange={(e) => setInviteForm({ ...inviteForm, password: e.target.value })}
+              placeholder="минимум 6 символов"
+              className="mt-1 w-full h-10 rounded-xl border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring/20"
+            />
+            <p className="mt-1 text-[10px] text-muted-foreground">Передайте пароль пользователю — он сможет сменить его в настройках.</p>
+          </div>
+          <div>
+            <label className="text-[11px] text-muted-foreground font-medium">Имя</label>
+            <input
+              value={inviteForm.full_name}
+              onChange={(e) => setInviteForm({ ...inviteForm, full_name: e.target.value })}
+              className="mt-1 w-full h-10 rounded-xl border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring/20"
+            />
+          </div>
+          <div>
+            <label className="text-[11px] text-muted-foreground font-medium">Роль</label>
+            <select
+              value={inviteForm.role}
+              onChange={(e) => setInviteForm({ ...inviteForm, role: e.target.value as any })}
+              className="mt-1 w-full h-10 rounded-xl border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring/20"
+            >
+              <option value="partner">Партнёр</option>
+              <option value="admin">Администратор</option>
+            </select>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Invite success — show credentials */}
+      <Modal
+        open={!!inviteResult}
+        onClose={() => setInviteResult(null)}
+        title="Пользователь создан"
+        footer={
+          <button
+            onClick={() => setInviteResult(null)}
+            className="px-4 py-2 rounded-xl bg-foreground text-background text-sm font-medium hover:opacity-90"
+          >
+            Готово
+          </button>
+        }
+      >
+        {inviteResult && (
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">Передайте эти данные пользователю:</p>
+            <div className="rounded-xl border border-border bg-muted/40 p-3 font-mono text-xs space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <span><span className="text-muted-foreground">Email:</span> {inviteResult.email}</span>
+                <button onClick={() => { navigator.clipboard.writeText(inviteResult.email); toast({ title: "Скопировано" }); }} className="p-1 rounded hover:bg-background">
+                  <Copy className="h-3 w-3" />
+                </button>
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <span><span className="text-muted-foreground">Пароль:</span> {inviteResult.password}</span>
+                <button onClick={() => { navigator.clipboard.writeText(inviteResult.password); toast({ title: "Скопировано" }); }} className="p-1 rounded hover:bg-background">
+                  <Copy className="h-3 w-3" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      <ConfirmDialog
+        open={!!deleteUser}
+        onClose={() => setDeleteUser(null)}
+        onConfirm={() => deleteUser && deleteUserMutation.mutate(deleteUser.user_id)}
+        title={`Отозвать доступ у ${deleteUser?.name}?`}
+        description="Пользователь потеряет доступ к CRM. Учётная запись сохранится, доступ можно вернуть повторным приглашением."
+        confirmLabel="Отозвать"
+        destructive
+      />
+
       <ConfirmDialog
         open={logoutOpen}
         onClose={() => setLogoutOpen(false)}
