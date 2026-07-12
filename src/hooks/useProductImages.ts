@@ -11,7 +11,12 @@ export type ProductImage = {
   sort_order: number | null;
   alt: string | null;
   variant_key: string | null;
+  glazing_key: string | null;
+  molding_key: string | null;
+  edge_key: string | null;
 };
+
+export type AxisKey = "variant_key" | "glazing_key" | "molding_key" | "edge_key";
 
 export function useProductImages(productId: string) {
   const qc = useQueryClient();
