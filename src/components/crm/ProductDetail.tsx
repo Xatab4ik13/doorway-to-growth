@@ -142,12 +142,12 @@ export function ProductDetail({ product, onClose, onDelete, onPrev, onNext, posi
     if (!Array.isArray(val)) return [];
     return val.map((v) => (typeof v === "string" ? v : v?.name ?? v?.key)).filter(Boolean) as string[];
   };
-  const availableAxes: { key: "variant_key" | "glazing_key" | "molding_key" | "edge_key"; label: string; values: string[]; current: string | null }[] = [
-    { key: "variant_key", label: "Цвет покрытия", values: axisValues(rawSpecs.colors), current: currentVariantKey },
-    { key: "glazing_key", label: "Остекление", values: axisValues(rawSpecs.glazing_options), current: currentGlazingKey },
-    { key: "molding_key", label: "Молдинг", values: axisValues(rawSpecs.moldings), current: currentMoldingKey },
-    { key: "edge_key", label: "Кромка", values: axisValues(rawSpecs.edges ?? rawSpecs.axes?.edge?.values), current: currentEdgeKey },
-  ].filter((a) => a.values.length > 0);
+  const availableAxes = ([
+    { key: "variant_key" as const, label: "Цвет покрытия", values: axisValues(rawSpecs.colors), current: currentVariantKey },
+    { key: "glazing_key" as const, label: "Остекление", values: axisValues(rawSpecs.glazing_options), current: currentGlazingKey },
+    { key: "molding_key" as const, label: "Молдинг", values: axisValues(rawSpecs.moldings), current: currentMoldingKey },
+    { key: "edge_key" as const, label: "Кромка", values: axisValues(rawSpecs.edges ?? rawSpecs.axes?.edge?.values), current: currentEdgeKey },
+  ]).filter((a) => a.values.length > 0);
 
   // Сколько фото имеют хоть одну привязку по имеющимся осям
   const boundCount = allImages.filter((img) =>
