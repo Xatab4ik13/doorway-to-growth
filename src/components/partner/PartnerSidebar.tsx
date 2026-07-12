@@ -10,6 +10,7 @@ import {
   X,
   ChevronsLeft,
   ChevronsRight,
+  Package,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -21,6 +22,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { icon: FileText, id: "leads", label: "Мои заявки" },
+  { icon: Package, id: "catalog", label: "Каталог" },
   { icon: Layout, id: "content", label: "Контент сайта" },
   { icon: Tag, id: "promotions", label: "Мои акции" },
   { icon: Megaphone, id: "announcements", label: "Объявления" },
