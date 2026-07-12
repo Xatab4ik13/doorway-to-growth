@@ -513,6 +513,70 @@ export function CatalogPage() {
           </div>
         </>
       )}
+        </div>
+
+        {/* ===== Правая панель категорий ===== */}
+        <aside className="hidden lg:block w-64 shrink-0 sticky top-4 self-start">
+          <div className="rounded-2xl border border-border bg-card overflow-hidden">
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
+              <FolderTree className="h-3.5 w-3.5 text-muted-foreground" />
+              <h4 className="text-xs font-semibold text-foreground">Категории</h4>
+            </div>
+            <div className="max-h-[calc(100vh-160px)] overflow-y-auto py-1.5">
+              <CategoryRow
+                label="Все товары"
+                count={products.length}
+                active={activeCategoryKey === ALL_CATEGORY}
+                onClick={() => { setActiveCategoryKey(ALL_CATEGORY); setPage(1); }}
+                emphasis
+              />
+              {roots.map((r: any) => {
+                const kids = childrenByParent.get(r.id) ?? [];
+                const isExp = expanded.has(r.id);
+                const total = countForCategory(r.id);
+                return (
+                  <div key={r.id}>
+                    <CategoryRow
+                      label={r.name}
+                      count={total}
+                      active={activeCategoryKey === r.id}
+                      onClick={() => { setActiveCategoryKey(r.id); setPage(1); }}
+                      expandable={kids.length > 0}
+                      expanded={isExp}
+                      onToggleExpand={() => toggleExpanded(r.id)}
+                      bold
+                    />
+                    {isExp && kids.map((k: any) => (
+                      <CategoryRow
+                        key={k.id}
+                        label={k.name}
+                        count={countForCategory(k.id)}
+                        active={activeCategoryKey === k.id}
+                        onClick={() => { setActiveCategoryKey(k.id); setPage(1); }}
+                        indent
+                      />
+                    ))}
+                  </div>
+                );
+              })}
+              {uncategorizedCount > 0 && (
+                <>
+                  <div className="my-1 h-px bg-border mx-3" />
+                  <CategoryRow
+                    label="Без категории"
+                    count={uncategorizedCount}
+                    active={activeCategoryKey === "__none__"}
+                    onClick={() => { setActiveCategoryKey("__none__"); setPage(1); }}
+                    muted
+                  />
+                </>
+              )}
+            </div>
+          </div>
+        </aside>
+      </div>
+
+
 
       {selectedProduct && (
         <ProductDetail
