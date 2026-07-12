@@ -31,7 +31,7 @@ export function StorefrontFooter({ site }: Props) {
             />
             <p
               className="text-sm leading-relaxed max-w-xs"
-              style={{ color: "rgba(245,245,240,0.4)", fontFamily: "'Raleway', sans-serif" }}
+              style={{ color: "rgba(245,245,240,0.4)", fontFamily: "'Onest', sans-serif" }}
             >
               Межкомнатные и входные двери премиум-класса. Официальный салон в {site.district || site.city}.
             </p>
@@ -41,7 +41,7 @@ export function StorefrontFooter({ site }: Props) {
           <div className="space-y-4">
             <h4
               className="text-[11px] font-semibold uppercase tracking-[0.25em] mb-5"
-              style={{ color: "rgba(207,187,150,0.6)", fontFamily: "'Raleway', sans-serif" }}
+              style={{ color: "rgba(207,187,150,0.6)", fontFamily: "'Onest', sans-serif" }}
             >
               Контакты
             </h4>
@@ -49,7 +49,7 @@ export function StorefrontFooter({ site }: Props) {
               <a
                 href={`tel:${site.phone}`}
                 className="flex items-center gap-3 text-sm hover:opacity-80 transition-opacity"
-                style={{ color: "rgba(245,245,240,0.6)", fontFamily: "'Raleway', sans-serif" }}
+                style={{ color: "rgba(245,245,240,0.6)", fontFamily: "'Onest', sans-serif" }}
               >
                 <Phone className="w-4 h-4 shrink-0" style={{ color: "rgba(207,187,150,0.5)" }} />
                 {site.phone}
@@ -59,7 +59,7 @@ export function StorefrontFooter({ site }: Props) {
               <a
                 href={`mailto:${site.email}`}
                 className="flex items-center gap-3 text-sm hover:opacity-80 transition-opacity"
-                style={{ color: "rgba(245,245,240,0.6)", fontFamily: "'Raleway', sans-serif" }}
+                style={{ color: "rgba(245,245,240,0.6)", fontFamily: "'Onest', sans-serif" }}
               >
                 <Mail className="w-4 h-4 shrink-0" style={{ color: "rgba(207,187,150,0.5)" }} />
                 {site.email}
@@ -68,7 +68,7 @@ export function StorefrontFooter({ site }: Props) {
             {site.address && (
               <div
                 className="flex items-start gap-3 text-sm"
-                style={{ color: "rgba(245,245,240,0.6)", fontFamily: "'Raleway', sans-serif" }}
+                style={{ color: "rgba(245,245,240,0.6)", fontFamily: "'Onest', sans-serif" }}
               >
                 <MapPin className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "rgba(207,187,150,0.5)" }} />
                 <span>{site.city}, {site.address}</span>
@@ -80,7 +80,7 @@ export function StorefrontFooter({ site }: Props) {
           <div className="space-y-3">
             <h4
               className="text-[11px] font-semibold uppercase tracking-[0.25em] mb-5"
-              style={{ color: "rgba(207,187,150,0.6)", fontFamily: "'Raleway', sans-serif" }}
+              style={{ color: "rgba(207,187,150,0.6)", fontFamily: "'Onest', sans-serif" }}
             >
               Навигация
             </h4>
@@ -95,7 +95,7 @@ export function StorefrontFooter({ site }: Props) {
                   key={item.label}
                   to={item.href}
                   className="block text-sm hover:opacity-80 transition-opacity"
-                  style={{ color: "rgba(245,245,240,0.5)", fontFamily: "'Raleway', sans-serif" }}
+                  style={{ color: "rgba(245,245,240,0.5)", fontFamily: "'Onest', sans-serif" }}
                 >
                   {item.label}
                 </Link>
@@ -104,7 +104,7 @@ export function StorefrontFooter({ site }: Props) {
                   key={item.label}
                   href={item.href}
                   className="block text-sm hover:opacity-80 transition-opacity"
-                  style={{ color: "rgba(245,245,240,0.5)", fontFamily: "'Raleway', sans-serif" }}
+                  style={{ color: "rgba(245,245,240,0.5)", fontFamily: "'Onest', sans-serif" }}
                 >
                   {item.label}
                 </a>
@@ -119,7 +119,7 @@ export function StorefrontFooter({ site }: Props) {
           style={{
             borderTop: "1px solid rgba(207,187,150,0.08)",
             color: "rgba(245,245,240,0.2)",
-            fontFamily: "'Raleway', sans-serif",
+            fontFamily: "'Onest', sans-serif",
           }}
         >
           © {new Date().getFullYear()} BRANDOORS. Все права защищены.

@@ -64,7 +64,7 @@ export function ReviewsCarousel({ siteSlug }: { siteSlug?: string | null }) {
         <div className="flex items-center gap-4">
           <h3
             className="text-xl font-light tracking-[0.15em] uppercase"
-            style={{ fontFamily: "'Raleway', sans-serif", color: "#F5F5F0" }}
+            style={{ fontFamily: "'Onest', sans-serif", color: "#F5F5F0" }}
           >
             Отзывы
           </h3>
@@ -90,7 +90,7 @@ export function ReviewsCarousel({ siteSlug }: { siteSlug?: string | null }) {
           target="_blank"
           rel="noopener noreferrer"
           className="hidden sm:inline-flex items-center gap-1.5 text-xs uppercase tracking-[0.2em] hover:opacity-80 transition-opacity"
-          style={{ color: "rgba(207,187,150,0.6)", fontFamily: "'Raleway', sans-serif" }}
+          style={{ color: "rgba(207,187,150,0.6)", fontFamily: "'Onest', sans-serif" }}
         >
           Все отзывы
           <ExternalLink className="w-3 h-3" />
@@ -156,7 +156,7 @@ export function ReviewsCarousel({ siteSlug }: { siteSlug?: string | null }) {
               <ChevronRight className="w-4 h-4" style={{ color: "rgba(245,245,240,0.5)" }} />
             </button>
             <div className="flex gap-2 ml-auto items-center">
-              <span className="text-xs tabular-nums" style={{ color: "rgba(245,245,240,0.4)", fontFamily: "'Raleway', sans-serif" }}>
+              <span className="text-xs tabular-nums" style={{ color: "rgba(245,245,240,0.4)", fontFamily: "'Onest', sans-serif" }}>
                 {String(current + 1).padStart(2, "0")} / {String(len).padStart(2, "0")}
               </span>
             </div>

@@ -12,7 +12,7 @@ interface Props {
 
 export function StorefrontLayout({ site, children }: Props) {
   return (
-    <div className="min-h-screen bg-storefront-bg text-storefront-text" style={{ fontFamily: "'Raleway', system-ui, sans-serif" }}>
+    <div className="min-h-screen bg-storefront-bg text-storefront-text" style={{ fontFamily: "'Onest', system-ui, sans-serif", fontFeatureSettings: "'tnum' 1, 'lnum' 1, 'ss01' 1" }}>
       <StorefrontHeader site={site} />
       <main>
         <PageTransition>{children}</PageTransition>

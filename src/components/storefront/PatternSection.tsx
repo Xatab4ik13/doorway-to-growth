@@ -121,7 +121,7 @@ const CollectionCarousel = memo(function CollectionCarousel({
             <span
               className="mt-6 text-[13px] md:text-[14px] tracking-[0.3em] uppercase text-center"
               style={{
-                fontFamily: "'Raleway', sans-serif",
+                fontFamily: "'Onest', sans-serif",
                 color: isCenter ? "rgba(245,245,240,0.8)" : "rgba(245,245,240,0.4)",
               }}
             >
@@ -183,7 +183,7 @@ export function PatternSection() {
       <div className="text-center mb-8 lg:mb-10 px-8 animate-fade-in">
         <h2
           className="text-3xl md:text-4xl lg:text-5xl font-extralight tracking-[0.2em] uppercase"
-          style={{ fontFamily: "'Raleway', sans-serif", color: "#F5F5F0" }}
+          style={{ fontFamily: "'Onest', sans-serif", color: "#F5F5F0" }}
         >
           Doors Collection
         </h2>
@@ -196,7 +196,7 @@ export function PatternSection() {
             onClick={() => setActiveTab(tab.key)}
             className="text-[13px] md:text-[14px] font-semibold tracking-[0.3em] uppercase transition-colors duration-300 focus:outline-none"
             style={{
-              fontFamily: "'Raleway', sans-serif",
+              fontFamily: "'Onest', sans-serif",
               color: activeTab === tab.key ? "#F5F5F0" : "rgba(245,245,240,0.35)",
             }}
           >

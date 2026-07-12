@@ -40,7 +40,7 @@ export function HeroSection({ site, banners }: Props) {
             href={`tel:${site.phone}`}
             className="flex items-center gap-2.5 font-semibold transition-colors duration-300"
             style={{
-              fontFamily: "'Raleway', sans-serif",
+              fontFamily: "'Onest', sans-serif",
               fontSize: "14px",
               letterSpacing: "0.15em",
               color: "rgba(26,20,8,0.85)",
@@ -107,7 +107,7 @@ export function HeroSection({ site, banners }: Props) {
                 key={item.label}
                 to={storeHref(site.slug, `${item.href}`)}
                 className="text-[15px] font-bold uppercase tracking-[0.25em] transition-colors duration-300"
-                style={{ fontFamily: "'Raleway', sans-serif", color: "rgba(26,20,8,0.85)" }}
+                style={{ fontFamily: "'Onest', sans-serif", color: "rgba(26,20,8,0.85)" }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,1)"; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.85)"; }}
               >
@@ -118,7 +118,7 @@ export function HeroSection({ site, banners }: Props) {
                 key={item.label}
                 href={item.href}
                 className="text-[15px] font-bold uppercase tracking-[0.25em] transition-colors duration-300"
-                style={{ fontFamily: "'Raleway', sans-serif", color: "rgba(26,20,8,0.85)" }}
+                style={{ fontFamily: "'Onest', sans-serif", color: "rgba(26,20,8,0.85)" }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,1)"; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.85)"; }}
               >

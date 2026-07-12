@@ -122,13 +122,13 @@ export default function StorefrontBrand() {
 
         <div className="relative z-10 max-w-[1400px] mx-auto px-6 py-20 md:py-32 w-full">
           <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease: EASE }}>
-            <p className="text-[11px] md:text-xs uppercase tracking-[0.4em] mb-6" style={{ color: "rgba(207,187,150,0.6)", fontFamily: "'Raleway', sans-serif" }}>
+            <p className="text-[11px] md:text-xs uppercase tracking-[0.4em] mb-6" style={{ color: "rgba(207,187,150,0.6)", fontFamily: "'Onest', sans-serif" }}>
               Custom Colored Doors
             </p>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-extralight tracking-[0.1em] uppercase mb-8" style={{ fontFamily: "'Raleway', sans-serif", color: "#F5F5F0" }}>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-extralight tracking-[0.1em] uppercase mb-8" style={{ fontFamily: "'Onest', sans-serif", color: "#F5F5F0" }}>
               <span style={{ color: "#cfbb96" }}>Brandoors</span>
             </h1>
-            <p className="max-w-2xl text-base md:text-lg leading-relaxed mb-10" style={{ color: "rgba(245,245,240,0.6)", fontFamily: "'Raleway', sans-serif" }}>
+            <p className="max-w-2xl text-base md:text-lg leading-relaxed mb-10" style={{ color: "rgba(245,245,240,0.6)", fontFamily: "'Onest', sans-serif" }}>
               Революция в мире дверей — инновационные технологии, безупречный дизайн и премиальное качество по доступной цене
             </p>
             <div className="flex flex-wrap items-center gap-4">
@@ -138,7 +138,7 @@ export default function StorefrontBrand() {
                 style={{
                   borderColor: "rgba(207,187,150,0.4)",
                   color: "#cfbb96",
-                  fontFamily: "'Raleway', sans-serif",
+                  fontFamily: "'Onest', sans-serif",
                 }}
               >
                 ← На главную
@@ -149,7 +149,7 @@ export default function StorefrontBrand() {
                 style={{
                   background: "linear-gradient(135deg, #cfbb96 0%, #b5a07a 50%, #a08a60 100%)",
                   color: "#0a0a0a",
-                  fontFamily: "'Raleway', sans-serif",
+                  fontFamily: "'Onest', sans-serif",
                 }}
               >
                 Смотреть каталог
@@ -167,7 +167,7 @@ export default function StorefrontBrand() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
             <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.8, ease: EASE }}>
               <SectionTitle>О <span style={{ color: "#cfbb96" }}>компании</span></SectionTitle>
-              <div className="space-y-5" style={{ color: "rgba(245,245,240,0.6)", fontFamily: "'Raleway', sans-serif", fontSize: "15px", lineHeight: "1.8" }}>
+              <div className="space-y-5" style={{ color: "rgba(245,245,240,0.6)", fontFamily: "'Onest', sans-serif", fontSize: "15px", lineHeight: "1.8" }}>
                 <p>
                   <Gold>BRANDOORS</Gold> — это ультрадинамичная команда творческих людей, объединившихся, чтобы бросить вызов стереотипам.
                 </p>
@@ -188,13 +188,13 @@ export default function StorefrontBrand() {
                 <img src={doorsReflect} alt="Скрытые двери ESTETICA REFLECT с зеркалом" loading="lazy" className="w-full h-full object-cover" />
                 <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(7,9,13,0.7) 0%, transparent 50%)" }} />
                 <div className="absolute bottom-6 left-6 right-6">
-                  <p className="text-[11px] uppercase tracking-[0.3em] mb-1" style={{ color: "rgba(207,187,150,0.7)", fontFamily: "'Raleway', sans-serif" }}>
+                  <p className="text-[11px] uppercase tracking-[0.3em] mb-1" style={{ color: "rgba(207,187,150,0.7)", fontFamily: "'Onest', sans-serif" }}>
                     Флагманская линейка
                   </p>
-                  <p className="text-lg font-light tracking-wider" style={{ color: "#F5F5F0", fontFamily: "'Raleway', sans-serif" }}>
+                  <p className="text-lg font-light tracking-wider" style={{ color: "#F5F5F0", fontFamily: "'Onest', sans-serif" }}>
                     Скрытые двери с коробом INVISIBLE
                   </p>
-                  <p className="text-xs mt-2 leading-relaxed" style={{ color: "rgba(245,245,240,0.5)", fontFamily: "'Raleway', sans-serif" }}>
+                  <p className="text-xs mt-2 leading-relaxed" style={{ color: "rgba(245,245,240,0.5)", fontFamily: "'Onest', sans-serif" }}>
                     Безупречное мастерство в каждой детали конструкции и великолепное комплексное решение для помещения
                   </p>
                 </div>
@@ -212,7 +212,7 @@ export default function StorefrontBrand() {
             <SectionTitle className="text-center">
               Варианты отделки <span style={{ color: "#cfbb96" }}>скрытых дверей</span>
             </SectionTitle>
-            <p className="max-w-2xl mx-auto text-sm md:text-base" style={{ color: "rgba(245,245,240,0.45)", fontFamily: "'Raleway', sans-serif" }}>
+            <p className="max-w-2xl mx-auto text-sm md:text-base" style={{ color: "rgba(245,245,240,0.45)", fontFamily: "'Onest', sans-serif" }}>
               Каждая дверь — это холст для вашего интерьера. Выберите отделку, которая идеально впишется в ваше пространство
             </p>
           </motion.div>
@@ -263,17 +263,17 @@ export default function StorefrontBrand() {
                 </div>
 
                 <div className="lg:[direction:ltr]">
-                  <h3 className="text-2xl md:text-3xl font-extralight tracking-[0.1em] uppercase mb-6" style={{ fontFamily: "'Raleway', sans-serif", color: "#F5F5F0" }}>
+                  <h3 className="text-2xl md:text-3xl font-extralight tracking-[0.1em] uppercase mb-6" style={{ fontFamily: "'Onest', sans-serif", color: "#F5F5F0" }}>
                     {tech.title}
                   </h3>
-                  <p className="text-sm leading-relaxed mb-6" style={{ color: "rgba(245,245,240,0.55)", fontFamily: "'Raleway', sans-serif" }}>
+                  <p className="text-sm leading-relaxed mb-6" style={{ color: "rgba(245,245,240,0.55)", fontFamily: "'Onest', sans-serif" }}>
                     {tech.desc}
                   </p>
                   <ul className="space-y-3">
                     {tech.points.map((point) => (
                       <li key={point} className="flex items-start gap-3">
                         <span className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#cfbb96" }} />
-                        <span className="text-sm" style={{ color: "rgba(245,245,240,0.65)", fontFamily: "'Raleway', sans-serif" }}>
+                        <span className="text-sm" style={{ color: "rgba(245,245,240,0.65)", fontFamily: "'Onest', sans-serif" }}>
                           {point}
                         </span>
                       </li>
@@ -308,13 +308,13 @@ export default function StorefrontBrand() {
                 transition={{ duration: 0.4, delay: i * 0.05, ease: EASE }}
               >
                 <div className="absolute -top-8 -right-8 w-20 h-20 rounded-full bg-[#cfbb96]/0 group-hover:bg-[#cfbb96]/10 blur-2xl transition-all duration-500" />
-                <span className="text-[32px] font-extralight leading-none mb-3 block" style={{ color: "rgba(207,187,150,0.15)", fontFamily: "'Raleway', sans-serif" }}>
+                <span className="text-[32px] font-extralight leading-none mb-3 block" style={{ color: "rgba(207,187,150,0.15)", fontFamily: "'Onest', sans-serif" }}>
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <h4 className="text-[13px] font-semibold mb-1.5 tracking-wide" style={{ color: "#F5F5F0", fontFamily: "'Raleway', sans-serif" }}>
+                <h4 className="text-[13px] font-semibold mb-1.5 tracking-wide" style={{ color: "#F5F5F0", fontFamily: "'Onest', sans-serif" }}>
                   {adv.title}
                 </h4>
-                <p className="text-[11px] leading-relaxed" style={{ color: "rgba(245,245,240,0.4)", fontFamily: "'Raleway', sans-serif" }}>
+                <p className="text-[11px] leading-relaxed" style={{ color: "rgba(245,245,240,0.4)", fontFamily: "'Onest', sans-serif" }}>
                   {adv.desc}
                 </p>
               </motion.div>
@@ -329,13 +329,13 @@ export default function StorefrontBrand() {
         <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, ease: EASE }}>
             <img src={brandoorsLogo} alt="Brandoors" className="h-12 mx-auto mb-8" style={{ filter: "brightness(0) invert(1)", opacity: 0.5 }} />
-            <h2 className="text-2xl md:text-3xl font-extralight tracking-[0.12em] uppercase mb-4" style={{ fontFamily: "'Raleway', sans-serif", color: "#F5F5F0" }}>
+            <h2 className="text-2xl md:text-3xl font-extralight tracking-[0.12em] uppercase mb-4" style={{ fontFamily: "'Onest', sans-serif", color: "#F5F5F0" }}>
               Приходите в наш <span style={{ color: "#cfbb96" }}>шоурум</span>
             </h2>
-            <p className="text-sm mb-3" style={{ color: "rgba(245,245,240,0.5)", fontFamily: "'Raleway', sans-serif" }}>
+            <p className="text-sm mb-3" style={{ color: "rgba(245,245,240,0.5)", fontFamily: "'Onest', sans-serif" }}>
               {site.address ? `${site.city}, ${site.address}` : site.city}
             </p>
-            <p className="text-xs mb-8" style={{ color: "rgba(245,245,240,0.35)", fontFamily: "'Raleway', sans-serif" }}>
+            <p className="text-xs mb-8" style={{ color: "rgba(245,245,240,0.35)", fontFamily: "'Onest', sans-serif" }}>
               Ежедневно 10:00 — 20:00
             </p>
             {site.phone && (
@@ -345,7 +345,7 @@ export default function StorefrontBrand() {
                 style={{
                   background: "linear-gradient(135deg, #cfbb96 0%, #b5a07a 50%, #a08a60 100%)",
                   color: "#0a0a0a",
-                  fontFamily: "'Raleway', sans-serif",
+                  fontFamily: "'Onest', sans-serif",
                 }}
               >
                 <Phone className="w-4 h-4" />
@@ -374,10 +374,10 @@ function CollectionCard({ col, index, aspect }: { col: { name: string; desc: str
       <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(7,9,13,0.85) 0%, rgba(7,9,13,0.2) 40%, transparent 70%)" }} />
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: "linear-gradient(to top, rgba(207,187,150,0.08) 0%, transparent 40%)" }} />
       <div className="absolute bottom-0 left-0 right-0 p-6">
-        <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: "rgba(207,187,150,0.8)", fontFamily: "'Raleway', sans-serif" }}>
+        <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: "rgba(207,187,150,0.8)", fontFamily: "'Onest', sans-serif" }}>
           {col.name}
         </p>
-        <p className="text-sm font-light leading-relaxed" style={{ color: "rgba(245,245,240,0.7)", fontFamily: "'Raleway', sans-serif" }}>
+        <p className="text-sm font-light leading-relaxed" style={{ color: "rgba(245,245,240,0.7)", fontFamily: "'Onest', sans-serif" }}>
           {col.desc}
         </p>
       </div>
@@ -398,7 +398,7 @@ function SectionTitle({ children, className = "" }: { children: React.ReactNode;
   return (
     <h2
       className={`text-3xl md:text-4xl font-extralight tracking-[0.15em] uppercase mb-8 ${className}`}
-      style={{ fontFamily: "'Raleway', sans-serif", color: "#F5F5F0" }}
+      style={{ fontFamily: "'Onest', sans-serif", color: "#F5F5F0" }}
     >
       {children}
     </h2>

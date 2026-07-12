@@ -152,7 +152,7 @@ export function StorefrontHeader({ site }: Props) {
                       key={item.label}
                       onClick={() => handleNavClick(item)}
                       className="text-left text-[13px] font-semibold uppercase tracking-[0.25em] py-3 transition-colors duration-300"
-                      style={{ fontFamily: "'Raleway', sans-serif", color: isActive(item) ? "rgba(26,20,8,0.85)" : "rgba(26,20,8,0.55)" }}
+                      style={{ fontFamily: "'Onest', sans-serif", color: isActive(item) ? "rgba(26,20,8,0.85)" : "rgba(26,20,8,0.55)" }}
                     >
                       {item.label}
                     </button>
@@ -164,7 +164,7 @@ export function StorefrontHeader({ site }: Props) {
                 {site.phone && (
                   <a href={`tel:${site.phone}`} className="flex items-center gap-3 mb-8">
                     <Phone className="w-4 h-4" style={{ color: "rgba(26,20,8,0.4)" }} />
-                    <span className="text-sm font-medium" style={{ fontFamily: "'Raleway', sans-serif", color: "rgba(26,20,8,0.7)" }}>
+                    <span className="text-sm font-medium" style={{ fontFamily: "'Onest', sans-serif", color: "rgba(26,20,8,0.7)" }}>
                       {site.phone}
                     </span>
                   </a>

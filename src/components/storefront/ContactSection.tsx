@@ -84,13 +84,13 @@ export function ContactSection({ site }: Props) {
         >
           <h2
             className="text-3xl md:text-4xl lg:text-5xl font-extralight tracking-[0.2em] uppercase mb-4"
-            style={{ fontFamily: "'Raleway', sans-serif", color: "#F5F5F0" }}
+            style={{ fontFamily: "'Onest', sans-serif", color: "#F5F5F0" }}
           >
             Свяжитесь <span style={{ color: "#cfbb96" }}>с нами</span>
           </h2>
           <p
             className="max-w-lg text-sm md:text-base leading-relaxed"
-            style={{ color: "rgba(245,245,240,0.45)", fontFamily: "'Raleway', sans-serif" }}
+            style={{ color: "rgba(245,245,240,0.45)", fontFamily: "'Onest', sans-serif" }}
           >
             Оставьте заявку или свяжитесь с нами напрямую — мы ответим в ближайшее время
           </p>
@@ -129,7 +129,7 @@ export function ContactSection({ site }: Props) {
                   <div>
                     <span
                       className="text-[11px] uppercase tracking-[0.25em] mb-1.5 block"
-                      style={{ color: "rgba(207,187,150,0.6)", fontFamily: "'Raleway', sans-serif" }}
+                      style={{ color: "rgba(207,187,150,0.6)", fontFamily: "'Onest', sans-serif" }}
                     >
                       {label}
                     </span>
@@ -137,7 +137,7 @@ export function ContactSection({ site }: Props) {
                       <a
                         href={href}
                         className="text-[15px] font-medium hover:opacity-80 transition-opacity"
-                        style={{ color: "#F5F5F0", fontFamily: "'Raleway', sans-serif" }}
+                        style={{ color: "#F5F5F0", fontFamily: "'Onest', sans-serif" }}
                       >
                         {value}
                       </a>
@@ -165,7 +165,7 @@ export function ContactSection({ site }: Props) {
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span
                   className="text-[11px] uppercase tracking-[0.25em]"
-                  style={{ color: "rgba(207,187,150,0.6)", fontFamily: "'Raleway', sans-serif" }}
+                  style={{ color: "rgba(207,187,150,0.6)", fontFamily: "'Onest', sans-serif" }}
                 >
                   Сейчас открыто
                 </span>
@@ -216,7 +216,7 @@ export function ContactSection({ site }: Props) {
                   </motion.div>
                   <h3
                     className="text-2xl font-light tracking-[0.15em] uppercase mb-3"
-                    style={{ fontFamily: "'Raleway', sans-serif", color: "#F5F5F0" }}
+                    style={{ fontFamily: "'Onest', sans-serif", color: "#F5F5F0" }}
                   >
                     Заявка отправлена
                   </h3>
@@ -245,13 +245,13 @@ export function ContactSection({ site }: Props) {
                 <>
                   <h3
                     className="text-xl font-light tracking-[0.15em] uppercase mb-2"
-                    style={{ fontFamily: "'Raleway', sans-serif", color: "#F5F5F0" }}
+                    style={{ fontFamily: "'Onest', sans-serif", color: "#F5F5F0" }}
                   >
                     Оставить заявку
                   </h3>
                   <p
                     className="text-sm mb-8"
-                    style={{ color: "rgba(245,245,240,0.4)", fontFamily: "'Raleway', sans-serif" }}
+                    style={{ color: "rgba(245,245,240,0.4)", fontFamily: "'Onest', sans-serif" }}
                   >
                     Заполните форму и мы перезвоним
                   </p>
@@ -273,7 +273,7 @@ export function ContactSection({ site }: Props) {
                             background: "rgba(255,255,255,0.04)",
                             border: "1px solid rgba(207,187,150,0.1)",
                             color: "#F5F5F0",
-                            fontFamily: "'Raleway', sans-serif",
+                            fontFamily: "'Onest', sans-serif",
                           }}
                           onFocus={(e) => {
                             e.currentTarget.style.borderColor = "rgba(207,187,150,0.35)";
@@ -298,7 +298,7 @@ export function ContactSection({ site }: Props) {
                           background: "rgba(255,255,255,0.04)",
                           border: "1px solid rgba(207,187,150,0.1)",
                           color: "#F5F5F0",
-                          fontFamily: "'Raleway', sans-serif",
+                          fontFamily: "'Onest', sans-serif",
                         }}
                         onFocus={(e) => {
                           e.currentTarget.style.borderColor = "rgba(207,187,150,0.35)";
@@ -319,7 +319,7 @@ export function ContactSection({ site }: Props) {
                         background:
                           "linear-gradient(135deg, #cfbb96 0%, #b5a07a 50%, #a08a60 100%)",
                         color: "#0a0a0a",
-                        fontFamily: "'Raleway', sans-serif",
+                        fontFamily: "'Onest', sans-serif",
                       }}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
