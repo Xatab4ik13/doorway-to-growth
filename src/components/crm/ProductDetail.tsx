@@ -480,7 +480,9 @@ export function ProductDetail({ product, onClose, onDelete, onPrev, onNext, posi
             )}
           </div>
         </div>
-      </div>
+        </div>
+      </aside>
     </div>
+
   );
 }
