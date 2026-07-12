@@ -485,6 +485,7 @@ export type Database = {
           glazing_key: string | null
           id: string
           is_primary: boolean | null
+          is_stale: boolean
           molding_key: string | null
           product_id: string
           sort_order: number | null
@@ -498,6 +499,7 @@ export type Database = {
           glazing_key?: string | null
           id?: string
           is_primary?: boolean | null
+          is_stale?: boolean
           molding_key?: string | null
           product_id: string
           sort_order?: number | null
@@ -511,6 +513,7 @@ export type Database = {
           glazing_key?: string | null
           id?: string
           is_primary?: boolean | null
+          is_stale?: boolean
           molding_key?: string | null
           product_id?: string
           sort_order?: number | null
@@ -520,6 +523,81 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "product_images_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_variants_staging: {
+        Row: {
+          color_name: string | null
+          created_at: string
+          edge_name: string | null
+          glazing_name: string | null
+          id: string
+          image_source_path: string | null
+          image_source_url: string | null
+          imported_at: string | null
+          matched_image_id: string | null
+          molding_name: string | null
+          notes: string | null
+          product_id: string | null
+          product_name: string
+          sku_source_id: number | null
+          sku_source_name: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          color_name?: string | null
+          created_at?: string
+          edge_name?: string | null
+          glazing_name?: string | null
+          id?: string
+          image_source_path?: string | null
+          image_source_url?: string | null
+          imported_at?: string | null
+          matched_image_id?: string | null
+          molding_name?: string | null
+          notes?: string | null
+          product_id?: string | null
+          product_name: string
+          sku_source_id?: number | null
+          sku_source_name?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          color_name?: string | null
+          created_at?: string
+          edge_name?: string | null
+          glazing_name?: string | null
+          id?: string
+          image_source_path?: string | null
+          image_source_url?: string | null
+          imported_at?: string | null
+          matched_image_id?: string | null
+          molding_name?: string | null
+          notes?: string | null
+          product_id?: string | null
+          product_name?: string
+          sku_source_id?: number | null
+          sku_source_name?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variants_staging_matched_image_id_fkey"
+            columns: ["matched_image_id"]
+            isOneToOne: false
+            referencedRelation: "product_images"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_variants_staging_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
