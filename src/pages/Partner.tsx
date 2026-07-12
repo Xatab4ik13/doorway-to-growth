@@ -5,6 +5,7 @@ import { PartnerContentPage } from "@/components/partner/pages/PartnerContentPag
 import { PartnerPromotionsPage } from "@/components/partner/pages/PartnerPromotionsPage";
 import { PartnerAnnouncementsPage } from "@/components/partner/pages/PartnerAnnouncementsPage";
 import { PartnerSettingsPage } from "@/components/partner/pages/PartnerSettingsPage";
+import { PartnerCatalogPage } from "@/components/partner/pages/PartnerCatalogPage";
 
 const Partner = () => {
   const [activeSection, setActiveSection] = useState("leads");
