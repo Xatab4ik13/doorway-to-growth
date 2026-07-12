@@ -149,81 +149,79 @@ export function ProductDetail({ product, onClose, onDelete, onPrev, onNext, posi
   }, [onClose, onPrev, onNext]);
 
   return (
-    <div className="fixed inset-0 z-50 flex animate-fade-in">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-foreground/40 backdrop-blur-sm" onClick={onClose} />
+    <div className="fixed inset-0 z-50 bg-background flex flex-col animate-fade-in">
+      {/* Sticky header */}
+      <div className="sticky top-0 z-10 flex items-center justify-between gap-3 px-4 sm:px-8 py-3 border-b border-border bg-card">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <button
+            onClick={onClose}
+            className="flex h-9 items-center gap-1.5 rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors shrink-0 px-2.5"
+            aria-label="Закрыть"
+            title="Закрыть (Esc)"
+          >
+            <X className="h-4 w-4" />
+            <span className="text-xs font-medium hidden sm:inline">Закрыть</span>
+          </button>
 
-      {/* Панель */}
-      <aside className="relative ml-auto h-full w-full max-w-[920px] bg-background shadow-2xl flex flex-col animate-slide-in-right">
-        {/* Sticky header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between gap-3 px-4 sm:px-6 py-3 border-b border-border bg-card">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <button
-              onClick={onClose}
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors shrink-0"
-              aria-label="Закрыть"
-            >
-              <X className="h-4 w-4" />
-            </button>
-
-            {(onPrev || onNext) && (
-              <div className="flex items-center gap-0.5 shrink-0">
-                <button
-                  onClick={onPrev}
-                  disabled={!onPrev}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors disabled:opacity-30"
-                  title="Предыдущий (←)"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={onNext}
-                  disabled={!onNext}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors disabled:opacity-30"
-                  title="Следующий (→)"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-                {position && total ? (
-                  <span className="ml-1 text-[11px] text-muted-foreground tabular-nums">{position} / {total}</span>
-                ) : null}
-              </div>
-            )}
-
-            <div className="min-w-0 pl-2 border-l border-border">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                {product.category?.name ?? "Без категории"}
-              </div>
-              <h3 className="text-sm font-semibold text-foreground truncate">{product.name}</h3>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <label className="hidden sm:flex items-center gap-1.5 cursor-pointer text-xs text-muted-foreground">
-              <input type="checkbox" checked={editActive} onChange={(e) => setEditActive(e.target.checked)} className="h-4 w-4 rounded accent-foreground" />
-              <span>{editActive ? "Активен" : "Скрыт"}</span>
-            </label>
-            {onDelete && (
+          {(onPrev || onNext) && (
+            <div className="flex items-center gap-0.5 shrink-0 pl-2 border-l border-border">
               <button
-                onClick={onDelete}
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive active:scale-95 transition-colors"
-                title="Удалить товар"
+                onClick={onPrev}
+                disabled={!onPrev}
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors disabled:opacity-30"
+                title="Предыдущий (←)"
               >
-                <Trash2 className="h-4 w-4" />
+                <ChevronLeft className="h-4 w-4" />
               </button>
-            )}
-            <button
-              onClick={handleSave}
-              disabled={updateProduct.isPending}
-              className="flex h-9 items-center gap-1.5 rounded-lg bg-foreground px-4 text-xs font-semibold text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-40"
-            >
-              <Save className="h-3.5 w-3.5" /> Сохранить
-            </button>
+              <button
+                onClick={onNext}
+                disabled={!onNext}
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors disabled:opacity-30"
+                title="Следующий (→)"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+              {position && total ? (
+                <span className="ml-1 text-[11px] text-muted-foreground tabular-nums">{position} / {total}</span>
+              ) : null}
+            </div>
+          )}
+
+          <div className="min-w-0 pl-3 border-l border-border">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              {product.category?.name ?? "Без категории"} · Редактирование
+            </div>
+            <h3 className="text-sm font-semibold text-foreground truncate">{product.name}</h3>
           </div>
         </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <label className="hidden sm:flex items-center gap-1.5 cursor-pointer text-xs text-muted-foreground">
+            <input type="checkbox" checked={editActive} onChange={(e) => setEditActive(e.target.checked)} className="h-4 w-4 rounded accent-foreground" />
+            <span>{editActive ? "Активен" : "Скрыт"}</span>
+          </label>
+          {onDelete && (
+            <button
+              onClick={onDelete}
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive active:scale-95 transition-colors"
+              title="Удалить товар"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
+          <button
+            onClick={handleSave}
+            disabled={updateProduct.isPending}
+            className="flex h-9 items-center gap-1.5 rounded-lg bg-foreground px-4 text-xs font-semibold text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-40"
+          >
+            <Save className="h-3.5 w-3.5" /> Сохранить
+          </button>
+        </div>
+      </div>
 
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="px-4 sm:px-6 py-5 grid grid-cols-1 gap-6">
+      {/* Body */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-8 py-6 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] gap-8">
+
 
           {/* ===== LEFT: Gallery & color binding ===== */}
           <div className="space-y-4">
