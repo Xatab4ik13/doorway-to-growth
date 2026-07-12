@@ -66,7 +66,7 @@ const COATING_PALETTE: { name: string; hex: string }[] = [
   { name: "Green", hex: "#2A4A3E" },
 ];
 
-export function ProductDetail({ product, onClose }: ProductDetailProps) {
+export function ProductDetail({ product, onClose, onDelete, onPrev, onNext, position, total }: ProductDetailProps) {
   const [activeImage, setActiveImage] = useState(0);
   const updateProduct = useUpdateProduct();
   const { images, uploading, uploadImage, deleteImage, setVariantKey } = useProductImages(product.id);
