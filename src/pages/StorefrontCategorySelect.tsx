@@ -75,13 +75,13 @@ export default function StorefrontCategorySelect() {
           <div className="mb-10 md:mb-16 text-center">
             <h1
               className="text-3xl md:text-5xl font-extralight text-storefront-text tracking-wide"
-              style={{ fontFamily: "'Raleway', sans-serif" }}
+              style={{ fontFamily: "'Onest', sans-serif" }}
             >
               Выберите категорию
             </h1>
             <p
               className="mt-3 text-sm md:text-base text-storefront-muted tracking-[0.15em] uppercase"
-              style={{ fontFamily: "'Raleway', sans-serif" }}
+              style={{ fontFamily: "'Onest', sans-serif" }}
             >
               4 раздела каталога
             </p>
@@ -120,13 +120,13 @@ export default function StorefrontCategorySelect() {
                 <div className="mt-4 md:mt-6">
                   <h2
                     className="text-base md:text-lg text-storefront-text tracking-[0.18em] uppercase font-light transition-colors duration-300 group-hover:text-storefront-gold"
-                    style={{ fontFamily: "'Raleway', sans-serif" }}
+                    style={{ fontFamily: "'Onest', sans-serif" }}
                   >
                     {cat.title}
                   </h2>
                   <p
                     className="mt-1 text-xs md:text-sm text-storefront-muted tracking-[0.1em]"
-                    style={{ fontFamily: "'Raleway', sans-serif" }}
+                    style={{ fontFamily: "'Onest', sans-serif" }}
                   >
                     {cat.subtitle}
                   </p>

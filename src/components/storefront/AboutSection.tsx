@@ -70,7 +70,7 @@ function ShowroomGallery({ gallery }: { gallery: Array<{ src: string; alt: strin
       </div>
 
       <div className="absolute top-4 right-4 z-10 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/10">
-        <span className="text-xs tracking-[0.15em] text-white/70" style={{ fontFamily: "'Raleway', sans-serif" }}>
+        <span className="text-xs tracking-[0.15em] text-white/70" style={{ fontFamily: "'Onest', sans-serif" }}>
           {String(current + 1).padStart(2, "0")} / {String(gallery.length).padStart(2, "0")}
         </span>
       </div>
@@ -100,7 +100,7 @@ function VideoBlock({ videoUrl, poster }: { videoUrl?: string; poster?: string }
           </div>
           <span
             className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs uppercase tracking-[0.3em]"
-            style={{ color: "rgba(245,245,240,0.6)", fontFamily: "'Raleway', sans-serif" }}
+            style={{ color: "rgba(245,245,240,0.6)", fontFamily: "'Onest', sans-serif" }}
           >
             Видеотур
           </span>
@@ -127,13 +127,13 @@ export function AboutSection({ site, staff }: Props) {
         >
           <h2
             className="text-3xl md:text-4xl lg:text-5xl font-extralight tracking-[0.2em] uppercase mb-4"
-            style={{ fontFamily: "'Raleway', sans-serif", color: "#F5F5F0" }}
+            style={{ fontFamily: "'Onest', sans-serif", color: "#F5F5F0" }}
           >
             Наш <span style={{ color: "#cfbb96" }}>салон</span>
           </h2>
           <p
             className="max-w-2xl text-sm md:text-base leading-relaxed"
-            style={{ color: "rgba(245,245,240,0.5)", fontFamily: "'Raleway', sans-serif" }}
+            style={{ color: "rgba(245,245,240,0.5)", fontFamily: "'Onest', sans-serif" }}
           >
             Официальный салон BRANDOORS в {site.district || site.city} — более 50 моделей входных и межкомнатных дверей
             в живой экспозиции. Приходите, чтобы увидеть и потрогать двери вживую.
@@ -198,7 +198,7 @@ export function AboutSection({ site, staff }: Props) {
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{ background: "rgba(207,187,150,0.10)" }}>
                   <Icon className="w-4.5 h-4.5" style={{ color: "#cfbb96" }} />
                 </div>
-                <span className="text-[11px] uppercase tracking-[0.25em] mb-2 block" style={{ color: "rgba(207,187,150,0.6)", fontFamily: "'Raleway', sans-serif" }}>
+                <span className="text-[11px] uppercase tracking-[0.25em] mb-2 block" style={{ color: "rgba(207,187,150,0.6)", fontFamily: "'Onest', sans-serif" }}>
                   {label}
                 </span>
                 {href ? (
@@ -234,7 +234,7 @@ export function AboutSection({ site, staff }: Props) {
         >
           <h3
             className="text-xl font-light tracking-[0.15em] uppercase mb-6"
-            style={{ fontFamily: "'Raleway', sans-serif", color: "#F5F5F0" }}
+            style={{ fontFamily: "'Onest', sans-serif", color: "#F5F5F0" }}
           >
             Ваш менеджер
           </h3>
