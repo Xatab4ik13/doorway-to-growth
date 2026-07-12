@@ -130,12 +130,51 @@ export function ProductDetail({ product, onClose, onDelete, onPrev, onNext, posi
   const allImages = images.length > 0 ? images : (product.primary_image ? [{ id: "legacy", url: product.primary_image, is_primary: true }] : []);
   const currentImage = allImages[activeImage] ?? allImages[0];
   const currentVariantKey: string | null = currentImage ? ((currentImage as any).variant_key ?? null) : null;
+  const currentGlazingKey: string | null = currentImage ? ((currentImage as any).glazing_key ?? null) : null;
+  const currentMoldingKey: string | null = currentImage ? ((currentImage as any).molding_key ?? null) : null;
+  const currentEdgeKey: string | null = currentImage ? ((currentImage as any).edge_key ?? null) : null;
   const currentSwatch = currentVariantKey ? COATING_PALETTE.find((c) => c.name.toLowerCase() === currentVariantKey.toLowerCase()) : null;
 
   const inputCls = "h-9 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 transition-shadow";
 
-  // Сколько фото уже привязаны к цветам
-  const boundCount = allImages.filter((img) => (img as any).variant_key).length;
+  // Оси вариантов из specifications товара
+  const axisValues = (val: any): string[] => {
+    if (!Array.isArray(val)) return [];
+    return val.map((v) => (typeof v === "string" ? v : v?.name ?? v?.key)).filter(Boolean) as string[];
+  };
+  const availableAxes: { key: "variant_key" | "glazing_key" | "molding_key" | "edge_key"; label: string; values: string[]; current: string | null }[] = [
+    { key: "variant_key", label: "Цвет покрытия", values: axisValues(rawSpecs.colors), current: currentVariantKey },
+    { key: "glazing_key", label: "Остекление", values: axisValues(rawSpecs.glazing_options), current: currentGlazingKey },
+    { key: "molding_key", label: "Молдинг", values: axisValues(rawSpecs.moldings), current: currentMoldingKey },
+    { key: "edge_key", label: "Кромка", values: axisValues(rawSpecs.edges ?? rawSpecs.axes?.edge?.values), current: currentEdgeKey },
+  ].filter((a) => a.values.length > 0);
+
+  // Сколько фото имеют хоть одну привязку по имеющимся осям
+  const boundCount = allImages.filter((img) =>
+    availableAxes.some((a) => (img as any)[a.key])
+  ).length;
+
+  // Недостающие комбинации (только по первым двум осям, чтобы не перегружать)
+  const missingCombos: string[] = (() => {
+    if (availableAxes.length < 1) return [];
+    const [a1, a2] = availableAxes;
+    const combos: string[] = [];
+    a1.values.forEach((v1) => {
+      if (a2) {
+        a2.values.forEach((v2) => {
+          const has = allImages.some((img) =>
+            String((img as any)[a1.key] ?? "").toLowerCase() === v1.toLowerCase() &&
+            String((img as any)[a2.key] ?? "").toLowerCase() === v2.toLowerCase()
+          );
+          if (!has) combos.push(`${v1} · ${v2}`);
+        });
+      } else {
+        const has = allImages.some((img) => String((img as any)[a1.key] ?? "").toLowerCase() === v1.toLowerCase());
+        if (!has) combos.push(v1);
+      }
+    });
+    return combos;
+  })();
 
   // Клавиатурная навигация: Esc / ← / →
   useEffect(() => {
