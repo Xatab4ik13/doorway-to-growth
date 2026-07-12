@@ -149,81 +149,79 @@ export function ProductDetail({ product, onClose, onDelete, onPrev, onNext, posi
   }, [onClose, onPrev, onNext]);
 
   return (
-    <div className="fixed inset-0 z-50 flex animate-fade-in">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-foreground/40 backdrop-blur-sm" onClick={onClose} />
+    <div className="fixed inset-0 z-50 bg-background flex flex-col animate-fade-in">
+      {/* Sticky header */}
+      <div className="sticky top-0 z-10 flex items-center justify-between gap-3 px-4 sm:px-8 py-3 border-b border-border bg-card">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <button
+            onClick={onClose}
+            className="flex h-9 items-center gap-1.5 rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors shrink-0 px-2.5"
+            aria-label="Закрыть"
+            title="Закрыть (Esc)"
+          >
+            <X className="h-4 w-4" />
+            <span className="text-xs font-medium hidden sm:inline">Закрыть</span>
+          </button>
 
-      {/* Панель */}
-      <aside className="relative ml-auto h-full w-full max-w-[920px] bg-background shadow-2xl flex flex-col animate-slide-in-right">
-        {/* Sticky header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between gap-3 px-4 sm:px-6 py-3 border-b border-border bg-card">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <button
-              onClick={onClose}
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors shrink-0"
-              aria-label="Закрыть"
-            >
-              <X className="h-4 w-4" />
-            </button>
-
-            {(onPrev || onNext) && (
-              <div className="flex items-center gap-0.5 shrink-0">
-                <button
-                  onClick={onPrev}
-                  disabled={!onPrev}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors disabled:opacity-30"
-                  title="Предыдущий (←)"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={onNext}
-                  disabled={!onNext}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors disabled:opacity-30"
-                  title="Следующий (→)"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-                {position && total ? (
-                  <span className="ml-1 text-[11px] text-muted-foreground tabular-nums">{position} / {total}</span>
-                ) : null}
-              </div>
-            )}
-
-            <div className="min-w-0 pl-2 border-l border-border">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                {product.category?.name ?? "Без категории"}
-              </div>
-              <h3 className="text-sm font-semibold text-foreground truncate">{product.name}</h3>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <label className="hidden sm:flex items-center gap-1.5 cursor-pointer text-xs text-muted-foreground">
-              <input type="checkbox" checked={editActive} onChange={(e) => setEditActive(e.target.checked)} className="h-4 w-4 rounded accent-foreground" />
-              <span>{editActive ? "Активен" : "Скрыт"}</span>
-            </label>
-            {onDelete && (
+          {(onPrev || onNext) && (
+            <div className="flex items-center gap-0.5 shrink-0 pl-2 border-l border-border">
               <button
-                onClick={onDelete}
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive active:scale-95 transition-colors"
-                title="Удалить товар"
+                onClick={onPrev}
+                disabled={!onPrev}
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors disabled:opacity-30"
+                title="Предыдущий (←)"
               >
-                <Trash2 className="h-4 w-4" />
+                <ChevronLeft className="h-4 w-4" />
               </button>
-            )}
-            <button
-              onClick={handleSave}
-              disabled={updateProduct.isPending}
-              className="flex h-9 items-center gap-1.5 rounded-lg bg-foreground px-4 text-xs font-semibold text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-40"
-            >
-              <Save className="h-3.5 w-3.5" /> Сохранить
-            </button>
+              <button
+                onClick={onNext}
+                disabled={!onNext}
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted active:scale-95 transition-colors disabled:opacity-30"
+                title="Следующий (→)"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+              {position && total ? (
+                <span className="ml-1 text-[11px] text-muted-foreground tabular-nums">{position} / {total}</span>
+              ) : null}
+            </div>
+          )}
+
+          <div className="min-w-0 pl-3 border-l border-border">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              {product.category?.name ?? "Без категории"} · Редактирование
+            </div>
+            <h3 className="text-sm font-semibold text-foreground truncate">{product.name}</h3>
           </div>
         </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <label className="hidden sm:flex items-center gap-1.5 cursor-pointer text-xs text-muted-foreground">
+            <input type="checkbox" checked={editActive} onChange={(e) => setEditActive(e.target.checked)} className="h-4 w-4 rounded accent-foreground" />
+            <span>{editActive ? "Активен" : "Скрыт"}</span>
+          </label>
+          {onDelete && (
+            <button
+              onClick={onDelete}
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive active:scale-95 transition-colors"
+              title="Удалить товар"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
+          <button
+            onClick={handleSave}
+            disabled={updateProduct.isPending}
+            className="flex h-9 items-center gap-1.5 rounded-lg bg-foreground px-4 text-xs font-semibold text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-40"
+          >
+            <Save className="h-3.5 w-3.5" /> Сохранить
+          </button>
+        </div>
+      </div>
 
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="px-4 sm:px-6 py-5 grid grid-cols-1 gap-6">
+      {/* Body */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-8 py-6 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] gap-8">
+
 
           {/* ===== LEFT: Gallery & color binding ===== */}
           <div className="space-y-4">
@@ -318,16 +316,36 @@ export function ProductDetail({ product, onClose, onDelete, onPrev, onNext, posi
             </div>
 
             {/* Привязка фото к цвету — крупная панель */}
-            <div className="rounded-2xl border border-border bg-muted/30 p-4">
+            <div className="rounded-2xl border border-foreground/15 bg-gradient-to-b from-muted/40 to-transparent p-4">
               <div className="flex items-start gap-2 mb-3">
                 <Link2 className="h-4 w-4 text-foreground mt-0.5 shrink-0" />
-                <div className="min-w-0">
-                  <h4 className="text-xs font-semibold text-foreground">Привязка фото к цвету покрытия</h4>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
-                    Выберите цвет — текущее фото будет показываться на витрине, когда покупатель выберет этот оттенок. Привязано: <span className="font-semibold text-foreground">{boundCount}</span> из {allImages.length}.
+                <div className="min-w-0 flex-1">
+                  <h4 className="text-sm font-semibold text-foreground">Привязка фото к цвету покрытия</h4>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Когда покупатель на витрине выберет цвет двери — ему покажется именно то фото, которое привязано к этому цвету.
                   </p>
                 </div>
+                <span className="shrink-0 rounded-full border border-border bg-background px-2 py-0.5 text-[10px] font-semibold text-foreground tabular-nums">
+                  {boundCount} / {allImages.length}
+                </span>
               </div>
+
+              {/* Пошаговая инструкция */}
+              <ol className="mb-3 space-y-1 text-[11px] text-muted-foreground bg-background/60 rounded-xl border border-border p-3">
+                <li className="flex gap-2">
+                  <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-foreground text-primary-foreground text-[9px] font-bold">1</span>
+                  <span>Кликните нужное <span className="font-medium text-foreground">фото</span> в галерее слева.</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-foreground text-primary-foreground text-[9px] font-bold">2</span>
+                  <span>Ниже выберите <span className="font-medium text-foreground">цвет покрытия</span> — привязка сохранится сразу.</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-foreground text-primary-foreground text-[9px] font-bold">3</span>
+                  <span>Повторите для каждого фото. Одно фото — один цвет.</span>
+                </li>
+              </ol>
+
 
               {!currentImage || currentImage.id === "legacy" ? (
                 <p className="text-[11px] text-muted-foreground italic">
@@ -480,9 +498,7 @@ export function ProductDetail({ product, onClose, onDelete, onPrev, onNext, posi
             )}
           </div>
         </div>
-        </div>
-      </aside>
+      </div>
     </div>
-
   );
 }

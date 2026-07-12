@@ -6,7 +6,7 @@ import { Modal } from "@/components/crm/Modal";
 import { ConfirmDialog } from "@/components/crm/ConfirmDialog";
 import {
   Search, Plus, CheckSquare, Package, Trash2, SlidersHorizontal, X,
-  Copy, EyeOff, Eye, LayoutGrid, Rows3, Image as ImageIcon,
+  Copy, EyeOff, Eye, LayoutGrid, Rows3, Image as ImageIcon, ChevronDown, ChevronRight, FolderTree,
 } from "lucide-react";
 import { ProductDetail } from "@/components/crm/ProductDetail";
 import {
@@ -77,18 +77,42 @@ export function CatalogPage() {
   ].filter(Boolean).length;
 
   // Категории с превью + счётчиком
-  const categoryTiles = useMemo(() => {
-    return categories.map((c) => {
-      const items = products.filter((p) => p.category?.id === c.id);
-      const preview = items.find((p) => p.primary_image)?.primary_image ?? null;
-      return { id: c.id, name: c.name, count: items.length, preview };
+  // Иерархия категорий: родители → дети
+  const { catById, roots, childrenByParent } = useMemo(() => {
+    const catById = new Map<string, any>();
+    categories.forEach((c: any) => catById.set(c.id, c));
+    const roots = categories.filter((c: any) => !c.parent_id);
+    const childrenByParent = new Map<string, any[]>();
+    categories.forEach((c: any) => {
+      if (c.parent_id) {
+        const arr = childrenByParent.get(c.parent_id) ?? [];
+        arr.push(c);
+        childrenByParent.set(c.parent_id, arr);
+      }
     });
-  }, [categories, products]);
+    return { catById, roots, childrenByParent };
+  }, [categories]);
 
   const uncategorizedCount = useMemo(
     () => products.filter((p) => !p.category?.id).length,
     [products]
   );
+
+  const countForCategory = useCallback((catId: string): number => {
+    const direct = products.filter((p) => p.category?.id === catId).length;
+    const kids = childrenByParent.get(catId) ?? [];
+    return direct + kids.reduce((sum, k) => sum + countForCategory(k.id), 0);
+  }, [products, childrenByParent]);
+
+  // Раскрытые узлы дерева
+  const [expanded, setExpanded] = useState<Set<string>>(() => new Set(categories.filter((c: any) => !c.parent_id).map((c: any) => c.id)));
+  const toggleExpanded = (id: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
 
   const resetForm = () => {
     setFormName(""); setFormCategoryId(""); setFormRrp(""); setFormColor(""); setFormGlazing(""); setFormDesc("");
@@ -149,7 +173,11 @@ export function CatalogPage() {
       if (activeCategoryKey === "__none__") {
         if (p.category?.id) return false;
       } else if (activeCategoryKey !== ALL_CATEGORY) {
-        if (p.category?.id !== activeCategoryKey) return false;
+        const pCatId = p.category?.id;
+        if (!pCatId) return false;
+        const pCat = catById.get(pCatId);
+        // Совпадение: сам ID или родитель = выбранная категория
+        if (pCatId !== activeCategoryKey && pCat?.parent_id !== activeCategoryKey) return false;
       }
       if (filterColor && s?.color !== filterColor) return false;
       if (filterGlazing && s?.glazing !== filterGlazing) return false;
@@ -159,7 +187,7 @@ export function CatalogPage() {
       if (filterStatus === "inactive" && p.is_active) return false;
       return true;
     });
-  }, [products, search, activeCategoryKey, filterColor, filterGlazing, filterPriceMin, filterPriceMax, filterStatus]);
+  }, [products, search, activeCategoryKey, catById, filterColor, filterGlazing, filterPriceMin, filterPriceMax, filterStatus]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -225,40 +253,10 @@ export function CatalogPage() {
         )}
       </div>
 
-      {/* ===== Категории — визуальная полоса плиток ===== */}
-      <div className="mb-5 -mx-4 sm:-mx-8 px-4 sm:px-8">
-        <div className="flex items-center gap-2.5 overflow-x-auto pb-2 [scrollbar-width:thin]">
-          {/* "Все" */}
-          <CategoryTile
-            active={activeCategoryKey === ALL_CATEGORY}
-            onClick={() => { setActiveCategoryKey(ALL_CATEGORY); setPage(1); }}
-            name="Все товары"
-            count={products.length}
-            preview={products.find((p) => p.primary_image)?.primary_image ?? null}
-            emphasis
-          />
-          {categoryTiles.map((c) => (
-            <CategoryTile
-              key={c.id}
-              active={activeCategoryKey === c.id}
-              onClick={() => { setActiveCategoryKey(c.id); setPage(1); }}
-              name={c.name}
-              count={c.count}
-              preview={c.preview}
-            />
-          ))}
-          {uncategorizedCount > 0 && (
-            <CategoryTile
-              active={activeCategoryKey === "__none__"}
-              onClick={() => { setActiveCategoryKey("__none__"); setPage(1); }}
-              name="Без категории"
-              count={uncategorizedCount}
-              preview={null}
-              dashed
-            />
-          )}
-        </div>
-      </div>
+      <div className="flex gap-6 items-start">
+        {/* ===== Основная область ===== */}
+        <div className="flex-1 min-w-0">
+
 
       {/* Toolbar */}
       <div className="flex flex-col gap-3 mb-4">
@@ -515,6 +513,70 @@ export function CatalogPage() {
           </div>
         </>
       )}
+        </div>
+
+        {/* ===== Правая панель категорий ===== */}
+        <aside className="hidden lg:block w-64 shrink-0 sticky top-4 self-start">
+          <div className="rounded-2xl border border-border bg-card overflow-hidden">
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
+              <FolderTree className="h-3.5 w-3.5 text-muted-foreground" />
+              <h4 className="text-xs font-semibold text-foreground">Категории</h4>
+            </div>
+            <div className="max-h-[calc(100vh-160px)] overflow-y-auto py-1.5">
+              <CategoryRow
+                label="Все товары"
+                count={products.length}
+                active={activeCategoryKey === ALL_CATEGORY}
+                onClick={() => { setActiveCategoryKey(ALL_CATEGORY); setPage(1); }}
+                emphasis
+              />
+              {roots.map((r: any) => {
+                const kids = childrenByParent.get(r.id) ?? [];
+                const isExp = expanded.has(r.id);
+                const total = countForCategory(r.id);
+                return (
+                  <div key={r.id}>
+                    <CategoryRow
+                      label={r.name}
+                      count={total}
+                      active={activeCategoryKey === r.id}
+                      onClick={() => { setActiveCategoryKey(r.id); setPage(1); }}
+                      expandable={kids.length > 0}
+                      expanded={isExp}
+                      onToggleExpand={() => toggleExpanded(r.id)}
+                      bold
+                    />
+                    {isExp && kids.map((k: any) => (
+                      <CategoryRow
+                        key={k.id}
+                        label={k.name}
+                        count={countForCategory(k.id)}
+                        active={activeCategoryKey === k.id}
+                        onClick={() => { setActiveCategoryKey(k.id); setPage(1); }}
+                        indent
+                      />
+                    ))}
+                  </div>
+                );
+              })}
+              {uncategorizedCount > 0 && (
+                <>
+                  <div className="my-1 h-px bg-border mx-3" />
+                  <CategoryRow
+                    label="Без категории"
+                    count={uncategorizedCount}
+                    active={activeCategoryKey === "__none__"}
+                    onClick={() => { setActiveCategoryKey("__none__"); setPage(1); }}
+                    muted
+                  />
+                </>
+              )}
+            </div>
+          </div>
+        </aside>
+      </div>
+
+
 
       {selectedProduct && (
         <ProductDetail
@@ -577,50 +639,55 @@ export function CatalogPage() {
   );
 }
 
-// ============ Плитка категории ============
-function CategoryTile({
-  active, onClick, name, count, preview, emphasis, dashed,
+// ============ Строка категории в правой панели ============
+function CategoryRow({
+  label, count, active, onClick, expandable, expanded, onToggleExpand, bold, indent, muted, emphasis,
 }: {
+  label: string;
+  count: number;
   active: boolean;
   onClick: () => void;
-  name: string;
-  count: number;
-  preview: string | null;
+  expandable?: boolean;
+  expanded?: boolean;
+  onToggleExpand?: () => void;
+  bold?: boolean;
+  indent?: boolean;
+  muted?: boolean;
   emphasis?: boolean;
-  dashed?: boolean;
 }) {
   return (
-    <button
-      onClick={onClick}
-      className={`group shrink-0 relative flex items-center gap-3 rounded-2xl border p-2 pr-4 transition-all active:scale-[0.98] ${
-        active
-          ? "border-foreground bg-foreground text-primary-foreground shadow-sm"
-          : `bg-card text-foreground hover:border-foreground/40 ${dashed ? "border-dashed border-border" : "border-border"}`
-      }`}
-      style={{ minWidth: emphasis ? 200 : 180 }}
-    >
-      <div className={`h-12 w-12 shrink-0 rounded-xl overflow-hidden flex items-center justify-center ${
-        active ? "bg-primary-foreground/10" : "bg-muted"
-      }`}>
-        {preview ? (
-          <img src={resolveStorageUrl(preview)} alt="" className="h-full w-full object-cover" loading="lazy" />
-        ) : (
-          <Package className={`h-5 w-5 ${active ? "text-primary-foreground/60" : "text-muted-foreground"}`} />
-        )}
-      </div>
-      <div className="min-w-0 text-left">
-        <div className={`text-[11px] uppercase tracking-wider font-medium ${
-          active ? "text-primary-foreground/70" : "text-muted-foreground"
-        }`}>
-          Коллекция
-        </div>
-        <div className="text-sm font-semibold truncate">{name}</div>
-        <div className={`text-[11px] tabular-nums ${
+    <div className={`group flex items-stretch mx-1.5 rounded-lg transition-colors ${
+      active ? "bg-foreground text-primary-foreground" : "hover:bg-muted/60 text-foreground"
+    }`}>
+      {expandable && (
+        <button
+          onClick={onToggleExpand}
+          className={`flex w-6 items-center justify-center shrink-0 rounded-l-lg transition-colors ${
+            active ? "text-primary-foreground/70 hover:bg-primary-foreground/10" : "text-muted-foreground hover:text-foreground"
+          }`}
+          title={expanded ? "Свернуть" : "Развернуть"}
+        >
+          {expanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+        </button>
+      )}
+      <button
+        onClick={onClick}
+        className={`flex-1 flex items-center justify-between gap-2 px-2.5 py-1.5 text-left transition-colors ${
+          indent ? "pl-6" : ""
+        } ${!expandable ? "rounded-lg" : "rounded-r-lg"}`}
+      >
+        <span className={`text-[13px] truncate ${
+          bold ? "font-semibold" : indent ? "font-normal" : emphasis ? "font-semibold" : "font-medium"
+        } ${muted && !active ? "text-muted-foreground" : ""}`}>
+          {label}
+        </span>
+        <span className={`text-[11px] tabular-nums shrink-0 ${
           active ? "text-primary-foreground/80" : "text-muted-foreground"
         }`}>
-          {count} шт.
-        </div>
-      </div>
-    </button>
+          {count}
+        </span>
+      </button>
+    </div>
   );
 }
+
