@@ -83,10 +83,10 @@ export function StorefrontHeader({ site }: Props) {
             <span className="block w-7 h-[2px] bg-storefront-gold rounded-full" />
           </button>
 
-          <Link to={storeHref(site.slug)} className="flex items-center">
+          <Link to={storeHref(site.slug)} className="flex items-center" aria-label="Brandoors — салон премиальных дверей">
             <img
               src={brandoorsLogo}
-              alt="Brandoors"
+              alt="Brandoors — салон премиальных дверей"
               className="h-8"
               style={{ filter: "brightness(0) invert(1)", opacity: 0.9 }}
             />

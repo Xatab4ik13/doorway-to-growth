@@ -134,7 +134,7 @@ export function HeroSection({ site, banners }: Props) {
         <div className="absolute left-0 w-[260px] top-1/2 -translate-y-1/2 flex items-center justify-center">
           <img
             src={brandoorsLogo}
-            alt="Brandoors"
+            alt="Brandoors — салон премиальных дверей"
             style={{ filter: "brightness(0)", opacity: 0.8, transform: "rotate(-90deg)", width: "auto", height: "82px" }}
           />
         </div>
