@@ -2,10 +2,10 @@
 // Добавьте номера счётчиков для остальных доменов по мере их создания.
 const COUNTERS: Record<string, number> = {
   "brandoors.moscow": 111216423,
-  // "brandoors.online": 0,
-  // "brandoors.store": 0,
-  // "brandoors.pro": 0,
-  // "brandoors.su": 0,
+  "brandoors.online": 111216525,
+  "brandoors.store": 111216544,
+  "brandoors.pro": 111216560,
+  "brandoors.su": 111216583,
 };
 
 declare global {
