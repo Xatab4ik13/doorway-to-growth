@@ -1,11 +1,11 @@
 // Яндекс.Метрика — по счётчику на домен.
 // Добавьте номера счётчиков для остальных доменов по мере их создания.
 const COUNTERS: Record<string, number> = {
-  "brandoors.moscow": 111216423,
-  "brandoors.online": 111216525,
-  "brandoors.store": 111216544,
-  "brandoors.pro": 111216560,
-  "brandoors.su": 111216583,
+  "brandoors.moscow": 111219410,
+  "brandoors.online": 111219411,
+  "brandoors.store": 111219412,
+  "brandoors.pro": 111219413,
+  "brandoors.su": 111219414,
 };
 
 declare global {
