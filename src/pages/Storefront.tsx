@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
+import { buildOrganizationSchema, buildLocalBusinessSchema } from "@/lib/seo";
 import {
   useStorefrontBanners,
   useStorefrontStaff,
@@ -25,7 +26,9 @@ export default function Storefront() {
     description: site
       ? `Салон дверей Brandoors в ${site.district || site.city}. ${site.address ? `Адрес: ${site.city}, ${site.address}.` : ""} ${site.phone ? `Тел: ${site.phone}` : ""}`
       : "Межкомнатные и входные двери премиум-класса от Brandoors",
-    ogUrl: site ? `https://${site.slug}.brandoors.su` : undefined,
+    jsonLd: site
+      ? [buildOrganizationSchema(), buildLocalBusinessSchema(site)]
+      : buildOrganizationSchema(),
   });
 
   // Show loader while: query is loading, OR slug hasn't resolved yet (custom domain lookup),

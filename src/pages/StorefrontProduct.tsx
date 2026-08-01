@@ -5,6 +5,7 @@ import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import { useSiteSlug } from "@/hooks/useSiteSlug";
+import { buildProductSchema, buildBreadcrumbSchema } from "@/lib/seo";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { ArrowLeft, ChevronLeft, ChevronRight, ShoppingCart, Check, Plus } from "lucide-react";
@@ -74,6 +75,7 @@ function MaterialSwatch({
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
       title={disabled ? `${name} — нет такой комбинации` : name}
+      aria-label={name}
       aria-pressed={selected}
       aria-disabled={disabled}
       className={`group relative w-16 h-16 rounded-full transition-all duration-300 ease-out will-change-transform ${
@@ -588,8 +590,24 @@ export default function StorefrontProduct() {
   useDocumentMeta({
     title: product ? `${product.name} — Brandoors ${site?.city ?? ""}` : "Товар — Brandoors",
     description: product?.description || `Дверь ${product?.name ?? ""} от Brandoors. Характеристики, фото, цены.`,
-    ogImage: primaryImg,
-    ogUrl: site ? `https://${site.slug}.brandoors.su/product/${productSlug}` : undefined,
+    ogImage: primaryImg ? (primaryImg.startsWith("http") ? primaryImg : `${window.location.origin}${primaryImg}`) : undefined,
+    jsonLd: product
+      ? [
+          buildProductSchema({
+            slug: product.slug,
+            name: product.name,
+            description: product.description,
+            rrp: product.rrp,
+            image: primaryImg,
+            categoryName: product.categories?.name,
+          }),
+          buildBreadcrumbSchema([
+            { name: "Главная", path: "/" },
+            { name: "Каталог", path: "/catalog" },
+            { name: product.name },
+          ]),
+        ]
+      : undefined,
   });
 
   const images = product?.product_images
