@@ -11,6 +11,7 @@ import { SettingsPage } from "@/components/crm/pages/SettingsPage";
 import { NotificationsPage } from "@/components/crm/pages/NotificationsPage";
 import { ProfilePage } from "@/components/crm/pages/ProfilePage";
 import { AnnouncementsPage } from "@/components/crm/pages/AnnouncementsPage";
+import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 
 const VALID_SECTIONS = ["dashboard","sites","partners","catalog","leads","analytics","announcements","settings","notifications","profile"];
 
@@ -27,6 +28,13 @@ const Index = () => {
   const [transitioning, setTransitioning] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const prevSection = useRef(activeSection);
+
+  useDocumentMeta({
+    title: "CRM Dashboard — Brandoors",
+    description: "Центральная панель управления партнёрской сетью Brandoors: каталог, заявки, партнёры и аналитика.",
+    ogTitle: "CRM Dashboard — Brandoors",
+    ogDescription: "Управление каталогом, заявками, партнёрами и аналитикой Brandoors.",
+  });
 
   useEffect(() => {
     localStorage.setItem("crm:activeSection", activeSection);

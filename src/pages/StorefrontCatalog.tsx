@@ -4,6 +4,7 @@ import { useParams, Link, useSearchParams } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
+import { buildBreadcrumbSchema } from "@/lib/seo";
 import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { ChevronRight, ChevronDown, ShoppingCart, Check, SlidersHorizontal, X } from "lucide-react";
@@ -28,7 +29,10 @@ export default function StorefrontCatalog() {
   useDocumentMeta({
     title: site ? `Каталог дверей — ${site.name}` : "Каталог — Brandoors",
     description: site ? `Каталог межкомнатных и входных дверей в салоне ${site.name}, ${site.city}` : "Каталог дверей Brandoors",
-    ogUrl: site ? `https://${site.slug}.brandoors.su/catalog` : undefined,
+    jsonLd: buildBreadcrumbSchema([
+      { name: "Главная", path: "/" },
+      { name: "Каталог" },
+    ]),
   });
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);

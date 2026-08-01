@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useSiteSlug } from "@/hooks/useSiteSlug";
+import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { motion } from "framer-motion";
 import brandoorsLogo from "@/assets/logo.png";
@@ -95,6 +96,11 @@ export default function StorefrontBrand() {
   const slug = useSiteSlug(urlSlug);
   const { data: site, isLoading, error } = useSiteBySlug(slug);
 
+  useDocumentMeta({
+    title: site ? `О бренде — Brandoors ${site.city}` : "О бренде — Brandoors",
+    description: "Brandoors — инновационные скрытые двери премиум-класса. Технологии, коллекции, шоурумы и преимущества производителя.",
+  });
+
   if (isLoading || (!site && !slug && !error)) {
     return (
       <div className="min-h-screen bg-[#111111] flex items-center justify-center">
@@ -126,7 +132,7 @@ export default function StorefrontBrand() {
               Custom Colored Doors
             </p>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-extralight tracking-[0.1em] uppercase mb-8" style={{ fontFamily: "'Onest', sans-serif", color: "#F5F5F0" }}>
-              <span style={{ color: "#cfbb96" }}>Brandoors</span>
+              <span style={{ color: "#cfbb96" }}>Brandoors</span> — Инновационные скрытые двери
             </h1>
             <p className="max-w-2xl text-base md:text-lg leading-relaxed mb-10" style={{ color: "rgba(245,245,240,0.6)", fontFamily: "'Onest', sans-serif" }}>
               Революция в мире дверей — инновационные технологии, безупречный дизайн и премиальное качество по доступной цене

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import logoFull from "@/assets/logo.png";
 
 export default function LoginPage() {
@@ -12,6 +13,13 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const { signIn } = useAuth();
   const navigate = useNavigate();
+
+  useDocumentMeta({
+    title: "Вход в CRM — Brandoors",
+    description: "Войдите в CRM Brandoors для управления каталогом, заявками и партнёрами.",
+    ogTitle: "Вход в CRM — Brandoors",
+    ogDescription: "Авторизация в CRM Brandoors для администраторов и партнёров.",
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
