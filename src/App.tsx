@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import ScrollToTop from "@/components/ScrollToTop";
+import { MetrikaTracker } from "@/components/MetrikaTracker";
 
 // Eager load CRM (primary use case)
 import Index from "./pages/Index.tsx";
@@ -137,6 +138,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
+        <MetrikaTracker />
         <AuthProvider>
           <AppRoutes />
         </AuthProvider>
