@@ -83,10 +83,10 @@ export function StorefrontHeader({ site }: Props) {
             <span className="block w-7 h-[2px] bg-storefront-gold rounded-full" />
           </button>
 
-          <Link to={storeHref(site.slug)} className="flex items-center">
+          <Link to={storeHref(site.slug)} className="flex items-center" aria-label="Brandoors — салон премиальных дверей">
             <img
               src={brandoorsLogo}
-              alt="Brandoors"
+              alt="Brandoors — салон премиальных дверей"
               className="h-8"
               style={{ filter: "brightness(0) invert(1)", opacity: 0.9 }}
             />
@@ -173,7 +173,7 @@ export function StorefrontHeader({ site }: Props) {
                 <div className="flex-1" />
 
                 <div className="flex justify-center mb-10">
-                  <img src={brandoorsLogo} alt="Brandoors" style={{ filter: "brightness(0)", opacity: 0.7, width: "auto", height: "60px" }} />
+                  <img src={brandoorsLogo} alt="Brandoors — салон премиальных дверей" style={{ filter: "brightness(0)", opacity: 0.7, width: "auto", height: "60px" }} />
                 </div>
 
                 <div className="flex items-center justify-center gap-3 mb-10">

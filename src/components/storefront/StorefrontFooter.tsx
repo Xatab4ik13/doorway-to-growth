@@ -25,7 +25,7 @@ export function StorefrontFooter({ site }: Props) {
           <div>
             <img
               src={brandoorsLogo}
-              alt="Brandoors"
+              alt="Brandoors — салон премиальных дверей"
               className="h-8 mb-5"
               style={{ filter: "brightness(0) invert(1)", opacity: 0.85 }}
             />
