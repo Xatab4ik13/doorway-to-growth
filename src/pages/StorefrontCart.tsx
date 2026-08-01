@@ -6,6 +6,7 @@ import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { useCartStore } from "@/stores/useCartStore";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { reachGoal } from "@/lib/metrika";
 import { motion, AnimatePresence } from "framer-motion";
 import {
 
@@ -71,6 +72,9 @@ export default function StorefrontCart() {
         source: "cart",
       });
       if (error) throw error;
+      reachGoal("cart_order", { items: items.length, sum: pricedSum });
+
+
 
       toast({
         title: "Заказ оформлен! 🎉",

@@ -4,6 +4,7 @@ import { StorefrontSite } from "@/hooks/useSiteBySlug";
 import { supabase } from "@/integrations/supabase/client";
 import { Phone, Mail, MapPin, Send, CheckCircle2, ArrowRight } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { reachGoal } from "@/lib/metrika";
 
 interface Props {
   site: StorefrontSite;
@@ -29,6 +30,7 @@ export function ContactSection({ site }: Props) {
         source: "website",
       });
       if (error) throw error;
+      reachGoal("lead_form");
       setSent(true);
       setForm({ name: "", phone: "", message: "" });
     } catch {
