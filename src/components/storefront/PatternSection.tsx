@@ -168,11 +168,12 @@ export function PatternSection() {
 
   const handleSelect = (name: string) => {
     if (activeTab === "entrance") {
-      navigate(storeHref(slug, "catalog/list?category=entrance-doors"));
+      navigate(categoryHref(slug, "entrance-doors"));
     } else {
-      navigate(storeHref(slug, `catalog/list?category=mezhkomnatnye-dveri&collection=${encodeURIComponent(name)}`));
+      navigate(collectionHrefByName(slug, name));
     }
   };
+
 
 
   return (
