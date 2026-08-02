@@ -180,7 +180,9 @@ export default function StorefrontNews() {
                     Читать
                     <ArrowRight className="w-4 h-4" />
                   </Link>
+                  </div>
                 </motion.article>
+
               ))}
             </div>
           ) : (
