@@ -166,6 +166,16 @@ export default function StorefrontArticle() {
               {article.title}
             </h1>
 
+            {newsImage(article.cover) && (
+              <img
+                src={newsImage(article.cover)}
+                alt={article.title}
+                className="w-full rounded-2xl object-cover mb-10"
+                style={{ maxHeight: 460, backgroundColor: "#0c0e14" }}
+                decoding="async"
+              />
+            )}
+
             <p
               className="text-base md:text-lg leading-relaxed pb-10 mb-10 border-b"
               style={{
@@ -176,6 +186,7 @@ export default function StorefrontArticle() {
             >
               {article.excerpt}
             </p>
+
           </motion.div>
 
           <motion.div
