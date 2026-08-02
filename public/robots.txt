@@ -16,4 +16,6 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://brandoors.su/sitemap.xml
+# Sitemap для каждого домена добавлен вручную в Яндекс.Вебмастере
+# (общий robots.txt отдаётся со всех 5 доменов, поэтому жёсткая ссылка тут не указывается)
+
