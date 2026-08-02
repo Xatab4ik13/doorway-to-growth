@@ -639,11 +639,48 @@ export default function StorefrontCatalog() {
                   </button>
                 </div>
               )}
+
+              {/* SEO-текст раздела + внутренняя перелинковка */}
+              {!isLegacyListUrl && (seoCollection?.body || seoCategory?.body) && (
+                <section className="mt-16 pt-10 border-t border-white/10">
+                  <h2 className="text-lg sm:text-xl font-bold text-storefront-text uppercase tracking-wide mb-6">
+                    {seoCollection
+                      ? `Коллекция ${seoCollection.name}`
+                      : `О разделе «${seoCategory?.name}»`}
+                  </h2>
+                  <div className="space-y-4 max-w-3xl">
+                    {(seoCollection?.body ?? seoCategory?.body ?? []).map((p, i) => (
+                      <p key={i} className="text-sm sm:text-base leading-relaxed text-storefront-muted">
+                        {p}
+                      </p>
+                    ))}
+                  </div>
+
+                  <div className="mt-10 flex flex-wrap gap-3">
+                    {COLLECTION_SLUGS.filter((s) => s !== seoCollection?.slug).map((s) => (
+                      <Link
+                        key={s}
+                        to={collectionHref(slug, s)}
+                        className="px-4 py-2 rounded-full border border-storefront-gold/30 text-xs uppercase tracking-wider text-storefront-gold hover:bg-storefront-gold/10 transition-colors"
+                      >
+                        {COLLECTION_SEO[s].name}
+                      </Link>
+                    ))}
+                    <Link
+                      to={storeHref(slug, "salon")}
+                      className="px-4 py-2 rounded-full border border-white/15 text-xs uppercase tracking-wider text-storefront-muted hover:text-storefront-text transition-colors"
+                    >
+                      Адрес салона
+                    </Link>
+                  </div>
+                </section>
+              )}
             </div>
           </div>
         </div>
       </div>
     </StorefrontLayout>
+
   );
 }
 
