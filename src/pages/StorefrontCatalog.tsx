@@ -385,13 +385,31 @@ export default function StorefrontCatalog() {
               Главная
             </Link>
             <span className="text-storefront-muted/40">/</span>
-            {lockedParent ? (
+            {seoCategory || seoCollection ? (
               <>
                 <Link to={categoriesBackHref} className="uppercase tracking-[0.15em] text-storefront-muted hover:text-storefront-gold transition-colors">
                   Каталог
                 </Link>
-                <span className="text-storefront-muted/40">/</span>
-                <span className="uppercase tracking-[0.15em] text-storefront-text">{lockedParent.name}</span>
+                {seoCollection ? (
+                  <>
+                    <span className="text-storefront-muted/40">/</span>
+                    <Link
+                      to={storeHref(slug, `${CATALOG_ROOT}/${COLLECTIONS_PARENT_SLUG}`)}
+                      className="uppercase tracking-[0.15em] text-storefront-muted hover:text-storefront-gold transition-colors"
+                    >
+                      {CATEGORY_SEO[COLLECTIONS_PARENT_SLUG].name}
+                    </Link>
+                    <span className="text-storefront-muted/40">/</span>
+                    <span className="uppercase tracking-[0.15em] text-storefront-text">{seoCollection.name}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-storefront-muted/40">/</span>
+                    <span className="uppercase tracking-[0.15em] text-storefront-text">
+                      {seoCategory?.name ?? lockedParent?.name}
+                    </span>
+                  </>
+                )}
               </>
             ) : (
               <span className="uppercase tracking-[0.15em] text-storefront-text">Каталог</span>
@@ -401,8 +419,9 @@ export default function StorefrontCatalog() {
           {/* Title row */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-3 mb-8">
             <h1 className="text-2xl sm:text-4xl font-bold text-storefront-text uppercase tracking-normal sm:tracking-wide break-words">
-              {lockedParent ? lockedParent.name : "Каталог"}
+              {meta.h1}
             </h1>
+
             <div className="flex items-center gap-2 sm:shrink-0">
 
               {/* Mobile filter button */}
