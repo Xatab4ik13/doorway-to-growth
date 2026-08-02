@@ -128,6 +128,8 @@ function AppRoutes() {
         <Route path="/store/:slug/product/:productSlug" element={<StorefrontProduct />} />
         <Route path="/store/:slug/cart" element={<StorefrontCart />} />
         <Route path="/store/:slug/brand" element={<StorefrontBrand />} />
+        <Route path="/store/:slug/news" element={<StorefrontNews />} />
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
