@@ -53,7 +53,7 @@ export default function StorefrontCategorySelect() {
     );
   }
 
-  const baseHref = storeHref(slug, "catalog/list");
+  
 
   return (
     <StorefrontLayout site={site}>
