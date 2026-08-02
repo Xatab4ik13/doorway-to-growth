@@ -587,23 +587,54 @@ export default function StorefrontProduct() {
   }, [realHardware, hardwareTab]);
 
   const primaryImg = product?.product_images?.find((i: any) => i.is_primary)?.url || product?.product_images?.[0]?.url;
+
+  // SEO-контекст товара: категория верхнего уровня + коллекция (если это межкомнатная дверь).
+  const productCategorySeo = getCategorySeo(rootCategorySlug);
+  const productCollectionSeo =
+    getCollectionSeo(product?.categories?.slug) ||
+    getCollectionSeo(collectionSlugByName(product?.categories?.name));
+
+  const productMeta = product
+    ? buildProductMeta(site as any, {
+        name: product.name,
+        description: product.description,
+        rrp: product.rrp,
+        categoryName: product.categories?.name,
+      }, productCategorySeo, productCollectionSeo)
+    : null;
+
   useDocumentMeta({
-    title: product ? `${product.name} — Brandoors ${site?.city ?? ""}` : "Товар — Brandoors",
-    description: product?.description || `Дверь ${product?.name ?? ""} от Brandoors. Характеристики, фото, цены.`,
+    title: productMeta?.title || "Товар — Brandoors",
+    description:
+      productMeta?.description ||
+      `Дверь ${product?.name ?? ""} от Brandoors. Характеристики, фото, цены.`,
     ogImage: primaryImg ? (primaryImg.startsWith("http") ? primaryImg : `${window.location.origin}${primaryImg}`) : undefined,
     jsonLd: product
       ? [
           buildProductSchema({
             slug: product.slug,
             name: product.name,
-            description: product.description,
+            description: productMeta?.description || product.description,
             rrp: product.rrp,
             image: primaryImg,
-            categoryName: product.categories?.name,
+            categoryName: productCollectionSeo?.name || product.categories?.name,
+            collectionName: productCollectionSeo?.name,
+            sku: product.sku || product.slug,
           }),
           buildBreadcrumbSchema([
             { name: "Главная", path: "/" },
-            { name: "Каталог", path: "/catalog" },
+            { name: "Каталог", path: `/${CATALOG_ROOT}` },
+            ...(productCategorySeo
+              ? [{ name: productCategorySeo.name, path: `/${CATALOG_ROOT}/${productCategorySeo.slug}` }]
+              : []),
+            ...(productCollectionSeo
+              ? [
+                  {
+                    name: productCollectionSeo.name,
+                    path: `/${CATALOG_ROOT}/${COLLECTIONS_PARENT_SLUG}/${productCollectionSeo.slug}`,
+                  },
+                ]
+              : []),
             { name: product.name },
           ]),
         ]
