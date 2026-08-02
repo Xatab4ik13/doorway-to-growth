@@ -312,11 +312,11 @@ export function buildProductMeta(
 
   const kind = collection ? `${collection.name}, межкомнатная дверь` : group;
 
-  const title = `${product.name} — ${kind} — купить в ${cityIn}`;
+  const title = `${product.name} — ${kind} — купить в ${cityIn}, салон ${salon}`;
 
   const priceLine =
     product.rrp && Number(product.rrp) > 0
-      ? `Цена от ${Number(product.rrp).toLocaleString("ru-RU")} ₽.`
+      ? `Цена от ${Math.round(Number(product.rrp)).toLocaleString("ru-RU")} ₽.`
       : "Цена по запросу.";
 
   const base =

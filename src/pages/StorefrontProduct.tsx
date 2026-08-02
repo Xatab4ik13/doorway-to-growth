@@ -622,7 +622,7 @@ export default function StorefrontProduct() {
           buildProductSchema({
             slug: product.slug,
             name: product.name,
-            description: productMeta?.description || product.description,
+            description: product.description || productMeta?.description,
             rrp: product.rrp,
             image: primaryImg,
             categoryName: productCollectionSeo?.name || product.categories?.name,
