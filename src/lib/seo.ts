@@ -36,6 +36,7 @@ export function buildOrganizationSchema() {
 }
 
 interface LocalBusinessSite {
+  slug?: string;
   name: string;
   city: string;
   district?: string | null;
@@ -51,6 +52,21 @@ export const SALON_HOURS = [
   { days: "Пн — Вс", time: "10:00 — 20:00" },
 ];
 
+/** Ссылка на точку салона в Яндекс.Картах — для hasMap и кнопки «Построить маршрут». */
+export function buildYandexMapsUrl(site: {
+  city: string;
+  address?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+}) {
+  if (site.latitude != null && site.longitude != null) {
+    return `https://yandex.ru/maps/?ll=${site.longitude},${site.latitude}&z=17&pt=${site.longitude},${site.latitude}`;
+  }
+  return `https://yandex.ru/maps/?text=${encodeURIComponent(
+    `${site.city}, ${site.address || ""}`
+  )}`;
+}
+
 export function buildLocalBusinessSchema(site: LocalBusinessSite) {
   const origin = getOrigin();
   const geo =
@@ -64,27 +80,33 @@ export function buildLocalBusinessSchema(site: LocalBusinessSite) {
 
   return {
     "@context": "https://schema.org",
-    "@type": "Store",
+    "@type": ["Store", "FurnitureStore", "HomeGoodsStore"],
     "@id": `${origin}/#store`,
     name: site.name,
-    description: `Салон дверей Brandoors в ${site.district || site.city}`,
+    alternateName: `Brandoors ${site.district || site.city}`,
+    description: `Салон дверей Brandoors в ${site.district || site.city}: экспозиция межкомнатных и входных дверей, замер, доставка и установка в ${site.city}.`,
     url: origin,
-    image: `${origin}/og-image.png`,
+    image: [`${origin}/og-image.png`],
+    logo: `${origin}/favicon.png`,
     telephone: site.phone,
     email: site.email,
     priceRange: "₽₽₽",
     currenciesAccepted: "RUB",
-    areaServed: {
-      "@type": "City",
-      name: site.city,
-    },
+    paymentAccepted: "Наличные, банковская карта, безналичный расчёт",
+    hasMap: buildYandexMapsUrl(site),
+    areaServed: [
+      { "@type": "City", name: site.city },
+      ...(site.district ? [{ "@type": "Place", name: site.district }] : []),
+    ],
     parentOrganization: { "@id": `${origin}/#organization` },
     address: {
       "@type": "PostalAddress",
+      addressCountry: "RU",
+      addressRegion: site.city,
       addressLocality: site.city,
       streetAddress: site.address || `${site.district || site.city}`,
-      addressCountry: "RU",
     },
+    openingHours: "Mo-Su 10:00-20:00",
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
@@ -104,6 +126,7 @@ export function buildLocalBusinessSchema(site: LocalBusinessSite) {
     ...(geo ? { geo } : {}),
   };
 }
+
 
 
 interface ProductData {
