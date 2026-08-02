@@ -1149,6 +1149,15 @@ export default function StorefrontProduct() {
     });
   };
 
+  // Описательный alt для SEO: «GHOST 01 — межкомнатная дверь Brandoors, эмаль белая»
+  const imageAlt = (img: any) => {
+    if (img?.alt) return img.alt;
+    const parts = [product?.name, productMeta?.group ? productMeta.group.toLowerCase() : null, "Brandoors"];
+    const variant = img?.variant_key || img?.glazing_key || img?.edge_key;
+    if (variant) parts.push(String(variant));
+    return parts.filter(Boolean).join(" — ");
+  };
+
   const nextImage = () => setCurrentImage((prev) => (prev + 1) % images.length);
   const prevImage = () => setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
 
@@ -1204,7 +1213,7 @@ export default function StorefrontProduct() {
                   <img
                     key={currentImage}
                     src={resolveStorageUrl(images[currentImage]?.url)}
-                    alt={images[currentImage]?.alt || product.name}
+                    alt={imageAlt(images[currentImage])}
                     className="w-full h-full object-contain p-8 animate-fade-in"
                   />
                 ) : (
@@ -1242,7 +1251,7 @@ export default function StorefrontProduct() {
                           : "opacity-50 hover:opacity-80"
                       }`}
                     >
-                      <img src={resolveStorageUrl(img.url)} alt="" loading="lazy" className="w-full h-full object-cover" />
+                      <img src={resolveStorageUrl(img.url)} alt={imageAlt(img)} loading="lazy" className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>
