@@ -113,6 +113,8 @@ interface ProductData {
   rrp?: number | null;
   image?: string | null;
   categoryName?: string | null;
+  collectionName?: string | null;
+  sku?: string | null;
 }
 
 export function buildProductSchema(product: ProductData) {
@@ -159,6 +161,21 @@ export function buildProductSchema(product: ProductData) {
       name: "Brandoors",
     },
     category: product.categoryName || "Двери",
+    sku: product.sku || product.slug,
+    mpn: product.sku || product.slug,
+    itemCondition: "https://schema.org/NewCondition",
+    ...(product.collectionName
+      ? {
+          isSimilarTo: undefined,
+          additionalProperty: [
+            {
+              "@type": "PropertyValue",
+              name: "Коллекция",
+              value: product.collectionName,
+            },
+          ],
+        }
+      : {}),
     offers: offer,
   };
 }
