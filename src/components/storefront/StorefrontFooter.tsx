@@ -90,7 +90,7 @@ export function StorefrontFooter({ site }: Props) {
               { label: "О бренде", href: storeHref(site.slug, "brand"), isRoute: true },
               { label: "Отзывы", href: "#about", isRoute: false },
               { label: "О салоне", href: "#about", isRoute: false },
-              { label: "Контакты", href: "#contacts", isRoute: false },
+              { label: "Контакты", href: "salon", isRoute: true },
             ].map((item) =>
               item.isRoute ? (
                 <Link
