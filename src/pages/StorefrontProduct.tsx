@@ -6,6 +6,14 @@ import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStore
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { buildProductSchema, buildBreadcrumbSchema } from "@/lib/seo";
+import {
+  CATALOG_ROOT,
+  COLLECTIONS_PARENT_SLUG,
+  getCategorySeo,
+  getCollectionSeo,
+  collectionSlugByName,
+  buildProductMeta,
+} from "@/lib/catalogRoutes";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { ArrowLeft, ChevronLeft, ChevronRight, ShoppingCart, Check, Plus } from "lucide-react";
