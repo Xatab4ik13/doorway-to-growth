@@ -18,6 +18,7 @@ const STATIC_ROUTES = [
   { path: "/catalog/mezhkomnatnye", changefreq: "weekly", priority: "0.9" },
   { path: "/catalog/list", changefreq: "weekly", priority: "0.9" },
   { path: "/brand", changefreq: "monthly", priority: "0.8" },
+  { path: "/news", changefreq: "weekly", priority: "0.7" },
 ];
 
 interface SitemapEntry {

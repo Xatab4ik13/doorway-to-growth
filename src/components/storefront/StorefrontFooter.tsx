@@ -86,6 +86,8 @@ export function StorefrontFooter({ site }: Props) {
             </h4>
             {[
               { label: "Каталог", href: storeHref(site.slug, "catalog"), isRoute: true },
+              { label: "Новости", href: storeHref(site.slug, "news"), isRoute: true },
+              { label: "О бренде", href: storeHref(site.slug, "brand"), isRoute: true },
               { label: "Отзывы", href: "#about", isRoute: false },
               { label: "О салоне", href: "#about", isRoute: false },
               { label: "Контакты", href: "#contacts", isRoute: false },

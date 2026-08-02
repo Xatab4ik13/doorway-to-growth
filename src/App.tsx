@@ -22,6 +22,7 @@ const StorefrontCollectionSelect = lazy(() => import("./pages/StorefrontCollecti
 const StorefrontProduct = lazy(() => import("./pages/StorefrontProduct.tsx"));
 const StorefrontCart = lazy(() => import("./pages/StorefrontCart.tsx"));
 const StorefrontBrand = lazy(() => import("./pages/StorefrontBrand.tsx"));
+const StorefrontNews = lazy(() => import("./pages/StorefrontNews.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 const queryClient = new QueryClient({
@@ -91,6 +92,8 @@ function AppRoutes() {
           <Route path="/product/:productSlug" element={<StorefrontProduct />} />
           <Route path="/cart" element={<StorefrontCart />} />
           <Route path="/brand" element={<StorefrontBrand />} />
+          <Route path="/news" element={<StorefrontNews />} />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
@@ -125,6 +128,8 @@ function AppRoutes() {
         <Route path="/store/:slug/product/:productSlug" element={<StorefrontProduct />} />
         <Route path="/store/:slug/cart" element={<StorefrontCart />} />
         <Route path="/store/:slug/brand" element={<StorefrontBrand />} />
+        <Route path="/store/:slug/news" element={<StorefrontNews />} />
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
