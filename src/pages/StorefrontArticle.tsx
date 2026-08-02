@@ -50,6 +50,10 @@ export default function StorefrontArticle() {
             datePublished: article.date,
             dateModified: article.date,
             inLanguage: "ru-RU",
+            ...(newsImage(article.cover)
+              ? { image: [getPageUrl(newsImage(article.cover) as string)] }
+              : {}),
+
             url: getPageUrl(),
             mainEntityOfPage: getPageUrl(),
             keywords: article.tags.join(", "),
