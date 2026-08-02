@@ -8,6 +8,8 @@ import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
 import { storeHref } from "@/lib/storeHref";
 import { getPageUrl, buildBreadcrumbSchema } from "@/lib/seo";
 import { getArticle, getArticles } from "@/content/news";
+import { newsImage } from "@/content/news/media";
+
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const FONT = "'Onest', sans-serif";
@@ -48,6 +50,10 @@ export default function StorefrontArticle() {
             datePublished: article.date,
             dateModified: article.date,
             inLanguage: "ru-RU",
+            ...(newsImage(article.cover)
+              ? { image: [getPageUrl(newsImage(article.cover) as string)] }
+              : {}),
+
             url: getPageUrl(),
             mainEntityOfPage: getPageUrl(),
             keywords: article.tags.join(", "),
@@ -164,6 +170,16 @@ export default function StorefrontArticle() {
               {article.title}
             </h1>
 
+            {newsImage(article.cover) && (
+              <img
+                src={newsImage(article.cover)}
+                alt={article.title}
+                className="w-full rounded-2xl object-cover mb-10"
+                style={{ maxHeight: 460, backgroundColor: "#0c0e14" }}
+                decoding="async"
+              />
+            )}
+
             <p
               className="text-base md:text-lg leading-relaxed pb-10 mb-10 border-b"
               style={{
@@ -174,6 +190,7 @@ export default function StorefrontArticle() {
             >
               {article.excerpt}
             </p>
+
           </motion.div>
 
           <motion.div
@@ -228,6 +245,64 @@ export default function StorefrontArticle() {
                   </blockquote>
                 );
               }
+              if (block.type === "img") {
+                const src = newsImage(block.src);
+                if (!src) return null;
+                return (
+                  <figure key={i} className="my-10">
+                    <img
+                      src={src}
+                      alt={block.alt}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full rounded-2xl object-cover"
+                      style={{ maxHeight: 520, backgroundColor: "#0c0e14" }}
+                    />
+                    {block.caption && (
+                      <figcaption
+                        className="mt-3 text-[12px] tracking-[0.06em]"
+                        style={{ color: "rgba(245,245,240,0.4)", fontFamily: FONT }}
+                      >
+                        {block.caption}
+                      </figcaption>
+                    )}
+                  </figure>
+                );
+              }
+              if (block.type === "links") {
+                return (
+                  <div
+                    key={i}
+                    className="my-10 rounded-2xl border p-6"
+                    style={{
+                      borderColor: "rgba(207,187,150,0.18)",
+                      background:
+                        "linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)",
+                    }}
+                  >
+                    <p
+                      className="text-[11px] uppercase tracking-[0.24em] mb-4"
+                      style={{ color: "rgba(207,187,150,0.6)", fontFamily: FONT }}
+                    >
+                      {block.title || "Смотрите также"}
+                    </p>
+                    <ul className="space-y-3">
+                      {block.items.map((item) => (
+                        <li key={item.to + item.label}>
+                          <Link
+                            to={storeHref(site.slug, item.to)}
+                            className="inline-flex items-center gap-2 text-[15px] leading-snug transition-colors hover:text-[#cfbb96]"
+                            style={{ color: "rgba(245,245,240,0.78)", fontFamily: FONT }}
+                          >
+                            <ArrowRight className="w-3.5 h-3.5 shrink-0 text-[#cfbb96]" />
+                            {item.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              }
               return (
                 <p
                   key={i}
@@ -237,6 +312,7 @@ export default function StorefrontArticle() {
                   {block.text}
                 </p>
               );
+
             })}
           </motion.div>
 
