@@ -16,6 +16,7 @@ export function YandexMap({ siteSlug }: { siteSlug?: string | null }) {
 
   return (
     <motion.div
+      data-metrika-map
       className="relative w-full overflow-hidden rounded-2xl border border-white/[0.06]"
       style={{ aspectRatio: "16/9" }}
       initial={{ opacity: 0, y: 30 }}

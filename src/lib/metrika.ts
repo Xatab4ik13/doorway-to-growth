@@ -51,6 +51,40 @@ export function initMetrika() {
     accurateTrackBounce: true,
     webvisor: true,
   });
+
+  bindDelegatedGoals();
+}
+
+/**
+ * Делегированный трекинг кликов: телефон и карта салона.
+ * Один слушатель на документ — не нужно править каждый компонент.
+ */
+function bindDelegatedGoals() {
+  document.addEventListener(
+    "click",
+    (e) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+
+      const tel = target.closest?.('a[href^="tel:"]');
+      if (tel) {
+        reachGoal("phone_click");
+        return;
+      }
+
+      const mapLink = target.closest?.('a[href*="yandex.ru/maps"], a[href*="yandex.com/maps"]');
+      if (mapLink) {
+        reachGoal("showroom_map", { type: "route" });
+        return;
+      }
+
+      const mapBlock = target.closest?.("[data-metrika-map]");
+      if (mapBlock) {
+        reachGoal("showroom_map", { type: "map" });
+      }
+    },
+    true
+  );
 }
 
 export function trackPageView(url: string, referrer?: string) {
