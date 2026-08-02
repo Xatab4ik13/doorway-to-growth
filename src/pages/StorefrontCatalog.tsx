@@ -4,7 +4,7 @@ import { useParams, Link, useSearchParams } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStorefrontData";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
-import { buildBreadcrumbSchema } from "@/lib/seo";
+import { buildBreadcrumbSchema, getPageUrl } from "@/lib/seo";
 import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { ChevronRight, ChevronDown, ShoppingCart, Check, SlidersHorizontal, X } from "lucide-react";
@@ -15,9 +15,13 @@ import { storeHref } from "@/lib/storeHref";
 import {
   CATALOG_ROOT,
   CATEGORY_SEO,
+  COLLECTION_SEO,
+  COLLECTION_SLUGS,
   COLLECTIONS_PARENT_SLUG,
   buildCatalogMeta,
+  collectionHref,
   collectionSlugByName,
+
   getCategorySeo,
   getCollectionSeo,
 } from "@/lib/catalogRoutes";
@@ -77,13 +81,35 @@ export default function StorefrontCatalog() {
       ? `/${CATALOG_ROOT}/${seoCategory.slug}`
       : `/${CATALOG_ROOT}`;
 
+  // Список товаров текущего раздела для ItemList-разметки (первые 30 позиций).
+  const itemListSchema = useMemo(() => {
+    if (isLegacyListUrl) return null;
+    const items = (products as any[]).slice(0, 30);
+    if (!items.length) return null;
+    return {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: meta.h1,
+      numberOfItems: items.length,
+      itemListElement: items.map((p, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: p.name,
+        url: getPageUrl(`/product/${p.slug}`),
+      })),
+    };
+  }, [products, meta.h1, isLegacyListUrl]);
+
   useDocumentMeta({
     title: meta.title,
     description: meta.description,
     canonical: canonicalPath,
     noIndex: isLegacyListUrl,
-    jsonLd: buildBreadcrumbSchema(breadcrumbs),
+    jsonLd: itemListSchema
+      ? [buildBreadcrumbSchema(breadcrumbs), itemListSchema]
+      : buildBreadcrumbSchema(breadcrumbs),
   });
+
 
 
 
@@ -617,11 +643,48 @@ export default function StorefrontCatalog() {
                   </button>
                 </div>
               )}
+
+              {/* SEO-текст раздела + внутренняя перелинковка */}
+              {!isLegacyListUrl && (seoCollection?.body || seoCategory?.body) && (
+                <section className="mt-16 pt-10 border-t border-white/10">
+                  <h2 className="text-lg sm:text-xl font-bold text-storefront-text uppercase tracking-wide mb-6">
+                    {seoCollection
+                      ? `Коллекция ${seoCollection.name}`
+                      : `О разделе «${seoCategory?.name}»`}
+                  </h2>
+                  <div className="space-y-4 max-w-3xl">
+                    {(seoCollection?.body ?? seoCategory?.body ?? []).map((p, i) => (
+                      <p key={i} className="text-sm sm:text-base leading-relaxed text-storefront-muted">
+                        {p}
+                      </p>
+                    ))}
+                  </div>
+
+                  <div className="mt-10 flex flex-wrap gap-3">
+                    {COLLECTION_SLUGS.filter((s) => s !== seoCollection?.slug).map((s) => (
+                      <Link
+                        key={s}
+                        to={collectionHref(slug, s)}
+                        className="px-4 py-2 rounded-full border border-storefront-gold/30 text-xs uppercase tracking-wider text-storefront-gold hover:bg-storefront-gold/10 transition-colors"
+                      >
+                        {COLLECTION_SEO[s].name}
+                      </Link>
+                    ))}
+                    <Link
+                      to={storeHref(slug, "salon")}
+                      className="px-4 py-2 rounded-full border border-white/15 text-xs uppercase tracking-wider text-storefront-muted hover:text-storefront-text transition-colors"
+                    >
+                      Адрес салона
+                    </Link>
+                  </div>
+                </section>
+              )}
             </div>
           </div>
         </div>
       </div>
     </StorefrontLayout>
+
   );
 }
 
