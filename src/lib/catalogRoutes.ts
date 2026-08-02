@@ -323,7 +323,12 @@ export function buildProductMeta(
     product.description?.trim() ||
     `${product.name} — ${kind.toLowerCase()} Brandoors. Покрытия, размеры и фурнитура подбираются под проём.`;
 
-  const description = `${base} ${priceLine} Салон ${salon}, ${locality}: экспозиция, замер, доставка и установка.`
+  const salonLine =
+    salon.toLowerCase() === locality.toLowerCase()
+      ? `Салон Brandoors ${salon}`
+      : `Салон ${salon}, ${locality}`;
+
+  const description = `${base} ${priceLine} ${salonLine}: экспозиция, замер, доставка и установка.`
     .replace(/\s+/g, " ")
     .trim();
 
