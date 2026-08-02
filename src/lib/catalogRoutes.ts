@@ -224,9 +224,84 @@ export function collectionHrefByName(slug: string | null | undefined, name: stri
 /* ------------------------------------------------------------------ */
 
 export interface SiteMetaSource {
+  slug?: string | null;
   name?: string | null;
   city?: string | null;
   district?: string | null;
+}
+
+/**
+ * Смысловой акцент каждого салона.
+ * Нужен, чтобы главные страницы пяти доменов не выглядели дублями:
+ * у каждого свой заголовок, свой оффер и свой вводный текст.
+ */
+interface HomeAngle {
+  focus: string;
+  offer: string;
+  intro: string;
+}
+
+const HOME_ANGLES: Record<string, HomeAngle> = {
+  scherbinka: {
+    focus: "склад и быстрая отгрузка",
+    offer: "Двери в наличии на складе — отгрузка в день обращения",
+    intro:
+      "Складской салон Brandoors: популярные размеры и покрытия держим в наличии, поэтому заказ уезжает к клиенту в день обращения. Здесь удобно закрывать объект, когда двери нужны «на вчера».",
+  },
+  kashirsky: {
+    focus: "экспозиция в торговом центре",
+    offer: "Живая экспозиция коллекций в торговом центре",
+    intro:
+      "Салон в торговом центре с широкой экспозицией: полотна, короба и фурнитуру можно посмотреть и потрогать вживую, сравнить покрытия при разном свете и сразу выбрать комплект под интерьер.",
+  },
+  roomer: {
+    focus: "дизайн-проект и подбор под интерьер",
+    offer: "Подбор дверей под дизайн-проект интерьера",
+    intro:
+      "Салон для тех, кто идёт от интерьера: подбираем полотна, кромку и фурнитуру под палитру проекта, согласуем решения с дизайнером и собираем комплект на весь объект.",
+  },
+  dekorator: {
+    focus: "скрытые двери и нестандартные решения",
+    offer: "Скрытые двери INVISIBLE и нестандартные размеры",
+    intro:
+      "Профильное направление салона — скрытые двери в одной плоскости со стеной, короба INVISIBLE и нестандартные проёмы. Считаем сложные решения и сопровождаем монтаж.",
+  },
+  m2: {
+    focus: "комплектация квартир и объектов",
+    offer: "Комплектация квартир и новостроек под ключ",
+    intro:
+      "Салон работает с объёмными заказами: комплектуем квартиры и новостройки целиком, считаем смету по количеству проёмов, организуем замер, доставку и установку одной бригадой.",
+  },
+};
+
+const DEFAULT_ANGLE: HomeAngle = {
+  focus: "двери премиум-класса",
+  offer: "Межкомнатные и входные двери премиум-класса",
+  intro:
+    "Салон Brandoors: межкомнатные и входные двери собственного производства, покрытия под интерьер, замер, доставка и установка.",
+};
+
+export function getHomeAngle(slug?: string | null): HomeAngle {
+  return (slug && HOME_ANGLES[slug]) || DEFAULT_ANGLE;
+}
+
+/** Уникальные title/description/H1 для главной страницы конкретного салона. */
+export function buildHomeMeta(site: SiteMetaSource | null | undefined) {
+  const salon = siteShortName(site);
+  const locality = siteLocality(site);
+  const city = site?.city || "Москва";
+  const cityIn = city.endsWith("а") ? `${city.slice(0, -1)}е` : city;
+  const angle = getHomeAngle(site?.slug);
+
+  return {
+    h1: `Двери Brandoors — салон ${salon}`,
+    title: `Двери Brandoors в ${cityIn} — ${angle.focus} — салон ${salon}`,
+    description: `${angle.offer}. ${angle.intro} Салон ${salon}, ${locality}: замер, доставка и установка.`
+      .replace(/\s+/g, " ")
+      .trim(),
+    intro: angle.intro,
+    offer: angle.offer,
+  };
 }
 
 /** Короткая гео-привязка салона: район, если есть, иначе город. */
