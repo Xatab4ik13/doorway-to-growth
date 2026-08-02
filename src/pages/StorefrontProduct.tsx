@@ -1190,18 +1190,41 @@ export default function StorefrontProduct() {
       <div className="min-h-screen pt-[68px] md:pt-0 bg-[#07090d]">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-14">
 
-          {/* Breadcrumbs */}
-          <div className="flex items-center gap-4 mb-10 text-[10px] uppercase tracking-[0.2em] font-light">
+          {/* Breadcrumbs — совпадают с BreadcrumbList в JSON-LD */}
+          <nav aria-label="Хлебные крошки" className="flex flex-wrap items-center gap-4 mb-10 text-[10px] uppercase tracking-[0.2em] font-light">
             <Link to={storeHref(slug)} className="text-storefront-text/30 hover:text-storefront-gold transition-colors">
+              Главная
+            </Link>
+            <span className="w-1 h-1 rounded-full bg-white/20" />
+            <Link to={storeHref(slug, CATALOG_ROOT)} className="text-storefront-text/30 hover:text-storefront-gold transition-colors">
               Каталог
             </Link>
-            <span className="w-1 h-1 rounded-full bg-white/20" />
-            <Link to={storeHref(slug, "catalog")} className="text-storefront-text/30 hover:text-storefront-gold transition-colors">
-              Двери
-            </Link>
+            {productCategorySeo && (
+              <>
+                <span className="w-1 h-1 rounded-full bg-white/20" />
+                <Link
+                  to={storeHref(slug, `${CATALOG_ROOT}/${productCategorySeo.slug}`)}
+                  className="text-storefront-text/30 hover:text-storefront-gold transition-colors"
+                >
+                  {productCategorySeo.name}
+                </Link>
+              </>
+            )}
+            {productCollectionSeo && (
+              <>
+                <span className="w-1 h-1 rounded-full bg-white/20" />
+                <Link
+                  to={storeHref(slug, `${CATALOG_ROOT}/${COLLECTIONS_PARENT_SLUG}/${productCollectionSeo.slug}`)}
+                  className="text-storefront-text/30 hover:text-storefront-gold transition-colors"
+                >
+                  {productCollectionSeo.name}
+                </Link>
+              </>
+            )}
             <span className="w-1 h-1 rounded-full bg-white/20" />
             <span className="text-storefront-text/60">{product.name}</span>
-          </div>
+          </nav>
+
 
           {/* ===== MAIN: HERO IMAGE + CONFIG ===== */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-start">
