@@ -1,6 +1,16 @@
 import { writeFileSync, existsSync, mkdirSync } from "fs";
 import { resolve } from "path";
 import { createClient } from "@supabase/supabase-js";
+import { NEWS_BY_SITE } from "../src/content/news";
+
+// Домен → slug салона (у каждого домена свой набор статей)
+const DOMAIN_TO_SITE: Record<string, string> = {
+  "brandoors.moscow": "scherbinka",
+  "brandoors.online": "kashirsky",
+  "brandoors.store": "roomer",
+  "brandoors.pro": "dekorator",
+  "brandoors.su": "m2",
+};
 
 // 5 торговых доменов Brandoors
 const DOMAINS = [
@@ -127,6 +137,16 @@ async function main() {
       priority: r.priority,
       lastmod: date,
     }));
+
+    const siteSlug = DOMAIN_TO_SITE[domain];
+    for (const article of NEWS_BY_SITE[siteSlug] ?? []) {
+      entries.push({
+        loc: `https://${domain}/news/${article.slug}`,
+        changefreq: "monthly",
+        priority: "0.6",
+        lastmod: article.date,
+      });
+    }
 
     for (const product of products) {
       if (!product.slug) continue;
