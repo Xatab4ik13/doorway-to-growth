@@ -17,23 +17,54 @@ const ITEMS_PER_PAGE = 16;
 
 
 export default function StorefrontCatalog() {
-  const { slug: urlSlug } = useParams<{ slug: string }>();
+  const { slug: urlSlug, categorySlug, collectionSlug } = useParams<{
+    slug: string;
+    categorySlug: string;
+    collectionSlug: string;
+  }>();
   const slug = useSiteSlug(urlSlug);
   const [searchParams] = useSearchParams();
-  const collectionParam = searchParams.get("collection");
-  const categoryParam = searchParams.get("category");
+
+  // Статические маршруты (/catalog/:categorySlug/:collectionSlug) — основной путь.
+  // Query-параметры остаются как обратная совместимость со старыми ссылками.
+  const routeCategory = getCategorySeo(categorySlug);
+  const routeCollection = getCollectionSeo(collectionSlug);
+  const collectionParam = routeCollection?.name ?? searchParams.get("collection");
+  const categoryParam = routeCategory?.slug ?? searchParams.get("category");
+
   const { data: site, isLoading } = useSiteBySlug(slug);
   const { data: products = [] } = useStorefrontProducts(site?.id);
   const { data: categories = [] } = useStorefrontCategories();
 
-  useDocumentMeta({
-    title: site ? `Каталог дверей — ${site.name}` : "Каталог — Brandoors",
-    description: site ? `Каталог межкомнатных и входных дверей в салоне ${site.name}, ${site.city}` : "Каталог дверей Brandoors",
-    jsonLd: buildBreadcrumbSchema([
+  // Категория/коллекция для мета-тегов: из маршрута, иначе из query-параметров.
+  const seoCategory = routeCategory ?? getCategorySeo(searchParams.get("category"));
+  const seoCollection =
+    routeCollection ?? getCollectionSeo(collectionSlugByName(searchParams.get("collection")));
+  const meta = buildCatalogMeta(site, seoCategory, seoCollection);
+
+  const breadcrumbs = useMemo(() => {
+    const crumbs: { name: string; path?: string }[] = [
       { name: "Главная", path: "/" },
-      { name: "Каталог" },
-    ]),
+      { name: "Каталог", path: `/${CATALOG_ROOT}` },
+    ];
+    if (seoCollection) {
+      crumbs.push({
+        name: CATEGORY_SEO[COLLECTIONS_PARENT_SLUG].name,
+        path: `/${CATALOG_ROOT}/${COLLECTIONS_PARENT_SLUG}`,
+      });
+      crumbs.push({ name: seoCollection.name });
+    } else if (seoCategory) {
+      crumbs.push({ name: seoCategory.name });
+    }
+    return crumbs;
+  }, [seoCategory, seoCollection]);
+
+  useDocumentMeta({
+    title: meta.title,
+    description: meta.description,
+    jsonLd: buildBreadcrumbSchema(breadcrumbs),
   });
+
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [expandedParents, setExpandedParents] = useState<Set<string>>(new Set());
