@@ -456,6 +456,15 @@ export default function StorefrontCatalog() {
             </div>
           </div>
 
+          {/* SEO-текст категории/коллекции — уникальный для каждого салона */}
+          {(seoCollection || seoCategory) && (
+            <p className="-mt-4 mb-8 max-w-3xl text-sm leading-relaxed text-storefront-muted">
+              {(seoCollection ?? seoCategory)!.intro}
+            </p>
+          )}
+
+
+
           {/* ===== MOBILE FILTER SHEET ===== */}
           {mobileFiltersOpen && (
             <MobileFilterSheet
