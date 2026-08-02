@@ -77,6 +77,19 @@ function useHostMode(): "crm" | "storefront" | "dev" {
   }, []);
 }
 
+/**
+ * /catalog/:categorySlug — один статический маршрут на все разделы каталога.
+ * У «Межкомнатных дверей» это промежуточная страница выбора коллекции,
+ * у остальных разделов — сразу список товаров.
+ */
+function CatalogCategoryRoute() {
+  const { categorySlug } = useParams<{ categorySlug: string }>();
+
+  if (categorySlug === COLLECTIONS_PARENT_SLUG) return <StorefrontCollectionSelect />;
+  if (categorySlug && getCategorySeo(categorySlug)) return <StorefrontCatalog />;
+  return <NotFound />;
+}
+
 function AppRoutes() {
   const mode = useHostMode();
 
@@ -87,8 +100,14 @@ function AppRoutes() {
         <Routes>
           <Route path="/" element={<Storefront />} />
           <Route path="/catalog" element={<StorefrontCategorySelect />} />
-          <Route path="/catalog/mezhkomnatnye" element={<StorefrontCollectionSelect />} />
+          {/* Легаси-URL → канонические статические маршруты */}
+          <Route
+            path="/catalog/mezhkomnatnye"
+            element={<Navigate to={`/catalog/${COLLECTIONS_PARENT_SLUG}`} replace />}
+          />
           <Route path="/catalog/list" element={<StorefrontCatalog />} />
+          <Route path="/catalog/:categorySlug" element={<CatalogCategoryRoute />} />
+          <Route path="/catalog/:categorySlug/:collectionSlug" element={<StorefrontCatalog />} />
           <Route path="/product/:productSlug" element={<StorefrontProduct />} />
           <Route path="/cart" element={<StorefrontCart />} />
           <Route path="/brand" element={<StorefrontBrand />} />
@@ -123,8 +142,9 @@ function AppRoutes() {
         <Route path="/login" element={<LoginRoute />} />
         <Route path="/store/:slug" element={<Storefront />} />
         <Route path="/store/:slug/catalog" element={<StorefrontCategorySelect />} />
-        <Route path="/store/:slug/catalog/mezhkomnatnye" element={<StorefrontCollectionSelect />} />
         <Route path="/store/:slug/catalog/list" element={<StorefrontCatalog />} />
+        <Route path="/store/:slug/catalog/:categorySlug" element={<CatalogCategoryRoute />} />
+        <Route path="/store/:slug/catalog/:categorySlug/:collectionSlug" element={<StorefrontCatalog />} />
         <Route path="/store/:slug/product/:productSlug" element={<StorefrontProduct />} />
         <Route path="/store/:slug/cart" element={<StorefrontCart />} />
         <Route path="/store/:slug/brand" element={<StorefrontBrand />} />
@@ -133,6 +153,7 @@ function AppRoutes() {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
+
   );
 }
 
