@@ -166,7 +166,6 @@ export function buildProductSchema(product: ProductData) {
     itemCondition: "https://schema.org/NewCondition",
     ...(product.collectionName
       ? {
-          isSimilarTo: undefined,
           additionalProperty: [
             {
               "@type": "PropertyValue",
