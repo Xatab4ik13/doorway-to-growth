@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
@@ -26,7 +26,8 @@ function telHref(phone?: string | null) {
 }
 
 export default function StorefrontSalon() {
-  const slug = useSiteSlug();
+  const { slug: urlSlug } = useParams<{ slug?: string }>();
+  const slug = useSiteSlug(urlSlug);
   const { data: site, isLoading, error } = useSiteBySlug(slug);
 
   const locality = site?.district || site?.city || "Москва";
