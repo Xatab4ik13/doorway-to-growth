@@ -11,6 +11,8 @@ import colMaze from "@/assets/collections/maze.webp";
 import colKvartirnye from "@/assets/collections/kvartirnye.webp";
 import colUlichnye from "@/assets/collections/ulichnye.webp";
 import { storeHref } from "@/lib/storeHref";
+import { categoryHref, collectionHrefByName } from "@/lib/catalogRoutes";
+
 
 type CollectionItem = { src: string; name: string };
 
