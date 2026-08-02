@@ -124,13 +124,25 @@ export default function StorefrontNews() {
                   initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.7, delay: 0.05 * i, ease: EASE }}
-                  className="group rounded-2xl border p-7 flex flex-col transition-colors duration-300"
+                  className="group rounded-2xl border overflow-hidden flex flex-col transition-colors duration-300"
                   style={{
                     borderColor: "rgba(207,187,150,0.16)",
                     background:
                       "linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)",
                   }}
                 >
+                  {newsImage(article.cover) && (
+                    <img
+                      src={newsImage(article.cover)}
+                      alt={article.title}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-[180px] object-cover"
+                      style={{ backgroundColor: "#0c0e14" }}
+                    />
+                  )}
+
+                  <div className="p-7 flex flex-col flex-1">
                   <div
                     className="flex items-center gap-4 text-[11px] uppercase tracking-[0.2em] mb-5"
                     style={{ color: "rgba(207,187,150,0.6)", fontFamily: "'Onest', sans-serif" }}
@@ -141,6 +153,7 @@ export default function StorefrontNews() {
                       {article.readingMinutes} мин
                     </span>
                   </div>
+
 
                   <h2
                     className="text-lg md:text-xl font-extralight leading-snug mb-4"
