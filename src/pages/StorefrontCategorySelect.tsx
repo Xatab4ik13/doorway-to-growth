@@ -8,6 +8,8 @@ import entranceImg from "@/assets/categories/entrance-doors.png";
 import pogonazhImg from "@/assets/categories/pogonazh.png";
 import furnituraImg from "@/assets/categories/furnitura.png";
 import { storeHref } from "@/lib/storeHref";
+import { categoryHref } from "@/lib/catalogRoutes";
+
 
 type CategoryCard = {
   slug: string;
@@ -53,7 +55,7 @@ export default function StorefrontCategorySelect() {
     );
   }
 
-  const baseHref = storeHref(slug, "catalog/list");
+  
 
   return (
     <StorefrontLayout site={site}>
@@ -92,11 +94,8 @@ export default function StorefrontCategorySelect() {
             {CATEGORIES.map((cat) => (
               <Link
                 key={cat.slug}
-                to={
-                  cat.intermediate === "collections"
-                    ? storeHref(slug, "catalog/mezhkomnatnye")
-                    : `${baseHref}?category=${cat.slug}`
-                }
+                to={categoryHref(slug, cat.slug)}
+
                 className="group relative flex flex-col items-center text-center"
               >
                 {/* Image container — door silhouette acts as the visual frame */}

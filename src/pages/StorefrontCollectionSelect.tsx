@@ -5,6 +5,8 @@ import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { storeHref } from "@/lib/storeHref";
+import { collectionHrefByName } from "@/lib/catalogRoutes";
+
 import { supabase } from "@/integrations/supabase/client";
 import { resolveStorageUrl } from "@/lib/storageUrl";
 
@@ -171,7 +173,7 @@ export default function StorefrontCollectionSelect() {
             {collections.map((col) => (
               <Link
                 key={col.name}
-                to={`${listHref}?category=mezhkomnatnye-dveri&collection=${encodeURIComponent(col.name)}`}
+                to={collectionHrefByName(slug, col.name)}
                 className="group relative flex flex-col items-center text-center"
               >
                 {/* Image container — floating door silhouette from the catalog */}

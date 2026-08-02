@@ -13,16 +13,64 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://brandoors.pro/catalog/mezhkomnatnye</loc>
+    <loc>https://brandoors.pro/catalog/mezhkomnatnye-dveri</loc>
     <lastmod>2026-08-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://brandoors.pro/catalog/list</loc>
+    <loc>https://brandoors.pro/catalog/entrance-doors</loc>
     <lastmod>2026-08-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://brandoors.pro/catalog/pogonazh</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://brandoors.pro/catalog/furnitura</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://brandoors.pro/catalog/mezhkomnatnye-dveri/estetica</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://brandoors.pro/catalog/mezhkomnatnye-dveri/ghost</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://brandoors.pro/catalog/mezhkomnatnye-dveri/heavy</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://brandoors.pro/catalog/mezhkomnatnye-dveri/prime</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://brandoors.pro/catalog/mezhkomnatnye-dveri/reflect</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://brandoors.pro/catalog/mezhkomnatnye-dveri/maze</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://brandoors.pro/brand</loc>

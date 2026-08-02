@@ -12,28 +12,80 @@ import brandoorsLogo from "@/assets/logo.png";
 import { resolveStorageUrl } from "@/lib/storageUrl";
 import { useCartStore } from "@/stores/useCartStore";
 import { storeHref } from "@/lib/storeHref";
+import {
+  CATALOG_ROOT,
+  CATEGORY_SEO,
+  COLLECTIONS_PARENT_SLUG,
+  buildCatalogMeta,
+  collectionSlugByName,
+  getCategorySeo,
+  getCollectionSeo,
+} from "@/lib/catalogRoutes";
+
 
 const ITEMS_PER_PAGE = 16;
 
 
 export default function StorefrontCatalog() {
-  const { slug: urlSlug } = useParams<{ slug: string }>();
+  const { slug: urlSlug, categorySlug, collectionSlug } = useParams<{
+    slug: string;
+    categorySlug: string;
+    collectionSlug: string;
+  }>();
   const slug = useSiteSlug(urlSlug);
   const [searchParams] = useSearchParams();
-  const collectionParam = searchParams.get("collection");
-  const categoryParam = searchParams.get("category");
+
+  // Статические маршруты (/catalog/:categorySlug/:collectionSlug) — основной путь.
+  // Query-параметры остаются как обратная совместимость со старыми ссылками.
+  const routeCategory = getCategorySeo(categorySlug);
+  const routeCollection = getCollectionSeo(collectionSlug);
+  const collectionParam = routeCollection?.name ?? searchParams.get("collection");
+  const categoryParam = routeCategory?.slug ?? searchParams.get("category");
+
   const { data: site, isLoading } = useSiteBySlug(slug);
   const { data: products = [] } = useStorefrontProducts(site?.id);
   const { data: categories = [] } = useStorefrontCategories();
 
-  useDocumentMeta({
-    title: site ? `Каталог дверей — ${site.name}` : "Каталог — Brandoors",
-    description: site ? `Каталог межкомнатных и входных дверей в салоне ${site.name}, ${site.city}` : "Каталог дверей Brandoors",
-    jsonLd: buildBreadcrumbSchema([
+  // Категория/коллекция для мета-тегов: из маршрута, иначе из query-параметров.
+  const seoCategory = routeCategory ?? getCategorySeo(searchParams.get("category"));
+  const seoCollection =
+    routeCollection ?? getCollectionSeo(collectionSlugByName(searchParams.get("collection")));
+  const meta = buildCatalogMeta(site, seoCategory, seoCollection);
+
+  const breadcrumbs = useMemo(() => {
+    const crumbs: { name: string; path?: string }[] = [
       { name: "Главная", path: "/" },
-      { name: "Каталог" },
-    ]),
+      { name: "Каталог", path: `/${CATALOG_ROOT}` },
+    ];
+    if (seoCollection) {
+      crumbs.push({
+        name: CATEGORY_SEO[COLLECTIONS_PARENT_SLUG].name,
+        path: `/${CATALOG_ROOT}/${COLLECTIONS_PARENT_SLUG}`,
+      });
+      crumbs.push({ name: seoCollection.name });
+    } else if (seoCategory) {
+      crumbs.push({ name: seoCategory.name });
+    }
+    return crumbs;
+  }, [seoCategory, seoCollection]);
+
+  // Легаси-URL /catalog/list?... не индексируем — канонический адрес статический.
+  const isLegacyListUrl = !categorySlug;
+  const canonicalPath = seoCollection
+    ? `/${CATALOG_ROOT}/${COLLECTIONS_PARENT_SLUG}/${seoCollection.slug}`
+    : seoCategory
+      ? `/${CATALOG_ROOT}/${seoCategory.slug}`
+      : `/${CATALOG_ROOT}`;
+
+  useDocumentMeta({
+    title: meta.title,
+    description: meta.description,
+    canonical: canonicalPath,
+    noIndex: isLegacyListUrl,
+    jsonLd: buildBreadcrumbSchema(breadcrumbs),
   });
+
+
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [expandedParents, setExpandedParents] = useState<Set<string>>(new Set());
@@ -344,13 +396,31 @@ export default function StorefrontCatalog() {
               Главная
             </Link>
             <span className="text-storefront-muted/40">/</span>
-            {lockedParent ? (
+            {seoCategory || seoCollection ? (
               <>
                 <Link to={categoriesBackHref} className="uppercase tracking-[0.15em] text-storefront-muted hover:text-storefront-gold transition-colors">
                   Каталог
                 </Link>
-                <span className="text-storefront-muted/40">/</span>
-                <span className="uppercase tracking-[0.15em] text-storefront-text">{lockedParent.name}</span>
+                {seoCollection ? (
+                  <>
+                    <span className="text-storefront-muted/40">/</span>
+                    <Link
+                      to={storeHref(slug, `${CATALOG_ROOT}/${COLLECTIONS_PARENT_SLUG}`)}
+                      className="uppercase tracking-[0.15em] text-storefront-muted hover:text-storefront-gold transition-colors"
+                    >
+                      {CATEGORY_SEO[COLLECTIONS_PARENT_SLUG].name}
+                    </Link>
+                    <span className="text-storefront-muted/40">/</span>
+                    <span className="uppercase tracking-[0.15em] text-storefront-text">{seoCollection.name}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-storefront-muted/40">/</span>
+                    <span className="uppercase tracking-[0.15em] text-storefront-text">
+                      {seoCategory?.name ?? lockedParent?.name}
+                    </span>
+                  </>
+                )}
               </>
             ) : (
               <span className="uppercase tracking-[0.15em] text-storefront-text">Каталог</span>
@@ -360,8 +430,9 @@ export default function StorefrontCatalog() {
           {/* Title row */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-3 mb-8">
             <h1 className="text-2xl sm:text-4xl font-bold text-storefront-text uppercase tracking-normal sm:tracking-wide break-words">
-              {lockedParent ? lockedParent.name : "Каталог"}
+              {meta.h1}
             </h1>
+
             <div className="flex items-center gap-2 sm:shrink-0">
 
               {/* Mobile filter button */}
@@ -395,6 +466,15 @@ export default function StorefrontCatalog() {
               )}
             </div>
           </div>
+
+          {/* SEO-текст категории/коллекции — уникальный для каждого салона */}
+          {(seoCollection || seoCategory) && (
+            <p className="-mt-4 mb-8 max-w-3xl text-sm leading-relaxed text-storefront-muted">
+              {(seoCollection ?? seoCategory)!.intro}
+            </p>
+          )}
+
+
 
           {/* ===== MOBILE FILTER SHEET ===== */}
           {mobileFiltersOpen && (
