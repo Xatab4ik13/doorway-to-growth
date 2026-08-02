@@ -280,6 +280,18 @@ export default function StorefrontSalon() {
                 style={{ border: 0 }}
               />
             </motion.div>
+
+            <a
+              href={buildYandexMapsUrl(site)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="lg:col-start-2 inline-flex items-center gap-2 text-[12px] uppercase tracking-[0.2em] transition-colors hover:opacity-80"
+              style={{ color: GOLD, fontFamily: FONT }}
+            >
+              Построить маршрут в Яндекс.Картах
+              <ArrowRight className="h-4 w-4" />
+            </a>
+
           </div>
 
           {/* Перелинковка на разделы каталога — только внутри своего домена */}
