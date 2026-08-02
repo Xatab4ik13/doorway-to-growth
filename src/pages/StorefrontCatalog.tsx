@@ -15,9 +15,13 @@ import { storeHref } from "@/lib/storeHref";
 import {
   CATALOG_ROOT,
   CATEGORY_SEO,
+  COLLECTION_SEO,
+  COLLECTION_SLUGS,
   COLLECTIONS_PARENT_SLUG,
   buildCatalogMeta,
+  collectionHref,
   collectionSlugByName,
+
   getCategorySeo,
   getCollectionSeo,
 } from "@/lib/catalogRoutes";
