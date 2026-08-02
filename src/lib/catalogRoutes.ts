@@ -30,7 +30,10 @@ export interface CategorySeo {
   keyphrase: string;
   /** Уникальный вводный текст категории (для description и текстового блока). */
   intro: string;
+  /** Развёрнутый SEO-текст внизу страницы (2–3 абзаца). */
+  body?: string[];
 }
+
 
 export const CATEGORY_SEO: Record<string, CategorySeo> = {
   "entrance-doors": {
