@@ -275,3 +275,67 @@ export function buildCatalogMeta(
     description: `Каталог межкомнатных и входных дверей Brandoors. Салон ${salon}, ${locality}: экспозиция, замер, доставка и установка.`,
   };
 }
+
+/** Ссылка на карточку товара внутри текущего магазина. */
+export function productHref(slug: string | null | undefined, productSlug: string) {
+  return storeHref(slug, `/product/${productSlug}`);
+}
+
+export interface ProductMetaSource {
+  name: string;
+  description?: string | null;
+  rrp?: number | null;
+  categoryName?: string | null;
+}
+
+/**
+ * Уникальные title/description/H1 для карточки товара.
+ * Шаблон: «[Модель] — [Коллекция/Категория], купить в Москве — салон [Салон]».
+ * Гео-привязка к салону не даёт пяти доменам выглядеть дублями.
+ */
+export function buildProductMeta(
+  site: SiteMetaSource | null | undefined,
+  product: ProductMetaSource,
+  category: CategorySeo | null,
+  collection: CollectionSeo | null
+) {
+  const salon = siteShortName(site);
+  const locality = siteLocality(site);
+  const city = site?.city || "Москва";
+  const cityIn = city.endsWith("а") ? `${city.slice(0, -1)}е` : city;
+
+  const group =
+    collection?.name ||
+    category?.name ||
+    product.categoryName ||
+    "Двери Brandoors";
+
+  const kind = collection ? `${collection.name}, межкомнатная дверь` : group;
+
+  const title = `${product.name} — ${kind} — купить в ${cityIn}, салон ${salon}`;
+
+  const priceLine =
+    product.rrp && Number(product.rrp) > 0
+      ? `Цена от ${Math.round(Number(product.rrp)).toLocaleString("ru-RU")} ₽.`
+      : "Цена по запросу.";
+
+  const base =
+    product.description?.trim() ||
+    `${product.name} — ${kind.toLowerCase()} Brandoors. Покрытия, размеры и фурнитура подбираются под проём.`;
+
+  const salonLine =
+    salon.toLowerCase() === locality.toLowerCase()
+      ? `Салон Brandoors ${salon}`
+      : `Салон ${salon}, ${locality}`;
+
+  const description = `${base} ${priceLine} ${salonLine}: экспозиция, замер, доставка и установка.`
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return {
+    h1: product.name,
+    title,
+    description: description.length > 320 ? `${description.slice(0, 317)}…` : description,
+    group,
+  };
+}

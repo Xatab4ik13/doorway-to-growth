@@ -6,6 +6,14 @@ import { useStorefrontProducts, useStorefrontCategories } from "@/hooks/useStore
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { buildProductSchema, buildBreadcrumbSchema } from "@/lib/seo";
+import {
+  CATALOG_ROOT,
+  COLLECTIONS_PARENT_SLUG,
+  getCategorySeo,
+  getCollectionSeo,
+  collectionSlugByName,
+  buildProductMeta,
+} from "@/lib/catalogRoutes";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { ArrowLeft, ChevronLeft, ChevronRight, ShoppingCart, Check, Plus } from "lucide-react";
@@ -587,23 +595,54 @@ export default function StorefrontProduct() {
   }, [realHardware, hardwareTab]);
 
   const primaryImg = product?.product_images?.find((i: any) => i.is_primary)?.url || product?.product_images?.[0]?.url;
+
+  // SEO-контекст товара: категория верхнего уровня + коллекция (если это межкомнатная дверь).
+  const productCategorySeo = getCategorySeo(rootCategorySlug);
+  const productCollectionSeo =
+    getCollectionSeo(product?.categories?.slug) ||
+    getCollectionSeo(collectionSlugByName(product?.categories?.name));
+
+  const productMeta = product
+    ? buildProductMeta(site as any, {
+        name: product.name,
+        description: product.description,
+        rrp: product.rrp,
+        categoryName: product.categories?.name,
+      }, productCategorySeo, productCollectionSeo)
+    : null;
+
   useDocumentMeta({
-    title: product ? `${product.name} — Brandoors ${site?.city ?? ""}` : "Товар — Brandoors",
-    description: product?.description || `Дверь ${product?.name ?? ""} от Brandoors. Характеристики, фото, цены.`,
+    title: productMeta?.title || "Товар — Brandoors",
+    description:
+      productMeta?.description ||
+      `Дверь ${product?.name ?? ""} от Brandoors. Характеристики, фото, цены.`,
     ogImage: primaryImg ? (primaryImg.startsWith("http") ? primaryImg : `${window.location.origin}${primaryImg}`) : undefined,
     jsonLd: product
       ? [
           buildProductSchema({
             slug: product.slug,
             name: product.name,
-            description: product.description,
+            description: product.description || productMeta?.description,
             rrp: product.rrp,
             image: primaryImg,
-            categoryName: product.categories?.name,
+            categoryName: productCollectionSeo?.name || product.categories?.name,
+            collectionName: productCollectionSeo?.name,
+            sku: product.sku || product.slug,
           }),
           buildBreadcrumbSchema([
             { name: "Главная", path: "/" },
-            { name: "Каталог", path: "/catalog" },
+            { name: "Каталог", path: `/${CATALOG_ROOT}` },
+            ...(productCategorySeo
+              ? [{ name: productCategorySeo.name, path: `/${CATALOG_ROOT}/${productCategorySeo.slug}` }]
+              : []),
+            ...(productCollectionSeo
+              ? [
+                  {
+                    name: productCollectionSeo.name,
+                    path: `/${CATALOG_ROOT}/${COLLECTIONS_PARENT_SLUG}/${productCollectionSeo.slug}`,
+                  },
+                ]
+              : []),
             { name: product.name },
           ]),
         ]
@@ -1110,6 +1149,15 @@ export default function StorefrontProduct() {
     });
   };
 
+  // Описательный alt для SEO: «GHOST 01 — межкомнатная дверь Brandoors, эмаль белая»
+  const imageAlt = (img: any) => {
+    if (img?.alt) return img.alt;
+    const parts = [product?.name, productMeta?.group ? productMeta.group.toLowerCase() : null, "Brandoors"];
+    const variant = img?.variant_key || img?.glazing_key || img?.edge_key;
+    if (variant) parts.push(String(variant));
+    return parts.filter(Boolean).join(" — ");
+  };
+
   const nextImage = () => setCurrentImage((prev) => (prev + 1) % images.length);
   const prevImage = () => setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
 
@@ -1142,18 +1190,41 @@ export default function StorefrontProduct() {
       <div className="min-h-screen pt-[68px] md:pt-0 bg-[#07090d]">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-14">
 
-          {/* Breadcrumbs */}
-          <div className="flex items-center gap-4 mb-10 text-[10px] uppercase tracking-[0.2em] font-light">
+          {/* Breadcrumbs — совпадают с BreadcrumbList в JSON-LD */}
+          <nav aria-label="Хлебные крошки" className="flex flex-wrap items-center gap-4 mb-10 text-[10px] uppercase tracking-[0.2em] font-light">
             <Link to={storeHref(slug)} className="text-storefront-text/30 hover:text-storefront-gold transition-colors">
+              Главная
+            </Link>
+            <span className="w-1 h-1 rounded-full bg-white/20" />
+            <Link to={storeHref(slug, CATALOG_ROOT)} className="text-storefront-text/30 hover:text-storefront-gold transition-colors">
               Каталог
             </Link>
-            <span className="w-1 h-1 rounded-full bg-white/20" />
-            <Link to={storeHref(slug, "catalog")} className="text-storefront-text/30 hover:text-storefront-gold transition-colors">
-              Двери
-            </Link>
+            {productCategorySeo && (
+              <>
+                <span className="w-1 h-1 rounded-full bg-white/20" />
+                <Link
+                  to={storeHref(slug, `${CATALOG_ROOT}/${productCategorySeo.slug}`)}
+                  className="text-storefront-text/30 hover:text-storefront-gold transition-colors"
+                >
+                  {productCategorySeo.name}
+                </Link>
+              </>
+            )}
+            {productCollectionSeo && (
+              <>
+                <span className="w-1 h-1 rounded-full bg-white/20" />
+                <Link
+                  to={storeHref(slug, `${CATALOG_ROOT}/${COLLECTIONS_PARENT_SLUG}/${productCollectionSeo.slug}`)}
+                  className="text-storefront-text/30 hover:text-storefront-gold transition-colors"
+                >
+                  {productCollectionSeo.name}
+                </Link>
+              </>
+            )}
             <span className="w-1 h-1 rounded-full bg-white/20" />
             <span className="text-storefront-text/60">{product.name}</span>
-          </div>
+          </nav>
+
 
           {/* ===== MAIN: HERO IMAGE + CONFIG ===== */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-start">
@@ -1165,7 +1236,7 @@ export default function StorefrontProduct() {
                   <img
                     key={currentImage}
                     src={resolveStorageUrl(images[currentImage]?.url)}
-                    alt={images[currentImage]?.alt || product.name}
+                    alt={imageAlt(images[currentImage])}
                     className="w-full h-full object-contain p-8 animate-fade-in"
                   />
                 ) : (
@@ -1203,7 +1274,7 @@ export default function StorefrontProduct() {
                           : "opacity-50 hover:opacity-80"
                       }`}
                     >
-                      <img src={resolveStorageUrl(img.url)} alt="" loading="lazy" className="w-full h-full object-cover" />
+                      <img src={resolveStorageUrl(img.url)} alt={imageAlt(img)} loading="lazy" className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>
