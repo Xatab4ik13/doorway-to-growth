@@ -69,11 +69,22 @@ export default function StorefrontCatalog() {
     return crumbs;
   }, [seoCategory, seoCollection]);
 
+  // Легаси-URL /catalog/list?... не индексируем — канонический адрес статический.
+  const isLegacyListUrl = !categorySlug;
+  const canonicalPath = seoCollection
+    ? `/${CATALOG_ROOT}/${COLLECTIONS_PARENT_SLUG}/${seoCollection.slug}`
+    : seoCategory
+      ? `/${CATALOG_ROOT}/${seoCategory.slug}`
+      : `/${CATALOG_ROOT}`;
+
   useDocumentMeta({
     title: meta.title,
     description: meta.description,
+    canonical: canonicalPath,
+    noIndex: isLegacyListUrl,
     jsonLd: buildBreadcrumbSchema(breadcrumbs),
   });
+
 
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
