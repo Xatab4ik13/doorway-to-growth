@@ -200,7 +200,7 @@ export const kashirskyNewsExtra: Article[] = [
         items: [
           { label: "Матовые и глянцевые покрытия", to: "news/matovye-i-glyantsevye-pokrytiya" },
           { label: "Как выбирать дверь в шоуруме", to: "news/kak-vybirat-dver-v-shourume" },
-          { label: "Коллекция ESTETICA", to: "catalog/collection/estetica" },
+          { label: "Коллекция ESTETICA", to: "catalog/mezhkomnatnye-dveri/estetica" },
           { label: "Шоурум на Каширском", to: "salon" },
         ],
       },
