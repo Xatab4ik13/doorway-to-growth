@@ -77,13 +77,35 @@ export default function StorefrontCatalog() {
       ? `/${CATALOG_ROOT}/${seoCategory.slug}`
       : `/${CATALOG_ROOT}`;
 
+  // Список товаров текущего раздела для ItemList-разметки (первые 30 позиций).
+  const itemListSchema = useMemo(() => {
+    if (isLegacyListUrl) return null;
+    const items = (products as any[]).slice(0, 30);
+    if (!items.length) return null;
+    return {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: meta.h1,
+      numberOfItems: items.length,
+      itemListElement: items.map((p, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: p.name,
+        url: getPageUrl(`/product/${p.slug}`),
+      })),
+    };
+  }, [products, meta.h1, isLegacyListUrl]);
+
   useDocumentMeta({
     title: meta.title,
     description: meta.description,
     canonical: canonicalPath,
     noIndex: isLegacyListUrl,
-    jsonLd: buildBreadcrumbSchema(breadcrumbs),
+    jsonLd: itemListSchema
+      ? [buildBreadcrumbSchema(breadcrumbs), itemListSchema]
+      : buildBreadcrumbSchema(breadcrumbs),
   });
+
 
 
 
