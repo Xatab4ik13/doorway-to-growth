@@ -15,8 +15,19 @@ const DOMAINS = [
 const STATIC_ROUTES = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
   { path: "/catalog", changefreq: "weekly", priority: "0.9" },
-  { path: "/catalog/mezhkomnatnye", changefreq: "weekly", priority: "0.9" },
-  { path: "/catalog/list", changefreq: "weekly", priority: "0.9" },
+  // Статические SEO-маршруты категорий
+  { path: "/catalog/mezhkomnatnye-dveri", changefreq: "weekly", priority: "0.9" },
+  { path: "/catalog/entrance-doors", changefreq: "weekly", priority: "0.9" },
+  { path: "/catalog/pogonazh", changefreq: "weekly", priority: "0.7" },
+  { path: "/catalog/furnitura", changefreq: "weekly", priority: "0.7" },
+  // Коллекции межкомнатных дверей
+  { path: "/catalog/mezhkomnatnye-dveri/estetica", changefreq: "weekly", priority: "0.8" },
+  { path: "/catalog/mezhkomnatnye-dveri/ghost", changefreq: "weekly", priority: "0.8" },
+  { path: "/catalog/mezhkomnatnye-dveri/heavy", changefreq: "weekly", priority: "0.8" },
+  { path: "/catalog/mezhkomnatnye-dveri/prime", changefreq: "weekly", priority: "0.8" },
+  { path: "/catalog/mezhkomnatnye-dveri/reflect", changefreq: "weekly", priority: "0.8" },
+  { path: "/catalog/mezhkomnatnye-dveri/maze", changefreq: "weekly", priority: "0.8" },
+
   { path: "/brand", changefreq: "monthly", priority: "0.8" },
   { path: "/news", changefreq: "weekly", priority: "0.7" },
 ];
