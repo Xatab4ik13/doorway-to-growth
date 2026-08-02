@@ -27,9 +27,6 @@ export function HeroSection({ site, banners }: Props) {
   const heroImage = getSiteMedia(site.slug).heroImage ?? heroBanner;
   return (
     <section className="relative h-screen min-h-[700px] overflow-hidden select-none bg-storefront-bg">
-      {/* SEO h1 — visually hidden but available to crawlers */}
-      <h1 className="sr-only">Скрытые двери Brandoors в {site.city}</h1>
-
       {/* Hero banner image */}
       <div className="absolute inset-0 z-0">
         <img src={heroImage} alt="Brandoors — скрытые двери в интерьере" className="w-full h-full object-cover" />

@@ -12,6 +12,7 @@ import { AboutSection } from "@/components/storefront/AboutSection";
 import { ContactSection } from "@/components/storefront/ContactSection";
 import { PatternSection } from "@/components/storefront/PatternSection";
 import { useSiteSlug } from "@/hooks/useSiteSlug";
+import { buildHomeMeta } from "@/lib/catalogRoutes";
 
 export default function Storefront() {
   const { slug: urlSlug } = useParams<{ slug: string }>();
@@ -21,10 +22,14 @@ export default function Storefront() {
   const { data: banners = [] } = useStorefrontBanners(site?.id);
   const { data: staff = [] } = useStorefrontStaff(site?.id);
 
+  const homeMeta = buildHomeMeta(
+    site ? { slug: site.slug, name: site.name, city: site.city, district: site.district } : null
+  );
+
   useDocumentMeta({
-    title: site ? `${site.name} — Двери Brandoors в ${site.city}` : "Brandoors — Двери премиум-класса",
+    title: site ? homeMeta.title : "Brandoors — Двери премиум-класса",
     description: site
-      ? `Салон дверей Brandoors в ${site.district || site.city}. ${site.address ? `Адрес: ${site.city}, ${site.address}.` : ""} ${site.phone ? `Тел: ${site.phone}` : ""}`
+      ? homeMeta.description
       : "Межкомнатные и входные двери премиум-класса от Brandoors",
     jsonLd: site
       ? [buildOrganizationSchema(), buildLocalBusinessSchema(site)]
@@ -55,6 +60,22 @@ export default function Storefront() {
   return (
     <StorefrontLayout site={site}>
       <HeroSection site={site} banners={banners} />
+
+      {/* SEO-вступление: уникальный текст и H1 для каждого домена */}
+      <section className="bg-[#07090d] px-6 py-14 md:px-12 lg:px-20">
+        <div className="mx-auto max-w-4xl text-center">
+          <h1 className="font-raleway text-2xl font-extralight uppercase tracking-[0.18em] text-[#f5f5f0] md:text-3xl">
+            {homeMeta.h1}
+          </h1>
+          <p className="mt-4 text-sm uppercase tracking-[0.22em] text-[#c5a572]">
+            {homeMeta.offer}
+          </p>
+          <p className="mt-6 text-sm leading-relaxed text-[#8a8a7a] md:text-base">
+            {homeMeta.intro}
+          </p>
+        </div>
+      </section>
+
       <PatternSection />
       <AboutSection site={site} staff={[]} />
       <ContactSection site={site} />
