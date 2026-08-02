@@ -8,6 +8,8 @@ import entranceImg from "@/assets/categories/entrance-doors.png";
 import pogonazhImg from "@/assets/categories/pogonazh.png";
 import furnituraImg from "@/assets/categories/furnitura.png";
 import { storeHref } from "@/lib/storeHref";
+import { categoryHref } from "@/lib/catalogRoutes";
+
 
 type CategoryCard = {
   slug: string;
