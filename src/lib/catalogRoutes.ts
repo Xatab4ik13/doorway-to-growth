@@ -193,11 +193,13 @@ export function buildCatalogMeta(
   const salon = siteShortName(site);
   const locality = siteLocality(site);
   const city = site?.city || "Москва";
+  // Предложный падеж города для естественных заголовков: «купить в Москве».
+  const cityIn = city.endsWith("а") ? `${city.slice(0, -1)}е` : city;
 
   if (collection) {
     return {
       h1: `${collection.name} — межкомнатные двери`,
-      title: `${collection.keyphrase} — купить в ${city}, салон ${salon}`,
+      title: `${collection.keyphrase} — купить в ${cityIn}, салон ${salon}`,
       description: `${collection.intro} Салон Brandoors ${salon}, ${locality}. Живая экспозиция, замер и расчёт стоимости.`,
     };
   }
@@ -205,10 +207,11 @@ export function buildCatalogMeta(
   if (category) {
     return {
       h1: category.name,
-      title: `${category.keyphrase} — купить в ${city}, салон ${salon}`,
+      title: `${category.keyphrase} — купить в ${cityIn}, салон ${salon}`,
       description: `${category.intro} Салон Brandoors ${salon}, ${locality}.`,
     };
   }
+
 
   return {
     h1: "Каталог",
