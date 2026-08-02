@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
@@ -11,7 +11,8 @@ import { getPageUrl } from "@/lib/seo";
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 export default function StorefrontNews() {
-  const slug = useSiteSlug();
+  const { slug: urlSlug } = useParams<{ slug?: string }>();
+  const slug = useSiteSlug(urlSlug);
   const { data: site, isLoading, error } = useSiteBySlug(slug);
 
   useDocumentMeta({

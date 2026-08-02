@@ -20,7 +20,7 @@ const NAV_ITEMS = [
   { label: "Новости", href: "news", isRoute: true },
   { label: "Отзывы", href: "#about", isRoute: false },
   { label: "О бренде", href: "brand", isRoute: true },
-  { label: "Контакты", href: "#contacts", isRoute: false },
+  { label: "Контакты", href: "salon", isRoute: true },
 ];
 
 export function HeroSection({ site, banners }: Props) {

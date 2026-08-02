@@ -17,20 +17,15 @@ export function getPageUrl(path?: string) {
 }
 
 export function buildOrganizationSchema() {
+  const origin = getOrigin();
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": `${origin}/#organization`,
     name: "Brandoors",
-    url: "https://brandoors.su",
-    logo: `${getOrigin()}/favicon.png`,
+    url: origin,
+    logo: `${origin}/favicon.png`,
     description: "Производитель межкомнатных и входных дверей премиум-класса",
-    sameAs: [
-      "https://brandoors.moscow",
-      "https://brandoors.online",
-      "https://brandoors.store",
-      "https://brandoors.pro",
-      "https://brandoors.su",
-    ],
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "sales",
@@ -51,7 +46,13 @@ interface LocalBusinessSite {
   longitude?: number | null;
 }
 
+/** Часы работы салонов — единый график торговых центров. */
+export const SALON_HOURS = [
+  { days: "Пн — Вс", time: "10:00 — 20:00" },
+];
+
 export function buildLocalBusinessSchema(site: LocalBusinessSite) {
+  const origin = getOrigin();
   const geo =
     site.latitude != null && site.longitude != null
       ? {
@@ -64,20 +65,46 @@ export function buildLocalBusinessSchema(site: LocalBusinessSite) {
   return {
     "@context": "https://schema.org",
     "@type": "Store",
+    "@id": `${origin}/#store`,
     name: site.name,
     description: `Салон дверей Brandoors в ${site.district || site.city}`,
-    url: getPageUrl("/"),
+    url: origin,
+    image: `${origin}/og-image.png`,
     telephone: site.phone,
     email: site.email,
+    priceRange: "₽₽₽",
+    currenciesAccepted: "RUB",
+    areaServed: {
+      "@type": "City",
+      name: site.city,
+    },
+    parentOrganization: { "@id": `${origin}/#organization` },
     address: {
       "@type": "PostalAddress",
       addressLocality: site.city,
       streetAddress: site.address || `${site.district || site.city}`,
       addressCountry: "RU",
     },
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday",
+        ],
+        opens: "10:00",
+        closes: "20:00",
+      },
+    ],
     ...(geo ? { geo } : {}),
   };
 }
+
 
 interface ProductData {
   slug: string;
