@@ -10,7 +10,9 @@ import {
   SALON_HOURS,
   buildBreadcrumbSchema,
   buildLocalBusinessSchema,
+  buildYandexMapsUrl,
 } from "@/lib/seo";
+
 import { CATEGORY_SEO, categoryHref } from "@/lib/catalogRoutes";
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
