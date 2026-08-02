@@ -8,6 +8,8 @@ import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
 import { storeHref } from "@/lib/storeHref";
 import { getPageUrl, buildBreadcrumbSchema } from "@/lib/seo";
 import { getArticle, getArticles } from "@/content/news";
+import { newsImage } from "@/content/news/media";
+
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const FONT = "'Onest', sans-serif";
