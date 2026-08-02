@@ -8,6 +8,8 @@ import { ArrowRight, Newspaper, Clock } from "lucide-react";
 import { storeHref } from "@/lib/storeHref";
 import { getPageUrl } from "@/lib/seo";
 import { getArticles } from "@/content/news";
+import { newsImage } from "@/content/news/media";
+
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
