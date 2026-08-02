@@ -22,6 +22,7 @@ const StorefrontCollectionSelect = lazy(() => import("./pages/StorefrontCollecti
 const StorefrontProduct = lazy(() => import("./pages/StorefrontProduct.tsx"));
 const StorefrontCart = lazy(() => import("./pages/StorefrontCart.tsx"));
 const StorefrontBrand = lazy(() => import("./pages/StorefrontBrand.tsx"));
+const StorefrontNews = lazy(() => import("./pages/StorefrontNews.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 const queryClient = new QueryClient({
