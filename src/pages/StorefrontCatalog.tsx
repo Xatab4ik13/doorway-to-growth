@@ -12,6 +12,16 @@ import brandoorsLogo from "@/assets/logo.png";
 import { resolveStorageUrl } from "@/lib/storageUrl";
 import { useCartStore } from "@/stores/useCartStore";
 import { storeHref } from "@/lib/storeHref";
+import {
+  CATALOG_ROOT,
+  CATEGORY_SEO,
+  COLLECTIONS_PARENT_SLUG,
+  buildCatalogMeta,
+  collectionSlugByName,
+  getCategorySeo,
+  getCollectionSeo,
+} from "@/lib/catalogRoutes";
+
 
 const ITEMS_PER_PAGE = 16;
 
