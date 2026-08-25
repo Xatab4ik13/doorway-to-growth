@@ -18,7 +18,10 @@ export const BRAND_DOMAINS = [
   "brandoors.store",
 ];
 
-export const BRAND_SAME_AS = BRAND_DOMAINS.map((d) => `https://${d}`);
+export const BRAND_SAME_AS = [
+  ...BRAND_DOMAINS.map((d) => `https://${d}`),
+  "https://vk.ru/vkbrandoors",
+];
 
 /** true — если текущий сайт и есть головной сайт бренда. */
 export function isBrandHost(host?: string) {
