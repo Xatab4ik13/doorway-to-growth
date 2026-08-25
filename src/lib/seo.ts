@@ -100,7 +100,8 @@ export function buildLocalBusinessSchema(site: LocalBusinessSite) {
       { "@type": "City", name: site.city },
       ...(site.district ? [{ "@type": "Place", name: site.district }] : []),
     ],
-    parentOrganization: { "@id": `${origin}/#organization` },
+    parentOrganization: { "@id": BRAND_ID, "@type": "Organization", name: BRAND_NAME, url: BRAND_URL },
+    brand: { "@id": BRAND_ID },
     address: {
       "@type": "PostalAddress",
       addressCountry: "RU",
