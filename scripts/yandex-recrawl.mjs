@@ -4,6 +4,7 @@
  * Требует переменную окружения YANDEX_OAUTH_TOKEN.
  *
  *   node scripts/yandex-recrawl.mjs             # приоритетные страницы (категории/салоны/новости)
+ *   node scripts/yandex-recrawl.mjs --news      # только /news и статьи
  *   node scripts/yandex-recrawl.mjs --quota     # только показать остаток квоты
  */
 import { readFileSync } from "node:fs";
@@ -19,6 +20,7 @@ if (!TOKEN) {
 const API = "https://api.webmaster.yandex.net/v4";
 const H = { Authorization: `OAuth ${TOKEN}`, "Content-Type": "application/json" };
 const QUOTA_ONLY = process.argv.includes("--quota");
+const NEWS_ONLY = process.argv.includes("--news");
 
 const DOMAINS = [
   "brandoors.moscow",
@@ -82,6 +84,7 @@ for (const domain of DOMAINS) {
     console.log(`  нет карты сайта ${file}`);
     continue;
   }
+  if (NEWS_ONLY) urls = urls.filter((u) => /\/news(\/|$)/.test(new URL(u).pathname));
   urls.sort((a, b) => priority(a) - priority(b) || a.length - b.length);
 
   let sent = 0;

@@ -6,6 +6,7 @@
  * Запуск (после деплоя, когда ключ уже доступен на проде):
  *   node scripts/indexnow.mjs            # только не-товарные страницы (быстро)
  *   node scripts/indexnow.mjs --all      # все URL из карт сайта
+ *   node scripts/indexnow.mjs --news     # только /news и статьи
  */
 import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
@@ -14,6 +15,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const KEY = readFileSync(resolve(ROOT, "public/indexnow-key.txt"), "utf8").trim();
 const ALL = process.argv.includes("--all");
+const NEWS = process.argv.includes("--news");
 
 const DOMAINS = [
   "brandoors.moscow",
@@ -37,7 +39,8 @@ for (const host of DOMAINS) {
   }
 
   let urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-  if (!ALL) urls = urls.filter((u) => !u.includes("/product/"));
+  if (NEWS) urls = urls.filter((u) => /\/news(\/|$)/.test(u));
+  else if (!ALL) urls = urls.filter((u) => !u.includes("/product/"));
   if (!urls.length) continue;
 
   for (const batch of chunk(urls, 10000)) {
