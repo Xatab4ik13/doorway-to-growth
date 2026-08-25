@@ -7,7 +7,9 @@ import { ConfirmDialog } from "@/components/crm/ConfirmDialog";
 import {
   Search, Plus, CheckSquare, Package, Trash2, SlidersHorizontal, X,
   Copy, EyeOff, Eye, LayoutGrid, Rows3, Image as ImageIcon, ChevronDown, ChevronRight, FolderTree,
+  Pencil, FolderPlus,
 } from "lucide-react";
+
 import { ProductDetail } from "@/components/crm/ProductDetail";
 import {
   useProducts, useCategories, useCreateProduct, useDeleteProduct, useUpdateProduct,
@@ -31,6 +33,14 @@ export function CatalogPage() {
   const createProduct = useCreateProduct();
   const deleteProduct = useDeleteProduct();
   const updateProduct = useUpdateProduct();
+  const createCategory = useCreateCategory();
+  const updateCategory = useUpdateCategory();
+  const deleteCategory = useDeleteCategory();
+
+  // Управление категориями
+  const [catModal, setCatModal] = useState<null | { mode: "create" | "edit"; id?: string; name: string; parentId: string }>(null);
+  const [catDeleteTarget, setCatDeleteTarget] = useState<any | null>(null);
+
 
   const [density, setDensity] = useState<"comfy" | "compact">("comfy");
   const [search, setSearch] = useState("");
