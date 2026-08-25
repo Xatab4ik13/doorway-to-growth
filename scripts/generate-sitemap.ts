@@ -1,7 +1,7 @@
 import { writeFileSync, existsSync, mkdirSync } from "fs";
 import { resolve } from "path";
-import { createClient } from "@supabase/supabase-js";
 import { NEWS_BY_SITE } from "../src/content/news";
+import PRODUCT_SNAPSHOT from "../src/content/products-snapshot.json";
 
 // Домен → slug салона (у каждого домена свой набор статей)
 const DOMAIN_TO_SITE: Record<string, string> = {
@@ -88,45 +88,20 @@ function buildUrlset(entries: SitemapEntry[]) {
   ].join("\n");
 }
 
-async function fetchProducts() {
-  const url = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
-  const key = process.env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
-
-  if (!url || !key) {
-    console.warn("Supabase credentials not found. Generating sitemap with static routes only.");
-    return [];
-  }
-
-  const supabase = createClient(url, key);
-  const PAGE = 1000;
-  const all: { slug: string }[] = [];
-
-  for (let from = 0; ; from += PAGE) {
-    const { data, error } = await supabase
-      .from("products")
-      .select("slug")
-      .eq("is_active", true)
-      .order("sort_order", { ascending: true })
-      .order("id", { ascending: true })
-      .range(from, from + PAGE - 1);
-
-    if (error) {
-      console.warn("Failed to fetch products:", error.message);
-      break;
-    }
-    if (!data || data.length === 0) break;
-    all.push(...data);
-    if (data.length < PAGE) break;
-  }
-
-  return all;
+/**
+ * Источник товаров — статический снимок каталога (scripts/snapshot-products.ts).
+ * На прод-VM переменные Supabase при сборке недоступны, поэтому обращаться к БД
+ * здесь нельзя: sitemap иначе терял бы все карточки товаров.
+ */
+function fetchProducts(): { slug: string }[] {
+  return (PRODUCT_SNAPSHOT as { slug: string }[]).filter((p) => p.slug);
 }
 
 async function main() {
   const publicDir = resolve("public");
   if (!existsSync(publicDir)) mkdirSync(publicDir, { recursive: true });
 
-  const products = await fetchProducts();
+  const products = fetchProducts();
   const date = today();
   const indexEntries: string[] = [];
 
@@ -135,7 +110,6 @@ async function main() {
       loc: `https://${domain}${r.path}`,
       changefreq: r.changefreq,
       priority: r.priority,
-      lastmod: date,
     }));
 
     const siteSlug = DOMAIN_TO_SITE[domain];
@@ -154,7 +128,6 @@ async function main() {
         loc: `https://${domain}/product/${product.slug}`,
         changefreq: "weekly",
         priority: "0.7",
-        lastmod: date,
       });
     }
 
@@ -172,7 +145,7 @@ async function main() {
     indexEntries
       .map(
         (loc) =>
-          `  <sitemap>\n    <loc>${escapeXml(loc)}</loc>\n    <lastmod>${date}</lastmod>\n  </sitemap>`
+          `  <sitemap>\n    <loc>${escapeXml(loc)}</loc>\n  </sitemap>`
       )
       .join("\n"),
     `</sitemapindex>`,
