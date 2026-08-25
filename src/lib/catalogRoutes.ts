@@ -22,6 +22,49 @@ export const CATALOG_ROOT = "catalog";
 /** Родительская категория, у которой есть промежуточная страница выбора коллекций. */
 export const COLLECTIONS_PARENT_SLUG = "mezhkomnatnye-dveri";
 
+/** Родительская категория входных дверей — тоже имеет страницу выбора подкатегории. */
+export const ENTRANCE_PARENT_SLUG = "entrance-doors";
+
+export interface EntranceSubcategory {
+  slug: string;
+  /** Название для карточки, H1 и хлебных крошек. */
+  name: string;
+  /** Название подкатегории в БД. null — вся категория целиком. */
+  dbName: string | null;
+  subtitle: string;
+  intro: string;
+}
+
+export const ENTRANCE_SUBCATEGORIES: EntranceSubcategory[] = [
+  {
+    slug: "standartnye",
+    name: "Входные двери",
+    dbName: null,
+    subtitle: "Стальные двери в квартиру",
+    intro:
+      "Входные двери Brandoors на стальном каркасе с двойным контуром уплотнения, двумя замками разных систем и отделкой под интерьер квартиры.",
+  },
+  {
+    slug: "termo",
+    name: "Термо",
+    dbName: "Термо",
+    subtitle: "С терморазрывом для улицы",
+    intro:
+      "Входные двери Brandoors с терморазрывом: полотно разделено на два контура, поэтому дверь не промерзает и не собирает конденсат на входе в дом.",
+  },
+];
+
+export function getEntranceSub(slug?: string | null): EntranceSubcategory | null {
+  if (!slug) return null;
+  return ENTRANCE_SUBCATEGORIES.find((s) => s.slug === slug) ?? null;
+}
+
+export function entranceSubHref(siteSlug: string | null | undefined, subSlug: string) {
+  return storeHref(siteSlug, `${CATALOG_ROOT}/${ENTRANCE_PARENT_SLUG}/${subSlug}`);
+}
+
+
+
 export interface CategorySeo {
   slug: string;
   /** Название категории для H1 и хлебных крошек. */
