@@ -184,8 +184,10 @@ export function buildProductSchema(product: ProductData) {
     url: pageUrl,
     brand: {
       "@type": "Brand",
-      name: "Brandoors",
+      name: BRAND_NAME,
+      url: BRAND_URL,
     },
+    manufacturer: { "@id": BRAND_ID },
     category: product.categoryName || "Двери",
     sku: product.sku || product.slug,
     mpn: product.sku || product.slug,
