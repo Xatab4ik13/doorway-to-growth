@@ -687,8 +687,59 @@ export function CatalogPage() {
         </div>
       </Modal>
 
+      {/* Категория: создание / редактирование */}
+      <Modal
+        open={!!catModal}
+        onClose={() => setCatModal(null)}
+        title={catModal?.mode === "edit" ? "Редактировать категорию" : "Новая категория"}
+        footer={
+          <>
+            <button onClick={() => setCatModal(null)} className="h-9 px-4 rounded-xl border border-border text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors">Отмена</button>
+            <button onClick={handleSaveCategory} disabled={!catModal?.name.trim()} className="h-9 px-4 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-40">Сохранить</button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-[10px] font-medium uppercase tracking-wider text-muted-foreground mb-1">Название *</label>
+            <input
+              value={catModal?.name ?? ""}
+              onChange={(e) => setCatModal((m) => (m ? { ...m, name: e.target.value } : m))}
+              placeholder="Термо"
+              className={inputCls}
+              autoFocus
+            />
+          </div>
+          <div>
+            <label className="block text-[10px] font-medium uppercase tracking-wider text-muted-foreground mb-1">Родительская категория</label>
+            <select
+              value={catModal?.parentId ?? ""}
+              onChange={(e) => setCatModal((m) => (m ? { ...m, parentId: e.target.value } : m))}
+              className={selectCls}
+            >
+              <option value="">— Основной раздел —</option>
+              {roots.filter((r: any) => r.id !== catModal?.id).map((r: any) => (
+                <option key={r.id} value={r.id}>{r.name}</option>
+              ))}
+            </select>
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              Выберите раздел, чтобы создать подкатегорию (например «Входные двери» → «Термо»).
+            </p>
+          </div>
+        </div>
+      </Modal>
+
       <ConfirmDialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={() => deleteTarget && handleDelete(deleteTarget)} title="Удалить товар" description={`Удалить ${deleteTarget?.name}? Это действие нельзя отменить.`} confirmLabel="Удалить" destructive />
       <ConfirmDialog open={bulkDeleteOpen} onClose={() => setBulkDeleteOpen(false)} onConfirm={handleBulkDelete} title="Массовое удаление" description={`Удалить выбранные товары (${selectedIds.size} шт.)? Это действие нельзя отменить.`} confirmLabel="Удалить все" destructive />
+      <ConfirmDialog
+        open={!!catDeleteTarget}
+        onClose={() => setCatDeleteTarget(null)}
+        onConfirm={handleDeleteCategory}
+        title="Удалить категорию"
+        description={`Удалить категорию «${catDeleteTarget?.name}»? Товары останутся в каталоге, но потеряют категорию.`}
+        confirmLabel="Удалить"
+        destructive
+      />
     </div>
   );
 }
@@ -696,6 +747,7 @@ export function CatalogPage() {
 // ============ Строка категории в правой панели ============
 function CategoryRow({
   label, count, active, onClick, expandable, expanded, onToggleExpand, bold, indent, muted, emphasis,
+  onAddChild, onEdit, onDelete,
 }: {
   label: string;
   count: number;
@@ -708,7 +760,11 @@ function CategoryRow({
   indent?: boolean;
   muted?: boolean;
   emphasis?: boolean;
+  onAddChild?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }) {
+
   return (
     <div className={`group flex items-stretch mx-1.5 rounded-lg transition-colors ${
       active ? "bg-foreground text-primary-foreground" : "hover:bg-muted/60 text-foreground"
