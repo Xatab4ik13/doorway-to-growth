@@ -36,6 +36,16 @@ export function StorefrontFooter({ site }: Props) {
             >
               Межкомнатные и входные двери премиум-класса. Официальный салон в {site.district || site.city}.
             </p>
+            {!isBrandHost() && (
+              <a
+                href={BRAND_URL}
+                className="inline-flex items-center gap-2 mt-5 text-sm hover:opacity-80 transition-opacity"
+                style={{ color: "rgba(207,187,150,0.75)", fontFamily: "'Onest', sans-serif" }}
+              >
+                <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                Официальный сайт бренда Brandoors — {BRAND_HOST}
+              </a>
+            )}
           </div>
 
           {/* Contacts */}
