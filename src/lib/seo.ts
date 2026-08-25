@@ -3,6 +3,8 @@
  * All URLs are built from window.location.origin so they stay correct
  * for each custom domain (brandoors.moscow, brandoors.online, etc.).
  */
+import { BRAND_ID, BRAND_NAME, BRAND_SAME_AS, BRAND_URL } from "@/lib/brand";
+
 
 export function getOrigin() {
   if (typeof window !== "undefined") return window.location.origin;
