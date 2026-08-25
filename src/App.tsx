@@ -91,6 +91,7 @@ function CatalogCategoryRoute() {
   const { categorySlug } = useParams<{ categorySlug: string }>();
 
   if (categorySlug === COLLECTIONS_PARENT_SLUG) return <StorefrontCollectionSelect />;
+  if (categorySlug === ENTRANCE_PARENT_SLUG) return <StorefrontEntranceSelect />;
   if (categorySlug && getCategorySeo(categorySlug)) return <StorefrontCatalog />;
   return <NotFound />;
 }
