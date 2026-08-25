@@ -310,15 +310,18 @@ export default function StorefrontCatalog() {
 
   // Products that match the current category — used to derive which filters make sense
   const productsInCategory = useMemo(() => {
-    if (!selectedCategory) return products as any[];
+    const base = entranceExcludedIds
+      ? (products as any[]).filter((p) => !entranceExcludedIds.has(p.category_id))
+      : (products as any[]);
+    if (!selectedCategory) return base;
     const children = getChildren(selectedCategory);
     if (children.length > 0) {
       const ids = [selectedCategory, ...children.map((c) => c.id)];
-      return (products as any[]).filter((p) => ids.includes(p.category_id));
+      return base.filter((p) => ids.includes(p.category_id));
     }
-    return (products as any[]).filter((p) => p.category_id === selectedCategory);
+    return base.filter((p) => p.category_id === selectedCategory);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [products, selectedCategory, categories]);
+  }, [products, selectedCategory, categories, entranceExcludedIds]);
 
   // Colors are derived strictly from product_images.variant_key — i.e. colors that
   // have an actual photo for the product. This makes the filter list match reality
@@ -355,6 +358,10 @@ export default function StorefrontCatalog() {
   // Filter
   const filtered = useMemo(() => {
     let result = [...(products as any[])];
+
+    if (entranceExcludedIds) {
+      result = result.filter((p) => !entranceExcludedIds.has(p.category_id));
+    }
 
     if (selectedCategory) {
       const children = getChildren(selectedCategory);
@@ -406,7 +413,7 @@ export default function StorefrontCatalog() {
     }
 
     return result;
-  }, [products, categories, selectedCategory, sortBy, selectedColors, selectedGlazings]);
+  }, [products, categories, selectedCategory, sortBy, selectedColors, selectedGlazings, entranceExcludedIds]);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
