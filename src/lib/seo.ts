@@ -3,6 +3,8 @@
  * All URLs are built from window.location.origin so they stay correct
  * for each custom domain (brandoors.moscow, brandoors.online, etc.).
  */
+import { BRAND_ID, BRAND_NAME, BRAND_SAME_AS, BRAND_URL } from "@/lib/brand";
+
 
 export function getOrigin() {
   if (typeof window !== "undefined") return window.location.origin;
@@ -17,14 +19,14 @@ export function getPageUrl(path?: string) {
 }
 
 export function buildOrganizationSchema() {
-  const origin = getOrigin();
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "@id": `${origin}/#organization`,
-    name: "Brandoors",
-    url: origin,
-    logo: `${origin}/favicon.png`,
+    "@id": BRAND_ID,
+    name: BRAND_NAME,
+    url: BRAND_URL,
+    logo: `${BRAND_URL}/favicon.png`,
+    sameAs: BRAND_SAME_AS,
     description: "Производитель межкомнатных и входных дверей премиум-класса",
     contactPoint: {
       "@type": "ContactPoint",
@@ -98,7 +100,8 @@ export function buildLocalBusinessSchema(site: LocalBusinessSite) {
       { "@type": "City", name: site.city },
       ...(site.district ? [{ "@type": "Place", name: site.district }] : []),
     ],
-    parentOrganization: { "@id": `${origin}/#organization` },
+    parentOrganization: { "@id": BRAND_ID, "@type": "Organization", name: BRAND_NAME, url: BRAND_URL },
+    brand: { "@id": BRAND_ID },
     address: {
       "@type": "PostalAddress",
       addressCountry: "RU",
@@ -181,8 +184,10 @@ export function buildProductSchema(product: ProductData) {
     url: pageUrl,
     brand: {
       "@type": "Brand",
-      name: "Brandoors",
+      name: BRAND_NAME,
+      url: BRAND_URL,
     },
+    manufacturer: { "@id": BRAND_ID },
     category: product.categoryName || "Двери",
     sku: product.sku || product.slug,
     mpn: product.sku || product.slug,

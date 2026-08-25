@@ -30,6 +30,7 @@ import {
 import { NEWS_BY_SITE } from "../src/content/news";
 import type { Article } from "../src/content/news";
 import PRODUCT_SNAPSHOT from "../src/content/products-snapshot.json";
+import { BRAND_ID, BRAND_NAME, BRAND_URL, BRAND_HOST, BRAND_SAME_AS } from "../src/lib/brand";
 
 /** Снимок каталога: карточки товаров пререндерятся без обращения к БД. */
 interface SnapshotProduct {
@@ -139,11 +140,26 @@ interface PageSpec {
   jsonLd?: Record<string, unknown>[];
 }
 
+/** Единая Organization бренда: все домены сходятся на brandoors.online. */
+function organization() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": BRAND_ID,
+    name: BRAND_NAME,
+    url: BRAND_URL,
+    logo: `${BRAND_URL}/favicon.png`,
+    sameAs: BRAND_SAME_AS,
+    description: "Производитель межкомнатных и входных дверей премиум-класса",
+  };
+}
+
 function localBusiness(site: SiteInfo) {
   const origin = `https://${site.domain}`;
   return {
     "@context": "https://schema.org",
     "@type": "FurnitureStore",
+    "@id": `${origin}/#store`,
     name: site.name,
     url: origin,
     telephone: site.phone,
@@ -155,6 +171,13 @@ function localBusiness(site: SiteInfo) {
       addressCountry: "RU",
     },
     areaServed: site.city,
+    brand: { "@id": BRAND_ID },
+    parentOrganization: {
+      "@id": BRAND_ID,
+      "@type": "Organization",
+      name: BRAND_NAME,
+      url: BRAND_URL,
+    },
   };
 }
 
@@ -217,7 +240,7 @@ function pagesForSite(site: SiteInfo): PageSpec[] {
       { href: "/brand", label: "О бренде Brandoors" },
       { href: "/news", label: "Статьи и новости" },
     ],
-    jsonLd: [localBusiness(site)],
+    jsonLd: [organization(), localBusiness(site)],
   });
 
   // Корень каталога
@@ -321,6 +344,7 @@ function pagesForSite(site: SiteInfo): PageSpec[] {
       `Посмотреть продукцию вживую можно в салоне ${salon}: ${site.address}.`,
     ],
     links: [...catalogLinks, { href: "/salon", label: `Салон ${salon}` }],
+    jsonLd: [organization()],
   });
 
   // Лента статей
@@ -356,11 +380,13 @@ function pagesForSite(site: SiteInfo): PageSpec[] {
           dateModified: article.date,
           inLanguage: "ru-RU",
           mainEntityOfPage: `${origin}/news/${article.slug}`,
-          author: { "@type": "Organization", name: "Brandoors" },
+          author: { "@id": BRAND_ID, "@type": "Organization", name: BRAND_NAME, url: BRAND_URL },
           publisher: {
+            "@id": BRAND_ID,
             "@type": "Organization",
-            name: "Brandoors",
-            logo: { "@type": "ImageObject", url: `${origin}/favicon.png` },
+            name: BRAND_NAME,
+            url: BRAND_URL,
+            logo: { "@type": "ImageObject", url: `${BRAND_URL}/favicon.png` },
           },
         },
         breadcrumbs(origin, [
@@ -421,7 +447,8 @@ function pagesForSite(site: SiteInfo): PageSpec[] {
           name: product.name,
           description: meta.description,
           category: groupName,
-          brand: { "@type": "Brand", name: "Brandoors" },
+          brand: { "@type": "Brand", name: BRAND_NAME, url: BRAND_URL },
+          manufacturer: { "@id": BRAND_ID, "@type": "Organization", name: BRAND_NAME, url: BRAND_URL },
           url: `${origin}${path}`,
           offers: {
             "@type": "Offer",
@@ -445,7 +472,7 @@ function pagesForSite(site: SiteInfo): PageSpec[] {
 /*  Генерация HTML                                                     */
 /* ------------------------------------------------------------------ */
 
-function renderBody(page: PageSpec): string {
+function renderBody(page: PageSpec, site: SiteInfo): string {
   const blocks = page.body
     .map((line) =>
       line.startsWith("## ")
@@ -454,7 +481,16 @@ function renderBody(page: PageSpec): string {
     )
     .join("\n      ");
 
-  const links = page.links
+  // Дилерские домены ссылаются на головной сайт бренда.
+  const allLinks =
+    site.domain === BRAND_HOST
+      ? page.links
+      : [
+          ...page.links,
+          { href: BRAND_URL, label: `Официальный сайт бренда Brandoors — ${BRAND_HOST}` },
+        ];
+
+  const links = allLinks
     .map((l) => `<li><a href="${esc(l.href)}">${esc(l.label)}</a></li>`)
     .join("\n        ");
 
@@ -519,7 +555,7 @@ function renderPage(template: string, site: SiteInfo, page: PageSpec): string {
 
   html = html.replace(
     /<div id="root"><\/div>/,
-    `<div id="root">${renderBody(page)}</div>`
+    `<div id="root">${renderBody(page, site)}</div>`
   );
 
   return html;
@@ -548,7 +584,37 @@ function main() {
     }
   }
 
+  writeDomainSitemaps();
+
   console.log(`[prerender] Сгенерировано ${count} HTML-страниц для ${SITES.length} доменов → dist/_pre/`);
+}
+
+/**
+ * Каждому домену — собственные /sitemap.xml и /robots.txt.
+ * Раньше со всех пяти доменов отдавался один общий sitemap-индекс со ссылками
+ * на чужие домены — поисковики такие карты игнорируют.
+ */
+function writeDomainSitemaps() {
+  for (const site of SITES) {
+    const origin = `https://${site.domain}`;
+    const src = resolve(DIST, `sitemap-${site.domain.replace(/\./g, "-")}.xml`);
+    if (!existsSync(src)) {
+      console.warn(`[prerender] нет карты сайта для ${site.domain} — пропускаю`);
+      continue;
+    }
+    const dir = resolve(OUT_ROOT, site.domain);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(resolve(dir, "sitemap.xml"), readFileSync(src, "utf-8"), "utf-8");
+
+    const robotsSrc = resolve(DIST, "robots.txt");
+    const robots = existsSync(robotsSrc) ? readFileSync(robotsSrc, "utf-8") : "User-agent: *\nAllow: /\n";
+    writeFileSync(
+      resolve(dir, "robots.txt"),
+      `${robots.trimEnd()}\n\nSitemap: ${origin}/sitemap.xml\n`,
+      "utf-8"
+    );
+  }
+  console.log(`[prerender] sitemap.xml и robots.txt записаны для ${SITES.length} доменов`);
 }
 
 main();

@@ -1,8 +1,9 @@
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
-import { Phone, Mail, MapPin } from "lucide-react";
+import { Phone, Mail, MapPin, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import brandoorsLogo from "@/assets/logo.png";
 import { storeHref } from "@/lib/storeHref";
+import { BRAND_HOST, BRAND_URL, isBrandHost } from "@/lib/brand";
 
 interface Props {
   site: StorefrontSite;
@@ -35,6 +36,16 @@ export function StorefrontFooter({ site }: Props) {
             >
               Межкомнатные и входные двери премиум-класса. Официальный салон в {site.district || site.city}.
             </p>
+            {!isBrandHost() && (
+              <a
+                href={BRAND_URL}
+                className="inline-flex items-center gap-2 mt-5 text-sm hover:opacity-80 transition-opacity"
+                style={{ color: "rgba(207,187,150,0.75)", fontFamily: "'Onest', sans-serif" }}
+              >
+                <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                Официальный сайт бренда Brandoors — {BRAND_HOST}
+              </a>
+            )}
           </div>
 
           {/* Contacts */}
