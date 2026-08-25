@@ -380,11 +380,13 @@ function pagesForSite(site: SiteInfo): PageSpec[] {
           dateModified: article.date,
           inLanguage: "ru-RU",
           mainEntityOfPage: `${origin}/news/${article.slug}`,
-          author: { "@type": "Organization", name: "Brandoors" },
+          author: { "@id": BRAND_ID, "@type": "Organization", name: BRAND_NAME, url: BRAND_URL },
           publisher: {
+            "@id": BRAND_ID,
             "@type": "Organization",
-            name: "Brandoors",
-            logo: { "@type": "ImageObject", url: `${origin}/favicon.png` },
+            name: BRAND_NAME,
+            url: BRAND_URL,
+            logo: { "@type": "ImageObject", url: `${BRAND_URL}/favicon.png` },
           },
         },
         breadcrumbs(origin, [
