@@ -344,6 +344,7 @@ function pagesForSite(site: SiteInfo): PageSpec[] {
       `Посмотреть продукцию вживую можно в салоне ${salon}: ${site.address}.`,
     ],
     links: [...catalogLinks, { href: "/salon", label: `Салон ${salon}` }],
+    jsonLd: [organization()],
   });
 
   // Лента статей
