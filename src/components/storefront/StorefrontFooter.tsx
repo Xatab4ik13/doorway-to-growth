@@ -1,8 +1,9 @@
 import { StorefrontSite } from "@/hooks/useSiteBySlug";
-import { Phone, Mail, MapPin } from "lucide-react";
+import { Phone, Mail, MapPin, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import brandoorsLogo from "@/assets/logo.png";
 import { storeHref } from "@/lib/storeHref";
+import { BRAND_HOST, BRAND_URL, isBrandHost } from "@/lib/brand";
 
 interface Props {
   site: StorefrontSite;
