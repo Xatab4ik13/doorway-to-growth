@@ -793,11 +793,34 @@ function CategoryRow({
         </span>
         <span className={`text-[11px] tabular-nums shrink-0 ${
           active ? "text-primary-foreground/80" : "text-muted-foreground"
-        }`}>
+        } ${(onEdit || onDelete || onAddChild) ? "group-hover:hidden" : ""}`}>
           {count}
         </span>
       </button>
+      {(onAddChild || onEdit || onDelete) && (
+        <div className={`hidden group-hover:flex items-center gap-0.5 pr-1.5 ${active ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
+          {onAddChild && (
+            <button onClick={(e) => { e.stopPropagation(); onAddChild(); }} title="Добавить подкатегорию"
+              className="flex h-6 w-6 items-center justify-center rounded-md hover:bg-muted/70 hover:text-foreground">
+              <FolderPlus className="h-3.5 w-3.5" />
+            </button>
+          )}
+          {onEdit && (
+            <button onClick={(e) => { e.stopPropagation(); onEdit(); }} title="Переименовать"
+              className="flex h-6 w-6 items-center justify-center rounded-md hover:bg-muted/70 hover:text-foreground">
+              <Pencil className="h-3.5 w-3.5" />
+            </button>
+          )}
+          {onDelete && (
+            <button onClick={(e) => { e.stopPropagation(); onDelete(); }} title="Удалить"
+              className="flex h-6 w-6 items-center justify-center rounded-md hover:bg-destructive/10 hover:text-destructive">
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
+      )}
     </div>
+
   );
 }
 
