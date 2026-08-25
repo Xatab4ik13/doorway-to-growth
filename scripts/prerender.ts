@@ -468,7 +468,7 @@ function pagesForSite(site: SiteInfo): PageSpec[] {
 /*  Генерация HTML                                                     */
 /* ------------------------------------------------------------------ */
 
-function renderBody(page: PageSpec): string {
+function renderBody(page: PageSpec, site: SiteInfo): string {
   const blocks = page.body
     .map((line) =>
       line.startsWith("## ")
@@ -477,7 +477,16 @@ function renderBody(page: PageSpec): string {
     )
     .join("\n      ");
 
-  const links = page.links
+  // Дилерские домены ссылаются на головной сайт бренда.
+  const allLinks =
+    site.domain === BRAND_HOST
+      ? page.links
+      : [
+          ...page.links,
+          { href: BRAND_URL, label: `Официальный сайт бренда Brandoors — ${BRAND_HOST}` },
+        ];
+
+  const links = allLinks
     .map((l) => `<li><a href="${esc(l.href)}">${esc(l.label)}</a></li>`)
     .join("\n        ");
 
