@@ -134,6 +134,35 @@ export function CatalogPage() {
     setFilterColor(""); setFilterGlazing(""); setFilterPriceMin(""); setFilterPriceMax(""); setFilterStatus("all");
   };
 
+  const handleSaveCategory = () => {
+    if (!catModal || !catModal.name.trim()) return;
+    const name = catModal.name.trim();
+    const parent_id = catModal.parentId || null;
+    if (catModal.mode === "create") {
+      const siblings = categories.filter((c: any) => (c.parent_id ?? null) === parent_id);
+      const sort_order = siblings.reduce((m: number, c: any) => Math.max(m, c.sort_order ?? 0), 0) + 1;
+      createCategory.mutate({ name, slug: slugify(name), parent_id, sort_order }, {
+        onSuccess: () => {
+          if (parent_id) setExpanded((prev) => new Set(prev).add(parent_id));
+          setCatModal(null);
+        },
+      });
+    } else if (catModal.id) {
+      updateCategory.mutate({ id: catModal.id, name, parent_id }, { onSuccess: () => setCatModal(null) });
+    }
+  };
+
+  const handleDeleteCategory = () => {
+    if (!catDeleteTarget) return;
+    deleteCategory.mutate(catDeleteTarget.id, {
+      onSuccess: () => {
+        if (activeCategoryKey === catDeleteTarget.id) setActiveCategoryKey(ALL_CATEGORY);
+        setCatDeleteTarget(null);
+      },
+    });
+  };
+
+
   const handleAdd = () => {
     if (!formName.trim()) return;
     const specs: Record<string, string> = {};
