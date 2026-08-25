@@ -1,7 +1,7 @@
 import { lazy, Suspense, useMemo } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, Navigate, useParams } from "react-router-dom";
-import { COLLECTIONS_PARENT_SLUG, getCategorySeo } from "@/lib/catalogRoutes";
+import { COLLECTIONS_PARENT_SLUG, ENTRANCE_PARENT_SLUG, getCategorySeo } from "@/lib/catalogRoutes";
 
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -21,6 +21,7 @@ const Storefront = lazy(() => import("./pages/Storefront.tsx"));
 const StorefrontCatalog = lazy(() => import("./pages/StorefrontCatalog.tsx"));
 const StorefrontCategorySelect = lazy(() => import("./pages/StorefrontCategorySelect.tsx"));
 const StorefrontCollectionSelect = lazy(() => import("./pages/StorefrontCollectionSelect.tsx"));
+const StorefrontEntranceSelect = lazy(() => import("./pages/StorefrontEntranceSelect.tsx"));
 const StorefrontProduct = lazy(() => import("./pages/StorefrontProduct.tsx"));
 const StorefrontCart = lazy(() => import("./pages/StorefrontCart.tsx"));
 const StorefrontBrand = lazy(() => import("./pages/StorefrontBrand.tsx"));
@@ -90,6 +91,7 @@ function CatalogCategoryRoute() {
   const { categorySlug } = useParams<{ categorySlug: string }>();
 
   if (categorySlug === COLLECTIONS_PARENT_SLUG) return <StorefrontCollectionSelect />;
+  if (categorySlug === ENTRANCE_PARENT_SLUG) return <StorefrontEntranceSelect />;
   if (categorySlug && getCategorySeo(categorySlug)) return <StorefrontCatalog />;
   return <NotFound />;
 }
