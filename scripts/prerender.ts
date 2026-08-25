@@ -30,6 +30,7 @@ import {
 import { NEWS_BY_SITE } from "../src/content/news";
 import type { Article } from "../src/content/news";
 import PRODUCT_SNAPSHOT from "../src/content/products-snapshot.json";
+import { BRAND_ID, BRAND_NAME, BRAND_URL, BRAND_HOST, BRAND_SAME_AS } from "../src/lib/brand";
 
 /** Снимок каталога: карточки товаров пререндерятся без обращения к БД. */
 interface SnapshotProduct {
