@@ -551,7 +551,7 @@ function renderPage(template: string, site: SiteInfo, page: PageSpec): string {
 
   html = html.replace(
     /<div id="root"><\/div>/,
-    `<div id="root">${renderBody(page)}</div>`
+    `<div id="root">${renderBody(page, site)}</div>`
   );
 
   return html;
