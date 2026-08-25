@@ -62,7 +62,9 @@ const hostsRes = await api(`/user/${userId}/hosts/`);
 const hosts = hostsRes.json.hosts || [];
 
 for (const domain of DOMAINS) {
-  const host = hosts.find((h) => h.ascii_host_url?.includes(domain));
+  const host =
+    hosts.find((h) => h.ascii_host_url === `https://${domain}/` && !h.main_mirror) ||
+    hosts.find((h) => h.ascii_host_url === `https://${domain}/`);
   if (!host) {
     console.log(`${domain}: хост не найден в Вебмастере`);
     continue;
