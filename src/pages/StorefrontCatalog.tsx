@@ -211,6 +211,16 @@ export default function StorefrontCatalog() {
   const displayedParents = lockedParent ? [lockedParent] : parentCategories;
   const categoriesBackHref = storeHref(slug, "catalog");
 
+  // Раздел «Входные двери» (без подкатегории) не должен показывать товары
+  // дочерних подкатегорий (Термо) — они живут на своей странице.
+  const entranceExcludedIds = useMemo(() => {
+    if (!entranceSub || entranceSub.dbName) return null;
+    const parent = (categories as any[]).find((c) => c.slug === ENTRANCE_PARENT_SLUG && !c.parent_id);
+    if (!parent) return null;
+    const ids = (categories as any[]).filter((c) => c.parent_id === parent.id).map((c) => c.id);
+    return ids.length ? new Set(ids) : null;
+  }, [entranceSub, categories]);
+
   // Don't count lockedParent (page context from ?category=) as a user-applied filter.
   const activeFiltersCount =
     (selectedCategory && selectedCategory !== lockedParent?.id ? 1 : 0) +
