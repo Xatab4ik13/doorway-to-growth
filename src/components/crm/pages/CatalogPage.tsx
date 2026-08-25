@@ -7,13 +7,17 @@ import { ConfirmDialog } from "@/components/crm/ConfirmDialog";
 import {
   Search, Plus, CheckSquare, Package, Trash2, SlidersHorizontal, X,
   Copy, EyeOff, Eye, LayoutGrid, Rows3, Image as ImageIcon, ChevronDown, ChevronRight, FolderTree,
+  Pencil, FolderPlus,
 } from "lucide-react";
+
 import { ProductDetail } from "@/components/crm/ProductDetail";
 import {
   useProducts, useCategories, useCreateProduct, useDeleteProduct, useUpdateProduct,
+  useCreateCategory, useUpdateCategory, useDeleteCategory,
   type Product,
 } from "@/hooks/useProducts";
 import { resolveStorageUrl } from "@/lib/storageUrl";
+
 
 const PAGE_SIZE = 24;
 
@@ -29,6 +33,14 @@ export function CatalogPage() {
   const createProduct = useCreateProduct();
   const deleteProduct = useDeleteProduct();
   const updateProduct = useUpdateProduct();
+  const createCategory = useCreateCategory();
+  const updateCategory = useUpdateCategory();
+  const deleteCategory = useDeleteCategory();
+
+  // Управление категориями
+  const [catModal, setCatModal] = useState<null | { mode: "create" | "edit"; id?: string; name: string; parentId: string }>(null);
+  const [catDeleteTarget, setCatDeleteTarget] = useState<any | null>(null);
+
 
   const [density, setDensity] = useState<"comfy" | "compact">("comfy");
   const [search, setSearch] = useState("");
@@ -121,6 +133,35 @@ export function CatalogPage() {
   const clearFilters = () => {
     setFilterColor(""); setFilterGlazing(""); setFilterPriceMin(""); setFilterPriceMax(""); setFilterStatus("all");
   };
+
+  const handleSaveCategory = () => {
+    if (!catModal || !catModal.name.trim()) return;
+    const name = catModal.name.trim();
+    const parent_id = catModal.parentId || null;
+    if (catModal.mode === "create") {
+      const siblings = categories.filter((c: any) => (c.parent_id ?? null) === parent_id);
+      const sort_order = siblings.reduce((m: number, c: any) => Math.max(m, c.sort_order ?? 0), 0) + 1;
+      createCategory.mutate({ name, slug: slugify(name), parent_id, sort_order }, {
+        onSuccess: () => {
+          if (parent_id) setExpanded((prev) => new Set(prev).add(parent_id));
+          setCatModal(null);
+        },
+      });
+    } else if (catModal.id) {
+      updateCategory.mutate({ id: catModal.id, name, parent_id }, { onSuccess: () => setCatModal(null) });
+    }
+  };
+
+  const handleDeleteCategory = () => {
+    if (!catDeleteTarget) return;
+    deleteCategory.mutate(catDeleteTarget.id, {
+      onSuccess: () => {
+        if (activeCategoryKey === catDeleteTarget.id) setActiveCategoryKey(ALL_CATEGORY);
+        setCatDeleteTarget(null);
+      },
+    });
+  };
+
 
   const handleAdd = () => {
     if (!formName.trim()) return;
@@ -521,6 +562,13 @@ export function CatalogPage() {
             <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
               <FolderTree className="h-3.5 w-3.5 text-muted-foreground" />
               <h4 className="text-xs font-semibold text-foreground">Категории</h4>
+              <button
+                onClick={() => setCatModal({ mode: "create", name: "", parentId: "" })}
+                title="Новая категория"
+                className="ml-auto flex h-6 w-6 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95 transition-colors"
+              >
+                <Plus className="h-3.5 w-3.5" />
+              </button>
             </div>
             <div className="max-h-[calc(100vh-160px)] overflow-y-auto py-1.5">
               <CategoryRow
@@ -544,6 +592,9 @@ export function CatalogPage() {
                       expandable={kids.length > 0}
                       expanded={isExp}
                       onToggleExpand={() => toggleExpanded(r.id)}
+                      onAddChild={() => setCatModal({ mode: "create", name: "", parentId: r.id })}
+                      onEdit={() => setCatModal({ mode: "edit", id: r.id, name: r.name, parentId: "" })}
+                      onDelete={() => setCatDeleteTarget(r)}
                       bold
                     />
                     {isExp && kids.map((k: any) => (
@@ -553,12 +604,15 @@ export function CatalogPage() {
                         count={countForCategory(k.id)}
                         active={activeCategoryKey === k.id}
                         onClick={() => { setActiveCategoryKey(k.id); setPage(1); }}
+                        onEdit={() => setCatModal({ mode: "edit", id: k.id, name: k.name, parentId: k.parent_id ?? "" })}
+                        onDelete={() => setCatDeleteTarget(k)}
                         indent
                       />
                     ))}
                   </div>
                 );
               })}
+
               {uncategorizedCount > 0 && (
                 <>
                   <div className="my-1 h-px bg-border mx-3" />
@@ -633,8 +687,59 @@ export function CatalogPage() {
         </div>
       </Modal>
 
+      {/* Категория: создание / редактирование */}
+      <Modal
+        open={!!catModal}
+        onClose={() => setCatModal(null)}
+        title={catModal?.mode === "edit" ? "Редактировать категорию" : "Новая категория"}
+        footer={
+          <>
+            <button onClick={() => setCatModal(null)} className="h-9 px-4 rounded-xl border border-border text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-colors">Отмена</button>
+            <button onClick={handleSaveCategory} disabled={!catModal?.name.trim()} className="h-9 px-4 rounded-xl bg-foreground text-xs font-medium text-primary-foreground hover:bg-foreground/90 active:scale-95 transition-colors disabled:opacity-40">Сохранить</button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-[10px] font-medium uppercase tracking-wider text-muted-foreground mb-1">Название *</label>
+            <input
+              value={catModal?.name ?? ""}
+              onChange={(e) => setCatModal((m) => (m ? { ...m, name: e.target.value } : m))}
+              placeholder="Термо"
+              className={inputCls}
+              autoFocus
+            />
+          </div>
+          <div>
+            <label className="block text-[10px] font-medium uppercase tracking-wider text-muted-foreground mb-1">Родительская категория</label>
+            <select
+              value={catModal?.parentId ?? ""}
+              onChange={(e) => setCatModal((m) => (m ? { ...m, parentId: e.target.value } : m))}
+              className={selectCls}
+            >
+              <option value="">— Основной раздел —</option>
+              {roots.filter((r: any) => r.id !== catModal?.id).map((r: any) => (
+                <option key={r.id} value={r.id}>{r.name}</option>
+              ))}
+            </select>
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              Выберите раздел, чтобы создать подкатегорию (например «Входные двери» → «Термо»).
+            </p>
+          </div>
+        </div>
+      </Modal>
+
       <ConfirmDialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={() => deleteTarget && handleDelete(deleteTarget)} title="Удалить товар" description={`Удалить ${deleteTarget?.name}? Это действие нельзя отменить.`} confirmLabel="Удалить" destructive />
       <ConfirmDialog open={bulkDeleteOpen} onClose={() => setBulkDeleteOpen(false)} onConfirm={handleBulkDelete} title="Массовое удаление" description={`Удалить выбранные товары (${selectedIds.size} шт.)? Это действие нельзя отменить.`} confirmLabel="Удалить все" destructive />
+      <ConfirmDialog
+        open={!!catDeleteTarget}
+        onClose={() => setCatDeleteTarget(null)}
+        onConfirm={handleDeleteCategory}
+        title="Удалить категорию"
+        description={`Удалить категорию «${catDeleteTarget?.name}»? Товары останутся в каталоге, но потеряют категорию.`}
+        confirmLabel="Удалить"
+        destructive
+      />
     </div>
   );
 }
@@ -642,6 +747,7 @@ export function CatalogPage() {
 // ============ Строка категории в правой панели ============
 function CategoryRow({
   label, count, active, onClick, expandable, expanded, onToggleExpand, bold, indent, muted, emphasis,
+  onAddChild, onEdit, onDelete,
 }: {
   label: string;
   count: number;
@@ -654,7 +760,11 @@ function CategoryRow({
   indent?: boolean;
   muted?: boolean;
   emphasis?: boolean;
+  onAddChild?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }) {
+
   return (
     <div className={`group flex items-stretch mx-1.5 rounded-lg transition-colors ${
       active ? "bg-foreground text-primary-foreground" : "hover:bg-muted/60 text-foreground"
@@ -683,11 +793,34 @@ function CategoryRow({
         </span>
         <span className={`text-[11px] tabular-nums shrink-0 ${
           active ? "text-primary-foreground/80" : "text-muted-foreground"
-        }`}>
+        } ${(onEdit || onDelete || onAddChild) ? "group-hover:hidden" : ""}`}>
           {count}
         </span>
       </button>
+      {(onAddChild || onEdit || onDelete) && (
+        <div className={`hidden group-hover:flex items-center gap-0.5 pr-1.5 ${active ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
+          {onAddChild && (
+            <button onClick={(e) => { e.stopPropagation(); onAddChild(); }} title="Добавить подкатегорию"
+              className="flex h-6 w-6 items-center justify-center rounded-md hover:bg-muted/70 hover:text-foreground">
+              <FolderPlus className="h-3.5 w-3.5" />
+            </button>
+          )}
+          {onEdit && (
+            <button onClick={(e) => { e.stopPropagation(); onEdit(); }} title="Переименовать"
+              className="flex h-6 w-6 items-center justify-center rounded-md hover:bg-muted/70 hover:text-foreground">
+              <Pencil className="h-3.5 w-3.5" />
+            </button>
+          )}
+          {onDelete && (
+            <button onClick={(e) => { e.stopPropagation(); onDelete(); }} title="Удалить"
+              className="flex h-6 w-6 items-center justify-center rounded-md hover:bg-destructive/10 hover:text-destructive">
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
+      )}
     </div>
+
   );
 }
 

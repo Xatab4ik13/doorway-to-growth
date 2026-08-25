@@ -95,11 +95,47 @@ export function useCategories() {
 export function useCreateCategory() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (cat: { name: string; slug: string; description?: string; parent_id?: string }) => {
+    mutationFn: async (cat: { name: string; slug: string; description?: string; parent_id?: string | null; sort_order?: number }) => {
       const { data, error } = await supabase.from("categories").insert(cat).select().single();
       if (error) throw error;
       return data;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["categories"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["categories"] });
+      toast({ title: "Категория добавлена" });
+    },
+    onError: (e) => toast({ title: "Ошибка", description: e.message, variant: "destructive" }),
   });
 }
+
+export function useUpdateCategory() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...updates }: { id: string; name?: string; slug?: string; parent_id?: string | null; sort_order?: number }) => {
+      const { error } = await supabase.from("categories").update(updates).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["categories"] });
+      toast({ title: "Категория обновлена" });
+    },
+    onError: (e) => toast({ title: "Ошибка", description: e.message, variant: "destructive" }),
+  });
+}
+
+export function useDeleteCategory() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("categories").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["categories"] });
+      qc.invalidateQueries({ queryKey: ["products"] });
+      toast({ title: "Категория удалена", variant: "destructive" });
+    },
+    onError: (e) => toast({ title: "Ошибка", description: e.message, variant: "destructive" }),
+  });
+}
+
