@@ -50,10 +50,6 @@ interface SitemapEntry {
   lastmod?: string;
 }
 
-function today() {
-  return new Date().toISOString().split("T")[0];
-}
-
 function escapeXml(s: string) {
   return s
     .replace(/&/g, "&amp;")
@@ -102,7 +98,6 @@ async function main() {
   if (!existsSync(publicDir)) mkdirSync(publicDir, { recursive: true });
 
   const products = fetchProducts();
-  const date = today();
   const indexEntries: string[] = [];
 
   for (const domain of DOMAINS) {
