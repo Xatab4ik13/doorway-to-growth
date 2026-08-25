@@ -21,12 +21,37 @@ import {
   COLLECTIONS_PARENT_SLUG,
   buildHomeMeta,
   buildCatalogMeta,
+  buildProductMeta,
+  collectionSlugByName,
   siteShortName,
   siteLocality,
   type SiteMetaSource,
 } from "../src/lib/catalogRoutes";
 import { NEWS_BY_SITE } from "../src/content/news";
 import type { Article } from "../src/content/news";
+import PRODUCT_SNAPSHOT from "../src/content/products-snapshot.json";
+
+/** Снимок каталога: карточки товаров пререндерятся без обращения к БД. */
+interface SnapshotProduct {
+  slug: string;
+  name: string;
+  description: string | null;
+  rrp: number | null;
+  categoryName: string | null;
+  categorySlug: string | null;
+  parentName: string | null;
+  parentSlug: string | null;
+  rootSlug: string | null;
+  rootName: string | null;
+}
+
+/** Фурнитуру не пререндерим: 700+ мелких SKU дали бы тонкие однотипные страницы. */
+const PRERENDER_ROOTS = new Set(["mezhkomnatnye-dveri", "entrance-doors", "pogonazh"]);
+
+const PRODUCTS = (PRODUCT_SNAPSHOT as SnapshotProduct[]).filter((p) =>
+  PRERENDER_ROOTS.has(p.rootSlug || p.categorySlug || "")
+);
+
 
 const DIST = resolve(process.cwd(), "dist");
 const OUT_ROOT = resolve(DIST, "_pre");
