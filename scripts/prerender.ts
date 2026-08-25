@@ -1,0 +1,463 @@
+/**
+ * Статический пререндер storefront для поисковых роботов.
+ *
+ * Проблема: приложение — SPA. YandexBot получает одинаковый пустой index.html
+ * на все URL, из-за чего страницы попадают в SOFT_404 и «дубли».
+ *
+ * Решение: после сборки для каждого из пяти доменов и каждого статического
+ * маршрута кладём готовый HTML с уникальными <title>, description, canonical,
+ * OG, JSON-LD и текстовым содержимым внутри #root. React при загрузке
+ * перерисовывает #root, поэтому на поведение приложения это не влияет.
+ *
+ * Результат: dist/_pre/<домен>/<путь>/index.html
+ * nginx отдаёт его роботу и пользователю: try_files $uri /_pre/<домен>$uri/index.html /index.html;
+ */
+
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
+import { resolve, dirname } from "path";
+import {
+  CATEGORY_SEO,
+  COLLECTION_SEO,
+  COLLECTIONS_PARENT_SLUG,
+  buildHomeMeta,
+  buildCatalogMeta,
+  siteShortName,
+  siteLocality,
+  type SiteMetaSource,
+} from "../src/lib/catalogRoutes";
+import { NEWS_BY_SITE } from "../src/content/news";
+import type { Article } from "../src/content/news";
+
+const DIST = resolve(process.cwd(), "dist");
+const OUT_ROOT = resolve(DIST, "_pre");
+
+interface SiteInfo extends SiteMetaSource {
+  slug: string;
+  domain: string;
+  name: string;
+  city: string;
+  district: string;
+  address: string;
+  phone: string;
+}
+
+/** Данные салонов дублируются статикой: пререндер не должен зависеть от доступности БД. */
+const SITES: SiteInfo[] = [
+  {
+    slug: "scherbinka",
+    domain: "brandoors.moscow",
+    name: "BRANDOORS Щербинка",
+    city: "Москва",
+    district: "Щербинка",
+    address: "г. Щербинка, Квартал 120, д. 6, Павильон, 3 этаж",
+    phone: "+7 (964) 514-14-44",
+  },
+  {
+    slug: "kashirsky",
+    domain: "brandoors.online",
+    name: "BRANDOORS Каширский двор",
+    city: "Москва",
+    district: "Южный",
+    address: "Каширское шоссе, д. 19, к. 1, 4 этаж, пав. 4-А40, ТК «Каширский двор»",
+    phone: "+7 (999) 707-88-08",
+  },
+  {
+    slug: "roomer",
+    domain: "brandoors.store",
+    name: "BRANDOORS Roomer",
+    city: "Москва",
+    district: "ТЦ ROOMER",
+    address: "Ленинская слобода, д. 26, Галерея А, подиум 116, павильон А116",
+    phone: "+7 (965) 232-57-77",
+  },
+  {
+    slug: "dekorator",
+    domain: "brandoors.pro",
+    name: "BRANDOORS Декоратор",
+    city: "Москва",
+    district: "Юго-Восточный",
+    address: "Рязанский проспект, д. 2, к. 3, павильон 231, ТЦ «Декоратор»",
+    phone: "+7 (925) 486-82-24",
+  },
+  {
+    slug: "m2",
+    domain: "brandoors.su",
+    name: "BRANDOORS Метр Квадратный",
+    city: "Москва",
+    district: "Южнопортовый",
+    address: "Волгоградский проспект, д. 32, к. 25, ТЦ «Метр Квадратный», павильон 157, 1 этаж",
+    phone: "+7 (906) 771-00-66",
+  },
+];
+
+/* ------------------------------------------------------------------ */
+/*  Утилиты                                                            */
+/* ------------------------------------------------------------------ */
+
+function esc(s: string) {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+interface PageSpec {
+  path: string;
+  title: string;
+  description: string;
+  h1: string;
+  /** Абзацы и подзаголовки основного текста. */
+  body: string[];
+  /** Внутренние ссылки для обхода роботом. */
+  links: Array<{ href: string; label: string }>;
+  jsonLd?: Record<string, unknown>[];
+}
+
+function localBusiness(site: SiteInfo) {
+  const origin = `https://${site.domain}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "FurnitureStore",
+    name: site.name,
+    url: origin,
+    telephone: site.phone,
+    image: `${origin}/og-image.png`,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: site.address,
+      addressLocality: site.city,
+      addressCountry: "RU",
+    },
+    areaServed: site.city,
+  };
+}
+
+function breadcrumbs(origin: string, trail: Array<{ name: string; path: string }>) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: trail.map((t, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: t.name,
+      item: `${origin}${t.path}`,
+    })),
+  };
+}
+
+/** Текст статьи в плоские абзацы (без картинок и служебных блоков). */
+function articleBody(article: Article): string[] {
+  const out: string[] = [];
+  for (const b of article.blocks) {
+    if (b.type === "p" || b.type === "quote") out.push(b.text);
+    else if (b.type === "h2") out.push(`## ${b.text}`);
+    else if (b.type === "ul") out.push(...b.items.map((i) => `— ${i}`));
+  }
+  return out;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Список страниц для одного салона                                   */
+/* ------------------------------------------------------------------ */
+
+function pagesForSite(site: SiteInfo): PageSpec[] {
+  const origin = `https://${site.domain}`;
+  const salon = siteShortName(site);
+  const locality = siteLocality(site);
+  const pages: PageSpec[] = [];
+
+  const catalogLinks = [
+    { href: "/catalog/mezhkomnatnye-dveri", label: "Межкомнатные двери" },
+    { href: "/catalog/entrance-doors", label: "Входные двери" },
+    { href: "/catalog/pogonazh", label: "Погонаж" },
+    { href: "/catalog/furnitura", label: "Фурнитура" },
+  ];
+
+  // Главная
+  const home = buildHomeMeta(site);
+  pages.push({
+    path: "/",
+    title: home.title,
+    description: home.description,
+    h1: home.h1,
+    body: [
+      home.offer,
+      home.intro,
+      `Салон ${salon}: ${site.address}. Телефон ${site.phone}. Замер, доставка и установка по Москве и области.`,
+    ],
+    links: [
+      ...catalogLinks,
+      { href: "/salon", label: `Салон ${salon}` },
+      { href: "/brand", label: "О бренде Brandoors" },
+      { href: "/news", label: "Статьи и новости" },
+    ],
+    jsonLd: [localBusiness(site)],
+  });
+
+  // Корень каталога
+  const catalogMeta = buildCatalogMeta(site, null, null);
+  pages.push({
+    path: "/catalog",
+    title: catalogMeta.title,
+    description: catalogMeta.description,
+    h1: `${catalogMeta.h1} — салон ${salon}`,
+    body: [
+      `Каталог Brandoors в салоне ${salon}, ${locality}: межкомнатные и входные двери, погонаж и фурнитура собственного производства.`,
+      "Выберите категорию, чтобы посмотреть модели, покрытия и размерные сетки. Комплект под конкретный проём рассчитает менеджер салона после замера.",
+    ],
+    links: catalogLinks,
+    jsonLd: [
+      breadcrumbs(origin, [
+        { name: "Главная", path: "/" },
+        { name: "Каталог", path: "/catalog" },
+      ]),
+    ],
+  });
+
+  // Категории
+  for (const category of Object.values(CATEGORY_SEO)) {
+    const meta = buildCatalogMeta(site, category, null);
+    const path = `/catalog/${category.slug}`;
+    pages.push({
+      path,
+      title: meta.title,
+      description: meta.description,
+      h1: `${meta.h1} — салон ${salon}, ${locality}`,
+      body: [category.intro, ...(category.body ?? [])],
+      links:
+        category.slug === COLLECTIONS_PARENT_SLUG
+          ? Object.values(COLLECTION_SEO).map((c) => ({
+              href: `/catalog/${COLLECTIONS_PARENT_SLUG}/${c.slug}`,
+              label: c.keyphrase,
+            }))
+          : catalogLinks.filter((l) => l.href !== path),
+      jsonLd: [
+        breadcrumbs(origin, [
+          { name: "Главная", path: "/" },
+          { name: "Каталог", path: "/catalog" },
+          { name: category.name, path },
+        ]),
+      ],
+    });
+  }
+
+  // Коллекции межкомнатных дверей
+  for (const collection of Object.values(COLLECTION_SEO)) {
+    const meta = buildCatalogMeta(site, CATEGORY_SEO[COLLECTIONS_PARENT_SLUG], collection);
+    const path = `/catalog/${COLLECTIONS_PARENT_SLUG}/${collection.slug}`;
+    pages.push({
+      path,
+      title: meta.title,
+      description: meta.description,
+      h1: `${meta.h1} — салон ${salon}`,
+      body: [collection.intro, ...(collection.body ?? [])],
+      links: Object.values(COLLECTION_SEO)
+        .filter((c) => c.slug !== collection.slug)
+        .map((c) => ({
+          href: `/catalog/${COLLECTIONS_PARENT_SLUG}/${c.slug}`,
+          label: c.keyphrase,
+        })),
+      jsonLd: [
+        breadcrumbs(origin, [
+          { name: "Главная", path: "/" },
+          { name: "Каталог", path: "/catalog" },
+          { name: "Межкомнатные двери", path: `/catalog/${COLLECTIONS_PARENT_SLUG}` },
+          { name: collection.name, path },
+        ]),
+      ],
+    });
+  }
+
+  // Салон
+  pages.push({
+    path: "/salon",
+    title: `Салон дверей ${salon} — ${locality}, Москва — Brandoors`,
+    description: `Салон Brandoors ${salon}: ${site.address}. Экспозиция межкомнатных и входных дверей, замер, доставка и установка. Телефон ${site.phone}.`,
+    h1: `Салон Brandoors ${salon}`,
+    body: [
+      `Адрес: ${site.address}. Телефон: ${site.phone}.`,
+      `В экспозиции салона представлены полотна, короба, погонаж и фурнитура Brandoors. Покрытия и оттенки удобнее выбирать вживую: эмаль и шпон по-разному читаются при разном освещении.`,
+      "Менеджер помогает собрать комплект на всю квартиру в одном оттенке, рассчитывает стоимость с погонажем и фурнитурой, организует замер, доставку и установку.",
+    ],
+    links: [...catalogLinks, { href: "/news", label: "Статьи салона" }],
+    jsonLd: [localBusiness(site)],
+  });
+
+  // О бренде
+  pages.push({
+    path: "/brand",
+    title: `О бренде Brandoors — производство дверей — салон ${salon}`,
+    description: `Brandoors — российское производство межкомнатных и входных дверей премиум-класса: скрытый монтаж, эмаль, шпон, стекло. Салон ${salon}, ${locality}.`,
+    h1: "О бренде Brandoors",
+    body: [
+      "Brandoors — российский производитель межкомнатных и входных дверей премиум-класса. Собственное производство позволяет выпускать полотна нестандартной высоты, собирать скрытые короба и подбирать покрытия под конкретный интерьер.",
+      "Линейка включает шесть коллекций межкомнатных дверей — ESTETICA, GHOST, HEAVY, PRIME, REFLECT и MAZE, а также входные двери с терморазрывом, погонаж и фурнитуру в единой палитре.",
+      `Посмотреть продукцию вживую можно в салоне ${salon}: ${site.address}.`,
+    ],
+    links: [...catalogLinks, { href: "/salon", label: `Салон ${salon}` }],
+  });
+
+  // Лента статей
+  const articles = [...(NEWS_BY_SITE[site.slug] ?? [])].sort((a, b) => (a.date < b.date ? 1 : -1));
+  pages.push({
+    path: "/news",
+    title: `Статьи о дверях — салон ${salon}, ${locality}`,
+    description: `Статьи салона Brandoors ${salon}: подбор межкомнатных и входных дверей, покрытия, замер, монтаж и разборы коллекций.`,
+    h1: `Статьи и новости — салон ${salon}`,
+    body: articles.map((a) => `${a.title}. ${a.excerpt}`),
+    links: articles.map((a) => ({ href: `/news/${a.slug}`, label: a.title })),
+  });
+
+  // Статьи
+  for (const article of articles) {
+    pages.push({
+      path: `/news/${article.slug}`,
+      title: article.seoTitle,
+      description: article.description,
+      h1: article.title,
+      body: articleBody(article),
+      links: [
+        { href: "/news", label: "Все статьи салона" },
+        ...catalogLinks.slice(0, 2),
+      ],
+      jsonLd: [
+        {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: article.title,
+          description: article.description,
+          datePublished: article.date,
+          dateModified: article.date,
+          inLanguage: "ru-RU",
+          mainEntityOfPage: `${origin}/news/${article.slug}`,
+          author: { "@type": "Organization", name: "Brandoors" },
+          publisher: {
+            "@type": "Organization",
+            name: "Brandoors",
+            logo: { "@type": "ImageObject", url: `${origin}/favicon.png` },
+          },
+        },
+        breadcrumbs(origin, [
+          { name: "Главная", path: "/" },
+          { name: "Статьи", path: "/news" },
+          { name: article.title, path: `/news/${article.slug}` },
+        ]),
+      ],
+    });
+  }
+
+  return pages;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Генерация HTML                                                     */
+/* ------------------------------------------------------------------ */
+
+function renderBody(page: PageSpec): string {
+  const blocks = page.body
+    .map((line) =>
+      line.startsWith("## ")
+        ? `<h2>${esc(line.slice(3))}</h2>`
+        : `<p>${esc(line)}</p>`
+    )
+    .join("\n      ");
+
+  const links = page.links
+    .map((l) => `<li><a href="${esc(l.href)}">${esc(l.label)}</a></li>`)
+    .join("\n        ");
+
+  return [
+    `<div id="prerender-seo">`,
+    `      <h1>${esc(page.h1)}</h1>`,
+    `      ${blocks}`,
+    links ? `      <nav><ul>\n        ${links}\n      </ul></nav>` : "",
+    `    </div>`,
+  ]
+    .filter(Boolean)
+    .join("\n    ");
+}
+
+function renderPage(template: string, site: SiteInfo, page: PageSpec): string {
+  const origin = `https://${site.domain}`;
+  const url = `${origin}${page.path === "/" ? "/" : page.path}`;
+  const title = esc(page.title);
+  const description = esc(page.description);
+
+  let html = template;
+
+  html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${title}</title>`);
+  html = html.replace(
+    /<meta name="description"[^>]*>/,
+    `<meta name="description" content="${description}" />`
+  );
+  html = html.replace(
+    /<link rel="canonical"[^>]*>/,
+    `<link rel="canonical" href="${url}" />`
+  );
+  html = html.replace(
+    /<meta property="og:title"[^>]*>/,
+    `<meta property="og:title" content="${title}" />`
+  );
+  html = html.replace(
+    /<meta property="og:description"[^>]*>/,
+    `<meta property="og:description" content="${description}" />`
+  );
+  html = html.replace(
+    /<meta property="og:url"[^>]*>/,
+    `<meta property="og:url" content="${url}" />`
+  );
+  html = html.replace(
+    /<meta name="twitter:title"[^>]*>/,
+    `<meta name="twitter:title" content="${title}" />`
+  );
+  html = html.replace(
+    /<meta name="twitter:description"[^>]*>/,
+    `<meta name="twitter:description" content="${description}" />`
+  );
+
+  if (page.jsonLd?.length) {
+    const scripts = page.jsonLd
+      .map(
+        (data) =>
+          `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>`
+      )
+      .join("\n    ");
+    html = html.replace("</head>", `  ${scripts}\n  </head>`);
+  }
+
+  html = html.replace(
+    /<div id="root"><\/div>/,
+    `<div id="root">${renderBody(page)}</div>`
+  );
+
+  return html;
+}
+
+/* ------------------------------------------------------------------ */
+
+function main() {
+  const templatePath = resolve(DIST, "index.html");
+  if (!existsSync(templatePath)) {
+    console.warn("[prerender] dist/index.html не найден — пропускаю пререндер.");
+    return;
+  }
+  const template = readFileSync(templatePath, "utf-8");
+
+  let count = 0;
+  for (const site of SITES) {
+    for (const page of pagesForSite(site)) {
+      const dir =
+        page.path === "/"
+          ? resolve(OUT_ROOT, site.domain)
+          : resolve(OUT_ROOT, site.domain, page.path.replace(/^\//, ""));
+      mkdirSync(dir, { recursive: true });
+      writeFileSync(resolve(dir, "index.html"), renderPage(template, site, page), "utf-8");
+      count++;
+    }
+  }
+
+  console.log(`[prerender] Сгенерировано ${count} HTML-страниц для ${SITES.length} доменов → dist/_pre/`);
+}
+
+main();
