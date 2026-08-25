@@ -17,14 +17,14 @@ export function getPageUrl(path?: string) {
 }
 
 export function buildOrganizationSchema() {
-  const origin = getOrigin();
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "@id": `${origin}/#organization`,
-    name: "Brandoors",
-    url: origin,
-    logo: `${origin}/favicon.png`,
+    "@id": BRAND_ID,
+    name: BRAND_NAME,
+    url: BRAND_URL,
+    logo: `${BRAND_URL}/favicon.png`,
+    sameAs: BRAND_SAME_AS,
     description: "Производитель межкомнатных и входных дверей премиум-класса",
     contactPoint: {
       "@type": "ContactPoint",
