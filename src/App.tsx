@@ -21,6 +21,7 @@ const Storefront = lazy(() => import("./pages/Storefront.tsx"));
 const StorefrontCatalog = lazy(() => import("./pages/StorefrontCatalog.tsx"));
 const StorefrontCategorySelect = lazy(() => import("./pages/StorefrontCategorySelect.tsx"));
 const StorefrontCollectionSelect = lazy(() => import("./pages/StorefrontCollectionSelect.tsx"));
+const StorefrontEntranceSelect = lazy(() => import("./pages/StorefrontEntranceSelect.tsx"));
 const StorefrontProduct = lazy(() => import("./pages/StorefrontProduct.tsx"));
 const StorefrontCart = lazy(() => import("./pages/StorefrontCart.tsx"));
 const StorefrontBrand = lazy(() => import("./pages/StorefrontBrand.tsx"));
