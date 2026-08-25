@@ -140,11 +140,26 @@ interface PageSpec {
   jsonLd?: Record<string, unknown>[];
 }
 
+/** Единая Organization бренда: все домены сходятся на brandoors.online. */
+function organization() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": BRAND_ID,
+    name: BRAND_NAME,
+    url: BRAND_URL,
+    logo: `${BRAND_URL}/favicon.png`,
+    sameAs: BRAND_SAME_AS,
+    description: "Производитель межкомнатных и входных дверей премиум-класса",
+  };
+}
+
 function localBusiness(site: SiteInfo) {
   const origin = `https://${site.domain}`;
   return {
     "@context": "https://schema.org",
     "@type": "FurnitureStore",
+    "@id": `${origin}/#store`,
     name: site.name,
     url: origin,
     telephone: site.phone,
@@ -156,6 +171,13 @@ function localBusiness(site: SiteInfo) {
       addressCountry: "RU",
     },
     areaServed: site.city,
+    brand: { "@id": BRAND_ID },
+    parentOrganization: {
+      "@id": BRAND_ID,
+      "@type": "Organization",
+      name: BRAND_NAME,
+      url: BRAND_URL,
+    },
   };
 }
 
