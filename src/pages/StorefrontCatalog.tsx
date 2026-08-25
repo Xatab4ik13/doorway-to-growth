@@ -60,7 +60,17 @@ export default function StorefrontCatalog() {
   const seoCategory = routeCategory ?? getCategorySeo(searchParams.get("category"));
   const seoCollection =
     routeCollection ?? getCollectionSeo(collectionSlugByName(searchParams.get("collection")));
-  const meta = buildCatalogMeta(site, seoCategory, seoCollection);
+  const baseMeta = buildCatalogMeta(site, seoCategory, seoCollection);
+  const meta = entranceSub
+    ? {
+        ...baseMeta,
+        h1: entranceSub.dbName ? `${entranceSub.name} — входные двери` : baseMeta.h1,
+        title: entranceSub.dbName
+          ? `Входные двери Термо${site?.name ? ` — ${site.name}` : ""}`
+          : baseMeta.title,
+        description: entranceSub.dbName ? entranceSub.intro : baseMeta.description,
+      }
+    : baseMeta;
 
   const breadcrumbs = useMemo(() => {
     const crumbs: { name: string; path?: string }[] = [
@@ -73,19 +83,27 @@ export default function StorefrontCatalog() {
         path: `/${CATALOG_ROOT}/${COLLECTIONS_PARENT_SLUG}`,
       });
       crumbs.push({ name: seoCollection.name });
+    } else if (entranceSub) {
+      crumbs.push({
+        name: CATEGORY_SEO[ENTRANCE_PARENT_SLUG].name,
+        path: `/${CATALOG_ROOT}/${ENTRANCE_PARENT_SLUG}`,
+      });
+      crumbs.push({ name: entranceSub.name });
     } else if (seoCategory) {
       crumbs.push({ name: seoCategory.name });
     }
     return crumbs;
-  }, [seoCategory, seoCollection]);
+  }, [seoCategory, seoCollection, entranceSub]);
 
   // Легаси-URL /catalog/list?... не индексируем — канонический адрес статический.
   const isLegacyListUrl = !categorySlug;
   const canonicalPath = seoCollection
     ? `/${CATALOG_ROOT}/${COLLECTIONS_PARENT_SLUG}/${seoCollection.slug}`
-    : seoCategory
-      ? `/${CATALOG_ROOT}/${seoCategory.slug}`
-      : `/${CATALOG_ROOT}`;
+    : entranceSub
+      ? `/${CATALOG_ROOT}/${ENTRANCE_PARENT_SLUG}/${entranceSub.slug}`
+      : seoCategory
+        ? `/${CATALOG_ROOT}/${seoCategory.slug}`
+        : `/${CATALOG_ROOT}`;
 
   // Список товаров текущего раздела для ItemList-разметки (первые 30 позиций).
   const itemListSchema = useMemo(() => {
