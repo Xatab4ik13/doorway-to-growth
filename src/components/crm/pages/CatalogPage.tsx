@@ -562,6 +562,13 @@ export function CatalogPage() {
             <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
               <FolderTree className="h-3.5 w-3.5 text-muted-foreground" />
               <h4 className="text-xs font-semibold text-foreground">Категории</h4>
+              <button
+                onClick={() => setCatModal({ mode: "create", name: "", parentId: "" })}
+                title="Новая категория"
+                className="ml-auto flex h-6 w-6 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95 transition-colors"
+              >
+                <Plus className="h-3.5 w-3.5" />
+              </button>
             </div>
             <div className="max-h-[calc(100vh-160px)] overflow-y-auto py-1.5">
               <CategoryRow
@@ -585,6 +592,9 @@ export function CatalogPage() {
                       expandable={kids.length > 0}
                       expanded={isExp}
                       onToggleExpand={() => toggleExpanded(r.id)}
+                      onAddChild={() => setCatModal({ mode: "create", name: "", parentId: r.id })}
+                      onEdit={() => setCatModal({ mode: "edit", id: r.id, name: r.name, parentId: "" })}
+                      onDelete={() => setCatDeleteTarget(r)}
                       bold
                     />
                     {isExp && kids.map((k: any) => (
@@ -594,12 +604,15 @@ export function CatalogPage() {
                         count={countForCategory(k.id)}
                         active={activeCategoryKey === k.id}
                         onClick={() => { setActiveCategoryKey(k.id); setPage(1); }}
+                        onEdit={() => setCatModal({ mode: "edit", id: k.id, name: k.name, parentId: k.parent_id ?? "" })}
+                        onDelete={() => setCatDeleteTarget(k)}
                         indent
                       />
                     ))}
                   </div>
                 );
               })}
+
               {uncategorizedCount > 0 && (
                 <>
                   <div className="my-1 h-px bg-border mx-3" />
