@@ -240,7 +240,7 @@ function pagesForSite(site: SiteInfo): PageSpec[] {
       { href: "/brand", label: "О бренде Brandoors" },
       { href: "/news", label: "Статьи и новости" },
     ],
-    jsonLd: [localBusiness(site)],
+    jsonLd: [organization(), localBusiness(site)],
   });
 
   // Корень каталога
