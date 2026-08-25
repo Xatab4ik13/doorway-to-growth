@@ -11,9 +11,11 @@ import {
 import { ProductDetail } from "@/components/crm/ProductDetail";
 import {
   useProducts, useCategories, useCreateProduct, useDeleteProduct, useUpdateProduct,
+  useCreateCategory, useUpdateCategory, useDeleteCategory,
   type Product,
 } from "@/hooks/useProducts";
 import { resolveStorageUrl } from "@/lib/storageUrl";
+
 
 const PAGE_SIZE = 24;
 
