@@ -21,12 +21,37 @@ import {
   COLLECTIONS_PARENT_SLUG,
   buildHomeMeta,
   buildCatalogMeta,
+  buildProductMeta,
+  collectionSlugByName,
   siteShortName,
   siteLocality,
   type SiteMetaSource,
 } from "../src/lib/catalogRoutes";
 import { NEWS_BY_SITE } from "../src/content/news";
 import type { Article } from "../src/content/news";
+import PRODUCT_SNAPSHOT from "../src/content/products-snapshot.json";
+
+/** Снимок каталога: карточки товаров пререндерятся без обращения к БД. */
+interface SnapshotProduct {
+  slug: string;
+  name: string;
+  description: string | null;
+  rrp: number | null;
+  categoryName: string | null;
+  categorySlug: string | null;
+  parentName: string | null;
+  parentSlug: string | null;
+  rootSlug: string | null;
+  rootName: string | null;
+}
+
+/** Фурнитуру не пререндерим: 700+ мелких SKU дали бы тонкие однотипные страницы. */
+const PRERENDER_ROOTS = new Set(["mezhkomnatnye-dveri", "entrance-doors", "pogonazh"]);
+
+const PRODUCTS = (PRODUCT_SNAPSHOT as SnapshotProduct[]).filter((p) =>
+  PRERENDER_ROOTS.has(p.rootSlug || p.categorySlug || "")
+);
+
 
 const DIST = resolve(process.cwd(), "dist");
 const OUT_ROOT = resolve(DIST, "_pre");
@@ -347,7 +372,73 @@ function pagesForSite(site: SiteInfo): PageSpec[] {
     });
   }
 
+  // Карточки товаров
+  for (const product of PRODUCTS) {
+    const collectionSlug = collectionSlugByName(product.categoryName);
+    const collection = collectionSlug ? COLLECTION_SEO[collectionSlug] : null;
+    const rootSlug = product.rootSlug || product.categorySlug || "";
+    const category = CATEGORY_SEO[rootSlug] ?? null;
+    const meta = buildProductMeta(site, product, category, collection);
+    const path = `/product/${product.slug}`;
+    const price = product.rrp && Number(product.rrp) > 0 ? Number(product.rrp) : null;
+    const groupName = collection?.name || category?.name || product.categoryName || "Двери Brandoors";
+
+    const categoryPath = category ? `/catalog/${category.slug}` : "/catalog";
+    const collectionPath = collection
+      ? `/catalog/${COLLECTIONS_PARENT_SLUG}/${collection.slug}`
+      : null;
+
+    const trail = [
+      { name: "Главная", path: "/" },
+      { name: "Каталог", path: "/catalog" },
+      ...(category ? [{ name: category.name, path: categoryPath }] : []),
+      ...(collection && collectionPath ? [{ name: collection.name, path: collectionPath }] : []),
+      { name: product.name, path },
+    ];
+
+    pages.push({
+      path,
+      title: meta.title,
+      description: meta.description,
+      h1: `${product.name} — ${groupName}`,
+      body: [
+        product.description?.trim() ||
+          `${product.name} — ${groupName.toLowerCase()} Brandoors. Полотно изготавливается под размер проёма, покрытие и фурнитура подбираются в салоне.`,
+        price
+          ? `Рекомендованная цена от ${Math.round(price).toLocaleString("ru-RU")} ₽. Итоговая стоимость зависит от размера, покрытия, остекления и комплекта фурнитуры.`
+          : "Цена рассчитывается индивидуально: она зависит от размера проёма, покрытия, остекления и комплекта фурнитуры.",
+        `Посмотреть модель вживую можно в салоне ${salon}: ${site.address}. Телефон ${site.phone}. Замер, доставка и установка по Москве и области.`,
+      ],
+      links: [
+        ...(collectionPath ? [{ href: collectionPath, label: `Коллекция ${collection!.name}` }] : []),
+        { href: categoryPath, label: category?.name || "Каталог" },
+        { href: "/salon", label: `Салон ${salon}` },
+      ],
+      jsonLd: [
+        {
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: product.name,
+          description: meta.description,
+          category: groupName,
+          brand: { "@type": "Brand", name: "Brandoors" },
+          url: `${origin}${path}`,
+          offers: {
+            "@type": "Offer",
+            url: `${origin}${path}`,
+            priceCurrency: "RUB",
+            ...(price ? { price: String(Math.round(price)) } : {}),
+            availability: "https://schema.org/InStock",
+            seller: { "@type": "Organization", name: site.name },
+          },
+        },
+        breadcrumbs(origin, trail),
+      ],
+    });
+  }
+
   return pages;
+
 }
 
 /* ------------------------------------------------------------------ */
