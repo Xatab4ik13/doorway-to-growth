@@ -18,6 +18,8 @@ import {
   COLLECTION_SEO,
   COLLECTION_SLUGS,
   COLLECTIONS_PARENT_SLUG,
+  ENTRANCE_PARENT_SLUG,
+  getEntranceSub,
   buildCatalogMeta,
   collectionHref,
   collectionSlugByName,
