@@ -447,7 +447,8 @@ function pagesForSite(site: SiteInfo): PageSpec[] {
           name: product.name,
           description: meta.description,
           category: groupName,
-          brand: { "@type": "Brand", name: "Brandoors" },
+          brand: { "@type": "Brand", name: BRAND_NAME, url: BRAND_URL },
+          manufacturer: { "@id": BRAND_ID, "@type": "Organization", name: BRAND_NAME, url: BRAND_URL },
           url: `${origin}${path}`,
           offers: {
             "@type": "Offer",
