@@ -43,7 +43,11 @@ export default function StorefrontCatalog() {
   // Query-параметры остаются как обратная совместимость со старыми ссылками.
   const routeCategory = getCategorySeo(categorySlug);
   const routeCollection = getCollectionSeo(collectionSlug);
-  const collectionParam = routeCollection?.name ?? searchParams.get("collection");
+  // Входные двери: подкатегория берётся из того же сегмента URL.
+  const entranceSub =
+    categorySlug === ENTRANCE_PARENT_SLUG ? getEntranceSub(collectionSlug) : null;
+  const collectionParam =
+    routeCollection?.name ?? entranceSub?.dbName ?? searchParams.get("collection");
   const categoryParam = routeCategory?.slug ?? searchParams.get("category");
 
   const { data: site, isLoading } = useSiteBySlug(slug);
