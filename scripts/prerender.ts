@@ -584,7 +584,37 @@ function main() {
     }
   }
 
+  writeDomainSitemaps();
+
   console.log(`[prerender] Сгенерировано ${count} HTML-страниц для ${SITES.length} доменов → dist/_pre/`);
+}
+
+/**
+ * Каждому домену — собственные /sitemap.xml и /robots.txt.
+ * Раньше со всех пяти доменов отдавался один общий sitemap-индекс со ссылками
+ * на чужие домены — поисковики такие карты игнорируют.
+ */
+function writeDomainSitemaps() {
+  for (const site of SITES) {
+    const origin = `https://${site.domain}`;
+    const src = resolve(DIST, `sitemap-${site.domain.replace(/\./g, "-")}.xml`);
+    if (!existsSync(src)) {
+      console.warn(`[prerender] нет карты сайта для ${site.domain} — пропускаю`);
+      continue;
+    }
+    const dir = resolve(OUT_ROOT, site.domain);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(resolve(dir, "sitemap.xml"), readFileSync(src, "utf-8"), "utf-8");
+
+    const robotsSrc = resolve(DIST, "robots.txt");
+    const robots = existsSync(robotsSrc) ? readFileSync(robotsSrc, "utf-8") : "User-agent: *\nAllow: /\n";
+    writeFileSync(
+      resolve(dir, "robots.txt"),
+      `${robots.trimEnd()}\n\nSitemap: ${origin}/sitemap.xml\n`,
+      "utf-8"
+    );
+  }
+  console.log(`[prerender] sitemap.xml и robots.txt записаны для ${SITES.length} доменов`);
 }
 
 main();
