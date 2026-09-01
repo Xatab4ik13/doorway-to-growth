@@ -980,7 +980,7 @@ const ProductCard = memo(function ProductCard({
           {img ? (
             <img
               src={img}
-              alt={product.name}
+              alt={`${product.name} — ${collectionLabel ? `коллекция ${collectionLabel}, ` : ""}двери Brandoors`}
               loading="lazy"
               decoding="async"
               width="400"
