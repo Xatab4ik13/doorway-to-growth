@@ -21,9 +21,23 @@ import { resolveStorageUrl } from "@/lib/storageUrl";
 
 const PAGE_SIZE = 24;
 
+const TRANSLIT: Record<string, string> = {
+  а: "a", б: "b", в: "v", г: "g", д: "d", е: "e", ё: "e", ж: "zh", з: "z", и: "i",
+  й: "y", к: "k", л: "l", м: "m", н: "n", о: "o", п: "p", р: "r", с: "s", т: "t",
+  у: "u", ф: "f", х: "h", ц: "c", ч: "ch", ш: "sh", щ: "sch", ъ: "", ы: "y", ь: "",
+  э: "e", ю: "yu", я: "ya",
+};
+
 function slugify(text: string) {
-  return text.toLowerCase().replace(/[^a-zа-яё0-9]+/gi, "-").replace(/^-|-$/g, "");
+  return text
+    .toLowerCase()
+    .split("")
+    .map((ch) => (ch in TRANSLIT ? TRANSLIT[ch] : ch))
+    .join("")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }
+
 
 const ALL_CATEGORY = "__all__";
 
