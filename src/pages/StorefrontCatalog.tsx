@@ -66,7 +66,7 @@ export default function StorefrontCatalog() {
         ...baseMeta,
         h1: entranceSub.dbName ? `${entranceSub.name} — входные двери` : baseMeta.h1,
         title: entranceSub.dbName
-          ? `Входные двери Термо${site?.name ? ` — ${site.name}` : ""}`
+          ? `Входные двери Термо Brandoors${site?.city ? ` — купить в ${site.city}` : ""}`
           : baseMeta.title,
         description: entranceSub.dbName ? entranceSub.intro : baseMeta.description,
       }
