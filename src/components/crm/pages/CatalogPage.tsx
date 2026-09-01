@@ -179,22 +179,39 @@ export function CatalogPage() {
   };
 
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!formName.trim()) return;
+    setFormError(null);
+    if (!formCategoryId) {
+      setFormError("Выберите категорию — без неё товар не показывается на сайте.");
+      return;
+    }
     const specs: Record<string, string> = {};
     if (formColor) specs.color = formColor;
     if (formGlazing) specs.glazing = formGlazing;
-    createProduct.mutate({
-      name: formName.trim(),
-      slug: slugify(formName),
-      category_id: formCategoryId || undefined,
-      rrp: formRrp ? Number(formRrp) : undefined,
-      specifications: specs,
-      description: formDesc.trim() || undefined,
-    });
-    setAddOpen(false);
-    resetForm();
+
+    // Уникальный slug: латиница + суффикс, если такой адрес уже занят.
+    const base = slugify(formName) || "product";
+    const taken = new Set(products.map((p) => p.slug));
+    let slug = base;
+    for (let i = 2; taken.has(slug); i++) slug = `${base}-${i}`;
+
+    try {
+      await createProduct.mutateAsync({
+        name: formName.trim(),
+        slug,
+        category_id: formCategoryId,
+        rrp: formRrp ? Number(formRrp) : undefined,
+        specifications: specs,
+        description: formDesc.trim() || undefined,
+      });
+      setAddOpen(false);
+      resetForm();
+    } catch (e: any) {
+      setFormError(e?.message || "Не удалось сохранить товар. Обновите страницу и войдите заново.");
+    }
   };
+
 
   const handleDelete = (product: Product) => {
     deleteProduct.mutate(product.id);
