@@ -384,26 +384,33 @@ export function buildCatalogMeta(
   if (collection) {
     return {
       h1: `${collection.name} — межкомнатные двери`,
-      title: `${collection.keyphrase} — купить в ${cityIn}, салон ${salon}`,
-      description: `${collection.intro} Салон Brandoors ${salon}, ${locality}. Живая экспозиция, замер и расчёт стоимости.`,
+      title: `${collection.name} Brandoors — ${collection.keyphrase} в ${cityIn}`,
+      description: clampDescription(
+        `${collection.keyphrase} Brandoors: цены, фото и живая экспозиция в салоне ${salon}, ${locality}. Замер, доставка и установка. ${collection.intro}`
+      ),
     };
   }
 
   if (category) {
     return {
       h1: category.name,
-      title: `${category.keyphrase} — купить в ${cityIn}, салон ${salon}`,
-      description: `${category.intro} Салон Brandoors ${salon}, ${locality}.`,
+      title: `${category.name} Brandoors — купить в ${cityIn}, салон ${salon}`,
+      description: clampDescription(
+        `${category.keyphrase} от производителя Brandoors: цены, фото, экспозиция в салоне ${salon}, ${locality}. Замер, доставка и установка. ${category.intro}`
+      ),
     };
   }
 
 
   return {
     h1: "Каталог",
-    title: `Каталог дверей Brandoors — салон ${salon}, ${city}`,
-    description: `Каталог межкомнатных и входных дверей Brandoors. Салон ${salon}, ${locality}: экспозиция, замер, доставка и установка.`,
+    title: `Каталог дверей Brandoors — купить в ${cityIn}, салон ${salon}`,
+    description: clampDescription(
+      `Каталог дверей Brandoors (Брандорс): межкомнатные и входные двери от производителя. Салон ${salon}, ${locality}: цены, экспозиция, замер, доставка и установка.`
+    ),
   };
 }
+
 
 /** Ссылка на карточку товара внутри текущего магазина. */
 export function productHref(slug: string | null | undefined, productSlug: string) {
