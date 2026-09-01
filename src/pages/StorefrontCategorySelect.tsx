@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { useSiteBySlug } from "@/hooks/useSiteBySlug";
 import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
+import { siteShortName } from "@/lib/catalogRoutes";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import interiorImg from "@/assets/categories/interior-doors.png";
 import entranceImg from "@/assets/categories/entrance-doors.png";
@@ -33,10 +34,12 @@ export default function StorefrontCategorySelect() {
   const { data: site, isLoading } = useSiteBySlug(slug);
 
   useDocumentMeta({
-    title: site ? `Каталог — ${site.name}` : "Каталог — Brandoors",
+    title: site
+      ? `Каталог дверей Brandoors — салон ${siteShortName(site)}, ${site.city}`
+      : "Каталог дверей Brandoors (Брандорс) — межкомнатные и входные",
     description: site
-      ? `Выберите категорию: межкомнатные и входные двери, погонаж, фурнитура — салон ${site.name}, ${site.city}`
-      : "Каталог Brandoors: межкомнатные и входные двери, погонаж, фурнитура",
+      ? `Каталог Brandoors: межкомнатные и входные двери, погонаж, фурнитура от производителя. Салон ${siteShortName(site)}, ${site.city}: экспозиция, замер, доставка.`
+      : "Каталог Brandoors: межкомнатные и входные двери, погонаж и фурнитура от производителя. Экспозиция в салонах, замер, доставка и установка.",
   });
 
   if (isLoading || (!site && !slug)) {

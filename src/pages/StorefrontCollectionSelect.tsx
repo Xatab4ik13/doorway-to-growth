@@ -105,10 +105,12 @@ export default function StorefrontCollectionSelect() {
   const { data: collections = [], isLoading: collectionsLoading } = useCollections();
 
   useDocumentMeta({
-    title: site ? `Межкомнатные двери — ${site.name}` : "Межкомнатные двери — Brandoors",
+    title: site
+      ? `Межкомнатные двери Brandoors — купить в ${site.city}, ${siteShortName(site)}`
+      : "Межкомнатные двери Brandoors (Брандорс) — коллекции и цены",
     description: site
-      ? `Выберите коллекцию межкомнатных дверей: PRIME, ESTETICA, GHOST, HEAVY, MAZE — салон ${site.name}, ${site.city}`
-      : "Коллекции межкомнатных дверей Brandoors: PRIME, ESTETICA, GHOST, HEAVY, MAZE",
+      ? `Межкомнатные двери Brandoors: коллекции PRIME, ESTETICA, GHOST, HEAVY, MAZE. Салон ${siteShortName(site)}, ${site.city}: цены, экспозиция, замер и установка.`
+      : "Межкомнатные двери Brandoors: коллекции PRIME, ESTETICA, GHOST, HEAVY, MAZE. Цены от производителя, экспозиция в салонах, замер и установка.",
   });
 
   if (isLoading || (!site && !slug)) {
