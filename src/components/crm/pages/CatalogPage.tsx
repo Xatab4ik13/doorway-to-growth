@@ -82,6 +82,8 @@ export function CatalogPage() {
   const [formColor, setFormColor] = useState("");
   const [formGlazing, setFormGlazing] = useState("");
   const [formDesc, setFormDesc] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+
 
   const { uniqueColors, uniqueGlazings } = useMemo(() => {
     const colors = new Set<string>();
