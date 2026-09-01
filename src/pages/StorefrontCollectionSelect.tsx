@@ -99,6 +99,12 @@ function useCollections() {
   });
 }
 
+const INTERIOR_CRUMBS = buildBreadcrumbSchema([
+  { name: "Главная", path: "/" },
+  { name: "Каталог", path: "/catalog" },
+  { name: "Межкомнатные двери" },
+]);
+
 export default function StorefrontCollectionSelect() {
   const { slug: urlSlug } = useParams<{ slug: string }>();
   const slug = useSiteSlug(urlSlug);
@@ -113,11 +119,7 @@ export default function StorefrontCollectionSelect() {
       ? `Межкомнатные двери Brandoors: коллекции PRIME, ESTETICA, GHOST, HEAVY, MAZE. Салон ${siteShortName(site)}, ${site.city}: цены, экспозиция, замер и установка.`
       : "Межкомнатные двери Brandoors: коллекции PRIME, ESTETICA, GHOST, HEAVY, MAZE. Цены от производителя, экспозиция в салонах, замер и установка.",
     canonical: "/catalog/mezhkomnatnye-dveri",
-    jsonLd: buildBreadcrumbSchema([
-      { name: "Главная", path: "/" },
-      { name: "Каталог", path: "/catalog" },
-      { name: "Межкомнатные двери" },
-    ]),
+    jsonLd: INTERIOR_CRUMBS,
   });
 
   if (isLoading || (!site && !slug)) {
