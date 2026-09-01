@@ -5,6 +5,7 @@ import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { storeHref } from "@/lib/storeHref";
 import { ENTRANCE_SUBCATEGORIES, entranceSubHref, siteShortName, cityIn } from "@/lib/catalogRoutes";
+import { buildBreadcrumbSchema } from "@/lib/seo";
 import entranceImg from "@/assets/categories/entrance-doors.png";
 import termoImg from "@/assets/categories/entrance-termo.png";
 
@@ -25,6 +26,12 @@ export default function StorefrontEntranceSelect() {
     description: site
       ? `Входные двери Brandoors: стальные модели и Термо с терморазрывом. Салон ${siteShortName(site)}, ${site.city}: цены, экспозиция, замер, доставка и установка.`
       : "Входные двери Brandoors: стальные модели и серия Термо с терморазрывом. Цены от производителя, экспозиция в салонах, замер и установка.",
+    canonical: "/catalog/entrance-doors",
+    jsonLd: buildBreadcrumbSchema([
+      { name: "Главная", path: "/" },
+      { name: "Каталог", path: "/catalog" },
+      { name: "Входные двери" },
+    ]),
   });
 
   if (isLoading || (!site && !slug)) {

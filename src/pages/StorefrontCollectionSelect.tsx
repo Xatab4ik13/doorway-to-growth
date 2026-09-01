@@ -6,6 +6,7 @@ import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { storeHref } from "@/lib/storeHref";
 import { collectionHrefByName, siteShortName, cityIn } from "@/lib/catalogRoutes";
+import { buildBreadcrumbSchema } from "@/lib/seo";
 
 import { supabase } from "@/integrations/supabase/client";
 import { resolveStorageUrl } from "@/lib/storageUrl";
@@ -111,6 +112,12 @@ export default function StorefrontCollectionSelect() {
     description: site
       ? `Межкомнатные двери Brandoors: коллекции PRIME, ESTETICA, GHOST, HEAVY, MAZE. Салон ${siteShortName(site)}, ${site.city}: цены, экспозиция, замер и установка.`
       : "Межкомнатные двери Brandoors: коллекции PRIME, ESTETICA, GHOST, HEAVY, MAZE. Цены от производителя, экспозиция в салонах, замер и установка.",
+    canonical: "/catalog/mezhkomnatnye-dveri",
+    jsonLd: buildBreadcrumbSchema([
+      { name: "Главная", path: "/" },
+      { name: "Каталог", path: "/catalog" },
+      { name: "Межкомнатные двери" },
+    ]),
   });
 
   if (isLoading || (!site && !slug)) {
@@ -188,7 +195,7 @@ export default function StorefrontCollectionSelect() {
                   {col.image ? (
                     <img
                       src={col.image}
-                      alt={col.name}
+                      alt={`Межкомнатные двери Brandoors, коллекция ${col.name}${col.subtitle ? ` — ${col.subtitle.toLowerCase()}` : ""}`}
                       loading="lazy"
                       className="relative max-h-full w-auto object-contain transition-transform duration-500 ease-out group-hover:scale-[1.03] drop-shadow-[0_30px_40px_rgba(0,0,0,0.5)]"
                     />

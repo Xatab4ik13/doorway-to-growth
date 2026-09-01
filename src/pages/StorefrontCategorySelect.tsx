@@ -10,6 +10,7 @@ import pogonazhImg from "@/assets/categories/pogonazh.png";
 import furnituraImg from "@/assets/categories/furnitura.png";
 import { storeHref } from "@/lib/storeHref";
 import { categoryHref } from "@/lib/catalogRoutes";
+import { buildBreadcrumbSchema } from "@/lib/seo";
 
 
 type CategoryCard = {
@@ -40,6 +41,11 @@ export default function StorefrontCategorySelect() {
     description: site
       ? `Каталог Brandoors: межкомнатные и входные двери, погонаж, фурнитура от производителя. Салон ${siteShortName(site)}, ${site.city}: экспозиция, замер, доставка.`
       : "Каталог Brandoors: межкомнатные и входные двери, погонаж и фурнитура от производителя. Экспозиция в салонах, замер, доставка и установка.",
+    canonical: "/catalog",
+    jsonLd: buildBreadcrumbSchema([
+      { name: "Главная", path: "/" },
+      { name: "Каталог" },
+    ]),
   });
 
   if (isLoading || (!site && !slug)) {
@@ -110,7 +116,7 @@ export default function StorefrontCategorySelect() {
                   />
                   <img
                     src={cat.image}
-                    alt={cat.title}
+                    alt={`${cat.title} Brandoors — ${cat.subtitle.toLowerCase()}`}
                     width={640}
                     height={960}
                     loading="lazy"
