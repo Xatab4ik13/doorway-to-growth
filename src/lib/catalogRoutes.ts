@@ -328,6 +328,16 @@ export function getHomeAngle(slug?: string | null): HomeAngle {
   return (slug && HOME_ANGLES[slug]) || DEFAULT_ANGLE;
 }
 
+/** Обрезает description до длины, которую показывают Яндекс и Google (без обрыва слова). */
+export function clampDescription(text: string, max = 158) {
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${cut.slice(0, lastSpace > 80 ? lastSpace : max).replace(/[
+,.;:—-]+$/, "")}…`;
+}
+
 /** Уникальные title/description/H1 для главной страницы конкретного салона. */
 export function buildHomeMeta(site: SiteMetaSource | null | undefined) {
   const salon = siteShortName(site);
@@ -338,14 +348,15 @@ export function buildHomeMeta(site: SiteMetaSource | null | undefined) {
 
   return {
     h1: `Двери Brandoors — салон ${salon}`,
-    title: `Двери Brandoors в ${cityIn} — ${angle.focus} — салон ${salon}`,
-    description: `${angle.offer}. ${angle.intro} Салон ${salon}, ${locality}: замер, доставка и установка.`
-      .replace(/\s+/g, " ")
-      .trim(),
+    title: `Brandoors (Брандорс) — двери в ${cityIn}, салон ${salon}`,
+    description: clampDescription(
+      `Brandoors — двери премиум-класса от производителя: ${angle.focus}. Салон ${salon}, ${locality}: живая экспозиция, замер, доставка и установка.`
+    ),
     intro: angle.intro,
     offer: angle.offer,
   };
 }
+
 
 /** Короткая гео-привязка салона: район, если есть, иначе город. */
 export function siteLocality(site?: SiteMetaSource | null) {
