@@ -690,17 +690,23 @@ export function CatalogPage() {
         }
       >
         <div className="grid grid-cols-2 gap-4">
+          {formError && (
+            <div className="col-span-2 rounded-xl border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+              {formError}
+            </div>
+          )}
           <div className="col-span-2">
             <label className="block text-[10px] font-medium uppercase tracking-wider text-muted-foreground mb-1">Название *</label>
             <input value={formName} onChange={(e) => setFormName(e.target.value)} placeholder="PRIME 22 Манхэттен" className={inputCls} />
           </div>
           <div>
-            <label className="block text-[10px] font-medium uppercase tracking-wider text-muted-foreground mb-1">Категория</label>
+            <label className="block text-[10px] font-medium uppercase tracking-wider text-muted-foreground mb-1">Категория *</label>
             <select value={formCategoryId} onChange={(e) => setFormCategoryId(e.target.value)} className={selectCls}>
-              <option value="">Без категории</option>
+              <option value="">Выберите категорию</option>
               {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
+
           <div>
             <label className="block text-[10px] font-medium uppercase tracking-wider text-muted-foreground mb-1">РРЦ (₽)</label>
             <input value={formRrp} onChange={(e) => setFormRrp(e.target.value.replace(/\D/g, ""))} placeholder="9380" className={`${inputCls} tabular-nums`} />
