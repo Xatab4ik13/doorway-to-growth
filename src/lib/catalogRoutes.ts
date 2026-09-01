@@ -334,8 +334,8 @@ export function clampDescription(text: string, max = 158) {
   if (clean.length <= max) return clean;
   const cut = clean.slice(0, max);
   const lastSpace = cut.lastIndexOf(" ");
-  return `${cut.slice(0, lastSpace > 80 ? lastSpace : max).replace(/[
-,.;:—-]+$/, "")}…`;
+  const base = cut.slice(0, lastSpace > 80 ? lastSpace : max);
+  return `${base.replace(/[\s,.;:—-]+$/, "")}…`;
 }
 
 /** Уникальные title/description/H1 для главной страницы конкретного салона. */
