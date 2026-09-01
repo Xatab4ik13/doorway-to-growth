@@ -19,6 +19,8 @@ import {
   CATEGORY_SEO,
   COLLECTION_SEO,
   COLLECTIONS_PARENT_SLUG,
+  ENTRANCE_PARENT_SLUG,
+  ENTRANCE_SUBCATEGORIES,
   buildHomeMeta,
   buildCatalogMeta,
   buildProductMeta,
@@ -285,6 +287,46 @@ function pagesForSite(site: SiteInfo): PageSpec[] {
           { name: "Главная", path: "/" },
           { name: "Каталог", path: "/catalog" },
           { name: category.name, path },
+        ]),
+      ],
+    });
+  }
+
+  // Подкатегории входных дверей (стальные и Термо)
+  for (const sub of ENTRANCE_SUBCATEGORIES) {
+    const path = `/catalog/${ENTRANCE_PARENT_SLUG}/${sub.slug}`;
+    const title = sub.dbName
+      ? `Входные двери Термо Brandoors — купить в ${site.city}, ${salon}`
+      : `Входные двери Brandoors — купить в ${site.city}, салон ${salon}`;
+    const description = sub.dbName
+      ? `Входные двери Термо Brandoors с терморазрывом: не промерзают и не собирают конденсат. Салон ${salon}, ${locality}: цены, экспозиция, замер и установка.`
+      : `Стальные входные двери Brandoors: два контура уплотнения, два замка, отделка под интерьер. Салон ${salon}, ${locality}: цены, экспозиция, замер и установка.`;
+    pages.push({
+      path,
+      title,
+      description,
+      h1: `${sub.name} Brandoors — салон ${salon}, ${locality}`,
+      body: [
+        sub.intro,
+        sub.dbName
+          ? `Серия Термо рассчитана на вход с улицы: терморазрыв в полотне и коробке, морозостойкое покрытие, комплект уплотнителей по контуру. В салоне ${salon} можно посмотреть срез полотна и сравнить отделки.`
+          : `Стальные входные двери подходят для квартиры и тамбура: жёсткий каркас, скрытые петли, отделка полотна в одной палитре с межкомнатными дверями Brandoors. Замер и подбор — в салоне ${salon}.`,
+        `Адрес салона: ${site.address}. Телефон ${site.phone}. Замер, доставка и установка по Москве и области.`,
+      ],
+      links: [
+        { href: `/catalog/${ENTRANCE_PARENT_SLUG}`, label: "Все входные двери" },
+        ...ENTRANCE_SUBCATEGORIES.filter((s) => s.slug !== sub.slug).map((s) => ({
+          href: `/catalog/${ENTRANCE_PARENT_SLUG}/${s.slug}`,
+          label: s.name,
+        })),
+        { href: "/salon", label: `Салон ${salon}` },
+      ],
+      jsonLd: [
+        breadcrumbs(origin, [
+          { name: "Главная", path: "/" },
+          { name: "Каталог", path: "/catalog" },
+          { name: "Входные двери", path: `/catalog/${ENTRANCE_PARENT_SLUG}` },
+          { name: sub.name, path },
         ]),
       ],
     });
