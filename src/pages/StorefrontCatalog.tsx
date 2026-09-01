@@ -27,6 +27,9 @@ import {
 
   getCategorySeo,
   getCollectionSeo,
+  getSectionFaq,
+  ENTRANCE_SUBCATEGORIES,
+  entranceSubHref,
 } from "@/lib/catalogRoutes";
 
 
@@ -95,6 +98,16 @@ export default function StorefrontCatalog() {
     }
     return crumbs;
   }, [seoCategory, seoCollection, entranceSub]);
+
+  const sectionFaq = useMemo(
+    () =>
+      getSectionFaq({
+        entranceSubSlug: entranceSub?.slug,
+        collectionSlug: seoCollection?.slug,
+        categorySlug: seoCategory?.slug,
+      }),
+    [entranceSub, seoCollection, seoCategory]
+  );
 
   // Легаси-URL /catalog/list?... не индексируем — канонический адрес статический.
   const isLegacyListUrl = !categorySlug;
@@ -703,7 +716,18 @@ export default function StorefrontCatalog() {
                   </div>
 
                   <div className="mt-10 flex flex-wrap gap-3">
-                    {COLLECTION_SLUGS.filter((s) => s !== seoCollection?.slug).map((s) => (
+                    {seoCategory?.slug === ENTRANCE_PARENT_SLUG &&
+                      ENTRANCE_SUBCATEGORIES.filter((sub) => sub.slug !== entranceSub?.slug).map((sub) => (
+                        <Link
+                          key={sub.slug}
+                          to={entranceSubHref(slug, sub.slug)}
+                          className="px-4 py-2 rounded-full border border-storefront-gold/30 text-xs uppercase tracking-wider text-storefront-gold hover:bg-storefront-gold/10 transition-colors"
+                        >
+                          {sub.name}
+                        </Link>
+                      ))}
+                    {seoCategory?.slug !== ENTRANCE_PARENT_SLUG &&
+                      COLLECTION_SLUGS.filter((s) => s !== seoCollection?.slug).map((s) => (
                       <Link
                         key={s}
                         to={collectionHref(slug, s)}
@@ -718,6 +742,28 @@ export default function StorefrontCatalog() {
                     >
                       Адрес салона
                     </Link>
+                  </div>
+                </section>
+              )}
+
+              {/* FAQ раздела */}
+              {!isLegacyListUrl && sectionFaq.length > 0 && (
+                <section className="mt-14 pt-10 border-t border-white/10">
+                  <h2 className="text-lg sm:text-xl font-bold text-storefront-text uppercase tracking-wide mb-6">
+                    Частые вопросы
+                  </h2>
+                  <div className="max-w-3xl divide-y divide-white/10 border-y border-white/10">
+                    {sectionFaq.map((item) => (
+                      <details key={item.q} className="group py-4">
+                        <summary className="flex cursor-pointer items-start justify-between gap-4 list-none text-sm sm:text-base text-storefront-text">
+                          <span className="font-medium">{item.q}</span>
+                          <ChevronDown className="mt-0.5 h-4 w-4 shrink-0 text-storefront-gold transition-transform duration-300 group-open:rotate-180" />
+                        </summary>
+                        <p className="mt-3 text-sm sm:text-base leading-relaxed text-storefront-muted">
+                          {item.a}
+                        </p>
+                      </details>
+                    ))}
                   </div>
                 </section>
               )}
@@ -934,7 +980,7 @@ const ProductCard = memo(function ProductCard({
           {img ? (
             <img
               src={img}
-              alt={product.name}
+              alt={`${product.name}${catName ? ` — ${catName}` : ""} — двери Brandoors`}
               loading="lazy"
               decoding="async"
               width="400"

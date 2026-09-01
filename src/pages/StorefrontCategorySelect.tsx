@@ -10,6 +10,7 @@ import pogonazhImg from "@/assets/categories/pogonazh.png";
 import furnituraImg from "@/assets/categories/furnitura.png";
 import { storeHref } from "@/lib/storeHref";
 import { categoryHref } from "@/lib/catalogRoutes";
+import { buildBreadcrumbSchema } from "@/lib/seo";
 
 
 type CategoryCard = {
@@ -28,6 +29,11 @@ const CATEGORIES: CategoryItem[] = [
   { slug: "furnitura", title: "Фурнитура", subtitle: "Ручки, петли, замки", image: furnituraImg },
 ];
 
+const CATALOG_CRUMBS = buildBreadcrumbSchema([
+  { name: "Главная", path: "/" },
+  { name: "Каталог" },
+]);
+
 export default function StorefrontCategorySelect() {
   const { slug: urlSlug } = useParams<{ slug: string }>();
   const slug = useSiteSlug(urlSlug);
@@ -40,6 +46,8 @@ export default function StorefrontCategorySelect() {
     description: site
       ? `Каталог Brandoors: межкомнатные и входные двери, погонаж, фурнитура от производителя. Салон ${siteShortName(site)}, ${site.city}: экспозиция, замер, доставка.`
       : "Каталог Brandoors: межкомнатные и входные двери, погонаж и фурнитура от производителя. Экспозиция в салонах, замер, доставка и установка.",
+    canonical: "/catalog",
+    jsonLd: CATALOG_CRUMBS,
   });
 
   if (isLoading || (!site && !slug)) {
@@ -110,7 +118,7 @@ export default function StorefrontCategorySelect() {
                   />
                   <img
                     src={cat.image}
-                    alt={cat.title}
+                    alt={`${cat.title} Brandoors — ${cat.subtitle.toLowerCase()}`}
                     width={640}
                     height={960}
                     loading="lazy"
