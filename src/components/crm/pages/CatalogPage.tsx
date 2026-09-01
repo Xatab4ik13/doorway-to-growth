@@ -143,7 +143,7 @@ export function CatalogPage() {
   };
 
   const resetForm = () => {
-    setFormName(""); setFormCategoryId(""); setFormRrp(""); setFormColor(""); setFormGlazing(""); setFormDesc("");
+    setFormName(""); setFormCategoryId(""); setFormRrp(""); setFormColor(""); setFormGlazing(""); setFormDesc(""); setFormError(null);
   };
 
   const clearFilters = () => {
