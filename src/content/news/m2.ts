@@ -214,6 +214,8 @@ export const m2News: Article[] = [
         type: "links",
         title: "По теме",
         items: [
+          { label: "Входные двери Brandoors", to: "catalog/entrance-doors" },
+          { label: "Двери с терморазрывом (Термо)", to: "catalog/entrance-doors/termo" },
           { label: "Что входит в комплект двери", to: "news/komplekt-dveri-chto-vhodit" },
           { label: "Двери в новостройку", to: "news/dveri-v-novostroyku" },
           { label: "Каталог погонажных изделий", to: "catalog/pogonazh" },
@@ -326,6 +328,8 @@ export const m2News: Article[] = [
         type: "links",
         title: "По теме",
         items: [
+          { label: "Входные двери Brandoors", to: "catalog/entrance-doors" },
+          { label: "Двери с терморазрывом (Термо)", to: "catalog/entrance-doors/termo" },
           { label: "Каталог входных дверей", to: "catalog/entrance-doors" },
           { label: "Что входит в комплект двери", to: "news/komplekt-dveri-chto-vhodit" },
           { label: "Приёмка дверей при поставке", to: "news/priemka-dverey-pri-postavke" },
@@ -552,6 +556,8 @@ export const m2News: Article[] = [
         type: "links",
         title: "По теме",
         items: [
+          { label: "Входные двери Brandoors", to: "catalog/entrance-doors" },
+          { label: "Двери с терморазрывом (Термо)", to: "catalog/entrance-doors/termo" },
           { label: "Что входит в комплект двери", to: "news/komplekt-dveri-chto-vhodit" },
           { label: "Двери в новостройку", to: "news/dveri-v-novostroyku" },
           { label: "Каталог межкомнатных дверей", to: "catalog/mezhkomnatnye-dveri" },
