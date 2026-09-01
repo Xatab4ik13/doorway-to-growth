@@ -21,9 +21,23 @@ import { resolveStorageUrl } from "@/lib/storageUrl";
 
 const PAGE_SIZE = 24;
 
+const TRANSLIT: Record<string, string> = {
+  а: "a", б: "b", в: "v", г: "g", д: "d", е: "e", ё: "e", ж: "zh", з: "z", и: "i",
+  й: "y", к: "k", л: "l", м: "m", н: "n", о: "o", п: "p", р: "r", с: "s", т: "t",
+  у: "u", ф: "f", х: "h", ц: "c", ч: "ch", ш: "sh", щ: "sch", ъ: "", ы: "y", ь: "",
+  э: "e", ю: "yu", я: "ya",
+};
+
 function slugify(text: string) {
-  return text.toLowerCase().replace(/[^a-zа-яё0-9]+/gi, "-").replace(/^-|-$/g, "");
+  return text
+    .toLowerCase()
+    .split("")
+    .map((ch) => (ch in TRANSLIT ? TRANSLIT[ch] : ch))
+    .join("")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }
+
 
 const ALL_CATEGORY = "__all__";
 
@@ -68,6 +82,8 @@ export function CatalogPage() {
   const [formColor, setFormColor] = useState("");
   const [formGlazing, setFormGlazing] = useState("");
   const [formDesc, setFormDesc] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+
 
   const { uniqueColors, uniqueGlazings } = useMemo(() => {
     const colors = new Set<string>();
@@ -127,7 +143,7 @@ export function CatalogPage() {
   };
 
   const resetForm = () => {
-    setFormName(""); setFormCategoryId(""); setFormRrp(""); setFormColor(""); setFormGlazing(""); setFormDesc("");
+    setFormName(""); setFormCategoryId(""); setFormRrp(""); setFormColor(""); setFormGlazing(""); setFormDesc(""); setFormError(null);
   };
 
   const clearFilters = () => {
@@ -163,22 +179,39 @@ export function CatalogPage() {
   };
 
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!formName.trim()) return;
+    setFormError(null);
+    if (!formCategoryId) {
+      setFormError("Выберите категорию — без неё товар не показывается на сайте.");
+      return;
+    }
     const specs: Record<string, string> = {};
     if (formColor) specs.color = formColor;
     if (formGlazing) specs.glazing = formGlazing;
-    createProduct.mutate({
-      name: formName.trim(),
-      slug: slugify(formName),
-      category_id: formCategoryId || undefined,
-      rrp: formRrp ? Number(formRrp) : undefined,
-      specifications: specs,
-      description: formDesc.trim() || undefined,
-    });
-    setAddOpen(false);
-    resetForm();
+
+    // Уникальный slug: латиница + суффикс, если такой адрес уже занят.
+    const base = slugify(formName) || "product";
+    const taken = new Set(products.map((p) => p.slug));
+    let slug = base;
+    for (let i = 2; taken.has(slug); i++) slug = `${base}-${i}`;
+
+    try {
+      await createProduct.mutateAsync({
+        name: formName.trim(),
+        slug,
+        category_id: formCategoryId,
+        rrp: formRrp ? Number(formRrp) : undefined,
+        specifications: specs,
+        description: formDesc.trim() || undefined,
+      });
+      setAddOpen(false);
+      resetForm();
+    } catch (e: any) {
+      setFormError(e?.message || "Не удалось сохранить товар. Обновите страницу и войдите заново.");
+    }
   };
+
 
   const handleDelete = (product: Product) => {
     deleteProduct.mutate(product.id);
@@ -657,17 +690,23 @@ export function CatalogPage() {
         }
       >
         <div className="grid grid-cols-2 gap-4">
+          {formError && (
+            <div className="col-span-2 rounded-xl border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+              {formError}
+            </div>
+          )}
           <div className="col-span-2">
             <label className="block text-[10px] font-medium uppercase tracking-wider text-muted-foreground mb-1">Название *</label>
             <input value={formName} onChange={(e) => setFormName(e.target.value)} placeholder="PRIME 22 Манхэттен" className={inputCls} />
           </div>
           <div>
-            <label className="block text-[10px] font-medium uppercase tracking-wider text-muted-foreground mb-1">Категория</label>
+            <label className="block text-[10px] font-medium uppercase tracking-wider text-muted-foreground mb-1">Категория *</label>
             <select value={formCategoryId} onChange={(e) => setFormCategoryId(e.target.value)} className={selectCls}>
-              <option value="">Без категории</option>
+              <option value="">Выберите категорию</option>
               {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
+
           <div>
             <label className="block text-[10px] font-medium uppercase tracking-wider text-muted-foreground mb-1">РРЦ (₽)</label>
             <input value={formRrp} onChange={(e) => setFormRrp(e.target.value.replace(/\D/g, ""))} placeholder="9380" className={`${inputCls} tabular-nums`} />
