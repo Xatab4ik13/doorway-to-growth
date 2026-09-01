@@ -328,6 +328,22 @@ export function getHomeAngle(slug?: string | null): HomeAngle {
   return (slug && HOME_ANGLES[slug]) || DEFAULT_ANGLE;
 }
 
+/** Город в предложном падеже: «купить в Москве». */
+export function cityIn(city?: string | null) {
+  const c = city || "Москва";
+  return c.endsWith("а") ? `${c.slice(0, -1)}е` : c;
+}
+
+/** Обрезает description до длины, которую показывают Яндекс и Google (без обрыва слова). */
+export function clampDescription(text: string, max = 158) {
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max);
+  const lastSpace = cut.lastIndexOf(" ");
+  const base = cut.slice(0, lastSpace > 80 ? lastSpace : max);
+  return `${base.replace(/[\s,.;:—-]+$/, "")}…`;
+}
+
 /** Уникальные title/description/H1 для главной страницы конкретного салона. */
 export function buildHomeMeta(site: SiteMetaSource | null | undefined) {
   const salon = siteShortName(site);
@@ -338,14 +354,15 @@ export function buildHomeMeta(site: SiteMetaSource | null | undefined) {
 
   return {
     h1: `Двери Brandoors — салон ${salon}`,
-    title: `Двери Brandoors в ${cityIn} — ${angle.focus} — салон ${salon}`,
-    description: `${angle.offer}. ${angle.intro} Салон ${salon}, ${locality}: замер, доставка и установка.`
-      .replace(/\s+/g, " ")
-      .trim(),
+    title: `Brandoors (Брандорс) — двери в ${cityIn}, салон ${salon}`,
+    description: clampDescription(
+      `Brandoors — двери премиум-класса от производителя: ${angle.focus}. Салон ${salon}, ${locality}: живая экспозиция, замер, доставка и установка.`
+    ),
     intro: angle.intro,
     offer: angle.offer,
   };
 }
+
 
 /** Короткая гео-привязка салона: район, если есть, иначе город. */
 export function siteLocality(site?: SiteMetaSource | null) {
@@ -373,26 +390,33 @@ export function buildCatalogMeta(
   if (collection) {
     return {
       h1: `${collection.name} — межкомнатные двери`,
-      title: `${collection.keyphrase} — купить в ${cityIn}, салон ${salon}`,
-      description: `${collection.intro} Салон Brandoors ${salon}, ${locality}. Живая экспозиция, замер и расчёт стоимости.`,
+      title: `${collection.name} Brandoors — ${collection.keyphrase} в ${cityIn}`,
+      description: clampDescription(
+        `${collection.keyphrase} Brandoors: цены, фото и живая экспозиция в салоне ${salon}, ${locality}. Замер, доставка и установка. ${collection.intro}`
+      ),
     };
   }
 
   if (category) {
     return {
       h1: category.name,
-      title: `${category.keyphrase} — купить в ${cityIn}, салон ${salon}`,
-      description: `${category.intro} Салон Brandoors ${salon}, ${locality}.`,
+      title: `${category.name} Brandoors — купить в ${cityIn}, салон ${salon}`,
+      description: clampDescription(
+        `${category.keyphrase} от производителя Brandoors: цены, фото, экспозиция в салоне ${salon}, ${locality}. Замер, доставка и установка. ${category.intro}`
+      ),
     };
   }
 
 
   return {
     h1: "Каталог",
-    title: `Каталог дверей Brandoors — салон ${salon}, ${city}`,
-    description: `Каталог межкомнатных и входных дверей Brandoors. Салон ${salon}, ${locality}: экспозиция, замер, доставка и установка.`,
+    title: `Каталог дверей Brandoors — купить в ${cityIn}, салон ${salon}`,
+    description: clampDescription(
+      `Каталог дверей Brandoors (Брандорс): межкомнатные и входные двери от производителя. Салон ${salon}, ${locality}: цены, экспозиция, замер, доставка и установка.`
+    ),
   };
 }
+
 
 /** Ссылка на карточку товара внутри текущего магазина. */
 export function productHref(slug: string | null | undefined, productSlug: string) {

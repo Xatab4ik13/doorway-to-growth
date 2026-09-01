@@ -28,6 +28,8 @@ const STATIC_ROUTES = [
   // Статические SEO-маршруты категорий
   { path: "/catalog/mezhkomnatnye-dveri", changefreq: "weekly", priority: "0.9" },
   { path: "/catalog/entrance-doors", changefreq: "weekly", priority: "0.9" },
+  { path: "/catalog/entrance-doors/standartnye", changefreq: "weekly", priority: "0.8" },
+  { path: "/catalog/entrance-doors/termo", changefreq: "weekly", priority: "0.8" },
   { path: "/catalog/pogonazh", changefreq: "weekly", priority: "0.7" },
   { path: "/catalog/furnitura", changefreq: "weekly", priority: "0.7" },
   // Коллекции межкомнатных дверей

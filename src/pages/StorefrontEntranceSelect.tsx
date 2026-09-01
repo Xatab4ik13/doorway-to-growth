@@ -4,7 +4,7 @@ import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { storeHref } from "@/lib/storeHref";
-import { ENTRANCE_SUBCATEGORIES, entranceSubHref } from "@/lib/catalogRoutes";
+import { ENTRANCE_SUBCATEGORIES, entranceSubHref, siteShortName, cityIn } from "@/lib/catalogRoutes";
 import entranceImg from "@/assets/categories/entrance-doors.png";
 import termoImg from "@/assets/categories/entrance-termo.png";
 
@@ -19,10 +19,12 @@ export default function StorefrontEntranceSelect() {
   const { data: site, isLoading } = useSiteBySlug(slug);
 
   useDocumentMeta({
-    title: site ? `Входные двери — ${site.name}` : "Входные двери — Brandoors",
+    title: site
+      ? `Входные двери Brandoors — купить в ${cityIn(site.city)}, салон ${siteShortName(site)}`
+      : "Входные двери Brandoors (Брандорс) — стальные и Термо",
     description: site
-      ? `Входные двери Brandoors: стальные модели и двери с терморазрывом Термо — салон ${site.name}, ${site.city}`
-      : "Входные двери Brandoors: стальные модели и двери с терморазрывом Термо",
+      ? `Входные двери Brandoors: стальные модели и Термо с терморазрывом. Салон ${siteShortName(site)}, ${site.city}: цены, экспозиция, замер, доставка и установка.`
+      : "Входные двери Brandoors: стальные модели и серия Термо с терморазрывом. Цены от производителя, экспозиция в салонах, замер и установка.",
   });
 
   if (isLoading || (!site && !slug)) {
