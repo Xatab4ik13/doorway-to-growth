@@ -21,6 +21,7 @@ import {
   COLLECTIONS_PARENT_SLUG,
   ENTRANCE_PARENT_SLUG,
   ENTRANCE_SUBCATEGORIES,
+  cityIn,
   buildHomeMeta,
   buildCatalogMeta,
   buildProductMeta,
@@ -296,8 +297,8 @@ function pagesForSite(site: SiteInfo): PageSpec[] {
   for (const sub of ENTRANCE_SUBCATEGORIES) {
     const path = `/catalog/${ENTRANCE_PARENT_SLUG}/${sub.slug}`;
     const title = sub.dbName
-      ? `Входные двери Термо Brandoors — купить в ${site.city}, ${salon}`
-      : `Входные двери Brandoors — купить в ${site.city}, салон ${salon}`;
+      ? `Входные двери Термо Brandoors — купить в ${cityIn(site.city)}, ${salon}`
+      : `Входные двери Brandoors — купить в ${cityIn(site.city)}, салон ${salon}`;
     const description = sub.dbName
       ? `Входные двери Термо Brandoors с терморазрывом: не промерзают и не собирают конденсат. Салон ${salon}, ${locality}: цены, экспозиция, замер и установка.`
       : `Стальные входные двери Brandoors: два контура уплотнения, два замка, отделка под интерьер. Салон ${salon}, ${locality}: цены, экспозиция, замер и установка.`;

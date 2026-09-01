@@ -328,6 +328,12 @@ export function getHomeAngle(slug?: string | null): HomeAngle {
   return (slug && HOME_ANGLES[slug]) || DEFAULT_ANGLE;
 }
 
+/** Город в предложном падеже: «купить в Москве». */
+export function cityIn(city?: string | null) {
+  const c = city || "Москва";
+  return c.endsWith("а") ? `${c.slice(0, -1)}е` : c;
+}
+
 /** Обрезает description до длины, которую показывают Яндекс и Google (без обрыва слова). */
 export function clampDescription(text: string, max = 158) {
   const clean = text.replace(/\s+/g, " ").trim();

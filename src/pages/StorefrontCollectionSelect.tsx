@@ -5,7 +5,7 @@ import { useSiteSlug } from "@/hooks/useSiteSlug";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { storeHref } from "@/lib/storeHref";
-import { collectionHrefByName, siteShortName } from "@/lib/catalogRoutes";
+import { collectionHrefByName, siteShortName, cityIn } from "@/lib/catalogRoutes";
 
 import { supabase } from "@/integrations/supabase/client";
 import { resolveStorageUrl } from "@/lib/storageUrl";
@@ -106,7 +106,7 @@ export default function StorefrontCollectionSelect() {
 
   useDocumentMeta({
     title: site
-      ? `Межкомнатные двери Brandoors — купить в ${site.city}, ${siteShortName(site)}`
+      ? `Межкомнатные двери Brandoors — купить в ${cityIn(site.city)}, ${siteShortName(site)}`
       : "Межкомнатные двери Brandoors (Брандорс) — коллекции и цены",
     description: site
       ? `Межкомнатные двери Brandoors: коллекции PRIME, ESTETICA, GHOST, HEAVY, MAZE. Салон ${siteShortName(site)}, ${site.city}: цены, экспозиция, замер и установка.`
