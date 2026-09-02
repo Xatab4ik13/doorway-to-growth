@@ -27,10 +27,10 @@ export default function StorefrontEntranceSelect() {
 
   useDocumentMeta({
     title: site
-      ? `Входные двери Brandoors — купить в ${cityIn(site.city)}, салон ${siteShortName(site)}`
+      ? `Входные двери Brandoors в ${cityIn(site.city)}: стальные и Термо — ${siteShortName(site)}`
       : "Входные двери Brandoors (Брандорс) — стальные и Термо",
     description: site
-      ? `Входные двери Brandoors: стальные модели и Термо с терморазрывом. Салон ${siteShortName(site)}, ${site.city}: цены, экспозиция, замер, доставка и установка.`
+      ? `Входные двери Brandoors: стальные модели и Термо с терморазрывом. Цены, фото и экспозиция в салоне ${siteShortName(site)} в ${site.city}. Замер, доставка и установка.`
       : "Входные двери Brandoors: стальные модели и серия Термо с терморазрывом. Цены от производителя, экспозиция в салонах, замер и установка.",
     canonical: "/catalog/entrance-doors",
     jsonLd: ENTRANCE_CRUMBS,
