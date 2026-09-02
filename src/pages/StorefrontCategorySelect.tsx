@@ -39,12 +39,16 @@ export default function StorefrontCategorySelect() {
   const slug = useSiteSlug(urlSlug);
   const { data: site, isLoading } = useSiteBySlug(slug);
 
+  const cityInName = site?.city?.endsWith("а")
+    ? `${site.city.slice(0, -1)}е`
+    : site?.city || "Москве";
+
   useDocumentMeta({
     title: site
-      ? `Каталог дверей Brandoors — салон ${siteShortName(site)}, ${site.city}`
+      ? `Каталог дверей Brandoors в ${cityInName}: межкомнатные, входные — ${siteShortName(site)}`
       : "Каталог дверей Brandoors (Брандорс) — межкомнатные и входные",
     description: site
-      ? `Каталог Brandoors: межкомнатные и входные двери, погонаж, фурнитура от производителя. Салон ${siteShortName(site)}, ${site.city}: экспозиция, замер, доставка.`
+      ? `Каталог Brandoors: межкомнатные и входные двери, погонаж, фурнитура. Цены, фото и экспозиция в салоне ${siteShortName(site)} в ${site.city}. Замер, доставка и установка.`
       : "Каталог Brandoors: межкомнатные и входные двери, погонаж и фурнитура от производителя. Экспозиция в салонах, замер, доставка и установка.",
     canonical: "/catalog",
     jsonLd: CATALOG_CRUMBS,
