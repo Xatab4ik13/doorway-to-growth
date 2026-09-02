@@ -354,7 +354,7 @@ export function buildHomeMeta(site: SiteMetaSource | null | undefined) {
 
   return {
     h1: `Двери Brandoors — салон ${salon}`,
-    title: `Brandoors (Брандорс) — двери в ${cityIn}, салон ${salon}`,
+    title: `Brandoors в ${cityIn}: межкомнатные и входные двери — ${salon}`,
     description: clampDescription(
       `Brandoors — двери премиум-класса от производителя: ${angle.focus}. Салон ${salon}, ${locality}: живая экспозиция, замер, доставка и установка.`
     ),
@@ -390,7 +390,7 @@ export function buildCatalogMeta(
   if (collection) {
     return {
       h1: `${collection.name} — межкомнатные двери`,
-      title: `${collection.name} Brandoors — ${collection.keyphrase} в ${cityIn}`,
+      title: `${collection.name} Brandoors в ${cityIn} — ${salon}`,
       description: clampDescription(
         `${collection.keyphrase} Brandoors: цены, фото и живая экспозиция в салоне ${salon}, ${locality}. Замер, доставка и установка. ${collection.intro}`
       ),
@@ -400,7 +400,7 @@ export function buildCatalogMeta(
   if (category) {
     return {
       h1: category.name,
-      title: `${category.name} Brandoors — купить в ${cityIn}, салон ${salon}`,
+      title: `${category.name} Brandoors в ${cityIn}: цены, фото — ${salon}`,
       description: clampDescription(
         `${category.keyphrase} от производителя Brandoors: цены, фото, экспозиция в салоне ${salon}, ${locality}. Замер, доставка и установка. ${category.intro}`
       ),
@@ -410,7 +410,7 @@ export function buildCatalogMeta(
 
   return {
     h1: "Каталог",
-    title: `Каталог дверей Brandoors — купить в ${cityIn}, салон ${salon}`,
+    title: `Каталог дверей Brandoors в ${cityIn}: межкомнатные, входные — ${salon}`,
     description: clampDescription(
       `Каталог дверей Brandoors (Брандорс): межкомнатные и входные двери от производителя. Салон ${salon}, ${locality}: цены, экспозиция, замер, доставка и установка.`
     ),
@@ -454,7 +454,7 @@ export function buildProductMeta(
 
   const kind = collection ? `${collection.name}, межкомнатная дверь` : group;
 
-  const title = `${product.name} — ${kind} — купить в ${cityIn}, салон ${salon}`;
+  const title = `${product.name} — ${kind} в ${cityIn} — ${salon}`;
 
   const priceLine =
     product.rrp && Number(product.rrp) > 0
