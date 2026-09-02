@@ -14,16 +14,19 @@ import { kashirskyNewsExtra2 } from "./kashirsky-extra2";
 import { roomerNewsExtra2 } from "./roomer-extra2";
 import { dekoratorNewsExtra2 } from "./dekorator-extra2";
 import { m2NewsExtra2 } from "./m2-extra2";
+import { kashirskyNewsExtra3 } from "./kashirsky-extra3";
+import { m2NewsExtra3 } from "./m2-extra3";
+import { scherbinkaNewsExtra3 } from "./scherbinka-extra3";
 
 export type { Article, ArticleBlock } from "./types";
 
 /** Наборы статей по slug салона. У каждого домена свой уникальный контент. */
 export const NEWS_BY_SITE: Record<string, Article[]> = {
-  scherbinka: [...scherbinkaNews, ...scherbinkaNewsExtra, ...scherbinkaNewsExtra2],
-  kashirsky: [...kashirskyNews, ...kashirskyNewsExtra, ...kashirskyNewsExtra2],
+  scherbinka: [...scherbinkaNews, ...scherbinkaNewsExtra, ...scherbinkaNewsExtra2, ...scherbinkaNewsExtra3],
+  kashirsky: [...kashirskyNews, ...kashirskyNewsExtra, ...kashirskyNewsExtra2, ...kashirskyNewsExtra3],
   roomer: [...roomerNews, ...roomerNewsExtra, ...roomerNewsExtra2],
   dekorator: [...dekoratorNews, ...dekoratorNewsExtra, ...dekoratorNewsExtra2],
-  m2: [...m2News, ...m2NewsExtra, ...m2NewsExtra2],
+  m2: [...m2News, ...m2NewsExtra, ...m2NewsExtra2, ...m2NewsExtra3],
 };
 
 
