@@ -33,17 +33,21 @@ export default function StorefrontNews() {
   const articles = getArticles(site?.slug);
 
   useDocumentMeta({
-    title: site ? `Новости и статьи — Brandoors ${site.city}` : "Новости — Brandoors",
+    title: site
+      ? `Статьи о дверях: выбор, замер, установка — Brandoors ${site.city}`
+      : "Статьи о дверях: выбор, замер, установка — Brandoors",
     description: site
-      ? `Статьи салона Brandoors в ${site.district || site.city}: подбор межкомнатных и входных дверей, замер, монтаж, коллекции и практические разборы.`
-      : "Новости Brandoors: новые коллекции дверей, акции, события и полезные материалы.",
+      ? `Полезные статьи о дверях: выбор, замер, установка и уход. Блог салона Brandoors в ${site.district || site.city}: советы, тренды и практические разборы.`
+      : "Полезные статьи о дверях: выбор, замер, установка и уход. Блог Brandoors: советы, тренды и практические разборы.",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "CollectionPage",
-      name: site ? `Новости и статьи — Brandoors ${site.city}` : "Новости — Brandoors",
+      name: site
+        ? `Статьи о дверях: выбор, замер, установка — Brandoors ${site.city}`
+        : "Статьи о дверях: выбор, замер, установка — Brandoors",
       url: getPageUrl(),
       description:
-        "Статьи и практические материалы Brandoors о выборе, замере и установке дверей.",
+        "Полезные статьи и практические материалы Brandoors о выборе, замере и установке дверей.",
       ...(articles.length
         ? {
             mainEntity: {
