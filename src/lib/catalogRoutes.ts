@@ -356,7 +356,7 @@ export function buildHomeMeta(site: SiteMetaSource | null | undefined) {
     h1: `Двери Brandoors — салон ${salon}`,
     title: `Brandoors в ${cityIn}: межкомнатные и входные двери — ${salon}`,
     description: clampDescription(
-      `Brandoors в ${locality}: двери премиум-класса от производителя. ${angle.offer} Экспозиция, замер, доставка и установка в салоне ${salon}.`
+      `Brandoors в ${locality}: двери премиум-класса от производителя. ${angle.offer}. Экспозиция, замер, доставка и установка в салоне ${salon}.`
     ),
     intro: angle.intro,
     offer: angle.offer,
