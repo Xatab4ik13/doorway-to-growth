@@ -152,6 +152,12 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://brandoors.online/news/dveri-s-termorazryvom-chto-eto</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://brandoors.online/product/artdeco</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
