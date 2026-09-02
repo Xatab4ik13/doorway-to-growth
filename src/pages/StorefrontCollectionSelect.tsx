@@ -113,11 +113,11 @@ export default function StorefrontCollectionSelect() {
 
   useDocumentMeta({
     title: site
-      ? `Межкомнатные двери Brandoors — купить в ${cityIn(site.city)}, ${siteShortName(site)}`
-      : "Межкомнатные двери Brandoors (Брандорс) — коллекции и цены",
+      ? `Межкомнатные двери Brandoors в ${cityIn(site.city)}: 6 коллекций — ${siteShortName(site)}`
+      : "Межкомнатные двери Brandoors (Брандорс) — 6 коллекций, цены",
     description: site
-      ? `Межкомнатные двери Brandoors: коллекции PRIME, ESTETICA, GHOST, HEAVY, MAZE. Салон ${siteShortName(site)}, ${site.city}: цены, экспозиция, замер и установка.`
-      : "Межкомнатные двери Brandoors: коллекции PRIME, ESTETICA, GHOST, HEAVY, MAZE. Цены от производителя, экспозиция в салонах, замер и установка.",
+      ? `Межкомнатные двери Brandoors: коллекции PRIME, ESTETICA, GHOST, HEAVY, MAZE, REFLECT. Цены, фото, экспозиция в салоне ${siteShortName(site)} в ${site.city}. Замер и установка.`
+      : "Межкомнатные двери Brandoors: коллекции PRIME, ESTETICA, GHOST, HEAVY, MAZE, REFLECT. Цены от производителя, экспозиция в салонах, замер и установка.",
     canonical: "/catalog/mezhkomnatnye-dveri",
     jsonLd: INTERIOR_CRUMBS,
   });
