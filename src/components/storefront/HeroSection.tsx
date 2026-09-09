@@ -17,6 +17,7 @@ const EASE_SMOOTH: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const NAV_ITEMS = [
   { label: "Каталог", href: "catalog", isRoute: true },
+  { label: "Межкомнатные двери", href: "catalog/mezhkomnatnye-dveri", isRoute: true },
   { label: "Новости", href: "news", isRoute: true },
   { label: "Отзывы", href: "#about", isRoute: false },
   { label: "О бренде", href: "brand", isRoute: true },
@@ -100,13 +101,13 @@ export function HeroSection({ site, banners }: Props) {
         </svg>
 
         {/* Nav links in top tab */}
-        <div className="absolute top-0 left-[280px] h-[56px] flex items-center gap-8 xl:gap-10">
+        <div className="absolute top-0 left-[280px] h-[56px] flex items-center gap-5 xl:gap-7">
           {NAV_ITEMS.map((item) =>
             item.isRoute ? (
               <Link
                 key={item.label}
                 to={storeHref(site.slug, `${item.href}`)}
-                className="text-[15px] font-bold uppercase tracking-[0.25em] transition-colors duration-300"
+                className="text-[13px] xl:text-[14px] font-bold uppercase tracking-[0.18em] transition-colors duration-300 whitespace-nowrap"
                 style={{ fontFamily: "'Onest', sans-serif", color: "rgba(26,20,8,0.85)" }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,1)"; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.85)"; }}
@@ -117,7 +118,7 @@ export function HeroSection({ site, banners }: Props) {
               <a
                 key={item.label}
                 href={item.href}
-                className="text-[15px] font-bold uppercase tracking-[0.25em] transition-colors duration-300"
+                className="text-[13px] xl:text-[14px] font-bold uppercase tracking-[0.18em] transition-colors duration-300 whitespace-nowrap"
                 style={{ fontFamily: "'Onest', sans-serif", color: "rgba(26,20,8,0.85)" }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,1)"; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(26,20,8,0.85)"; }}

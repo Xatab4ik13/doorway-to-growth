@@ -70,6 +70,7 @@ export const scherbinkaNewsExtra3: Article[] = [
           { label: "Межкомнатные двери Brandoors", to: "catalog/mezhkomnatnye-dveri" },
           { label: "Входные двери Brandoors", to: "catalog/entrance-doors" },
           { label: "Коллекция PRIME", to: "catalog/mezhkomnatnye-dveri/prime" },
+          { label: "Скрытые двери GHOST", to: "catalog/mezhkomnatnye-dveri/ghost" },
           { label: "Салон «Щербинка»", to: "salon" },
         ],
       },
