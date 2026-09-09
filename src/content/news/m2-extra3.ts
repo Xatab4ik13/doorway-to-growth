@@ -77,6 +77,8 @@ export const m2NewsExtra3: Article[] = [
         title: "По теме",
         items: [
           { label: "Межкомнатные двери Brandoors", to: "catalog/mezhkomnatnye-dveri" },
+          { label: "Скрытые двери GHOST", to: "catalog/mezhkomnatnye-dveri/ghost" },
+          { label: "Современные двери PRIME", to: "catalog/mezhkomnatnye-dveri/prime" },
           { label: "Входные двери Brandoors", to: "catalog/entrance-doors" },
           { label: "Двери с терморазрывом (Термо)", to: "catalog/entrance-doors/termo" },
           { label: "Салон «Метр Квадратный»", to: "salon" },

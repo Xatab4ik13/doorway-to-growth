@@ -1,6 +1,6 @@
 import { useState, useEffect, memo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 import colPrime from "@/assets/collections/prime.webp";
 import colEstetica from "@/assets/collections/estetica.webp";
@@ -206,6 +206,16 @@ export function PatternSection() {
             {tab.label}
           </button>
         ))}
+      </div>
+
+      <div className="flex justify-center px-6">
+        <Link
+          to={categoryHref(slug, "mezhkomnatnye-dveri")}
+          className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-storefront-gold transition-opacity hover:opacity-80"
+        >
+          Все межкомнатные двери
+          <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        </Link>
       </div>
 
       <CollectionCarousel items={collectionsMap[activeTab]} onSelect={handleSelect} />

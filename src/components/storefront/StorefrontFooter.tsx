@@ -96,7 +96,7 @@ export function StorefrontFooter({ site }: Props) {
               Навигация
             </h4>
             {[
-              { label: "Каталог", href: storeHref(site.slug, "catalog"), isRoute: true },
+              { label: "Межкомнатные двери", href: storeHref(site.slug, "catalog/mezhkomnatnye-dveri"), isRoute: true },
               { label: "Новости", href: storeHref(site.slug, "news"), isRoute: true },
               { label: "О бренде", href: storeHref(site.slug, "brand"), isRoute: true },
               { label: "Отзывы", href: "#about", isRoute: false },

@@ -86,6 +86,7 @@ export const kashirskyNewsExtra3: Article[] = [
           { label: "Двери с терморазрывом (Термо)", to: "catalog/entrance-doors/termo" },
           { label: "Все входные двери Brandoors", to: "catalog/entrance-doors" },
           { label: "Межкомнатные двери", to: "catalog/mezhkomnatnye-dveri" },
+          { label: "Двери PRIME для современного интерьера", to: "catalog/mezhkomnatnye-dveri/prime" },
           { label: "Салон «Каширский двор»", to: "salon" },
         ],
       },
