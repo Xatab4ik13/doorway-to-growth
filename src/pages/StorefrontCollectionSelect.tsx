@@ -177,6 +177,12 @@ export default function StorefrontCollectionSelect() {
             >
               {collectionsLoading ? "Загрузка…" : `${collections.length} коллекций межкомнатных дверей`}
             </p>
+            <Link
+              to={storeHref(slug, "catalog/mezhkomnatnye-dveri/s-zerkalom")}
+              className="mt-4 inline-block text-xs uppercase tracking-[0.18em] text-storefront-gold hover:text-storefront-text transition-colors"
+            >
+              Двери с зеркалом →
+            </Link>
           </div>
 
           {/* Cards grid */}
