@@ -90,9 +90,16 @@ function buildUrlset(entries: SitemapEntry[]) {
  * Источник товаров — статический снимок каталога (scripts/snapshot-products.ts).
  * На прод-VM переменные Supabase при сборке недоступны, поэтому обращаться к БД
  * здесь нельзя: sitemap иначе терял бы все карточки товаров.
+ *
+ * В карту попадают только двери. Погонаж и фурнитура (≈900 мелких SKU) Яндекс
+ * массово исключал как LOW_QUALITY — они тратили обход и тянули качество сайта.
  */
+const SITEMAP_PRODUCT_ROOTS = new Set(["mezhkomnatnye-dveri", "entrance-doors"]);
+
 function fetchProducts(): { slug: string }[] {
-  return (PRODUCT_SNAPSHOT as { slug: string }[]).filter((p) => p.slug);
+  return (
+    PRODUCT_SNAPSHOT as { slug: string; rootSlug: string | null; categorySlug: string | null }[]
+  ).filter((p) => p.slug && SITEMAP_PRODUCT_ROOTS.has(p.rootSlug || p.categorySlug || ""));
 }
 
 async function main() {

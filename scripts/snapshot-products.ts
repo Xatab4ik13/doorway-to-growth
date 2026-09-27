@@ -34,7 +34,7 @@ async function main() {
   for (let from = 0; ; from += 1000) {
     const { data, error } = await supabase
       .from("products")
-      .select("slug,name,description,rrp,category_id")
+      .select("slug,name,description,rrp,category_id,specifications")
       .eq("is_active", true)
       .order("name")
       .range(from, from + 999);
@@ -43,12 +43,38 @@ async function main() {
     if (!data || data.length < 1000) break;
   }
 
+  // Краткая выжимка реальных характеристик из JSONB — для уникального текста карточек.
+  const specsOf = (s: any) => {
+    if (!s || typeof s !== "object") return null;
+    const uniq = (a: unknown) =>
+      Array.isArray(a) ? [...new Set(a.map((x) => String(x).replace(/\s+/g, " ").trim()).filter(Boolean))] : [];
+    const nums = (a: unknown) => (Array.isArray(a) ? a.map(Number).filter((n) => n > 0) : []);
+    const range = (a: number[]) => (a.length ? [Math.min(...a), Math.max(...a)] : null);
+    const ch = s.characteristics && typeof s.characteristics === "object" ? s.characteristics : {};
+    const out = {
+      type: ch.type ?? null,
+      material: ch.material ?? null,
+      finishing: ch.finishing ?? null,
+      thickness: ch.thickness ?? (s.size?.thickness ? `${s.size.thickness} мм` : null),
+      colors: uniq(s.axes?.color?.values?.length ? s.axes.color.values : s.colors).slice(0, 12),
+      edges: uniq(s.axes?.edge?.values),
+      glass: uniq(s.axes?.glass?.values),
+      widths: range(nums(s.widths)),
+      heights: range(nums(s.heights)),
+      size: s.size?.width && s.size?.height ? [Number(s.size.width), Number(s.size.height)] : null,
+      skuColors: uniq((s.skus ?? []).map((k: any) => k?.color)).slice(0, 12),
+    };
+    return out;
+  };
+
   const out = all
     .filter((p) => p.slug)
     .map((p) => {
       const c = byId[p.category_id];
       const parent = c?.parent_id ? byId[c.parent_id] : null;
       const root = parent?.parent_id ? byId[parent.parent_id] : parent;
+      const rootSlug = root?.slug ?? null;
+      const isDoor = ["mezhkomnatnye-dveri", "entrance-doors"].includes(rootSlug || c?.slug || "");
       return {
         slug: p.slug,
         name: p.name,
@@ -58,8 +84,9 @@ async function main() {
         categorySlug: c?.slug ?? null,
         parentName: parent?.name ?? null,
         parentSlug: parent?.slug ?? null,
-        rootSlug: root?.slug ?? null,
+        rootSlug,
         rootName: root?.name ?? null,
+        ...(isDoor ? { specs: specsOf(p.specifications) } : {}),
       };
     });
 
