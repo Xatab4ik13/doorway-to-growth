@@ -47,6 +47,41 @@ interface SnapshotProduct {
   parentSlug: string | null;
   rootSlug: string | null;
   rootName: string | null;
+  specs?: {
+    type: string | null;
+    material: string | null;
+    finishing: string | null;
+    thickness: string | null;
+    colors: string[];
+    edges: string[];
+    glass: string[];
+    widths: [number, number] | null;
+    heights: [number, number] | null;
+    size: [number, number] | null;
+    skuColors: string[];
+  } | null;
+}
+
+/** Абзацы с реальными характеристиками модели из каталога (без выдуманных данных). */
+function specLines(p: SnapshotProduct): string[] {
+  const s = p.specs;
+  if (!s) return [];
+  const clean = (v: string | null) => (v || "").replace(/\s+/g, " ").trim().replace(/\.$/, "");
+  const lines: string[] = [];
+  if (clean(s.type)) lines.push(`Конструкция: ${clean(s.type).toLowerCase()}.`);
+  if (clean(s.material)) lines.push(`Материал: ${clean(s.material)}.`);
+  if (clean(s.finishing)) lines.push(`Покрытие: ${clean(s.finishing)}.`);
+  if (clean(s.thickness)) lines.push(`Толщина полотна: ${clean(s.thickness)}.`);
+  const colors = s.colors.length ? s.colors : s.skuColors;
+  if (colors.length) lines.push(`Цвета ${p.name}: ${colors.join(", ")}.`);
+  if (s.edges.length) lines.push(`Варианты кромки: ${s.edges.join(", ")}.`);
+  if (s.glass.length) lines.push(`Остекление: ${s.glass.join(", ")}.`);
+  if (s.widths && s.heights)
+    lines.push(
+      `Размеры под проём: ширина от ${s.widths[0]} до ${s.widths[1]} мм, высота от ${s.heights[0]} до ${s.heights[1]} мм.`
+    );
+  else if (s.size) lines.push(`Размер: ${s.size[0]} × ${s.size[1]} мм.`);
+  return lines.length ? [`## Характеристики ${p.name}`, ...lines] : [];
 }
 
 /** Фурнитуру не пререндерим: 700+ мелких SKU дали бы тонкие однотипные страницы. */
