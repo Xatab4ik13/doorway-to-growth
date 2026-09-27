@@ -34,6 +34,7 @@ import { NEWS_BY_SITE } from "../src/content/news";
 import type { Article } from "../src/content/news";
 import PRODUCT_SNAPSHOT from "../src/content/products-snapshot.json";
 import { BRAND_ID, BRAND_NAME, BRAND_URL, BRAND_HOST, BRAND_SAME_AS } from "../src/lib/brand";
+import { MIRROR_DOOR_SLUGS, MIRROR_INTRO, MIRROR_BODY, MIRROR_PAGE_PATH } from "../src/lib/mirrorDoors";
 
 /** Снимок каталога: карточки товаров пререндерятся без обращения к БД. */
 interface SnapshotProduct {
@@ -313,10 +314,13 @@ function pagesForSite(site: SiteInfo): PageSpec[] {
       body: [category.intro, ...(category.body ?? [])],
       links:
         category.slug === COLLECTIONS_PARENT_SLUG
-          ? Object.values(COLLECTION_SEO).map((c) => ({
-              href: `/catalog/${COLLECTIONS_PARENT_SLUG}/${c.slug}`,
-              label: c.keyphrase,
-            }))
+          ? [
+              ...Object.values(COLLECTION_SEO).map((c) => ({
+                href: `/catalog/${COLLECTIONS_PARENT_SLUG}/${c.slug}`,
+                label: c.keyphrase,
+              })),
+              { href: MIRROR_PAGE_PATH, label: "Межкомнатные двери с зеркалом" },
+            ]
           : catalogLinks.filter((l) => l.href !== path),
       jsonLd: [
         breadcrumbs(origin, [
@@ -390,6 +394,32 @@ function pagesForSite(site: SiteInfo): PageSpec[] {
           { name: "Каталог", path: "/catalog" },
           { name: "Межкомнатные двери", path: `/catalog/${COLLECTIONS_PARENT_SLUG}` },
           { name: collection.name, path },
+        ]),
+      ],
+    });
+  }
+
+  // Межкомнатные двери с зеркалом — только модели с зеркалом в каталоге
+  {
+    const snap = PRODUCT_SNAPSHOT as SnapshotProduct[];
+    const bySlug = new Map(snap.map((p) => [p.slug, p]));
+    const mirror = MIRROR_DOOR_SLUGS.map((s) => bySlug.get(s)).filter(Boolean) as SnapshotProduct[];
+    pages.push({
+      path: MIRROR_PAGE_PATH,
+      title: `Межкомнатные двери с зеркалом в ${cityIn(site.city)} — ${salon}`,
+      description: `Межкомнатные двери с зеркалом Brandoors: ${mirror.length} моделей PRIME, MAZE, ESTETICA, HEAVY, REFLECT. Салон ${salon}, ${locality}: цены, замер, установка.`,
+      h1: `Межкомнатные двери с зеркалом — салон ${salon}`,
+      body: [MIRROR_INTRO, ...MIRROR_BODY],
+      links: [
+        ...mirror.map((p) => ({ href: `/product/${p.slug}`, label: `Дверь с зеркалом ${p.name}` })),
+        { href: `/catalog/${COLLECTIONS_PARENT_SLUG}`, label: "Все межкомнатные двери" },
+      ],
+      jsonLd: [
+        breadcrumbs(origin, [
+          { name: "Главная", path: "/" },
+          { name: "Каталог", path: "/catalog" },
+          { name: "Межкомнатные двери", path: `/catalog/${COLLECTIONS_PARENT_SLUG}` },
+          { name: "Двери с зеркалом", path: MIRROR_PAGE_PATH },
         ]),
       ],
     });

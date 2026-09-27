@@ -21,6 +21,7 @@ const Storefront = lazy(() => import("./pages/Storefront.tsx"));
 const StorefrontCatalog = lazy(() => import("./pages/StorefrontCatalog.tsx"));
 const StorefrontCategorySelect = lazy(() => import("./pages/StorefrontCategorySelect.tsx"));
 const StorefrontCollectionSelect = lazy(() => import("./pages/StorefrontCollectionSelect.tsx"));
+const StorefrontMirrorDoors = lazy(() => import("./pages/StorefrontMirrorDoors.tsx"));
 const StorefrontEntranceSelect = lazy(() => import("./pages/StorefrontEntranceSelect.tsx"));
 const StorefrontProduct = lazy(() => import("./pages/StorefrontProduct.tsx"));
 const StorefrontCart = lazy(() => import("./pages/StorefrontCart.tsx"));
@@ -112,6 +113,7 @@ function AppRoutes() {
             element={<Navigate to={`/catalog/${COLLECTIONS_PARENT_SLUG}`} replace />}
           />
           <Route path="/catalog/list" element={<StorefrontCatalog />} />
+          <Route path="/catalog/mezhkomnatnye-dveri/s-zerkalom" element={<StorefrontMirrorDoors />} />
           <Route path="/catalog/:categorySlug" element={<CatalogCategoryRoute />} />
           <Route path="/catalog/:categorySlug/:collectionSlug" element={<StorefrontCatalog />} />
           <Route path="/product/:productSlug" element={<StorefrontProduct />} />
@@ -151,6 +153,7 @@ function AppRoutes() {
         <Route path="/store/:slug" element={<Storefront />} />
         <Route path="/store/:slug/catalog" element={<StorefrontCategorySelect />} />
         <Route path="/store/:slug/catalog/list" element={<StorefrontCatalog />} />
+        <Route path="/store/:slug/catalog/mezhkomnatnye-dveri/s-zerkalom" element={<StorefrontMirrorDoors />} />
         <Route path="/store/:slug/catalog/:categorySlug" element={<CatalogCategoryRoute />} />
         <Route path="/store/:slug/catalog/:categorySlug/:collectionSlug" element={<StorefrontCatalog />} />
         <Route path="/store/:slug/product/:productSlug" element={<StorefrontProduct />} />
